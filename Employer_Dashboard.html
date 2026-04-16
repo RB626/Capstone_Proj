@@ -1,0 +1,2779 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlueCollar Connect</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="Employer_Dashboard.css" />
+</head>
+
+<body>
+
+  <!-- ══ TOP NAV ══ -->
+  <nav class="topnav">
+    <div class="brand" onclick="showPage('home')">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+        </svg>
+      </div>
+      <span class="brand-name">BlueCollar Connect</span>
+    </div>
+
+    <div class="search-bar">
+      <span class="search-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      </span>
+      <input type="text" placeholder="Search jobs, skills, or location..." />
+    </div>
+
+    <div class="nav-actions">
+      <div class="notif-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+        <span class="notif-dot"></span>
+      </div>
+
+      <!-- Avatar + Dropdown -->
+      <div class="avatar-wrap" id="avatarWrap">
+        <div class="avatar" onclick="toggleDropdown()" id="avatarBtn">
+          <img src="https://i.pravatar.cc/80?img=33" alt="Juan Dela Cruz" />
+        </div>
+
+        <div class="avatar-dropdown" id="avatarDropdown">
+          <!-- User header -->
+          <div class="dd-user-header">
+            <img class="dd-user-avatar" src="https://i.pravatar.cc/80?img=33" alt="Juan Dela Cruz" />
+            <div>
+              <div class="dd-user-name">Juan Dela Cruz</div>
+              <div class="dd-user-role">Carpenter | Painter</div>
+            </div>
+          </div>
+
+          <!-- Menu items -->
+          <div class="dd-menu">
+            <button class="dd-item" onclick="ddAction('profile')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              View Profile
+            </button>
+            <button class="dd-item dd-theme-item" type="button" onclick="toggleTheme(event)">
+              <span class="dd-theme-left">
+                <svg class="dd-theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3c0 .28-.01.57-.01.86A7 7 0 0 0 20.14 12c.29 0 .58-.01.86-.01Z">
+                  </path>
+                </svg>
+                <span>Dark Mode</span>
+              </span>
+
+              <span class="dd-switch" id="themeSwitch" aria-hidden="true">
+                <span class="dd-switch-thumb"></span>
+              </span>
+            </button>
+            <button class="dd-item" onclick="ddAction('settings')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+              Settings
+            </button>
+            <button class="dd-item" onclick="ddAction('help')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              Help &amp; Support
+            </button>
+            <div class="dd-divider"></div>
+            <button class="dd-item logout" onclick="ddAction('logout')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              Log Out
+            </button>
+          </div>
+        </div>
+      </div><!-- /avatar-wrap -->
+    </div>
+  </nav>
+
+  <div class="app-shell">
+
+    <!-- ══ SIDEBAR ══ -->
+    <aside class="sidebar">
+      <button class="nav-item active" id="nav-home" onclick="showPage('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        Home
+      </button>
+      <button class="nav-item" id="nav-jobs" onclick="showPage('jobs')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2" />
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+        </svg>
+        Job Listings
+      </button>
+      <button class="nav-item" id="nav-messages" onclick="showPage('messages')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        Messages
+      </button>
+      <button class="nav-item" id="nav-profile" onclick="showPage('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+        Profile
+      </button>
+
+      <div class="profile-card">
+        <div class="profile-avatar-wrap">
+          <img class="profile-avatar" src="https://i.pravatar.cc/80?img=33" alt="Juan Dela Cruz" />
+          <div class="profile-online"></div>
+        </div>
+        <div class="profile-name">Juan Dela Cruz</div>
+        <div class="profile-role">Carpenter | Painter</div>
+        <div class="profile-stats">
+          <div class="stat-row">
+            <span>Profile Views</span>
+            <span class="stat-val">127</span>
+          </div>
+          <div class="stat-row">
+            <span>Applications</span>
+            <span class="stat-val">8</span>
+          </div>
+        </div>
+        <button class="open-work-btn">
+          <span class="open-dot"></span>
+          Open for Work
+        </button>
+      </div>
+    </aside>
+
+    <!-- ══ MAIN CONTENT ══ -->
+    <div class="main-content">
+
+      <!-- ════ HOME PAGE ════ -->
+      <div class="page-panel active" id="page-home">
+
+        <div class="employer-home-header">
+          <div>
+            <h1 class="employer-home-title">Dashboard</h1>
+            <p class="employer-home-subtitle">Manage your job posts</p>
+          </div>
+
+          <div class="header-actions">
+            <button class="myjobs-btn" onclick="showJobs()">
+              My Job Post
+            </button>
+
+            <button class="applicants-btn" onclick="showApplicants()">
+              Applicants <span id="applicantsRealtimeCount">(0)</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="employer-home-jobs" class="employer-home-panel active">
+          <div id="employerHomeJobsList" class="jobs-list"></div>
+        </div>
+
+        <div id="employer-home-applicants" class="employer-home-panel" style="display:none;">
+          <div class="applicants-modern-card">
+            <div class="applicants-modern-header">
+              <h2 id="applicantsModernTitle">Applicants</h2>
+              <div class="applicants-count-pill" id="applicantsModernCount">0 applicants</div>
+            </div>
+
+            <div id="applicantsModernList">
+              <div class="applicants-empty-state">
+                <div class="applicants-empty-title">No applicants yet</div>
+                <div class="applicants-empty-text">
+                  Applicants from all of your job posts will appear here automatically.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ JOBS PAGE ════ -->
+      <div class="page-panel" id="page-jobs">
+
+        <div class="job-listings-page">
+
+          <div class="job-listings-header">
+            <div>
+              <h1 class="job-listings-title">My Job Postings</h1>
+              <p class="job-listings-subtitle">Manage your job listings and view applications</p>
+            </div>
+
+            <button class="job-listings-post-btn" type="button" onclick="openJobPostModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Post New Job
+            </button>
+          </div>
+
+          <div class="job-listings-toolbar-card">
+            <div class="job-listings-search-wrap">
+              <span class="job-listings-search-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
+              <input type="text" class="job-listings-search" placeholder="Search job postings..."
+                oninput="filterJobPostings()">
+            </div>
+
+            <div class="job-listings-filters">
+              <select class="job-status-dropdown" id="jobStatusFilter">
+                <option value="all" selected>All Jobs</option>
+                <option value="active">Active</option>
+                <option value="drafts">Drafts</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="employerJobsList"></div>
+        </div>
+      </div>
+
+      <!-- ════ MESSAGES PAGE ════ -->
+      <div class="page-panel" id="page-messages" style="padding-bottom:80px;">
+        <div class="msg-shell">
+
+          <!-- Conversation List -->
+          <div class="conv-list">
+            <div class="conv-search-wrap">
+              <span class="conv-search-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </span>
+              <input class="conv-search" type="text" placeholder="Search conversations..."
+                oninput="filterConvs(this.value)" />
+            </div>
+
+            <div class="conv-items" id="conv-items">
+
+              <!-- Conversation 1 — Maria Reyes -->
+              <div class="conv-item active" onclick="openConv(this,'maria')" data-convid="maria"
+                data-name="Maria Reyes">
+                <div class="conv-avatar-wrap">
+                  <img class="conv-avatar" src="https://i.pravatar.cc/48?img=47" alt="Maria Reyes" />
+                  <span class="conv-online"></span>
+                </div>
+                <div class="conv-body">
+                  <div class="conv-header-row">
+                    <span class="conv-name">Maria Re...</span>
+                    <span class="conv-time">2m ago</span>
+                  </div>
+                  <div class="conv-preview">Thank you! When ...</div>
+                  <div class="conv-footer-row">
+                    <span class="conv-badge employer">Employer</span>
+                    <span class="unread-dot">2</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conversation 2 — ABC Construction -->
+              <div class="conv-item" onclick="openConv(this,'abc')" data-convid="abc" data-name="ABC Construction">
+                <div class="conv-avatar-wrap">
+                  <img class="conv-avatar" src="https://i.pravatar.cc/48?img=52" alt="ABC Construction" />
+                </div>
+                <div class="conv-body">
+                  <div class="conv-header-row">
+                    <span class="conv-name">ABC Const...</span>
+                    <span class="conv-time">1h ago</span>
+                  </div>
+                  <div class="conv-preview">We'd like to schedu...</div>
+                  <div class="conv-footer-row">
+                    <span class="conv-badge employer">Employer</span>
+                    <span class="unread-dot">1</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conversation 3 — Representative -->
+              <div class="conv-item" onclick="openConv(this,'rep')" data-convid="rep" data-name="Representative">
+                <div class="conv-avatar-wrap">
+                  <img class="conv-avatar" src="https://i.pravatar.cc/48?img=60" alt="Representative" />
+                  <span class="conv-online"></span>
+                </div>
+                <div class="conv-body">
+                  <div class="conv-header-row">
+                    <span class="conv-name">Represent...</span>
+                    <span class="conv-time">3h ago</span>
+                  </div>
+                  <div class="conv-preview">I found a great opp...</div>
+                  <div class="conv-footer-row">
+                    <span class="conv-badge representative">Representative</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conversation 4 — Local Hardware -->
+              <div class="conv-item" onclick="openConv(this,'local')" data-convid="local" data-name="Local Hardware">
+                <div class="conv-avatar-wrap">
+                  <img class="conv-avatar" src="https://i.pravatar.cc/48?img=68" alt="Local Hardware" />
+                </div>
+                <div class="conv-body">
+                  <div class="conv-header-row">
+                    <span class="conv-name">Local Har...</span>
+                    <span class="conv-time">1d ago</span>
+                  </div>
+                  <div class="conv-preview">Perfect! See you on...</div>
+                  <div class="conv-footer-row">
+                    <span class="conv-badge employer">Employer</span>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /conv-items -->
+          </div><!-- /conv-list -->
+
+          <!-- Chat Area -->
+          <div class="chat-area">
+
+            <!-- Chat header -->
+            <div class="chat-header">
+              <div class="chat-header-avatar-wrap">
+                <img class="chat-header-avatar" id="chat-avatar" src="https://i.pravatar.cc/48?img=47" alt="" />
+                <span class="chat-header-online"></span>
+              </div>
+              <div class="chat-header-info">
+                <div class="chat-header-name" id="chat-name">Maria Reyes</div>
+                <div class="chat-header-status" id="chat-status">Active now</div>
+              </div>
+              <div class="chat-header-actions">
+                <!-- Back button — mobile only -->
+                <button class="chat-back-btn" onclick="closeChat()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                  Back
+                </button>
+                <button class="chat-action-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                </button>
+                <button class="chat-action-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polygon points="23 7 16 12 23 17 23 7" />
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                  </svg>
+                </button>
+                <button class="chat-action-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="1" />
+                    <circle cx="19" cy="12" r="1" />
+                    <circle cx="5" cy="12" r="1" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="chat-messages" id="chat-messages">
+
+              <!-- Maria Reyes conversation (default visible) -->
+              <div id="msgs-maria">
+                <div class="msg-bubble-wrap received">
+                  <div class="msg-bubble received">Hi Juan! I reviewed your application for the carpentry position.
+                  </div>
+                </div>
+                <div class="msg-timestamp">10:30 AM</div>
+
+                <div class="msg-bubble-wrap sent">
+                  <div class="msg-bubble sent">Hello! Thank you for considering my application. I'm very interested
+                    in
+                    this opportunity.</div>
+                </div>
+                <div class="msg-timestamp right">10:32 AM</div>
+
+                <div class="msg-bubble-wrap received">
+                  <div class="msg-bubble received">Your experience looks great! I see you've worked on similar
+                    projects
+                    before.</div>
+                </div>
+                <div class="msg-timestamp">10:33 AM</div>
+
+                <div class="msg-bubble-wrap sent">
+                  <div class="msg-bubble sent">Yes, I've completed several home renovation projects including
+                    kitchen
+                    cabinets and custom shelving. I take pride in quality craftsmanship.</div>
+                </div>
+                <div class="msg-timestamp right">10:35 AM</div>
+              </div>
+
+              <!-- ABC Construction conversation (hidden) -->
+              <div id="msgs-abc" style="display:none;">
+                <div class="msg-bubble-wrap received">
+                  <div class="msg-bubble received">Hello Juan, we reviewed your profile and you seem like a great
+                    fit
+                    for our project.</div>
+                </div>
+                <div class="msg-timestamp">9:00 AM</div>
+
+                <div class="msg-bubble-wrap sent">
+                  <div class="msg-bubble sent">Thank you! I'd love to learn more about the position.</div>
+                </div>
+                <div class="msg-timestamp right">9:05 AM</div>
+
+                <div class="msg-bubble-wrap received">
+                  <div class="msg-bubble received">We'd like to schedule an interview at our site. Are you available
+                    this week?</div>
+                </div>
+                <div class="msg-timestamp">9:10 AM</div>
+              </div>
+
+              <!-- Representative conversation (hidden) -->
+              <div id="msgs-rep" style="display:none;">
+                <div class="msg-bubble-wrap received">
+                  <div class="msg-bubble received">Hi Juan! I'm your community representative. I found a great
+                    opportunity that matches your skills.</div>
+                </div>
+                <div class="msg-timestamp">7:00 AM</div>
+
+                <div class="msg-bubble-wrap sent">
+                  <div class="msg-bubble sent">That sounds interesting! Can you tell me more about it?</div>
+                </div>
+                <div class="msg-timestamp right">7:15 AM</div>
+              </div>
+
+              <!-- Local Hardware conversation (hidden) -->
+              <div id="msgs-local" style="display:none;">
+                <div class="msg-bubble-wrap received">
+                  <div class="msg-bubble received">Juan, your application for the store renovation project has been
+                    approved!</div>
+                </div>
+                <div class="msg-timestamp">Yesterday 2:00 PM</div>
+
+                <div class="msg-bubble-wrap sent">
+                  <div class="msg-bubble sent">Wonderful! When do we start?</div>
+                </div>
+                <div class="msg-timestamp right">Yesterday 2:10 PM</div>
+
+                <div class="msg-bubble-wrap received">
+                  <div class="msg-bubble received">Perfect! See you on Monday at 8am.</div>
+                </div>
+                <div class="msg-timestamp">Yesterday 2:15 PM</div>
+              </div>
+
+            </div><!-- /chat-messages -->
+
+            <!-- Input area -->
+            <div class="chat-input-area">
+              <input class="chat-input" id="chat-input" type="text" placeholder="Type a message..."
+                onkeydown="sendOnEnter(event)" />
+              <button class="chat-send-btn" onclick="sendMessage()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13" />
+                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+              </button>
+            </div>
+
+          </div><!-- /chat-area -->
+        </div><!-- /msg-shell -->
+      </div>
+
+      <!-- ════ PROFILE PAGE ════ -->
+      <div class="page-panel" id="page-profile">
+        <div class="profile-layout">
+
+          <!-- ── LEFT COL ── -->
+          <div class="profile-left-col">
+
+            <!-- Profile Status -->
+            <div class="prof-card">
+              <div class="prof-section-title">Profile Status</div>
+              <div class="status-open">
+                <span class="status-dot-green"></span>
+                <div>
+                  <div class="status-open-title">Open for Work</div>
+                  <div class="status-open-sub">Actively seeking opportunities</div>
+                </div>
+              </div>
+              <div class="completion-wrap">
+                <div class="completion-row">
+                  <span class="completion-label">Profile Completion</span>
+                  <span class="completion-pct" id="profileCompletionPct">0%</span>
+                </div>
+                <div class="completion-bar">
+                  <div class="completion-fill" id="profileCompletionFill" style="width:0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="prof-card">
+              <div class="prof-section-title">Statistics</div>
+              <div class="stats-list">
+                <div class="stat-line">
+                  <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
+                    <polygon
+                      points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                  Rating
+                  <span class="sl-val">4.8/5.0</span>
+                </div>
+                <div class="stat-line">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-dark)" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                  Completed Jobs
+                  <span class="sl-val">42</span>
+                </div>
+                <div class="stat-line">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                  Profile Views
+                  <span class="sl-val">127</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Skills & Endorsements -->
+            <div class="prof-card">
+              <div class="prof-section-title">Skills</div>
+
+              <div class="skills-list" id="skillsList"></div>
+
+              <button class="add-skill-btn" id="addSkillBtn">Add Skill</button>
+            </div>
+
+          </div><!-- /profile-left-col -->
+
+          <!-- ── RIGHT COL ── -->
+          <div class="profile-right-col">
+
+            <!-- Hero card -->
+            <div class="prof-card prof-hero">
+              <label for="coverUploadInput" class="prof-cover-wrap" id="profileCoverTrigger">
+                <img id="profileHeroCover" class="prof-cover"
+                  src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&h=220&fit=crop&crop=center"
+                  alt="Cover" />
+                <div class="prof-cover-overlay">
+                  <span class="prof-cover-overlay-inner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                      </path>
+                      <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                    <span>Change Cover</span>
+                  </span>
+                </div>
+              </label>
+
+              <input type="file" id="coverUploadInput" accept="image/*" hidden>
+              <div class="prof-identity">
+                <label class="prof-pic-wrap prof-pic-upload" for="profilePhotoInput" id="profilePhotoTrigger">
+                  <img id="profileHeroAvatar" class="prof-pic" src="https://i.pravatar.cc/96?img=33"
+                    alt="Profile Photo" />
+
+                  <span class="prof-verified">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
+
+                  <span class="prof-pic-edit-badge" title="Change profile photo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                      </path>
+                      <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                  </span>
+                </label>
+
+                <input type="file" id="profilePhotoInput" accept="image/*" hidden>
+                <div class="prof-name-block">
+                  <div id="profileHeroName" class="prof-name">Juan Dela Cruz</div>
+                  <div class="prof-role-wrap">
+                    <div id="profileHeroRole" class="prof-role">
+                      Carpenter | Painter | Available in Catbalogan Central
+                    </div>
+
+                    <button type="button" class="prof-role-edit-btn" id="editProfileHeadlineBtn"
+                      aria-label="Edit profile headline" title="Edit profile headline">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="prof-meta-bar">
+                <div class="prof-meta-item prof-meta-location" id="profileLocationTrigger" role="button" tabindex="0"
+                  title="Update current location">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  <span id="profileLocationText">Set current location</span>
+                </div>
+                <div class="prof-meta-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  <span id="profileMemberSince">Member since --</span>
+                </div>
+                <div class="prof-actions">
+                  <button class="prof-btn-msg" onclick="showPage('messages')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    Message
+                  </button>
+                  <button class="prof-btn-contact">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path
+                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                    Contact
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- About -->
+            <div class="prof-card">
+              <div class="prof-section-title prof-section-title-row">
+                <span>About</span>
+                <button type="button" class="prof-about-edit-btn" id="editAboutBtn" aria-label="Edit about">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="prof-about-text" id="profileAboutText">
+                Experienced carpenter and painter with over 5 years in the construction industry. Specialized in
+                residential and commercial projects, from framing to fine finishing work. Known for attention to
+                detail,
+                reliability, and quality craftsmanship. Available for daily, weekly, or project-based work
+                throughout
+                Catbalogan and nearby areas.
+              </div>
+            </div>
+
+            <!-- Work Experience -->
+            <div class="prof-card">
+              <div class="prof-section-title prof-section-title-row">
+                <span>Work Experience</span>
+                <button type="button" class="prof-about-edit-btn" id="addExperienceBtn" aria-label="Add experience">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="exp-list" id="experienceList"></div>
+            </div>
+
+            <!-- Portfolio -->
+            <div class="prof-card">
+              <div class="prof-section-title">My Photos</div>
+
+              <div class="portfolio-grid" id="portfolioGrid">
+                <label for="portfolioUploadInput" class="port-add" id="portfolioAddBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span id="portfolioAddText">Add Photo</span>
+                </label>
+              </div>
+
+              <input type="file" id="portfolioUploadInput" accept="image/*" hidden />
+            </div>
+
+            <!-- Reviews & Ratings -->
+            <div class="prof-card">
+              <div class="prof-section-title">Reviews &amp; Ratings</div>
+              <div class="reviews-list">
+                <div class="review-item">
+                  <img class="review-avatar" src="https://i.pravatar.cc/48?img=47" alt="Maria Reyes" />
+                  <div class="review-body">
+                    <div class="review-header">
+                      <span class="review-name">Maria Reyes</span>
+                      <span class="review-time">2 weeks ago</span>
+                    </div>
+                    <div class="review-stars">
+                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    </div>
+                    <div class="review-text">Excellent work! Juan completed the carpentry project on time and with
+                      great
+                      attention to detail. Highly recommended!</div>
+                  </div>
+                </div>
+                <div class="review-item">
+                  <img class="review-avatar" src="https://i.pravatar.cc/48?img=52" alt="ABC Construction" />
+                  <div class="review-body">
+                    <div class="review-header">
+                      <span class="review-name">ABC Construction</span>
+                      <span class="review-time">1 month ago</span>
+                    </div>
+                    <div class="review-stars">
+                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    </div>
+                    <div class="review-text">Professional and reliable. Great addition to our team for the
+                      residential
+                      project.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /profile-right-col -->
+        </div>
+      </div>
+
+    </div><!-- /main-content -->
+  </div><!-- /app-shell -->
+
+  <!-- Mobile bottom nav -->
+  <nav class="mobile-nav">
+    <div class="mobile-nav-inner">
+      <button class="mobile-nav-item active" id="mob-home" onclick="showPage('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        Home
+      </button>
+      <button class="mobile-nav-item" id="mob-jobs" onclick="showPage('jobs')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2" />
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+        </svg>
+        Job Listings
+      </button>
+      <button class="mobile-nav-item" id="mob-messages" onclick="showPage('messages')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        Messages
+      </button>
+      <button class="mobile-nav-item" id="mob-profile" onclick="showPage('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+        Profile
+      </button>
+    </div>
+  </nav>
+
+  <script>
+
+    let selectedJobType = "all";
+
+    function setJobTypeFilter(type) {
+      selectedJobType = type;
+      filterJobItems();
+    }
+
+    /* ══════════════════════════════════════
+       AVATAR DROPDOWN
+    ══════════════════════════════════════ */
+    function toggleDropdown() {
+      const dd = document.getElementById('avatarDropdown');
+      dd.classList.toggle('open');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (e) {
+      const wrap = document.getElementById('avatarWrap');
+      const dd = document.getElementById('avatarDropdown');
+      if (wrap && !wrap.contains(e.target)) {
+        dd.classList.remove('open');
+      }
+    });
+
+    function ddAction(action) {
+      document.getElementById('avatarDropdown').classList.remove('open');
+      if (action === 'profile') {
+        showPage('profile');
+      } else if (action === 'settings') {
+        // Settings page placeholder — extend later
+        alert('Settings coming soon!');
+      } else if (action === 'help') {
+        alert('Help & Support coming soon!');
+      } else if (action === 'logout') {
+        if (confirm('Are you sure you want to log out?')) {
+          // Redirect to login page
+          firebaseLogout();
+        }
+      }
+    }
+
+    function applyTheme(theme) {
+      const isDark = theme === 'dark';
+      document.body.classList.toggle('dark-mode', isDark);
+      document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+      localStorage.setItem('bcc-theme', isDark ? 'dark' : 'light');
+    }
+
+    function toggleTheme(event) {
+      if (event) event.stopPropagation();
+
+      const isDarkNow = document.body.classList.contains('dark-mode');
+      applyTheme(isDarkNow ? 'light' : 'dark');
+    }
+
+    (function initTheme() {
+      const savedTheme = localStorage.getItem('bcc-theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
+    })();
+
+    /* ══════════════════════════════════════
+       PAGE NAVIGATION
+    ══════════════════════════════════════ */
+    const pages = ['home', 'jobs', 'messages', 'profile'];
+
+    function showPage(page) {
+      pages.forEach(p => {
+        const panel = document.getElementById('page-' + p);
+        if (panel) panel.classList.toggle('active', p === page);
+      });
+
+      pages.forEach(p => {
+        const nav = document.getElementById('nav-' + p);
+        if (nav) nav.classList.toggle('active', p === page);
+      });
+
+      pages.forEach(p => {
+        const mob = document.getElementById('mob-' + p);
+        if (mob) mob.classList.toggle('active', p === page);
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (page === 'jobs') {
+        requestAnimationFrame(() => {
+          filterJobPostings();
+        });
+      }
+    }
+
+    showPage('home');
+    showJobs();
+
+
+    /* ══════════════════════════════════════
+       MESSAGES
+    ══════════════════════════════════════ */
+    let activeConv = 'maria';
+
+    let activeConversationId = null;
+    let unsubscribeActiveMessages = null;
+
+    const convMeta = {
+      maria: { name: 'Maria Reyes', avatar: 'https://i.pravatar.cc/48?img=47', status: 'Active now', online: true },
+      abc: { name: 'ABC Construction', avatar: 'https://i.pravatar.cc/48?img=52', status: 'Active 1h ago', online: false },
+      rep: { name: 'Representative', avatar: 'https://i.pravatar.cc/48?img=60', status: 'Active now', online: true },
+      local: { name: 'Local Hardware', avatar: 'https://i.pravatar.cc/48?img=68', status: 'Active 1d ago', online: false },
+    };
+
+    function openConv(el, convId) {
+      // Update active state on list items
+      document.querySelectorAll('.conv-item').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+
+      // Remove unread badge on click
+      const badge = el.querySelector('.unread-dot');
+      if (badge) badge.remove();
+
+      // Switch message threads
+      document.querySelectorAll('#chat-messages > div[id^="msgs-"]').forEach(d => d.style.display = 'none');
+      const thread = document.getElementById('msgs-' + convId);
+      if (thread) thread.style.display = '';
+
+      // Update header
+      const meta = convMeta[convId];
+      if (meta) {
+        document.getElementById('chat-name').textContent = meta.name;
+        document.getElementById('chat-status').textContent = meta.status;
+        document.getElementById('chat-avatar').src = meta.avatar;
+        const onlineDot = document.querySelector('.chat-header-online');
+        if (onlineDot) onlineDot.style.display = meta.online ? '' : 'none';
+      }
+
+      // Mobile: show chat panel, hide conv list
+      const shell = document.querySelector('.msg-shell');
+      if (window.innerWidth < 900 && shell) {
+        shell.classList.add('chat-open');
+      }
+
+      // Scroll messages to bottom
+      const msgs = document.getElementById('chat-messages');
+      setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 60);
+
+      activeConv = convId;
+    }
+
+    function closeChat() {
+      // Mobile: go back to conversation list
+      const shell = document.querySelector('.msg-shell');
+      if (shell) shell.classList.remove('chat-open');
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("chat-input");
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      if (!window.sendRealtimeMessage) {
+        alert("Realtime messaging is not ready.");
+        return;
+      }
+
+      await window.sendRealtimeMessage(text);
+      input.value = "";
+    }
+
+    function sendOnEnter(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function sendOnEnter(e) {
+      if (e.key === 'Enter') sendMessage();
+    }
+
+    function filterConvs(q) {
+      const query = q.toLowerCase().trim();
+      document.querySelectorAll('.conv-item').forEach(item => {
+        const name = (item.dataset.name || '').toLowerCase();
+        item.style.display = (!query || name.includes(query)) ? '' : 'none';
+      });
+    }
+
+    /* ══════════════════════════════════════
+       BOOKMARK TOGGLE
+    ══════════════════════════════════════ */
+    function toggleSave(btn) {
+      const saved = btn.classList.toggle('saved');
+      btn.innerHTML = saved
+        ? `<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`
+        : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`;
+    }
+
+
+    /* ══════════════════════════════════════
+       WORK EXPERIENCE MODAL
+    ══════════════════════════════════════ */
+    function openExperienceModal(title, company, date, description, tags) {
+      document.getElementById('experienceModalTitle').textContent = title;
+      document.getElementById('experienceModalCompany').textContent = company;
+      document.getElementById('experienceModalDate').textContent = date;
+      document.getElementById('experienceModalDesc').textContent = description;
+
+      const tagsWrap = document.getElementById('experienceModalTags');
+      tagsWrap.innerHTML = '';
+
+      tags.forEach(tag => {
+        const span = document.createElement('span');
+        span.className = 'exp-tag';
+        span.textContent = tag;
+        tagsWrap.appendChild(span);
+      });
+
+      document.getElementById('experienceModalOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeExperienceModal(event) {
+      if (event && event.target !== event.currentTarget) return;
+
+      document.getElementById('experienceModalOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        closeExperienceModal();
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        closeExperienceModal();
+      }
+    });
+
+    function setEmployerHomeTab(btn, panelId) {
+      document.querySelectorAll('#page-home .employer-home-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      document.querySelectorAll('#page-home .employer-home-panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+
+      btn.classList.add('active');
+      document.getElementById(panelId).classList.add('active');
+    }
+
+    let activeJobType = 'all';
+
+    function setJobTab(btn, type) {
+      activeJobType = type;
+
+      document.querySelectorAll('.type-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      btn.classList.add('active');
+
+      filterJobItems();
+    }
+
+    function filterJobItems() {
+      const searchInput = document.querySelector('.job-search-input');
+      const items = document.querySelectorAll('.job-item');
+
+      // SAFETY CHECK (VERY IMPORTANT)
+      if (!items.length) {
+        console.warn("No job items found");
+        return;
+      }
+
+      const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+      items.forEach(item => {
+        const itemType = (item.dataset.type || '').toLowerCase();
+        const itemTitle = (item.dataset.title || '').toLowerCase();
+
+        const typeOk = activeJobType === 'all' || itemType === activeJobType;
+        const titleOk = !q || itemTitle.includes(q);
+
+        item.style.display = (typeOk && titleOk) ? '' : 'none';
+      });
+    }
+
+    let activeJobStatus = 'all';
+
+    function filterJobPostings() {
+      const searchInput = document.querySelector('.job-listings-search');
+      const cards = document.querySelectorAll('.job-card');
+
+      if (!cards.length) {
+        console.warn("No job postings found");
+        return;
+      }
+
+      const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+      cards.forEach(card => {
+        const title = card.querySelector('.job-title')?.textContent.toLowerCase() || '';
+        card.style.display = title.includes(q) ? '' : 'none';
+      });
+    }
+
+    function openJobPostModal() {
+      document.getElementById('jobPostModalOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeJobPostModal(event) {
+      if (event && event.target !== event.currentTarget) return;
+      document.getElementById('jobPostModalOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function showApplicants() {
+      const jobsPanel = document.getElementById('employer-home-jobs');
+      const applicantsPanel = document.getElementById('employer-home-applicants');
+
+      if (jobsPanel) jobsPanel.style.display = 'none';
+      if (applicantsPanel) applicantsPanel.style.display = 'block';
+    }
+
+    function showJobs() {
+      const jobsPanel = document.getElementById('employer-home-jobs');
+      const applicantsPanel = document.getElementById('employer-home-applicants');
+
+      if (jobsPanel) jobsPanel.style.display = 'block';
+      if (applicantsPanel) applicantsPanel.style.display = 'none';
+    }
+
+    function updateConversationSidebarPreview(conversationId, text) {
+      const convItem = document.querySelector(`.conv-item[data-convid="${conversationId}"]`);
+      if (!convItem) return;
+
+      const preview = convItem.querySelector(".conv-preview");
+      if (preview) {
+        preview.textContent = text.length > 22 ? text.substring(0, 22) + "..." : text;
+      }
+
+      const timeEl = convItem.querySelector(".conv-time");
+      if (timeEl) timeEl.textContent = "now";
+
+      const convItems = document.getElementById("conv-items");
+      if (convItems) convItems.prepend(convItem);
+    }
+
+    window.submitJobPost = submitJobPost;
+    window.openJobPostModal = openJobPostModal;
+    window.closeJobPostModal = closeJobPostModal;
+
+  </script>
+
+  <!-- Edit profile headline modal -->
+  <div class="profile-edit-overlay" id="profileEditOverlay">
+    <div class="profile-edit-modal" role="dialog" aria-modal="true" aria-labelledby="profileEditTitle">
+      <div class="profile-edit-header">
+        <div>
+          <h3 id="profileEditTitle">Edit profile headline</h3>
+          <p>Update your work title and availability.</p>
+        </div>
+        <button type="button" class="profile-edit-close" id="closeProfileEditBtn" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M18 6L6 18" />
+            <path d="M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="profile-edit-body">
+        <label class="profile-edit-label" for="profileHeadlineInput">Profile headline</label>
+        <textarea id="profileHeadlineInput" class="profile-edit-textarea" rows="3" maxlength="120"
+          placeholder="Example: Carpenter | Painter | Available in Catbalogan Central"></textarea>
+        <div class="profile-edit-helper">
+          Keep it short, clear, and professional.
+        </div>
+      </div>
+
+      <div class="profile-edit-footer">
+        <button type="button" class="profile-edit-btn secondary" id="cancelProfileEditBtn">Cancel</button>
+        <button type="button" class="profile-edit-btn primary" id="saveProfileEditBtn">Save changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit about modal -->
+  <div class="profile-edit-overlay" id="aboutEditOverlay">
+    <div class="profile-edit-modal" role="dialog" aria-modal="true" aria-labelledby="aboutEditTitle">
+      <div class="profile-edit-header">
+        <div>
+          <h3 id="aboutEditTitle">Edit about</h3>
+          <p>Update your profile description.</p>
+        </div>
+        <button type="button" class="profile-edit-close" id="closeAboutEditBtn" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M18 6L6 18" />
+            <path d="M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="profile-edit-body">
+        <label class="profile-edit-label" for="profileAboutInput">About</label>
+        <textarea id="profileAboutInput" class="profile-edit-textarea" rows="6" maxlength="500"
+          placeholder="Tell clients about your experience, skills, and availability."></textarea>
+        <div class="profile-edit-helper">
+          Write a short, clear, and professional summary.
+        </div>
+      </div>
+
+      <div class="profile-edit-footer">
+        <button type="button" class="profile-edit-btn secondary" id="cancelAboutEditBtn">Cancel</button>
+        <button type="button" class="profile-edit-btn primary" id="saveAboutEditBtn">Save changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Work Experience Modal -->
+  <div class="experience-modal-overlay" id="experienceModalOverlay" onclick="closeExperienceModal(event)">
+    <div class="experience-modal" onclick="event.stopPropagation()">
+      <div class="experience-modal-header">
+        <div>
+          <h3 id="experienceModalHeading">Add Work Experience</h3>
+          <p>Manage your experience details in real time</p>
+        </div>
+        <button class="experience-modal-close" type="button" onclick="closeExperienceModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="experience-modal-body">
+        <div class="experience-form-grid">
+          <div class="experience-field">
+            <label for="experienceTitleInput">Job Title</label>
+            <input type="text" id="experienceTitleInput" placeholder="e.g. Carpenter" />
+          </div>
+
+          <div class="experience-field">
+            <label for="experienceCompanyInput">Company</label>
+            <input type="text" id="experienceCompanyInput" placeholder="e.g. ABC Construction Corp" />
+          </div>
+
+          <div class="experience-field">
+            <label for="experienceDateInput">Date Range</label>
+            <input type="text" id="experienceDateInput" placeholder="e.g. 2022 - Present" />
+          </div>
+
+          <div class="experience-field">
+            <label for="experienceTagsInput">Tags</label>
+            <input type="text" id="experienceTagsInput" placeholder="e.g. Carpentry, Woodwork, Finishing" />
+          </div>
+
+          <div class="experience-field full">
+            <label for="experienceDescInput">Description</label>
+            <textarea id="experienceDescInput" rows="5"
+              placeholder="Describe the work, responsibilities, and achievements"></textarea>
+          </div>
+        </div>
+
+        <div class="experience-modal-error" id="experienceModalError"></div>
+      </div>
+
+      <div class="experience-modal-footer experience-modal-footer-split">
+        <button class="experience-modal-btn danger" type="button" id="deleteExperienceBtn" style="display:none;">
+          Delete
+        </button>
+
+        <div class="experience-modal-footer-right">
+          <button class="experience-modal-btn secondary" type="button" onclick="closeExperienceModal()">Cancel</button>
+          <button class="experience-modal-btn primary" type="button" id="saveExperienceBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="experience-modal-overlay" id="skillModalOverlay" onclick="closeSkillModal(event)">
+    <div class="experience-modal" onclick="event.stopPropagation()">
+      <div class="experience-modal-header">
+        <div>
+          <h3 id="skillModalHeading">Add Skill</h3>
+          <p>Manage your profile skills in real time</p>
+        </div>
+        <button class="experience-modal-close" type="button" onclick="closeSkillModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="experience-modal-body">
+        <div class="skill-form-grid">
+          <div class="skill-field full">
+            <label for="skillNameInput">Skill Name</label>
+            <input type="text" id="skillNameInput" placeholder="e.g. Carpentry">
+          </div>
+        </div>
+
+        <div class="experience-modal-error" id="skillModalError"></div>
+      </div>
+
+      <div class="experience-modal-footer experience-modal-footer-split">
+        <button class="experience-modal-btn danger" type="button" id="deleteSkillBtn" style="display:none;">
+          Delete
+        </button>
+
+        <div class="experience-modal-footer-right">
+          <button class="experience-modal-btn secondary" type="button" onclick="closeSkillModal()">Cancel</button>
+          <button class="experience-modal-btn primary" type="button" id="saveSkillBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POST JOB MODAL -->
+  <div class="job-post-modal-overlay" id="jobPostModalOverlay" onclick="closeJobPostModal(event)">
+    <div class="job-post-modal" role="dialog" aria-modal="true" aria-labelledby="jobPostModalTitle">
+      <div class="job-post-modal-header">
+        <div>
+          <h3 id="jobPostModalTitle">Post New Job</h3>
+          <p>Create a job post that matches the style of your listings page.</p>
+        </div>
+        <button type="button" class="job-post-modal-close" onclick="closeJobPostModal()" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M18 6L6 18"></path>
+            <path d="M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="job-post-modal-body">
+        <div class="job-post-form-grid">
+          <div class="job-post-field full">
+            <label for="jobPostTitle">Job Title</label>
+            <input id="jobPostTitle" type="text" placeholder="Example: Carpenter Needed for Home Renovation">
+          </div>
+
+          <div class="job-post-field">
+            <label for="jobPostBadge">Employer Badge</label>
+            <select id="jobPostBadge" class="job-status-dropdown">
+              <option value="Individual">Individual</option>
+              <option value="Company">Company</option>
+            </select>
+          </div>
+
+          <div class="job-post-field">
+            <label for="jobPostType">Job Type</label>
+            <select id="jobPostType" class="job-status-dropdown">
+              <option value="Full-time">Full-time</option>
+              <option value="Part-time">Part-time</option>
+              <option value="Contract">Contract</option>
+            </select>
+          </div>
+
+          <div class="job-post-field">
+            <label for="jobPostLocation">Location</label>
+            <input id="jobPostLocation" type="text" placeholder="Example: Catbalogan City">
+          </div>
+
+          <div class="job-post-field">
+            <label for="jobPostDuration">Duration</label>
+            <input id="jobPostDuration" type="text" placeholder="Example: 2-3 weeks">
+          </div>
+
+          <div class="job-post-field">
+            <label for="jobPostPay">Pay Range</label>
+            <input id="jobPostPay" type="text" placeholder="Example: ₱500-700/day">
+          </div>
+
+          <div class="job-post-field">
+            <label for="jobPostUrgent">Urgent Tag</label>
+            <select id="jobPostUrgent">
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div class="job-post-field">
+            <label for="jobPostStatus">Status</label>
+            <select id="jobPostStatus">
+              <option value="active">Active</option>
+              <option value="draft">Draft</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+
+          <div class="job-post-field full">
+            <label for="jobPostSkills">Skills (comma separated)</label>
+            <input id="jobPostSkills" type="text" placeholder="Example: Carpentry, Woodwork, Finishing">
+          </div>
+        </div>
+      </div>
+
+      <div class="job-post-modal-footer">
+        <button type="button" class="job-post-modal-btn secondary" onclick="closeJobPostModal()">Cancel</button>
+        <button type="button" class="job-post-modal-btn primary" onclick="submitJobPost()">Post Job</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="job-preview-overlay" id="jobPreviewOverlay">
+    <div class="job-preview-modal">
+      <div class="job-preview-header">
+        <div>
+          <h3 id="previewJobTitle">Job Preview</h3>
+          <p id="previewEmployerName">Employer</p>
+        </div>
+        <button type="button" class="job-preview-close" onclick="closeJobPreviewModal()">✕</button>
+      </div>
+
+      <div class="job-preview-body">
+        <div class="job-preview-grid">
+          <div class="job-preview-field">
+            <label>Badge</label>
+            <div id="previewBadge">-</div>
+          </div>
+
+          <div class="job-preview-field">
+            <label>Job Type</label>
+            <div id="previewJobType">-</div>
+          </div>
+
+          <div class="job-preview-field">
+            <label>Location</label>
+            <div id="previewLocation">-</div>
+          </div>
+
+          <div class="job-preview-field">
+            <label>Duration</label>
+            <div id="previewDuration">-</div>
+          </div>
+
+          <div class="job-preview-field">
+            <label>Pay</label>
+            <div id="previewPay">-</div>
+          </div>
+
+          <div class="job-preview-field">
+            <label>Applicants</label>
+            <div id="previewApplicants">0</div>
+          </div>
+        </div>
+
+        <div class="job-preview-field">
+          <label>Skills</label>
+          <div id="previewSkills" class="job-preview-skills"></div>
+        </div>
+
+        <div class="job-preview-field">
+          <label>Status</label>
+          <select id="previewJobStatus" class="job-preview-status">
+            <option value="active">Active</option>
+            <option value="draft">Draft</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="job-preview-footer">
+        <button type="button" class="job-preview-btn secondary" onclick="closeJobPreviewModal()">Cancel</button>
+        <button type="button" class="job-preview-btn primary" onclick="savePreviewJobStatus()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, updateDoc, query, where, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDnEkuV1HsfZWhhqVCFKPc5o-PjfoCUGTk",
+      authDomain: "bluecollarconnect-fc60d.firebaseapp.com",
+      projectId: "bluecollarconnect-fc60d",
+      storageBucket: "bluecollarconnect-fc60d.firebasestorage.app",
+      messagingSenderId: "1003483981586",
+      appId: "1:1003483981586:web:671214148745f5569cf5cb",
+      measurementId: "G-B723Y7DB99"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    function updateEmployerUI(displayName, photoURL = "") {
+      const safeName = displayName || "Employer";
+      const safePhoto =
+        photoURL ||
+        auth.currentUser?.photoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(safeName)}&background=2dd4bf&color=ffffff`;
+
+      // TOP NAV AVATAR
+      const avatarWrap = document.getElementById("avatarWrap");
+      if (avatarWrap) {
+        let img = avatarWrap.querySelector("img");
+
+        if (!img) {
+          img = document.createElement("img");
+          img.style.width = "100%";
+          img.style.height = "100%";
+          img.style.objectFit = "cover";
+          img.style.borderRadius = "50%";
+          avatarWrap.innerHTML = "";
+          avatarWrap.appendChild(img);
+        }
+
+        img.src = safePhoto;
+        img.alt = safeName;
+      }
+
+      // DROPDOWN
+      const ddAvatar = document.querySelector(".dd-user-avatar");
+      const ddName = document.querySelector(".dd-user-name");
+      if (ddAvatar) {
+        ddAvatar.src = safePhoto;
+        ddAvatar.alt = safeName;
+      }
+      if (ddName) ddName.textContent = safeName;
+
+      // SIDEBAR
+      const sidebarAvatar = document.querySelector(".profile-avatar");
+      const sidebarName = document.querySelector(".profile-name");
+      if (sidebarAvatar) {
+        sidebarAvatar.src = safePhoto;
+        sidebarAvatar.alt = safeName;
+      }
+      if (sidebarName) sidebarName.textContent = safeName;
+
+      // PROFILE PAGE
+      const heroAvatar = document.getElementById("profileHeroAvatar");
+      const heroName = document.getElementById("profileHeroName");
+      if (heroAvatar) {
+        heroAvatar.src = safePhoto;
+        heroAvatar.alt = safeName;
+      }
+      if (heroName) heroName.textContent = safeName;
+    }
+
+    function loadUserProfile(user) {
+      if (!user) return;
+
+      const name = user.displayName || "User";
+      const photo =
+        user.photoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2dd4bf&color=ffffff`;
+
+      // TOP NAV AVATAR
+      const avatarWrap = document.getElementById("avatarWrap");
+      if (avatarWrap) {
+        let img = avatarWrap.querySelector("img");
+
+        if (!img) {
+          img = document.createElement("img");
+          img.style.width = "100%";
+          img.style.height = "100%";
+          img.style.objectFit = "cover";
+          img.style.borderRadius = "50%";
+          avatarWrap.innerHTML = "";
+          avatarWrap.appendChild(img);
+        }
+
+        img.src = photo;
+        img.alt = name;
+      }
+
+      // DROPDOWN
+      const ddAvatar = document.querySelector(".dd-user-avatar");
+      const ddName = document.querySelector(".dd-user-name");
+      if (ddAvatar) ddAvatar.src = photo;
+      if (ddName) ddName.textContent = name;
+
+      // SIDEBAR
+      const sidebarAvatar = document.querySelector(".profile-avatar");
+      const sidebarName = document.querySelector(".profile-name");
+      if (sidebarAvatar) sidebarAvatar.src = photo;
+      if (sidebarName) sidebarName.textContent = name;
+
+      // PROFILE PAGE
+      const heroAvatar = document.getElementById("profileHeroAvatar");
+      const heroName = document.getElementById("profileHeroName");
+      if (heroAvatar) heroAvatar.src = photo;
+      if (heroName) heroName.textContent = name;
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        loadUserProfile(user);
+        window.location.href = "Employer_LogInPage.html";
+        return;
+      }
+
+      try {
+        const employerRef = doc(db, "employers", user.uid);
+        const employerSnap = await getDoc(employerRef);
+
+        if (!employerSnap.exists()) {
+          alert("Employer profile not found.");
+          await signOut(auth);
+          window.location.href = "Employer_LogInPage.html";
+          return;
+        }
+
+        const employerData = employerSnap.data();
+        currentEmployerData = employerData;
+
+        if (!employerData.photoURL && user.photoURL) {
+          try {
+            await updateDoc(doc(db, "employers", user.uid), {
+              photoURL: user.photoURL,
+              updatedAt: serverTimestamp()
+            });
+
+            employerData.photoURL = user.photoURL;
+            currentEmployerData.photoURL = user.photoURL;
+          } catch (error) {
+            console.error("FAILED TO SAVE GOOGLE PHOTO:", error);
+          }
+        }
+
+        if (employerData.role !== "employer") {
+          alert("Access denied.");
+          await signOut(auth);
+          window.location.href = "Employer_LogInPage.html";
+          return;
+        }
+
+        localStorage.setItem("bcc_employer_uid", user.uid);
+        localStorage.setItem("bcc_employer_name", employerData.name || "Employer");
+
+        updateEmployerUI(
+          employerData.name || auth.currentUser?.displayName || "Employer",
+          employerData.photoURL || auth.currentUser?.photoURL || ""
+        );
+
+        const jobsQuery = query(
+          collection(db, "jobs"),
+          where("employerId", "==", user.uid)
+        );
+
+        const jobsContainer = document.getElementById("employerJobsList");
+        const homeList = document.getElementById("employerHomeJobsList");
+
+        if (jobsUnsubscribe) {
+          jobsUnsubscribe();
+          jobsUnsubscribe = null;
+        }
+
+        jobsUnsubscribe = onSnapshot(jobsQuery, (snapshot) => {
+          console.log("SNAPSHOT SIZE:", snapshot.size);
+
+          if (jobsContainer) jobsContainer.innerHTML = "";
+          if (homeList) homeList.innerHTML = "";
+          cleanupEmployerApplicantCountListeners(employerListingApplicantCountUnsubs);
+          cleanupEmployerApplicantCountListeners(employerHomeApplicantCountUnsubs);
+
+          jobsCache.clear();
+          let totalApplicants = 0;
+
+          if (snapshot.empty) {
+            console.log("No jobs found for this employer.");
+
+            const emptyHTML = `
+      <div class="job-card dynamic-post">
+        <div class="job-title">No job posts yet</div>
+        <div class="job-desc">Your posted jobs will appear here once you publish one.</div>
+      </div>
+    `;
+
+            if (jobsContainer) jobsContainer.innerHTML = emptyHTML;
+            if (homeList) homeList.innerHTML = emptyHTML;
+
+            updateApplicantsRealtimeCount(0);
+            filterHeaderSearch();
+            return;
+          }
+
+          snapshot.forEach((docSnap) => {
+            const job = {
+              id: docSnap.id,
+              ...docSnap.data()
+            };
+
+            jobsCache.set(job.id, job);
+
+            console.log("JOB DOC:", job);
+
+            if (jobsContainer) {
+              jobsContainer.appendChild(renderJobCard(job.id, job, "listing"));
+            }
+
+            if (homeList) {
+              homeList.appendChild(renderJobCard(job.id, job, "home"));
+            }
+          });
+
+          listenToAllApplicants();
+
+          updateApplicantsRealtimeCount(totalApplicants);
+          filterHeaderSearch();
+
+        }, (error) => {
+          console.error("REALTIME JOB LISTENER ERROR:", error);
+          alert("Realtime listener failed: " + (error.message || error));
+        });
+
+      } catch (err) {
+        console.error("AUTH CHECK ERROR:", err);
+      }
+    });
+
+    let currentEmployerData = null;
+    let jobsUnsubscribe = null;
+    let selectedApplicantsJobId = null;
+    let applicantsListUnsubscribe = null;
+    const applicantsPerJobUnsubs = new Map();
+
+    const jobsCache = new Map();
+    const employerHomeApplicantCountUnsubs = new Map();
+    const employerListingApplicantCountUnsubs = new Map();
+
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function formatPostTime(timestamp) {
+      if (!timestamp) return "Just now";
+
+      const date = timestamp?.toDate ? timestamp.toDate() : new Date(timestamp);
+      if (!(date instanceof Date) || isNaN(date.getTime())) return "Just now";
+
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMin = Math.floor(diffMs / 60000);
+      const diffHr = Math.floor(diffMs / 3600000);
+      const diffDay = Math.floor(diffMs / 86400000);
+
+      if (diffMin < 1) return "Just now";
+      if (diffMin < 60) return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
+      if (diffHr < 24) return `${diffHr} hour${diffHr > 1 ? "s" : ""} ago`;
+      return `${diffDay} day${diffDay > 1 ? "s" : ""} ago`;
+    }
+
+    function renderJobCard(jobId, job, source = "listing") {
+      const card = document.createElement("div");
+      card.className = "job-card dynamic-post";
+      card.dataset.jobId = jobId;
+
+      const safeSkills = Array.isArray(job.skills) ? job.skills : [];
+      const skillsHTML = safeSkills.length
+        ? safeSkills.map(skill => `<span class="skill-tag">${escapeHtml(skill)}</span>`).join("")
+        : `<span class="skill-tag">No skills</span>`;
+
+      const urgentHTML = job.urgent
+        ? `<span class="urgent-badge">Urgent</span>`
+        : "";
+
+      const employerName = escapeHtml(job.employerName || "Employer");
+      const employerBadge = escapeHtml(job.badge || "Company");
+      const employerPhoto = job.employerPhotoURL || "https://i.pravatar.cc/80?img=32";
+      const title = escapeHtml(job.title || "Untitled Job");
+      const location = escapeHtml(job.location || "Not specified");
+      const duration = escapeHtml(job.duration || "Not specified");
+      const pay = escapeHtml(job.pay || "0");
+      const jobType = escapeHtml((job.jobType || "Full-time").toUpperCase());
+      const applicantsCount = 0;
+      const postTime = formatPostTime(job.createdAt);
+
+      card.innerHTML = `
+    <div class="job-card-header">
+      <img class="employer-avatar" src="${employerPhoto}" alt="${employerName}">
+
+      <div class="employer-info">
+        <div class="employer-name-row">
+          <span class="employer-name">${employerName}</span>
+
+          <span class="verified-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </span>
+
+          <span class="employer-badge">${employerBadge}</span>
+        </div>
+
+        <div class="post-time">${postTime}</div>
+      </div>
+
+      <button class="home-bookmark-btn" type="button" aria-label="Save job">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="job-title">${title}</div>
+
+    <div class="skill-tags">
+      ${skillsHTML}
+    </div>
+
+    <div class="job-meta">
+      <div class="meta-item">
+        <div class="meta-label">LOCATION</div>
+        <div class="meta-val-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <span>${location}</span>
+        </div>
+      </div>
+
+      <div class="meta-item">
+        <div class="meta-label">DURATION</div>
+        <div class="meta-val-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <span>${duration}</span>
+        </div>
+      </div>
+
+      <div class="meta-item">
+        <div class="meta-label">PAY</div>
+        <div class="meta-val-row">
+          <span>₱${pay}</span>
+        </div>
+      </div>
+
+      <div class="meta-item">
+        <div class="meta-label">TYPE</div>
+        <div class="meta-val-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="7" width="18" height="13" rx="2" />
+            <path d="M16 3v4" />
+            <path d="M8 3v4" />
+            <path d="M3 11h18" />
+          </svg>
+          <span>${jobType}</span>
+        </div>
+      </div>
+
+      <div class="meta-item">
+        <div class="meta-label">APPLICANTS</div>
+        <div class="meta-val-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <span class="employer-job-applicants-count">${applicantsCount} applied</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="job-footer">
+      ${urgentHTML}
+
+      <div class="match-row">
+        <div class="match-bar">
+          <div class="match-fill" style="width:95%;"></div>
+        </div>
+        <span>95% match</span>
+      </div>
+
+      <div class="job-actions">
+        <button class="btn-view" type="button">Preview</button>
+        <button class="btn-apply" type="button">View Applicants</button>
+      </div>
+    </div>
+  `;
+
+      const viewApplicantsBtn = card.querySelector(".btn-apply");
+      if (viewApplicantsBtn) {
+        viewApplicantsBtn.addEventListener("click", () => {
+          switchPage("page-applicants");
+        });
+      }
+
+      const applicantsCountEl = card.querySelector(".employer-job-applicants-count");
+      const listenerMap =
+        source === "home"
+          ? employerHomeApplicantCountUnsubs
+          : employerListingApplicantCountUnsubs;
+
+      bindEmployerRealtimeApplicantCount(jobId, applicantsCountEl, listenerMap, (count) => {
+        jobsCache.set(jobId, {
+          ...(jobsCache.get(jobId) || job),
+          applicantsCount: count
+        });
+
+        let liveTotal = 0;
+        jobsCache.forEach((trackedJob) => {
+          liveTotal += Number(trackedJob.applicantsCount || 0);
+        });
+
+        updateApplicantsRealtimeCount(liveTotal);
+      });
+
+      return card;
+    }
+
+    window.sendRealtimeMessage = async function (text) {
+      try {
+        if (!auth.currentUser) {
+          alert("You are not logged in.");
+          return;
+        }
+
+        if (!window.activeConversationId) {
+          alert("No active conversation selected.");
+          return;
+        }
+
+        const trimmed = String(text || "").trim();
+        if (!trimmed) return;
+
+        await addDoc(
+          collection(db, "conversations", window.activeConversationId, "messages"),
+          {
+            senderId: auth.currentUser.uid,
+            text: trimmed,
+            createdAt: serverTimestamp()
+          }
+        );
+
+        await setDoc(
+          doc(db, "conversations", window.activeConversationId),
+          {
+            lastMessage: trimmed,
+            updatedAt: serverTimestamp()
+          },
+          { merge: true }
+        );
+
+        updateConversationSidebarPreview(window.activeConversationId, trimmed);
+
+      } catch (error) {
+        console.error("SEND REALTIME MESSAGE ERROR:", error);
+        alert("Failed to send message: " + (error.message || error));
+      }
+    };
+
+    window.listenToConversationMessages = function (conversationId) {
+      try {
+        if (unsubscribeActiveMessages) {
+          unsubscribeActiveMessages();
+          unsubscribeActiveMessages = null;
+        }
+
+        const chatMessages = document.getElementById("chat-messages");
+        if (!chatMessages || !conversationId) return;
+
+        const messagesQuery = query(
+          collection(db, "conversations", conversationId, "messages"),
+          orderBy("createdAt", "asc")
+        );
+
+        unsubscribeActiveMessages = onSnapshot(messagesQuery, (snapshot) => {
+          chatMessages.innerHTML = "";
+
+          snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const isMine = data.senderId === auth.currentUser.uid;
+            const text = escapeHtml(data.text || "");
+            const createdAt = data.createdAt?.toDate?.();
+
+            const timeText = createdAt
+              ? createdAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+              : "Sending...";
+
+            const wrap = document.createElement("div");
+            wrap.className = `msg-bubble-wrap ${isMine ? "sent" : "received"}`;
+            wrap.innerHTML = `<div class="msg-bubble ${isMine ? "sent" : "received"}">${text}</div>`;
+
+            const ts = document.createElement("div");
+            ts.className = `msg-timestamp ${isMine ? "right" : ""}`;
+            ts.textContent = timeText;
+
+            chatMessages.appendChild(wrap);
+            chatMessages.appendChild(ts);
+          });
+
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, (error) => {
+          console.error("LISTEN MESSAGES ERROR:", error);
+          chatMessages.innerHTML = `
+        <div class="msg-bubble-wrap received">
+          <div class="msg-bubble received">Failed to load messages.</div>
+        </div>
+      `;
+        });
+      } catch (error) {
+        console.error("SETUP MESSAGE LISTENER ERROR:", error);
+      }
+    };
+
+    document.addEventListener("click", (event) => {
+      const previewBtn = event.target.closest(".btn-view");
+      if (!previewBtn) return;
+
+      const card = previewBtn.closest(".job-card.dynamic-post");
+      if (!card) return;
+
+      const jobId = card.dataset.jobId;
+      if (!jobId) return;
+
+      const job = jobsCache.get(jobId);
+      if (!job) {
+        console.warn("Preview job data not found for jobId:", jobId);
+        return;
+      }
+
+      openJobPreviewModal(jobId, job);
+    });
+
+    async function submitJobPost() {
+      const title = document.getElementById('jobPostTitle').value.trim();
+      const badge = document.getElementById('jobPostBadge').value;
+      const jobType = document.getElementById('jobPostType').value;
+      const location = document.getElementById('jobPostLocation').value.trim();
+      const duration = document.getElementById('jobPostDuration').value.trim();
+      const pay = document.getElementById('jobPostPay').value.trim();
+      const urgent = document.getElementById('jobPostUrgent').value;
+      const skillsRaw = document.getElementById('jobPostSkills').value.trim();
+      const status = document.getElementById('jobPostStatus').value;
+
+      if (!auth.currentUser) {
+        alert("You must be logged in first.");
+        return;
+      }
+
+      if (!title) {
+        alert("Enter job title");
+        return;
+      }
+
+      const skills = skillsRaw
+        ? skillsRaw.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+
+      try {
+        const employerName =
+          currentEmployerData?.name ||
+          localStorage.getItem("bcc_employer_name") ||
+          auth.currentUser.displayName ||
+          "Employer";
+
+        const employerPhotoURL =
+          currentEmployerData?.photoURL ||
+          auth.currentUser.photoURL ||
+          "https://i.pravatar.cc/80?img=32";
+
+        await addDoc(collection(db, "jobs"), {
+          employerId: auth.currentUser.uid,
+          employerName,
+          employerPhotoURL,
+          badge,
+          title,
+          jobType,
+          location: location || "Not specified",
+          duration: duration || "Not specified",
+          pay: pay || "0",
+          urgent: urgent === "yes",
+          status,
+          skills,
+          applicantsCount: 0,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        closeJobPostModal();
+
+        document.getElementById('jobPostTitle').value = '';
+        document.getElementById('jobPostBadge').value = 'Individual';
+        document.getElementById('jobPostType').value = 'Full-time';
+        document.getElementById('jobPostLocation').value = '';
+        document.getElementById('jobPostDuration').value = '';
+        document.getElementById('jobPostPay').value = '';
+        document.getElementById('jobPostUrgent').value = 'yes';
+        document.getElementById('jobPostStatus').value = 'active';
+        document.getElementById('jobPostSkills').value = '';
+
+        if (typeof filterJobPostings === 'function') {
+          filterJobPostings();
+        }
+      } catch (error) {
+        console.error("POST JOB ERROR FULL:", error);
+        alert("Failed to save job post: " + (error.message || error));
+      }
+    }
+
+    function filterHeaderSearch() {
+      const input = document.querySelector(".search-bar input");
+      if (!input) return;
+
+      const query = input.value.toLowerCase().trim();
+
+      const cards = document.querySelectorAll(`
+    #page-home .job-card,
+    #job-items-list .job-card,
+    #employerJobsList .job-card,
+    #employerHomeJobsList .job-card
+  `);
+
+      cards.forEach(card => {
+        const text = [
+          card.querySelector(".job-title")?.textContent || "",
+          card.querySelector(".employer-name")?.textContent || "",
+          ...Array.from(card.querySelectorAll(".skill-tag")).map(el => el.textContent || ""),
+          ...Array.from(card.querySelectorAll(".meta-val-row")).map(el => el.textContent || "")
+        ].join(" ").toLowerCase();
+
+        if (!query || text.includes(query)) {
+          card.style.display = "";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    }
+
+    function updateApplicantsRealtimeCount(total) {
+      const applicantsBtnCount = document.getElementById("applicantsRealtimeCount");
+      if (applicantsBtnCount) {
+        applicantsBtnCount.textContent = `(${total})`;
+      }
+
+      const applicantsCountPill = document.querySelector(".applicants-count-pill");
+      if (applicantsCountPill) {
+        applicantsCountPill.textContent = `${total} applicant${total === 1 ? "" : "s"}`;
+      }
+    }
+
+    let activePreviewJobId = null;
+    let activePreviewJobData = null;
+
+    function cleanupEmployerApplicantCountListeners(map) {
+      map.forEach((unsubscribe) => {
+        try {
+          unsubscribe();
+        } catch (error) {
+          console.warn("Failed to unsubscribe employer applicant count listener:", error);
+        }
+      });
+      map.clear();
+    }
+
+    function cleanupApplicantsListListeners() {
+      applicantsPerJobUnsubs.forEach((unsubscribe) => {
+        try {
+          unsubscribe();
+        } catch (error) {
+          console.warn("Failed to unsubscribe applicants list listener:", error);
+        }
+      });
+      applicantsPerJobUnsubs.clear();
+    }
+
+    function bindEmployerRealtimeApplicantCount(jobId, countElement, map, onCountChange = null) {
+      if (!jobId || !countElement) return;
+
+      if (map.has(jobId)) {
+        map.get(jobId)();
+        map.delete(jobId);
+      }
+
+      const appsRef = collection(db, "jobs", jobId, "applications");
+
+      const unsubscribe = onSnapshot(appsRef, (snapshot) => {
+        const count = snapshot.size;
+        countElement.textContent = `${count} applied`;
+
+        if (typeof onCountChange === "function") {
+          onCountChange(count);
+        }
+      }, (error) => {
+        console.error("EMPLOYER APPLICANT COUNT ERROR:", jobId, error);
+      });
+
+      map.set(jobId, unsubscribe);
+    }
+
+    function renderApplicantsEmptyState(message = "No one has applied to your job posts yet.") {
+      const list = document.getElementById("applicantsModernList");
+      const pill = document.getElementById("applicantsModernCount");
+      const title = document.getElementById("applicantsModernTitle");
+
+      if (title) title.textContent = "Applicants";
+      if (pill) pill.textContent = "0 applicants";
+      if (!list) return;
+
+      list.innerHTML = `
+    <div class="applicants-empty-state">
+      <div class="applicants-empty-title">No applicants yet</div>
+      <div class="applicants-empty-text">${message}</div>
+    </div>
+  `;
+    }
+
+    function createApplicantCard(applicationId, applicant) {
+      const applicantName = escapeHtml(applicant.applicantName || "Applicant");
+      const applicantPhoto =
+        applicant.applicantPhotoURL ||
+        "https://ui-avatars.com/api/?name=Applicant&background=ccfbf1&color=0f766e&size=128";
+
+      const applicantEmail = escapeHtml(applicant.applicantEmail || "No email");
+      const appliedJobTitle = escapeHtml(applicant.title || "Untitled Job");
+      const appliedAtText = formatPostTime(applicant.appliedAt);
+
+      const skills = Array.isArray(applicant.skills) ? applicant.skills : [];
+      const skillHTML = skills.length
+        ? skills.map(skill => `<span class="applicant-modern-skill">${escapeHtml(skill)}</span>`).join("")
+        : `<span class="applicant-modern-skill">No skills listed</span>`;
+
+      const matchText = skills.length ? `${Math.min(95, 70 + skills.length * 5)}% match` : "92% match";
+      const badgeText = escapeHtml(applicant.badge || "Individual");
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "applicant-modern-item";
+      wrapper.innerHTML = `
+    <div class="applicant-card-wide">
+      <div class="applicant-card-wide-left">
+        <div class="applicant-card-wide-header">
+          <img class="applicant-modern-avatar" src="${applicantPhoto}" alt="${applicantName}">
+
+          <div class="applicant-card-wide-info">
+            <div class="applicant-card-wide-topline">
+              <div class="applicant-card-wide-name-row">
+                <div class="applicant-modern-name">${applicantName}</div>
+
+                <span class="verified-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </span>
+
+                <span class="employer-badge">${badgeText}</span>
+              </div>
+
+              <div class="post-time">${appliedAtText}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="applicant-card-wide-content">
+          <div class="applicant-card-wide-jobline">
+            <strong>Applied for:</strong> ${appliedJobTitle}
+          </div>
+
+          <div class="applicant-modern-skills">
+            ${skillHTML}
+          </div>
+
+          <div class="applicant-card-wide-bottom">
+            <span class="applicant-modern-match">${matchText}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="applicant-modern-actions applicant-actions-wide">
+        <button class="employer-btn-secondary applicant-message-btn" type="button">Message</button>
+        <button class="employer-btn-primary applicant-profile-btn" type="button">View Profile</button>
+      </div>
+    </div>
+  `;
+
+      const messageBtn = wrapper.querySelector(".applicant-message-btn");
+      const profileBtn = wrapper.querySelector(".applicant-profile-btn");
+
+      if (messageBtn) {
+        messageBtn.addEventListener("click", () => {
+          window.openApplicantConversation(applicant);
+        });
+      }
+
+      if (profileBtn) {
+        profileBtn.addEventListener("click", () => {
+          alert(`Open profile for ${applicantName}`);
+        });
+      }
+
+      return wrapper;
+    }
+
+    function openApplicantChatPreview(applicant) {
+      const chatName = document.getElementById("chat-name");
+      const chatStatus = document.getElementById("chat-status");
+      const chatAvatar = document.getElementById("chat-avatar");
+      const onlineDot = document.querySelector(".chat-header-online");
+      const chatMessages = document.getElementById("chat-messages");
+
+      if (chatName) {
+        chatName.textContent = applicant.applicantName || "Applicant";
+      }
+
+      if (chatStatus) {
+        chatStatus.textContent = "Application chat";
+      }
+
+      if (chatAvatar) {
+        chatAvatar.src =
+          applicant.applicantPhotoURL ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(applicant.applicantName || "Applicant")}&background=2dd4bf&color=ffffff`;
+      }
+
+      if (onlineDot) {
+        onlineDot.style.display = "none";
+      }
+
+      if (chatMessages) {
+        chatMessages.innerHTML = `
+      <div class="msg-bubble-wrap received">
+        <div class="msg-bubble received">
+          Conversation with ${escapeHtml(applicant.applicantName || "Applicant")} is ready.
+        </div>
+      </div>
+      <div class="msg-timestamp">Just now</div>
+    `;
+      }
+    }
+
+    window.openApplicantConversation = async function (applicant) {
+      try {
+        if (!auth.currentUser) {
+          alert("You are not logged in.");
+          return;
+        }
+
+        const employerId = auth.currentUser.uid;
+        const applicantId = applicant.applicantId;
+
+        if (!applicantId) {
+          alert("Applicant ID is missing.");
+          return;
+        }
+
+        const conversationId = `conv_${[employerId, applicantId].sort().join("_")}`;
+
+        const employerRef = doc(db, "employers", employerId);
+        const employerSnap = await getDoc(employerRef);
+        const employerData = employerSnap.exists() ? employerSnap.data() : {};
+
+        await setDoc(doc(db, "conversations", conversationId), {
+          participantIds: [employerId, applicantId],
+
+          employerId,
+          employerName: currentEmployerData?.name || auth.currentUser.displayName || "Employer",
+          employerPhotoURL: currentEmployerData?.photoURL || auth.currentUser.photoURL || "",
+
+          applicantId,
+          applicantName: applicant.applicantName || "Applicant",
+          applicantPhotoURL: applicant.applicantPhotoURL || "",
+
+          lastMessage: "",
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        showPage("messages");
+        upsertConversationSidebarItem(applicant, conversationId);
+
+        const chatName = document.getElementById("chat-name");
+        const chatStatus = document.getElementById("chat-status");
+        const chatAvatar = document.getElementById("chat-avatar");
+        const onlineDot = document.querySelector(".chat-header-online");
+        const chatMessages = document.getElementById("chat-messages");
+
+        if (chatName) chatName.textContent = applicant.applicantName || "Applicant";
+        if (chatStatus) chatStatus.textContent = "Conversation opened";
+        if (chatAvatar) {
+          chatAvatar.src =
+            applicant.applicantPhotoURL ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(applicant.applicantName || "Applicant")}&background=2dd4bf&color=ffffff`;
+        }
+        if (onlineDot) onlineDot.style.display = "none";
+
+        if (chatMessages) {
+          chatMessages.innerHTML = `
+        <div class="msg-bubble-wrap received">
+          <div class="msg-bubble received">
+            You can now message ${escapeHtml(applicant.applicantName || "this applicant")}.
+          </div>
+        </div>
+        <div class="msg-timestamp">Just now</div>
+      `;
+        }
+
+        window.activeConversationId = conversationId;
+        window.activeApplicantId = applicantId;
+        window.listenToConversationMessages(conversationId);
+
+      } catch (error) {
+        console.error("OPEN APPLICANT CONVERSATION ERROR:", error);
+        alert("Failed to open conversation: " + (error.message || error));
+      }
+    };
+
+    function listenToAllApplicants() {
+      const list = document.getElementById("applicantsModernList");
+      const pill = document.getElementById("applicantsModernCount");
+      const title = document.getElementById("applicantsModernTitle");
+
+      if (!list || !auth.currentUser) return;
+
+      if (title) {
+        title.textContent = "Applicants";
+      }
+
+      cleanupApplicantsListListeners();
+
+      const employerJobs = Array.from(jobsCache.values()).filter(
+        (job) => job.employerId === auth.currentUser.uid
+      );
+
+      if (!employerJobs.length) {
+        renderApplicantsEmptyState("No one has applied to your job posts yet.");
+        return;
+      }
+
+      const applicationsMap = new Map();
+
+      function renderMergedApplicants() {
+        const applicants = Array.from(applicationsMap.values()).sort((a, b) => {
+          const aTime = a.appliedAt?.toDate ? a.appliedAt.toDate().getTime() : 0;
+          const bTime = b.appliedAt?.toDate ? b.appliedAt.toDate().getTime() : 0;
+          return bTime - aTime;
+        });
+
+        list.innerHTML = "";
+
+        if (pill) {
+          pill.textContent = `${applicants.length} applicant${applicants.length === 1 ? "" : "s"}`;
+        }
+
+        if (!applicants.length) {
+          renderApplicantsEmptyState("No one has applied to your job posts yet.");
+          return;
+        }
+
+        applicants.forEach((applicant) => {
+          list.appendChild(createApplicantCard(applicant.id, applicant));
+        });
+      }
+
+      employerJobs.forEach((job) => {
+        const appsRef = query(
+          collection(db, "jobs", job.id, "applications"),
+          orderBy("appliedAt", "desc")
+        );
+
+        const unsubscribe = onSnapshot(appsRef, (snapshot) => {
+          Array.from(applicationsMap.keys()).forEach((key) => {
+            if (key.startsWith(`${job.id}__`)) {
+              applicationsMap.delete(key);
+            }
+          });
+
+          snapshot.forEach((docSnap) => {
+            const applicant = {
+              id: `${job.id}__${docSnap.id}`,
+              ...docSnap.data()
+            };
+
+            applicationsMap.set(`${job.id}__${docSnap.id}`, applicant);
+          });
+
+          renderMergedApplicants();
+        }, (error) => {
+          console.error("FAILED TO LOAD APPLICANTS FOR JOB:", job.id, error);
+        });
+
+        applicantsPerJobUnsubs.set(job.id, unsubscribe);
+      });
+    }
+
+    function openJobPreviewModal(jobId, job) {
+      activePreviewJobId = jobId;
+      activePreviewJobData = job || {};
+
+      document.getElementById("previewJobTitle").textContent = job.title || "Untitled Job";
+      document.getElementById("previewEmployerName").textContent = job.employerName || "Employer";
+      document.getElementById("previewBadge").textContent = job.badge || "Not specified";
+      document.getElementById("previewJobType").textContent = job.jobType || "Not specified";
+      document.getElementById("previewLocation").textContent = job.location || "Not specified";
+      document.getElementById("previewDuration").textContent = job.duration || "Not specified";
+      document.getElementById("previewPay").textContent = job.pay ? `₱${job.pay}` : "₱0";
+      document.getElementById("previewApplicants").textContent = Number(job.applicantsCount || 0);
+      document.getElementById("previewJobStatus").value = job.status || "active";
+
+      const previewApplicantsEl = document.getElementById("previewApplicants");
+      const appsRef = collection(db, "jobs", jobId, "applications");
+
+      onSnapshot(appsRef, (snapshot) => {
+        previewApplicantsEl.textContent = snapshot.size;
+      }, (error) => {
+        console.error("PREVIEW APPLICANTS COUNT ERROR:", error);
+      });
+
+      const skillsWrap = document.getElementById("previewSkills");
+      skillsWrap.innerHTML = "";
+
+      const skills = Array.isArray(job.skills) ? job.skills : [];
+      if (skills.length) {
+        skills.forEach(skill => {
+          const span = document.createElement("span");
+          span.className = "job-preview-skill";
+          span.textContent = skill;
+          skillsWrap.appendChild(span);
+        });
+      } else {
+        skillsWrap.innerHTML = `<span class="job-preview-skill">No skills listed</span>`;
+      }
+
+      document.getElementById("jobPreviewOverlay").classList.add("open");
+    }
+
+    function closeJobPreviewModal() {
+      document.getElementById("jobPreviewOverlay").classList.remove("open");
+      activePreviewJobId = null;
+      activePreviewJobData = null;
+    }
+
+    async function savePreviewJobStatus() {
+      if (!activePreviewJobId) {
+        alert("No job selected.");
+        return;
+      }
+
+      const newStatus = document.getElementById("previewJobStatus").value;
+
+      try {
+        await updateDoc(doc(db, "jobs", activePreviewJobId), {
+          status: newStatus,
+          updatedAt: serverTimestamp()
+        });
+
+        if (activePreviewJobData) {
+          activePreviewJobData.status = newStatus;
+        }
+
+        closeJobPreviewModal();
+        alert("Job status updated successfully.");
+      } catch (error) {
+        console.error("UPDATE JOB STATUS ERROR:", error);
+        alert("Failed to update job status: " + (error.message || error));
+      }
+    }
+
+    document.querySelector(".search-bar input")
+      ?.addEventListener("input", filterHeaderSearch);
+
+    window.firebaseLogout = async function () {
+      try {
+        if (jobsUnsubscribe) {
+          jobsUnsubscribe();
+          jobsUnsubscribe = null;
+        }
+
+        if (applicantsListUnsubscribe) {
+          applicantsListUnsubscribe();
+          applicantsListUnsubscribe = null;
+        }
+
+        cleanupApplicantsListListeners();
+        cleanupEmployerApplicantCountListeners(employerListingApplicantCountUnsubs);
+        cleanupEmployerApplicantCountListeners(employerHomeApplicantCountUnsubs);
+
+        await signOut(auth);
+        window.location.href = "Employer_LogInPage.html";
+      } catch (error) {
+        console.error("LOGOUT ERROR:", error);
+        alert("Logout failed: " + (error.message || error));
+      }
+    };
+
+    function upsertConversationSidebarItem(applicant, conversationId) {
+      const convItems = document.getElementById("conv-items");
+      if (!convItems) return;
+
+      const applicantName = applicant.applicantName || "Applicant";
+      const applicantPhoto =
+        applicant.applicantPhotoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(applicantName)}&background=2dd4bf&color=ffffff`;
+
+      const existing = convItems.querySelector(`[data-convid="${conversationId}"]`);
+
+      if (existing) {
+        existing.querySelector(".conv-name").textContent = applicantName;
+        existing.querySelector(".conv-preview").textContent = "Conversation opened";
+        const timeEl = existing.querySelector(".conv-time");
+        if (timeEl) timeEl.textContent = "now";
+
+        const avatar = existing.querySelector(".conv-avatar");
+        if (avatar) avatar.src = applicantPhoto;
+
+        document.querySelectorAll(".conv-item").forEach(item => item.classList.remove("active"));
+        existing.classList.add("active");
+        convItems.prepend(existing);
+        return;
+      }
+
+      const item = document.createElement("div");
+      item.className = "conv-item active";
+      item.dataset.convid = conversationId;
+      item.dataset.name = applicantName.toLowerCase();
+
+      item.innerHTML = `
+    <div class="conv-avatar-wrap">
+      <img class="conv-avatar" src="${applicantPhoto}" alt="${escapeHtml(applicantName)}" />
+    </div>
+    <div class="conv-body">
+      <div class="conv-header-row">
+        <span class="conv-name">${escapeHtml(applicantName)}</span>
+        <span class="conv-time">now</span>
+      </div>
+      <div class="conv-preview">Conversation opened</div>
+      <div class="conv-footer-row">
+        <span class="conv-badge employer">Applicant</span>
+      </div>
+    </div>
+  `;
+
+      item.addEventListener("click", () => {
+        document.querySelectorAll(".conv-item").forEach(c => c.classList.remove("active"));
+        item.classList.add("active");
+
+        const chatName = document.getElementById("chat-name");
+        const chatStatus = document.getElementById("chat-status");
+        const chatAvatar = document.getElementById("chat-avatar");
+        const onlineDot = document.querySelector(".chat-header-online");
+        const chatMessages = document.getElementById("chat-messages");
+
+        if (chatName) chatName.textContent = applicantName;
+        if (chatStatus) chatStatus.textContent = "Conversation opened";
+        if (chatAvatar) chatAvatar.src = applicantPhoto;
+        if (onlineDot) onlineDot.style.display = "none";
+
+        if (chatMessages) {
+          chatMessages.innerHTML = `
+        <div class="msg-bubble-wrap received">
+          <div class="msg-bubble received">
+            You can now message ${escapeHtml(applicantName)}.
+          </div>
+        </div>
+        <div class="msg-timestamp">Just now</div>
+      `;
+        }
+
+        activeConv = conversationId;
+      });
+
+      document.querySelectorAll(".conv-item").forEach(c => c.classList.remove("active"));
+      convItems.prepend(item);
+    }
+
+    window.openJobPreviewModal = openJobPreviewModal;
+    window.closeJobPreviewModal = closeJobPreviewModal;
+    window.savePreviewJobStatus = savePreviewJobStatus;
+    window.submitJobPost = submitJobPost;
+    window.openJobPostModal = openJobPostModal;
+    window.closeJobPostModal = closeJobPostModal;
+  </script>
+
+</body>
+
+</html>

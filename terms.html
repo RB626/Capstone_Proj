@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service | BlueCollar Connect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6faff;
+      --panel: rgba(255,255,255,0.94);
+      --text: #10233f;
+      --muted: #60728c;
+      --line: #d9e6f7;
+      --brand: #2f80ed;
+      --brand-dark: #215fb0;
+      --accent: #11b39a;
+      --danger: #d75050;
+      --shadow: 0 18px 40px rgba(21, 57, 109, 0.12);
+      --radius: 28px;
+      --max: 1120px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at left top, rgba(47,128,237,0.12), transparent 34%),
+        linear-gradient(180deg, #fbfdff 0%, var(--bg) 100%);
+    }
+
+    a { color: var(--brand); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .page { padding: 28px 18px 64px; min-height: 100vh; }
+    .shell { max-width: var(--max); margin: 0 auto; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 800;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), #6cb0ff);
+      color: #fff;
+      box-shadow: 0 14px 26px rgba(47, 128, 237, 0.24);
+    }
+
+    .ghost-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.84);
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .hero {
+      border-radius: 32px;
+      background: linear-gradient(135deg, #142c50, #2f80ed 58%, #00bfa6);
+      color: #fff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .hero::before {
+      width: 280px;
+      height: 280px;
+      top: -110px;
+      right: -80px;
+    }
+
+    .hero::after {
+      width: 180px;
+      height: 180px;
+      bottom: -80px;
+      right: 180px;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      padding: 34px;
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 22px;
+      align-items: end;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      font-size: .82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 14px;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+
+    .stats {
+      display: grid;
+      gap: 14px;
+    }
+
+    .stat {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.18);
+      backdrop-filter: blur(8px);
+    }
+
+    .stat small {
+      display: block;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 6px;
+      opacity: .82;
+      font-weight: 700;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 290px minmax(0,1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .side,
+    .main,
+    .notice {
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.78);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .side {
+      border-radius: 26px;
+      padding: 22px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .side h2 {
+      margin: 0 0 14px;
+      font-size: 1.04rem;
+    }
+
+    .side nav {
+      display: grid;
+      gap: 10px;
+    }
+
+    .side a {
+      display: block;
+      padding: 11px 13px;
+      border-radius: 14px;
+      color: var(--muted);
+      background: #f8fbff;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+
+    .side a:hover {
+      text-decoration: none;
+      color: var(--brand-dark);
+      transform: translateX(2px);
+    }
+
+    .main {
+      border-radius: 30px;
+      padding: 30px;
+    }
+
+    .section {
+      padding-bottom: 24px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section:last-child {
+      border-bottom: 0;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .section h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.25rem, 2vw, 1.58rem);
+    }
+
+    .section p,
+    .section li {
+      color: var(--muted);
+      line-height: 1.9;
+      font-size: .98rem;
+    }
+
+    .section ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+    }
+
+    .notice {
+      margin-top: 24px;
+      border-radius: 24px;
+      padding: 22px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .notice-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      background: rgba(215,80,80,0.1);
+      color: var(--danger);
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .notice h3 {
+      margin: 0 0 6px;
+    }
+
+    .notice p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .footer-links {
+      margin-top: 24px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: #fff;
+      box-shadow: 0 14px 26px rgba(47, 128, 237, 0.18);
+    }
+
+    .btn-secondary {
+      background: #eef6ff;
+      color: var(--brand-dark);
+    }
+
+    @media (max-width: 960px) {
+      .hero-inner,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .side { position: static; }
+    }
+
+    @media (max-width: 640px) {
+      .page { padding: 18px 12px 44px; }
+      .hero,
+      .main,
+      .side,
+      .notice { border-radius: 22px; }
+      .hero-inner,
+      .main { padding: 22px 18px; }
+      .side,
+      .notice { padding: 18px; }
+      .ghost-link { width: 100%; }
+      .footer-links .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="shell">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo">BC</div>
+          <div>
+            <div>BlueCollar Connect</div>
+            <div style="font-size:.9rem;color:var(--muted);font-weight:600;">Terms for platform use</div>
+          </div>
+        </div>
+        <a href="\" class="ghost-link">← Back to home</a>
+      </div>
+
+      <section class="hero">
+        <div class="hero-inner">
+          <div>
+            <div class="pill">Terms of Service</div>
+            <h1>Clear rules for using BlueCollar Connect.</h1>
+            <p>These Terms of Service govern your access to and use of BlueCollar Connect, including account registration, job-related features, messaging, profile tools, and third-party login options such as Facebook Login.</p>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <small>Effective date</small>
+              <strong>March 26, 2026</strong>
+            </div>
+            <div class="stat">
+              <small>Support contact</small>
+              <strong>rbbelas54@gmail.com</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid">
+        <aside class="side">
+          <h2>On this page</h2>
+          <nav>
+            <a href="#acceptance">Acceptance of Terms</a>
+            <a href="#accounts">Accounts and Access</a>
+            <a href="#responsibilities">User Responsibilities</a>
+            <a href="#content">User Content</a>
+            <a href="#termination">Termination</a>
+            <a href="#disclaimer">Disclaimer</a>
+            <a href="#liability">Limitation of Liability</a>
+            <a href="#changes">Changes to Terms</a>
+            <a href="#contact">Contact</a>
+          </nav>
+        </aside>
+
+        <main class="main">
+          <section class="section" id="acceptance">
+            <h2>1. Acceptance of Terms</h2>
+            <p>By accessing or using BlueCollar Connect, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree, please do not use the platform.</p>
+          </section>
+
+          <section class="section" id="accounts">
+            <h2>2. Accounts and Access</h2>
+            <p>You may create an account using supported sign-in methods such as email, phone verification, Google, or Facebook Login. You are responsible for keeping your account details secure and for all activity that occurs under your account.</p>
+            <ul>
+              <li>You must provide accurate and complete information when registering.</li>
+              <li>You must not impersonate another person or use another person’s account without permission.</li>
+              <li>You are responsible for keeping your login credentials confidential.</li>
+            </ul>
+          </section>
+
+          <section class="section" id="responsibilities">
+            <h2>3. User Responsibilities</h2>
+            <p>You agree to use the platform lawfully and respectfully. You must not use BlueCollar Connect to post false information, harass others, distribute harmful content, or interfere with platform operations.</p>
+            <ul>
+              <li>No fraudulent, misleading, or illegal activity.</li>
+              <li>No attempt to bypass security, abuse authentication, or damage services.</li>
+              <li>No use of the platform in a way that harms other users or employers.</li>
+            </ul>
+          </section>
+
+          <section class="section" id="content">
+            <h2>4. User Content</h2>
+            <p>You retain ownership of the content you submit, such as profile details, work experience, job-related information, and messages. By submitting content, you grant us a limited right to host, display, and process it only as needed to operate the platform.</p>
+          </section>
+
+          <section class="section" id="termination">
+            <h2>5. Suspension or Termination</h2>
+            <p>We reserve the right to suspend, restrict, or terminate access to accounts that violate these Terms, create security risks, or misuse the platform. We may also remove content that violates platform rules or legal obligations.</p>
+          </section>
+
+          <section class="section" id="disclaimer">
+            <h2>6. Disclaimer</h2>
+            <p>BlueCollar Connect is provided on an “as is” and “as available” basis. While we aim to provide reliable service, we do not guarantee uninterrupted access, complete accuracy of user-submitted information, or guaranteed employment outcomes.</p>
+          </section>
+
+          <section class="section" id="liability">
+            <h2>7. Limitation of Liability</h2>
+            <p>To the fullest extent permitted by law, BlueCollar Connect and its operators shall not be liable for indirect, incidental, special, consequential, or punitive damages arising from platform use, inability to access services, or user interactions.</p>
+          </section>
+
+          <section class="section" id="changes">
+            <h2>8. Changes to These Terms</h2>
+            <p>We may update these Terms from time to time. Continued use of the platform after updates are posted means you accept the revised Terms.</p>
+          </section>
+
+          <section class="section" id="contact">
+            <h2>9. Contact</h2>
+            <p>If you have questions about these Terms, contact us at <a href="mailto:rbbelas54@gmail.com">rbbelas54@gmail.com</a>.</p>
+          </section>
+        </main>
+      </div>
+
+      <section class="notice">
+        <div class="notice-icon">!</div>
+        <div>
+          <h3>Please read these terms carefully.</h3>
+          <p>Using BlueCollar Connect means you agree to follow these conditions. If you are using Facebook Login, Google sign-in, or other authentication methods, your use of those services is also subject to their own provider terms.</p>
+        </div>
+      </section>
+
+      <div class="footer-links">
+        <a class="btn btn-primary" href="privacy.html">Privacy Policy</a>
+        <a class="btn btn-secondary" href="delete.html">Data Deletion</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

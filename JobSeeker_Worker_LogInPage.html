@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Seeker Portal – BlueCollar Connect</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── Page entrance ── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #d6f0f0 0%, #e8f5f5 30%, #f0f4f8 60%, #f5f0f8 100%);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 28px 16px 88px;
+    }
+
+    @media (min-width: 900px) {
+      body {
+        align-items: center;
+        padding: 48px 28px;
+      }
+    }
+
+    /* ── Layout ── */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 1100px;
+      width: 100%;
+    }
+
+    @media (min-width: 900px) {
+      .page-wrapper {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 32px;
+      }
+
+      .left-panel {
+        flex: 0 0 430px;
+      }
+
+      .right-panel {
+        flex: 1;
+      }
+    }
+
+    /* ───────────────────────────────────────── LEFT PANEL ───────────────────────────────────────── */
+    .left-panel {
+      background: #fff;
+      border-radius: 8px;
+      padding: 28px 24px 32px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 14px rgba(0, 0, 0, 0.07);
+      animation: fadeUp 0.5s 0.05s ease both;
+      transition: box-shadow 0.28s ease;
+    }
+
+    .left-panel:hover {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.10);
+    }
+
+    @media (min-width: 900px) {
+      .left-panel {
+        padding: 40px 36px 44px;
+      }
+    }
+
+    /* Mobile accordion toggle */
+    .left-toggle-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .left-toggle-chevron {
+      transition: transform 0.25s ease;
+      color: #6b7280;
+      flex-shrink: 0;
+    }
+
+    .left-toggle-chevron.open {
+      transform: rotate(180deg);
+    }
+
+    .left-collapsible {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.38s ease;
+    }
+
+    .left-collapsible.open {
+      max-height: 700px;
+    }
+
+    @media (min-width: 900px) {
+      .left-toggle-btn .left-toggle-chevron {
+        display: none;
+      }
+
+      .left-collapsible {
+        max-height: none !important;
+        overflow: visible;
+      }
+    }
+
+    /* Portal badge */
+    .portal-badge {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 0;
+    }
+
+    .portal-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 8px;
+      background: #2dd4bf;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(45, 212, 191, 0.30);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+    }
+
+    .portal-icon:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 8px 22px rgba(45, 212, 191, 0.42);
+    }
+
+    @media (min-width: 900px) {
+      .portal-icon {
+        width: 66px;
+        height: 66px;
+      }
+    }
+
+    .portal-icon svg {
+      width: 27px;
+      height: 27px;
+    }
+
+    @media (min-width: 900px) {
+      .portal-icon svg {
+        width: 30px;
+        height: 30px;
+      }
+    }
+
+    .portal-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.2;
+    }
+
+    @media (min-width: 900px) {
+      .portal-name {
+        font-size: 1.35rem;
+      }
+    }
+
+    .portal-tagline {
+      font-size: 0.82rem;
+      color: #6b7280;
+      margin-top: 3px;
+    }
+
+    /* Collapsible inner */
+    .left-headline {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #111827;
+      margin-top: 24px;
+      margin-bottom: 10px;
+    }
+
+    @media (min-width: 900px) {
+      .left-headline {
+        font-size: 1.35rem;
+        margin-top: 32px;
+        margin-bottom: 12px;
+      }
+    }
+
+    .left-desc {
+      font-size: 0.86rem;
+      color: #6b7280;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    @media (min-width: 900px) {
+      .left-desc {
+        margin-bottom: 32px;
+      }
+    }
+
+    /* Feature list */
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 28px;
+    }
+
+    @media (min-width: 900px) {
+      .feature-list {
+        margin-bottom: 36px;
+      }
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: background 0.2s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: default;
+    }
+
+    .feature-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .feature-list li:hover {
+      background: #f0fdf9;
+      transform: translateX(4px);
+    }
+
+    .check-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid #2dd4bf;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .feature-list li:hover .check-icon {
+      background: #2dd4bf;
+    }
+
+    .feature-list li:hover .check-icon svg {
+      color: #fff;
+    }
+
+    .check-icon svg {
+      width: 12px;
+      height: 12px;
+      color: #2dd4bf;
+      transition: color 0.2s;
+    }
+
+    .feature-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .feature-desc {
+      font-size: 0.79rem;
+      color: #6b7280;
+      margin-top: 2px;
+      line-height: 1.5;
+    }
+
+    /* Testimonial */
+
+    @media (min-width: 900px) {
+      .testimonial {
+        padding: 22px 28px;
+        font-size: 0.875rem;
+      }
+    }
+
+    /* ───────────────────────────────────────── RIGHT PANEL ───────────────────────────────────────── */
+    .right-panel {
+      background: #fff;
+      border-radius: 8px;
+      padding: 28px 24px 36px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 14px rgba(0, 0, 0, 0.07);
+      animation: fadeUp 0.5s 0.15s ease both;
+      transition: box-shadow 0.28s ease;
+    }
+
+    .right-panel:hover {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.10);
+    }
+
+    @media (min-width: 900px) {
+      .right-panel {
+        padding: 40px 44px 48px;
+      }
+    }
+
+    /* Tab switcher */
+    .tab-switcher {
+      display: flex;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f3f4f6;
+      margin-bottom: 32px;
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 11px 0;
+      font-size: 0.93rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: #6b7280;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease, transform 0.15s ease;
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: #e9eaec;
+      color: #374151;
+    }
+
+    .tab-btn.active {
+      background: #2dd4bf;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(45, 212, 191, 0.30);
+      transform: scale(1.01);
+    }
+
+    /* Form heading */
+    .form-heading {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 28px;
+    }
+
+    @media (min-width: 900px) {
+      .form-heading {
+        font-size: 1.65rem;
+        margin-bottom: 32px;
+      }
+    }
+
+    /* Labels */
+    .field-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    /* Input wrapper */
+    .input-wrap {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    @media (min-width: 900px) {
+      .input-wrap {
+        margin-bottom: 24px;
+      }
+    }
+
+    .input-wrap .input-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+
+    .input-wrap:focus-within .input-icon {
+      color: #2dd4bf;
+    }
+
+    .input-wrap .input-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .form-control-custom {
+      width: 100%;
+      padding: 14px 14px 14px 44px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 16px;
+      color: #374151;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.2s ease;
+    }
+
+    @media (min-width: 480px) {
+      .form-control-custom {
+        font-size: 0.9rem;
+      }
+    }
+
+    .form-control-custom::placeholder {
+      color: #9ca3af;
+    }
+
+    .form-control-custom:hover {
+      border-color: #c4c9d4;
+    }
+
+    .form-control-custom:focus {
+      border-color: #2dd4bf;
+      box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.16);
+      background: #fafffd;
+    }
+
+    /* Remember row */
+    .remember-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .remember-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      color: #374151;
+      cursor: pointer;
+    }
+
+    .remember-label input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: #2dd4bf;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .forgot-link {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #14b8a6;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .forgot-link::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      width: 0;
+      height: 1.5px;
+      background: #14b8a6;
+      transition: width 0.22s ease;
+    }
+
+    .forgot-link:hover::after {
+      width: 100%;
+    }
+
+    /* Primary teal button */
+    .btn-primary-teal {
+      width: 100%;
+      padding: 15px;
+      background: #2dd4bf;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      min-height: 54px;
+      box-shadow: 0 2px 8px rgba(45, 212, 191, 0.22);
+      transition: background 0.22s ease, box-shadow 0.22s ease, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .btn-primary-teal:hover {
+      background: #14b8a6;
+      box-shadow: 0 6px 20px rgba(45, 212, 191, 0.40);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary-teal:active {
+      transform: scale(0.98) translateY(0);
+      box-shadow: 0 2px 8px rgba(45, 212, 191, 0.20);
+    }
+
+    /* Divider */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 26px 0;
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+
+    /* Social buttons */
+    .social-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+
+    .btn-social {
+      flex: 1;
+      padding: 12px 8px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #374151;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      min-height: 50px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
+    }
+
+    .btn-social:hover {
+      border-color: #c4c9d4;
+      background: #fafafa;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
+      transform: translateY(-2px);
+    }
+
+    .btn-social:active {
+      transform: scale(0.98);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Back link */
+    .back-link {
+      text-align: center;
+      font-size: 0.875rem;
+      color: #6b7280;
+      text-decoration: none;
+      display: block;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: #374151;
+    }
+
+    /* SMS hint */
+    .sms-hint {
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin-top: -16px;
+      margin-bottom: 22px;
+    }
+
+    /* Terms */
+    .terms-text {
+      font-size: 0.8rem;
+      color: #6b7280;
+      text-align: center;
+      margin-bottom: 24px;
+      line-height: 1.55;
+    }
+
+    .terms-text a {
+      color: #14b8a6;
+      font-weight: 600;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .terms-text a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      width: 0;
+      height: 1px;
+      background: #14b8a6;
+      transition: width 0.2s ease;
+    }
+
+    .terms-text a:hover::after {
+      width: 100%;
+    }
+
+    /* ── Step indicator ── */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 6px;
+    }
+
+    .step-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      flex-shrink: 0;
+      transition: background 0.25s, transform 0.25s;
+    }
+
+    .step-dot.active {
+      background: #2dd4bf;
+      transform: scale(1.2);
+    }
+
+    .step-dot.done {
+      background: #0d9488;
+    }
+
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: #e5e7eb;
+      transition: background 0.3s;
+    }
+
+    .step-line.active {
+      background: #2dd4bf;
+    }
+
+    .step-label {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    /* ── OTP ── */
+    .otp-desc {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+
+    .otp-sms-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f0fdf9;
+      border: 1.5px solid #2dd4bf;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.875rem;
+      color: #374151;
+      margin-bottom: 24px;
+      animation: fadeUp 0.3s ease both;
+    }
+
+    .otp-boxes {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .otp-box {
+      width: 48px;
+      height: 56px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #111827;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      background: #fff;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .otp-box:focus {
+      border-color: #2dd4bf;
+      box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.18);
+      transform: scale(1.06);
+    }
+
+    .otp-box.filled {
+      border-color: #2dd4bf;
+      background: #f0fdf9;
+    }
+
+    .otp-box.error {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+
+    @media (max-width: 380px) {
+      .otp-box {
+        width: 40px;
+        height: 50px;
+        font-size: 1.2rem;
+      }
+
+      .otp-boxes {
+        gap: 6px;
+      }
+    }
+
+    .otp-error {
+      font-size: 0.8rem;
+      color: #ef4444;
+      min-height: 18px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .resend-row {
+      text-align: center;
+      font-size: 0.84rem;
+      color: #6b7280;
+      margin-top: 16px;
+      margin-bottom: 12px;
+    }
+
+    .resend-link {
+      color: #14b8a6;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .resend-link:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Password strength ── */
+    .pw-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #9ca3af;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+
+    .pw-toggle:hover {
+      color: #374151;
+    }
+
+    .strength-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: -14px;
+      margin-bottom: 18px;
+    }
+
+    .strength-bar {
+      flex: 1;
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease, background 0.3s ease;
+      width: 0%;
+    }
+
+    .strength-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ── Success ── */
+    .success-icon {
+      width: 88px;
+      height: 88px;
+      background: #f0fdf9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      box-shadow: 0 0 0 8px rgba(45, 212, 191, 0.12);
+      animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0.4);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Tab content */
+    .tab-content-pane {
+      display: none;
+    }
+
+    .tab-content-pane.active {
+      display: block;
+    }
+
+    #recaptcha-container {
+      width: 100%;
+      margin: 16px auto 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      min-height: 78px;
+    }
+
+    #recaptcha-container>div {
+      max-width: 100%;
+      transform-origin: center top;
+    }
+
+    @media(max-width:480px) {
+      #recaptcha-container>div {
+        transform: scale(.92);
+      }
+    }
+
+    @media(max-width:420px) {
+      #recaptcha-container>div {
+        transform: scale(.86);
+      }
+    }
+
+    @media(max-width:360px) {
+      #recaptcha-container>div {
+        transform: scale(.78);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- ── LEFT PANEL ── -->
+    <div class="left-panel">
+      <button class="left-toggle-btn" id="leftToggle" onclick="toggleLeft()" aria-expanded="false">
+        <div class="portal-badge">
+          <div class="portal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <div>
+            <div class="portal-name">Job Seeker Portal</div>
+            <div class="portal-tagline">Find your next opportunity</div>
+          </div>
+        </div>
+        <svg class="left-toggle-chevron" id="leftChevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      <div class="left-collapsible" id="leftCollapsible">
+        <div class="left-headline">Build Your Career, One Job at a Time</div>
+        <div class="left-desc">Connect with local employers, showcase your skills, and find jobs that match your
+          expertise.</div>
+
+        <ul class="feature-list">
+          <li>
+            <div class="check-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="feature-title">Smart Job Matching</div>
+              <div class="feature-desc">Get matched with jobs based on your skills and location</div>
+            </div>
+          </li>
+          <li>
+            <div class="check-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="feature-title">Skill Endorsements</div>
+              <div class="feature-desc">Build credibility with peer and employer endorsements</div>
+            </div>
+          </li>
+          <li>
+            <div class="check-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="feature-title">Direct Messaging</div>
+              <div class="feature-desc">Communicate directly with employers and get hired faster</div>
+            </div>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+
+    <!-- ── RIGHT PANEL ── -->
+    <div class="right-panel">
+      <div class="tab-switcher">
+        <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+        <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- Sign In -->
+      <div class="tab-content-pane active" id="pane-signin">
+        <div class="form-heading">Welcome Back!</div>
+
+        <label class="field-label">Phone Number</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+          </span>
+          <input type="tel" id="signin-phone" class="form-control-custom" placeholder="+63 912 345 6789"
+            inputmode="tel" />
+        </div>
+
+        <label class="field-label">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </span>
+          <input type="password" id="signin-password" class="form-control-custom" placeholder="Enter your password" />
+        </div>
+
+        <div class="remember-row">
+          <label class="remember-label"><input type="checkbox" /> Remember me</label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button class="btn-primary-teal" type="button" onclick="signInWithPhonePassword()">Sign In →</button>
+
+        <div class="or-divider">Or continue with</div>
+
+        <div class="social-row">
+          <button class="btn-social" id="signin-google-btn" type="button">
+            <svg width="18" height="18" viewBox="0 0 48 48">
+              <path fill="#EA4335"
+                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+              <path fill="#4285F4"
+                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+              <path fill="#FBBC05"
+                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+              <path fill="#34A853"
+                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+            </svg>
+            Google
+          </button>
+          <button class="btn-social" id="signin-facebook-btn" type="button">
+            <svg width="18" height="18" viewBox="0 0 48 48">
+              <circle cx="24" cy="24" r="24" fill="#1877F2" />
+              <path fill="#fff"
+                d="M32.64 31l1.04-6.78H27.1v-4.4c0-1.86.91-3.67 3.82-3.67H34v-5.77S31.3 10 28.73 10c-5.44 0-9 3.3-9 9.27V24.22H14v6.78h5.73V48h7.06V31z" />
+            </svg>
+            Facebook
+          </button>
+        </div>
+
+        <a href="index.html" class="back-link">← Back to Portal Selection</a>
+      </div>
+
+      <!-- Sign Up (3-step OTP flow) -->
+      <div class="tab-content-pane" id="pane-signup">
+
+        <!-- ── STEP 1: Details ── -->
+        <div id="step-1">
+          <div class="form-heading">Start Finding Jobs</div>
+          <div class="step-indicator">
+            <div class="step-dot active"></div>
+            <div class="step-line"></div>
+            <div class="step-dot"></div>
+            <div class="step-line"></div>
+            <div class="step-dot"></div>
+          </div>
+          <p class="step-label">Step 1 of 3 &mdash; Your Details</p>
+
+          <label class="field-label">Full Name</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </span>
+            <input type="text" id="su-name" class="form-control-custom" placeholder="Juan Dela Cruz"
+              autocomplete="name" />
+          </div>
+
+          <label class="field-label">Phone Number</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+            </span>
+            <input type="tel" id="su-phone" class="form-control-custom" placeholder="+63 912 345 6789"
+              inputmode="tel" />
+          </div>
+          <p class="sms-hint">We'll send you a verification code via SMS</p>
+
+          <button id="step1ContinueBtn" class="btn-primary-teal" onclick="goToOtp()">Continue &rarr;</button>
+          <div id="recaptcha-container"></div>
+
+          <div class="terms-text" style="margin-top:18px;">
+            By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </div>
+          <div class="or-divider">Or continue with</div>
+          <div class="social-row">
+            <button class="btn-social" id="signup-google-btn" type="button">
+              <svg width="18" height="18" viewBox="0 0 48 48">
+                <path fill="#EA4335"
+                  d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                <path fill="#4285F4"
+                  d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                <path fill="#FBBC05"
+                  d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                <path fill="#34A853"
+                  d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+              </svg>
+              Google
+            </button>
+            <button class="btn-social" id="signup-facebook-btn" type="button">
+              <svg width="18" height="18" viewBox="0 0 48 48">
+                <circle cx="24" cy="24" r="24" fill="#1877F2" />
+                <path fill="#fff"
+                  d="M32.64 31l1.04-6.78H27.1v-4.4c0-1.86.91-3.67 3.82-3.67H34v-5.77S31.3 10 28.73 10c-5.44 0-9 3.3-9 9.27V24.22H14v6.78h5.73V48h7.06V31z" />
+              </svg>
+              Facebook
+            </button>
+          </div>
+          <a href="index.html" class="back-link">← Back to Portal Selection</a>
+        </div>
+
+        <!-- ── STEP 2: OTP ── -->
+        <div id="step-2" style="display:none;">
+          <div class="form-heading">Verify Your Number</div>
+          <div class="step-indicator">
+            <div class="step-dot done"></div>
+            <div class="step-line active"></div>
+            <div class="step-dot active"></div>
+            <div class="step-line"></div>
+            <div class="step-dot"></div>
+          </div>
+          <p class="step-label">Step 2 of 3 &mdash; Enter OTP</p>
+
+          <p class="otp-desc">A 6-digit code was sent to <strong id="otp-phone-display"></strong></p>
+
+          <div class="otp-sms-banner" id="otp-sms-banner">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            SMS: Your BlueCollar code is&nbsp;<strong id="otp-display">------</strong>
+          </div>
+
+          <div class="otp-boxes" id="otp-boxes">
+            <input class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="otp0" oninput="otpInput(0)"
+              onkeydown="otpKeydown(event,0)" />
+            <input class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="otp1" oninput="otpInput(1)"
+              onkeydown="otpKeydown(event,1)" />
+            <input class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="otp2" oninput="otpInput(2)"
+              onkeydown="otpKeydown(event,2)" />
+            <input class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="otp3" oninput="otpInput(3)"
+              onkeydown="otpKeydown(event,3)" />
+            <input class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="otp4" oninput="otpInput(4)"
+              onkeydown="otpKeydown(event,4)" />
+            <input class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="otp5" oninput="otpInput(5)"
+              onkeydown="otpKeydown(event,5)" />
+          </div>
+          <p class="otp-error" id="otp-error"></p>
+
+          <button id="verifyOtpBtn" class="btn-primary-teal" onclick="verifyOtp()">Verify Code &rarr;</button>
+          <p class="resend-row">Didn't receive a code? <a href="#" class="resend-link"
+              onclick="resendOtp(event)">Resend</a></p>
+          <a href="#" class="back-link" onclick="goStep(1); return false;">&#8592; Back</a>
+        </div>
+
+        <!-- ── STEP 3: Password ── -->
+        <div id="step-3" style="display:none;">
+          <div class="form-heading">Create Password</div>
+          <div class="step-indicator">
+            <div class="step-dot done"></div>
+            <div class="step-line active"></div>
+            <div class="step-dot done"></div>
+            <div class="step-line active"></div>
+            <div class="step-dot active"></div>
+          </div>
+          <p class="step-label">Step 3 of 3 &mdash; Secure Your Account</p>
+
+          <label class="field-label">Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </span>
+            <input type="password" id="su-pass" class="form-control-custom" placeholder="Create a password"
+              oninput="checkStrength()" />
+            <button class="pw-toggle" onclick="togglePw('su-pass',this)" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+          <div class="strength-bar-wrap" id="strength-wrap" style="display:none;">
+            <div class="strength-bar">
+              <div class="strength-fill" id="strength-fill"></div>
+            </div>
+            <span class="strength-label" id="strength-label"></span>
+          </div>
+
+          <label class="field-label" style="margin-top:16px;">Confirm Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </span>
+            <input type="password" id="su-pass2" class="form-control-custom" placeholder="Confirm your password" />
+            <button class="pw-toggle" onclick="togglePw('su-pass2',this)" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+          <p class="otp-error" id="pass-error"></p>
+
+          <button id="finishSignupBtn" class="btn-primary-teal" onclick="finishSignup()">Create Account &rarr;</button>
+          <a href="#" class="back-link" style="margin-top:14px;" onclick="goStep(2); return false;">&#8592; Back</a>
+        </div>
+
+        <!-- ── STEP 4: Success ── -->
+        <div id="step-4" style="display:none; text-align:center; padding:32px 0;">
+          <div class="success-icon">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </div>
+          <div class="form-heading" style="margin-top:16px; margin-bottom:8px;">Account Created!</div>
+          <p style="font-size:0.9rem; color:#6b7280; margin-bottom:28px;">Welcome, <strong id="success-name"></strong>!
+            Your account is ready.</p>
+          <button class="btn-primary-teal" onclick="switchTab('signin')">Go to Sign In &rarr;</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, EmailAuthProvider, linkWithCredential, signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDnEkuV1HsfZWhhqVCFKPc5o-PjfoCUGTk",
+      authDomain: "bluecollarconnect-fc60d.firebaseapp.com",
+      projectId: "bluecollarconnect-fc60d",
+      storageBucket: "bluecollarconnect-fc60d.firebasestorage.app",
+      messagingSenderId: "1003483981586",
+      appId: "1:1003483981586:web:671214148745f5569cf5cb",
+      measurementId: "G-B723Y7DB99"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    await setPersistence(auth, browserLocalPersistence);
+
+    const step1ContinueBtn = document.getElementById("step1ContinueBtn");
+    const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+    const finishSignupBtn = document.getElementById("finishSignupBtn");
+    const recaptchaContainer = document.getElementById("recaptcha-container");
+
+    const googleProvider = new GoogleAuthProvider();
+    googleProvider.setCustomParameters({
+      prompt: "select_account"
+    });
+
+    const facebookProvider = new FacebookAuthProvider();
+    facebookProvider.addScope("email");
+    facebookProvider.setCustomParameters({
+      display: "touch"
+    });
+
+    let confirmationResult = null;
+    let recaptchaVerifier = null;
+    let recaptchaWidgetId = null;
+    let lastOtpPhone = null;
+
+    function setButtonLoading(button, isLoading, loadingText, normalText) {
+      if (!button) return;
+      button.disabled = isLoading;
+      button.textContent = isLoading ? loadingText : normalText;
+    }
+
+    async function saveGoogleUser(user) {
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        fullName: user.displayName || "",
+        email: user.email || "",
+        photoURL: user.photoURL || "",
+        provider: "google",
+        updatedAt: serverTimestamp(),
+        createdAt: serverTimestamp()
+      }, { merge: true });
+    }
+
+    async function saveFacebookUser(user) {
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        fullName: user.displayName || "",
+        email: user.email || "",
+        photoURL: user.photoURL || "",
+        provider: "facebook",
+        updatedAt: serverTimestamp(),
+        createdAt: serverTimestamp()
+      }, { merge: true });
+    }
+
+    function isMobileDevice() {
+      return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
+        || window.innerWidth <= 768;
+    }
+
+    async function finishFacebookLogin(result) {
+      if (!result || !result.user) return;
+
+      const user = result.user;
+
+      await saveFacebookUser(user);
+
+      alert("Signed in as " + (user.displayName || user.email || "User"));
+      window.location.href = "JobSeeker_Dashboard.html";
+    }
+
+    async function handleGoogleSignIn() {
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+
+        await saveGoogleUser(user);
+
+        alert("Signed in as " + (user.displayName || user.email || "User"));
+
+        // redirect to your dashboard file
+        window.location.href = "JobSeeker_Dashboard.html";
+      } catch (error) {
+        console.error("GOOGLE SIGN IN ERROR:", error);
+        alert("Google sign-in failed:\n" + (error.message || error.code));
+      }
+    }
+
+    async function handleFacebookSignIn(event) {
+      const clickedBtn = event?.currentTarget || null;
+      const originalHtml = clickedBtn ? clickedBtn.innerHTML : "";
+
+      try {
+        if (clickedBtn) {
+          clickedBtn.disabled = true;
+          clickedBtn.innerHTML = "Please wait...";
+        }
+
+        const result = await signInWithPopup(auth, facebookProvider);
+        await finishFacebookLogin(result);
+
+      } catch (error) {
+        console.error("FACEBOOK SIGN IN ERROR:", error);
+
+        const redirectFallbackErrors = [
+          "auth/popup-blocked",
+          "auth/popup-closed-by-user",
+          "auth/cancelled-popup-request"
+        ];
+
+        if (redirectFallbackErrors.includes(error.code)) {
+          try {
+            await signInWithRedirect(auth, facebookProvider);
+            return;
+          } catch (redirectError) {
+            console.error("FACEBOOK REDIRECT FALLBACK ERROR:", redirectError);
+            alert("Facebook sign-in failed:\n" + (redirectError.message || redirectError.code));
+            return;
+          }
+        }
+
+        if (error.code === "auth/account-exists-with-different-credential") {
+          alert("This email is already registered with another sign-in method.");
+        } else if (error.code === "auth/operation-not-allowed") {
+          alert("Facebook login is not enabled yet in Firebase Authentication.");
+        } else {
+          alert("Facebook sign-in failed:\n" + (error.message || error.code));
+        }
+      } finally {
+        if (clickedBtn) {
+          clickedBtn.disabled = false;
+          clickedBtn.innerHTML = originalHtml;
+        }
+      }
+    }
+
+    try {
+      const redirectResult = await getRedirectResult(auth);
+      if (redirectResult && redirectResult.user) {
+        await finishFacebookLogin(redirectResult);
+      }
+    } catch (error) {
+      console.error("REDIRECT RESULT ERROR:", error);
+
+      if (error.code === "auth/missing-initial-state") {
+        console.warn("Redirect result skipped because initial state was missing.");
+      } else {
+        alert("Facebook redirect sign-in failed:\n" + (error.message || error.code));
+      }
+    }
+
+    function attachGoogleButtons() {
+      const signinGoogleBtn = document.getElementById("signin-google-btn");
+      const signupGoogleBtn = document.getElementById("signup-google-btn");
+
+      if (signinGoogleBtn) {
+        signinGoogleBtn.addEventListener("click", handleGoogleSignIn);
+      }
+
+      if (signupGoogleBtn) {
+        signupGoogleBtn.addEventListener("click", handleGoogleSignIn);
+      }
+    }
+
+    function attachFacebookButtons() {
+      const signinFacebookBtn = document.getElementById("signin-facebook-btn");
+      const signupFacebookBtn = document.getElementById("signup-facebook-btn");
+
+      if (signinFacebookBtn) {
+        signinFacebookBtn.addEventListener("click", (event) => handleFacebookSignIn(event));
+      }
+
+      if (signupFacebookBtn) {
+        signupFacebookBtn.addEventListener("click", (event) => handleFacebookSignIn(event));
+      }
+    }
+
+    function goStep(step) {
+      [1, 2, 3, 4].forEach(num => {
+        const el = document.getElementById("step-" + num);
+        if (el) el.style.display = num === step ? "block" : "none";
+      });
+    }
+    window.goStep = goStep;
+
+    function formatPHNumber(raw) {
+      let phone = raw.replace(/\D/g, "");
+
+      if (phone.startsWith("0")) {
+        phone = "63" + phone.slice(1);
+      } else if (phone.startsWith("9") && phone.length === 10) {
+        phone = "63" + phone;
+      } else if (phone.startsWith("63")) {
+        // keep as is
+      } else {
+        return null;
+      }
+
+      if (!/^639\d{9}$/.test(phone)) return null;
+      return "+" + phone;
+    }
+
+    function phoneToEmail(phone) {
+      const normalized = phone.replace(/\D/g, "");
+      return `${normalized}@bluecollarconnect.local`;
+    }
+
+    async function setupRecaptcha() {
+      recaptchaContainer.style.display = "flex";
+
+      if (!recaptchaVerifier) {
+        recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+          size: "normal",
+          callback: () => {
+            console.log("reCAPTCHA solved");
+          },
+          "expired-callback": () => {
+            console.log("reCAPTCHA expired");
+          }
+        });
+
+        recaptchaWidgetId = await recaptchaVerifier.render();
+      }
+
+      return recaptchaVerifier;
+    }
+
+    window.goToOtp = async function () {
+      const name = document.getElementById("su-name").value.trim();
+      const phoneInput = document.getElementById("su-phone").value.trim();
+
+      if (!name) {
+        alert("Enter your full name");
+        return;
+      }
+
+      if (!phoneInput) {
+        alert("Enter your phone number");
+        return;
+      }
+
+      const phone = formatPHNumber(phoneInput);
+
+      if (!phone) {
+        alert("Use a valid PH number like 09XXXXXXXXX");
+        return;
+      }
+
+      try {
+        setButtonLoading(step1ContinueBtn, true, "Sending OTP...", "Continue →");
+
+        await setupRecaptcha();
+
+        confirmationResult = await signInWithPhoneNumber(auth, phone, recaptchaVerifier);
+        lastOtpPhone = phone;
+
+        document.getElementById("otp-phone-display").textContent = phone;
+        document.getElementById("otp-error").textContent = "";
+
+        for (let i = 0; i < 6; i++) {
+          const box = document.getElementById("otp" + i);
+          if (box) {
+            box.value = "";
+            box.classList.remove("error", "filled");
+          }
+        }
+
+        goStep(2);
+        document.getElementById("otp0")?.focus();
+      } catch (error) {
+        console.error("OTP ERROR:", error);
+
+        if (error.code === "auth/invalid-phone-number") {
+          alert("Invalid phone number.");
+        } else if (error.code === "auth/too-many-requests") {
+          alert("Too many requests. Please wait and try again.");
+        } else if (error.code === "auth/captcha-check-failed") {
+          alert("reCAPTCHA failed. Please try again.");
+        } else {
+          alert((error.code || "unknown-error") + "\n" + (error.message || "Failed to send OTP"));
+        }
+      } finally {
+        setButtonLoading(step1ContinueBtn, false, "Sending OTP...", "Continue →");
+      }
+    };
+
+    function getEnteredOtp() {
+      let code = "";
+      for (let i = 0; i < 6; i++) {
+        code += document.getElementById("otp" + i).value.trim();
+      }
+      return code;
+    }
+
+    window.otpInput = function (idx) {
+      const box = document.getElementById("otp" + idx);
+      box.value = box.value.replace(/\D/g, "").slice(0, 1);
+
+      if (box.value) {
+        box.classList.add("filled");
+        box.classList.remove("error");
+      } else {
+        box.classList.remove("filled");
+      }
+
+      if (box.value && idx < 5) {
+        document.getElementById("otp" + (idx + 1)).focus();
+      }
+    };
+
+    window.otpKeydown = function (event, idx) {
+      const current = document.getElementById("otp" + idx);
+
+      if (event.key === "Backspace") {
+        if (current.value) {
+          current.value = "";
+          current.classList.remove("filled", "error");
+          event.preventDefault();
+          return;
+        }
+
+        if (idx > 0) {
+          const prev = document.getElementById("otp" + (idx - 1));
+          prev.focus();
+          prev.value = "";
+          prev.classList.remove("filled", "error");
+          event.preventDefault();
+        }
+      }
+
+      if (event.key === "ArrowLeft" && idx > 0) {
+        document.getElementById("otp" + (idx - 1)).focus();
+        event.preventDefault();
+      }
+
+      if (event.key === "ArrowRight" && idx < 5) {
+        document.getElementById("otp" + (idx + 1)).focus();
+        event.preventDefault();
+      }
+    };
+
+    window.verifyOtp = async function () {
+      const code = getEnteredOtp();
+      const errorText = document.getElementById("otp-error");
+
+      if (code.length !== 6) {
+        errorText.textContent = "Enter the 6-digit code";
+        for (let i = 0; i < 6; i++) {
+          const box = document.getElementById("otp" + i);
+          if (box && !box.value) box.classList.add("error");
+        }
+        return;
+      }
+
+      if (!confirmationResult) {
+        errorText.textContent = "Send OTP first";
+        return;
+      }
+
+      try {
+        setButtonLoading(verifyOtpBtn, true, "Verifying...", "Verify Code →");
+
+        const result = await confirmationResult.confirm(code);
+        const user = result.user;
+
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          fullName: document.getElementById("su-name").value.trim(),
+          phoneNumber: user.phoneNumber || "",
+          provider: "phone_pending_password",
+          updatedAt: serverTimestamp(),
+          createdAt: serverTimestamp()
+        }, { merge: true });
+
+        errorText.textContent = "";
+        goStep(3);
+      } catch (error) {
+        console.error("VERIFY ERROR:", error);
+
+        if (error.code === "auth/invalid-verification-code") {
+          errorText.textContent = "Invalid OTP code";
+        } else if (error.code === "auth/code-expired") {
+          errorText.textContent = "OTP expired. Please resend.";
+        } else {
+          errorText.textContent = "Wrong OTP";
+        }
+
+        for (let i = 0; i < 6; i++) {
+          document.getElementById("otp" + i)?.classList.add("error");
+        }
+      } finally {
+        setButtonLoading(verifyOtpBtn, false, "Verifying...", "Verify Code →");
+      }
+    };
+
+    window.resendOtp = async function (event) {
+      event.preventDefault();
+
+      if (!lastOtpPhone) {
+        alert("Enter your phone number first.");
+        goStep(1);
+        return;
+      }
+
+      await window.goToOtp();
+    };
+
+    window.togglePw = function (id) {
+      const input = document.getElementById(id);
+      if (!input) return;
+      input.type = input.type === "password" ? "text" : "password";
+    };
+
+    window.checkStrength = function () {
+      const pw = document.getElementById("su-pass").value;
+      const wrap = document.getElementById("strength-wrap");
+      const fill = document.getElementById("strength-fill");
+      const label = document.getElementById("strength-label");
+
+      if (!pw) {
+        wrap.style.display = "none";
+        fill.style.width = "0%";
+        label.textContent = "";
+        return;
+      }
+
+      wrap.style.display = "flex";
+
+      let score = 0;
+      if (pw.length >= 8) score++;
+      if (/[A-Z]/.test(pw)) score++;
+      if (/[0-9]/.test(pw)) score++;
+      if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+      if (score <= 1) {
+        fill.style.width = "25%";
+        fill.style.background = "#ef4444";
+        label.textContent = "Weak";
+        label.style.color = "#ef4444";
+      } else if (score === 2) {
+        fill.style.width = "50%";
+        fill.style.background = "#f59e0b";
+        label.textContent = "Fair";
+        label.style.color = "#f59e0b";
+      } else if (score === 3) {
+        fill.style.width = "75%";
+        fill.style.background = "#eab308";
+        label.textContent = "Good";
+        label.style.color = "#eab308";
+      } else {
+        fill.style.width = "100%";
+        fill.style.background = "#22c55e";
+        label.textContent = "Strong";
+        label.style.color = "#22c55e";
+      }
+    };
+
+    window.finishSignup = async function () {
+      const name = document.getElementById("su-name").value.trim();
+      const pw = document.getElementById("su-pass").value.trim();
+      const pw2 = document.getElementById("su-pass2").value.trim();
+      const err = document.getElementById("pass-error");
+
+      err.textContent = "";
+
+      if (pw.length < 8) {
+        err.textContent = "Password must be at least 8 characters";
+        return;
+      }
+
+      if (pw !== pw2) {
+        err.textContent = "Passwords do not match";
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user || !user.phoneNumber) {
+        err.textContent = "Phone verification session lost. Please try again.";
+        return;
+      }
+
+      const internalEmail = phoneToEmail(user.phoneNumber);
+
+      try {
+        setButtonLoading(finishSignupBtn, true, "Creating Account...", "Create Account →");
+
+        const credential = EmailAuthProvider.credential(internalEmail, pw);
+        await linkWithCredential(user, credential);
+
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          fullName: name,
+          phoneNumber: user.phoneNumber,
+          loginEmailAlias: internalEmail,
+          hasLocalPassword: true,
+          provider: "phone_password",
+          updatedAt: serverTimestamp(),
+          createdAt: serverTimestamp()
+        }, { merge: true });
+
+        document.getElementById("success-name").textContent = name;
+        goStep(4);
+
+        setTimeout(() => {
+          window.location.href = "JobSeeker_Dashboard.html";
+        }, 1200);
+      } catch (error) {
+        console.error("LINK PASSWORD ERROR:", error);
+
+        if (error.code === "auth/provider-already-linked") {
+          err.textContent = "This account already has a password.";
+        } else if (error.code === "auth/email-already-in-use") {
+          err.textContent = "This phone number is already registered.";
+        } else if (error.code === "auth/requires-recent-login") {
+          err.textContent = "Session expired. Verify OTP again.";
+        } else {
+          err.textContent = error.message || "Failed to create account.";
+        }
+      } finally {
+        setButtonLoading(finishSignupBtn, false, "Creating Account...", "Create Account →");
+      }
+    };
+
+    window.signInWithPhonePassword = async function () {
+      const phoneInput = document.getElementById("signin-phone").value.trim();
+      const password = document.getElementById("signin-password").value.trim();
+
+      if (!phoneInput || !password) {
+        alert("Enter your phone number and password.");
+        return;
+      }
+
+      const formattedPhone = formatPHNumber(phoneInput);
+      if (!formattedPhone) {
+        alert("Use a valid PH number like 09XXXXXXXXX");
+        return;
+      }
+
+      const internalEmail = phoneToEmail(formattedPhone);
+
+      try {
+        await signInWithEmailAndPassword(auth, internalEmail, password);
+        window.location.href = "JobSeeker_Dashboard.html";
+      } catch (error) {
+        console.error("PHONE PASSWORD SIGN IN ERROR:", error);
+        alert("Login failed:\n" + (error.message || error.code));
+      }
+    };
+
+    try {
+      const redirectResult = await getRedirectResult(auth);
+      if (redirectResult && redirectResult.user) {
+        await finishFacebookLogin(redirectResult);
+      }
+    } catch (error) {
+      console.error("REDIRECT RESULT ERROR:", error);
+
+      if (error.code === "auth/missing-initial-state") {
+        console.warn("Redirect result skipped because initial state was missing.");
+      } else {
+        alert("Facebook redirect sign-in failed:\n" + (error.message || error.code));
+      }
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      console.log("Auth state:", user ? user.uid : "No user");
+    });
+
+    attachGoogleButtons();
+    attachFacebookButtons();
+
+  </script>
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".tab-content-pane").forEach(pane => pane.classList.remove("active"));
+
+      document.getElementById("tab-" + tab).classList.add("active");
+      document.getElementById("pane-" + tab).classList.add("active");
+    }
+
+    function toggleLeft() {
+      const collapsible = document.getElementById("leftCollapsible");
+      const chevron = document.getElementById("leftChevron");
+      const toggle = document.getElementById("leftToggle");
+
+      if (!collapsible || !chevron || !toggle) return;
+
+      const isOpen = collapsible.classList.contains("open");
+      collapsible.classList.toggle("open", !isOpen);
+      chevron.classList.toggle("open", !isOpen);
+      toggle.setAttribute("aria-expanded", String(!isOpen));
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

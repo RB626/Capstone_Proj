@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employer Portal – BlueCollar Connect</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #fde8e8 0%, #fdf0f0 30%, #faf5f5 60%, #f8f5f8 100%);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 24px 16px 88px;
+    }
+
+    @media (min-width: 900px) {
+      body {
+        align-items: center;
+        padding: 48px 28px;
+      }
+    }
+
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 1100px;
+      width: 100%;
+    }
+
+    @media (min-width: 900px) {
+      .page-wrapper {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 32px;
+      }
+
+      .left-panel {
+        flex: 0 0 430px;
+      }
+
+      .right-panel {
+        flex: 1;
+      }
+    }
+
+    .left-panel {
+      background: #fff;
+      border-radius: 8px;
+      padding: 24px 20px 28px;
+      box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.04),
+        0 4px 14px rgba(0, 0, 0, 0.07);
+      animation: fadeUp 0.5s 0.05s ease both;
+      transition: box-shadow 0.28s ease;
+    }
+
+    .left-panel:hover {
+      box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.04),
+        0 12px 32px rgba(0, 0, 0, 0.10);
+    }
+
+    @media (min-width: 900px) {
+      .left-panel {
+        padding: 40px 36px 44px;
+      }
+    }
+
+    .left-toggle-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      min-height: 48px;
+    }
+
+    .left-toggle-chevron {
+      transition: transform 0.25s ease;
+      color: #9ca3af;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+
+    .left-toggle-chevron.open {
+      transform: rotate(180deg);
+    }
+
+    .left-collapsible {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.38s ease;
+    }
+
+    .left-collapsible.open {
+      max-height: 800px;
+    }
+
+    @media (min-width: 900px) {
+      .left-toggle-btn .left-toggle-chevron {
+        display: none;
+      }
+
+      .left-collapsible {
+        max-height: none !important;
+        overflow: visible;
+      }
+    }
+
+    .portal-badge {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .portal-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      background: #f87171;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(248, 113, 113, 0.30);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+    }
+
+    .portal-icon:hover {
+      transform: translateY(-2px) scale(1.06);
+      box-shadow: 0 8px 22px rgba(248, 113, 113, 0.42);
+    }
+
+    @media (min-width: 900px) {
+      .portal-icon {
+        width: 66px;
+        height: 66px;
+      }
+    }
+
+    .portal-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    @media (min-width: 900px) {
+      .portal-icon svg {
+        width: 30px;
+        height: 30px;
+      }
+    }
+
+    .portal-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.2;
+    }
+
+    @media (min-width: 900px) {
+      .portal-name {
+        font-size: 1.35rem;
+      }
+    }
+
+    .portal-tagline {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    .left-headline {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #111827;
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+
+    @media (min-width: 900px) {
+      .left-headline {
+        font-size: 1.35rem;
+        margin-top: 32px;
+        margin-bottom: 12px;
+      }
+    }
+
+    .left-desc {
+      font-size: 0.84rem;
+      color: #6b7280;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    @media (min-width: 900px) {
+      .left-desc {
+        margin-bottom: 32px;
+      }
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 24px;
+    }
+
+    @media (min-width: 900px) {
+      .feature-list {
+        margin-bottom: 36px;
+      }
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      cursor: default;
+      transition: background 0.2s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .feature-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .feature-list li:hover {
+      background: #fff5f5;
+      transform: translateX(4px);
+    }
+
+    .check-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #f87171;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .check-icon svg {
+      width: 11px;
+      height: 11px;
+      color: #f87171;
+      transition: color 0.2s;
+    }
+
+    .feature-list li:hover .check-icon {
+      background: #f87171;
+    }
+
+    .feature-list li:hover .check-icon svg {
+      color: #fff;
+    }
+
+    .feature-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .feature-desc {
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin-top: 2px;
+      line-height: 1.5;
+    }
+
+
+    @media (min-width: 900px) {
+      .testimonial {
+        padding: 20px 26px;
+        font-size: 0.875rem;
+      }
+    }
+
+    .right-panel {
+      background: #fff;
+      border-radius: 8px;
+      padding: 24px 20px 32px;
+      box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.04),
+        0 4px 14px rgba(0, 0, 0, 0.07);
+      animation: fadeUp 0.5s 0.15s ease both;
+      transition: box-shadow 0.28s ease;
+    }
+
+    .right-panel:hover {
+      box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.04),
+        0 12px 32px rgba(0, 0, 0, 0.10);
+    }
+
+    @media (min-width: 900px) {
+      .right-panel {
+        padding: 40px 44px 48px;
+      }
+    }
+
+    .tab-switcher {
+      display: flex;
+      border-radius: 8px;
+      background: #f3f4f6;
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 28px;
+    }
+
+    @media (min-width: 900px) {
+      .tab-switcher {
+        margin-bottom: 32px;
+      }
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 11px 0;
+      font-size: 0.92rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: #6b7280;
+      cursor: pointer;
+      border-radius: 6px;
+      font-family: 'Inter', sans-serif;
+      min-height: 44px;
+      transition: background 0.22s, color 0.22s, box-shadow 0.22s, transform 0.15s;
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: #e9eaec;
+      color: #374151;
+    }
+
+    .tab-btn.active {
+      background: #f87171;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(248, 113, 113, 0.30);
+      transform: scale(1.01);
+    }
+
+    .form-heading {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 24px;
+    }
+
+    @media (min-width: 900px) {
+      .form-heading {
+        font-size: 1.65rem;
+        margin-bottom: 32px;
+      }
+    }
+
+    /* ── Step indicator ── */
+    /* ── Step indicator ── */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 6px;
+    }
+
+    .step-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      flex-shrink: 0;
+      transition: background 0.25s, transform 0.25s;
+    }
+
+    .step-dot.active {
+      background: #f87171;
+      /* RED */
+      transform: scale(1.2);
+    }
+
+    .step-dot.done {
+      background: #ef4444;
+      transform: scale(1.2);
+    }
+
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: #e5e7eb;
+      transition: background 0.3s;
+    }
+
+    .step-line.active {
+      background: #f87171;
+      /* RED LINE */
+    }
+
+    .step-label {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 576px) {
+      .step-dot {
+        width: 14px;
+        height: 14px;
+      }
+
+      .step-dot.active {
+        box-shadow: 0 0 0 5px rgba(248, 113, 113, 0.18);
+      }
+
+      .step-line {
+        margin: 0 10px;
+      }
+
+      .step-label {
+        font-size: 0.86rem;
+      }
+    }
+
+    .field-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .optional-badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #6b7280;
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 6px;
+      margin-left: 6px;
+    }
+
+    .input-wrap {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    @media (min-width: 900px) {
+      .input-wrap {
+        margin-bottom: 22px;
+      }
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+
+    .input-wrap:focus-within .input-icon {
+      color: #f87171;
+    }
+
+    .input-icon svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .form-control-custom {
+      width: 100%;
+      font-size: 16px;
+      padding: 13px 13px 13px 42px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      color: #374151;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      transition: border-color 0.22s, box-shadow 0.22s, background 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    @media (min-width: 480px) {
+      .form-control-custom {
+        font-size: 0.9rem;
+      }
+    }
+
+    .form-control-custom::placeholder {
+      color: #9ca3af;
+    }
+
+    .form-control-custom:hover {
+      border-color: #c4c9d4;
+    }
+
+    .form-control-custom:focus {
+      border-color: #f87171;
+      box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.15);
+      background: #fffafa;
+    }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .remember-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      color: #374151;
+      cursor: pointer;
+    }
+
+    .remember-label input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: #f87171;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .forgot-link {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #f87171;
+      text-decoration: none;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .forgot-link::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      width: 0;
+      height: 1.5px;
+      background: #f87171;
+      transition: width 0.22s;
+    }
+
+    .forgot-link:hover::after {
+      width: 100%;
+    }
+
+    .btn-primary-red {
+      width: 100%;
+      padding: 15px;
+      background: #f87171;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      min-height: 52px;
+      box-shadow: 0 2px 8px rgba(248, 113, 113, 0.25);
+      transition: background 0.22s, box-shadow 0.22s, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .btn-primary-red:hover {
+      background: #ef4444;
+      box-shadow: 0 6px 20px rgba(248, 113, 113, 0.42);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary-red:active {
+      transform: scale(0.98) translateY(0);
+      box-shadow: 0 2px 8px rgba(248, 113, 113, 0.22);
+    }
+
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 22px 0;
+      font-size: 0.83rem;
+      color: #9ca3af;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+
+    .social-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .btn-social {
+      flex: 1;
+      padding: 11px 6px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: #374151;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-family: 'Inter', sans-serif;
+      min-height: 48px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
+    }
+
+    .btn-social:hover {
+      border-color: #c4c9d4;
+      background: #fafafa;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
+      transform: translateY(-2px);
+    }
+
+    .btn-social:active {
+      transform: scale(0.98);
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      font-size: 0.875rem;
+      color: #6b7280;
+      text-decoration: none;
+      transition: color 0.2s;
+      padding: 4px 0;
+    }
+
+    .back-link:hover {
+      color: #374151;
+    }
+
+    .sms-hint {
+      font-size: 0.77rem;
+      color: #6b7280;
+      margin-top: -12px;
+      margin-bottom: 18px;
+    }
+
+    .terms-text {
+      font-size: 0.79rem;
+      color: #6b7280;
+      text-align: center;
+      margin-bottom: 20px;
+      line-height: 1.55;
+    }
+
+    .terms-text a {
+      color: #f87171;
+      font-weight: 600;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .terms-text a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      width: 0;
+      height: 1px;
+      background: #f87171;
+      transition: width 0.2s;
+    }
+
+    .terms-text a:hover::after {
+      width: 100%;
+    }
+
+    .tab-content-pane {
+      display: none;
+    }
+
+    .tab-content-pane.active {
+      display: block;
+    }
+
+    #recaptcha-container {
+      width: 100%;
+      margin: 16px auto 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      min-height: 78px;
+    }
+
+    #recaptcha-container>div {
+      max-width: 100%;
+      transform-origin: center top;
+    }
+
+    @media (max-width: 480px) {
+      #recaptcha-container>div {
+        transform: scale(.92);
+      }
+    }
+
+    @media (max-width: 420px) {
+      #recaptcha-container>div {
+        transform: scale(.86);
+      }
+    }
+
+    @media (max-width: 360px) {
+      #recaptcha-container>div {
+        transform: scale(.78);
+      }
+    }
+
+    .otp-desc {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+
+    .otp-sms-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff5f5;
+      border: 1.5px solid #f87171;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.875rem;
+      color: #374151;
+      margin-bottom: 24px;
+      animation: fadeUp 0.3s ease both;
+    }
+
+    .otp-boxes {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .otp-box {
+      width: 48px;
+      height: 56px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #111827;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      background: #fff;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .otp-box:focus {
+      border-color: #f87171;
+      box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18);
+      transform: scale(1.06);
+    }
+
+    .otp-box.filled {
+      border-color: #f87171;
+      background: #fff5f5;
+    }
+
+    .otp-box.error {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+
+    @media (max-width: 380px) {
+      .otp-box {
+        width: 40px;
+        height: 50px;
+        font-size: 1.2rem;
+      }
+
+      .otp-boxes {
+        gap: 6px;
+      }
+    }
+
+    .otp-error {
+      font-size: 0.8rem;
+      color: #ef4444;
+      min-height: 18px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .resend-row {
+      text-align: center;
+      font-size: 0.84rem;
+      color: #6b7280;
+      margin-top: 16px;
+      margin-bottom: 12px;
+    }
+
+    .resend-link {
+      color: #f87171;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .resend-link:hover {
+      text-decoration: underline;
+    }
+
+    .pw-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #9ca3af;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+
+    .pw-toggle:hover {
+      color: #374151;
+    }
+
+    .strength-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: -10px;
+      margin-bottom: 18px;
+    }
+
+    .strength-bar {
+      flex: 1;
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease, background 0.3s ease;
+      width: 0%;
+    }
+
+    .strength-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .success-icon {
+      width: 88px;
+      height: 88px;
+      background: #fff5f5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      box-shadow: 0 0 0 8px rgba(248, 113, 113, 0.12);
+      animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0.4);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- ── LEFT PANEL ── -->
+    <div class="left-panel">
+
+      <button class="left-toggle-btn" id="leftToggle" onclick="toggleLeft()" aria-expanded="false">
+        <div class="portal-badge">
+          <div class="portal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <path d="M8 21h8M12 17v4" />
+              <path d="M7 8h2M7 12h2M13 8h2M13 12h2" />
+            </svg>
+          </div>
+          <div>
+            <div class="portal-name">Employer Portal</div>
+            <div class="portal-tagline">Find the right talent</div>
+          </div>
+        </div>
+        <svg class="left-toggle-chevron" id="leftChevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      <div class="left-collapsible" id="leftCollapsible">
+        <div class="left-headline">Hire Skilled Workers Faster</div>
+        <div class="left-desc">Post jobs, review qualified candidates, and build your team with verified blue-collar
+          professionals.</div>
+
+        <ul class="feature-list">
+          <li>
+            <div class="check-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="feature-title">Qualified Candidates</div>
+              <div class="feature-desc">Access workers with verified skills and peer endorsements</div>
+            </div>
+          </li>
+          <li>
+            <div class="check-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="feature-title">Easy Job Posting</div>
+              <div class="feature-desc">Create job listings in minutes and reach local workers instantly</div>
+            </div>
+          </li>
+          <li>
+            <div class="check-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="feature-title">Applicant Management</div>
+              <div class="feature-desc">Track applications and communicate directly with candidates</div>
+            </div>
+          </li>
+        </ul>
+
+      </div>
+
+    </div>
+
+    <!-- ── RIGHT PANEL ── -->
+    <div class="right-panel">
+
+      <div class="tab-switcher">
+        <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+        <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- ── Sign In ── -->
+      <div class="tab-content-pane active" id="pane-signin">
+        <div class="form-heading">Welcome Back!</div>
+
+        <label class="field-label">Phone Number</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+          </span>
+          <input type="tel" class="form-control-custom" placeholder="+63 912 345 6789" inputmode="tel"
+            autocomplete="tel" />
+        </div>
+
+        <label class="field-label">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </span>
+          <input type="password" class="form-control-custom" placeholder="Enter your password"
+            autocomplete="current-password" />
+        </div>
+
+        <div class="remember-row">
+          <label class="remember-label">
+            <input type="checkbox" /> Remember me
+          </label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button class="btn-primary-red">Sign In →</button>
+
+        <div class="or-divider">Or continue with</div>
+
+        <div class="social-row">
+          <button class="btn-social" id="googleSignInBtn">
+            <svg width="18" height="18" viewBox="0 0 48 48">
+              <path fill="#EA4335"
+                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+              <path fill="#4285F4"
+                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+              <path fill="#FBBC05"
+                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+              <path fill="#34A853"
+                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+            </svg>
+            Google
+          </button>
+          <button class="btn-social">
+            <svg width="18" height="18" viewBox="0 0 48 48">
+              <circle cx="24" cy="24" r="24" fill="#1877F2" />
+              <path fill="#fff"
+                d="M32.64 31l1.04-6.78H27.1v-4.4c0-1.86.91-3.67 3.82-3.67H34v-5.77S31.3 10 28.73 10c-5.44 0-9 3.3-9 9.27V24.22H14v6.78h5.73V48h7.06V31z" />
+            </svg>
+            Facebook
+          </button>
+        </div>
+
+        <a href="index.html" class="back-link">← Back to Portal Selection</a>
+      </div>
+
+      <!-- ── Sign Up ── -->
+      <div class="tab-content-pane" id="pane-signup">
+
+        <!-- STEP 1 -->
+        <div id="step-1">
+          <div class="form-heading">Start Hiring Today</div>
+
+          <div class="step-indicator">
+            <div class="step-dot active"></div>
+            <div class="step-line"></div>
+            <div class="step-dot"></div>
+            <div class="step-line"></div>
+            <div class="step-dot"></div>
+          </div>
+          <p class="step-label">Step 1 of 3 — Your Details</p>
+
+          <label class="field-label">
+            Business Name <span class="optional-badge">Optional</span>
+          </label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M3 21h18" />
+                <path d="M5 21V7l8-4v18" />
+                <path d="M19 21V11l-6-4" />
+                <path d="M9 9h.01" />
+                <path d="M9 13h.01" />
+                <path d="M9 17h.01" />
+                <path d="M13 13h.01" />
+                <path d="M13 17h.01" />
+                <path d="M17 17h.01" />
+              </svg>
+            </span>
+            <input id="business-name" type="text" class="form-control-custom" placeholder="ABC Construction"
+              autocomplete="organization" />
+          </div>
+
+          <label class="field-label">Contact Person Name</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </span>
+            <input id="name" type="text" class="form-control-custom" placeholder="Juan Dela Cruz" autocomplete="name" />
+          </div>
+
+          <label class="field-label">Phone Number</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+            </span>
+            <input id="phone" type="tel" class="form-control-custom" placeholder="+63 912 345 6789" inputmode="tel"
+              autocomplete="tel" />
+          </div>
+          <p class="sms-hint">We'll send you a verification code via SMS</p>
+
+          <button id="continueOtpBtn" class="btn-primary-red" onclick="goToOtp()">Continue →</button>
+          <div id="recaptcha-container"></div>
+
+          <div class="or-divider">Or continue with</div>
+
+          <div class="social-row">
+            <button class="btn-social" id="googleSignUpBtn">
+              <svg width="18" height="18" viewBox="0 0 48 48">
+                <path fill="#EA4335"
+                  d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                <path fill="#4285F4"
+                  d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                <path fill="#FBBC05"
+                  d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                <path fill="#34A853"
+                  d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+              </svg>
+              Google
+            </button>
+            <button class="btn-social">
+              <svg width="18" height="18" viewBox="0 0 48 48">
+                <circle cx="24" cy="24" r="24" fill="#1877F2" />
+                <path fill="#fff"
+                  d="M32.64 31l1.04-6.78H27.1v-4.4c0-1.86.91-3.67 3.82-3.67H34v-5.77S31.3 10 28.73 10c-5.44 0-9 3.3-9 9.27V24.22H14v6.78h5.73V48h7.06V31z" />
+              </svg>
+              Facebook
+            </button>
+          </div>
+
+          <div class="terms-text">
+            By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </div>
+          <a href="index.html" class="back-link">← Back to Portal Selection</a>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="step-2" style="display:none;">
+          <div class="form-heading">Verify Your Number</div>
+
+          <div class="step-indicator">
+            <div class="step-dot done"></div>
+            <div class="step-line active"></div>
+            <div class="step-dot active"></div>
+            <div class="step-line"></div>
+            <div class="step-dot"></div>
+          </div>
+          <p class="step-label">Step 2 of 3 — Enter OTP</p>
+
+          <p class="otp-desc">A 6-digit code was sent to <strong id="otp-phone-display"></strong></p>
+
+          <div class="otp-sms-banner" id="otp-sms-banner">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            A real verification code has been sent to your phone number.
+          </div>
+
+          <div class="otp-boxes" id="otp-boxes">
+            <input class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="otp0" oninput="otpInput(0)"
+              onkeydown="otpKeydown(event,0)" />
+            <input class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="otp1" oninput="otpInput(1)"
+              onkeydown="otpKeydown(event,1)" />
+            <input class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="otp2" oninput="otpInput(2)"
+              onkeydown="otpKeydown(event,2)" />
+            <input class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="otp3" oninput="otpInput(3)"
+              onkeydown="otpKeydown(event,3)" />
+            <input class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="otp4" oninput="otpInput(4)"
+              onkeydown="otpKeydown(event,4)" />
+            <input class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="otp5" oninput="otpInput(5)"
+              onkeydown="otpKeydown(event,5)" />
+          </div>
+
+          <p class="otp-error" id="otp-error"></p>
+
+          <button id="verifyOtpBtn" class="btn-primary-red" onclick="verifyOtp()">Verify Code →</button>
+          <p class="resend-row">Didn't receive a code? <a href="#" class="resend-link"
+              onclick="resendOtp(event)">Resend</a></p>
+          <a href="#" class="back-link" onclick="showStep(1); return false;">← Back</a>
+        </div>
+
+        <!-- STEP 3 -->
+        <div id="step-3" style="display:none;">
+          <div class="form-heading">Create Password</div>
+
+          <div class="step-indicator">
+            <div class="step-dot done"></div>
+            <div class="step-line active"></div>
+            <div class="step-dot done"></div>
+            <div class="step-line active"></div>
+            <div class="step-dot active"></div>
+          </div>
+          <p class="step-label">Step 3 of 3 — Secure Your Account</p>
+
+          <label class="field-label">Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </span>
+            <input id="password" type="password" class="form-control-custom" placeholder="Create a password"
+              oninput="checkStrength()" />
+            <button class="pw-toggle" onclick="togglePw('password')" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="strength-bar-wrap" id="strength-wrap" style="display:none;">
+            <div class="strength-bar">
+              <div class="strength-fill" id="strength-fill"></div>
+            </div>
+            <span class="strength-label" id="strength-label"></span>
+          </div>
+
+          <label class="field-label" style="margin-top:16px;">Confirm Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </span>
+            <input id="confirm-password" type="password" class="form-control-custom"
+              placeholder="Confirm your password" />
+            <button class="pw-toggle" onclick="togglePw('confirm-password')" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+
+          <p class="otp-error" id="pass-error"></p>
+
+          <button id="finishSignupBtn" class="btn-primary-red" onclick="saveUser()">Finish Sign Up →</button>
+          <a href="#" class="back-link" style="margin-top:14px;" onclick="showStep(2); return false;">← Back</a>
+        </div>
+
+        <!-- STEP 4 -->
+        <div id="step-4" style="display:none; text-align:center; padding:32px 0;">
+          <div class="success-icon">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </div>
+
+          <div class="form-heading" style="margin-top:16px; margin-bottom:8px;">Account Created!</div>
+          <p style="font-size:0.9rem; color:#6b7280; margin-bottom:28px;">
+            Welcome, <strong id="success-name"></strong>! Your employer account is ready.
+          </p>
+          <button class="btn-primary-red" onclick="switchTab('signin')">Go to Sign In →</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, EmailAuthProvider, linkWithCredential, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDnEkuV1HsfZWhhqVCFKPc5o-PjfoCUGTk",
+      authDomain: "bluecollarconnect-fc60d.firebaseapp.com",
+      projectId: "bluecollarconnect-fc60d",
+      storageBucket: "bluecollarconnect-fc60d.firebasestorage.app",
+      messagingSenderId: "1003483981586",
+      appId: "1:1003483981586:web:671214148745f5569cf5cb",
+      measurementId: "G-B723Y7DB99"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    await setPersistence(auth, browserLocalPersistence);
+
+    const googleProvider = new GoogleAuthProvider();
+    googleProvider.setCustomParameters({
+      prompt: "select_account"
+    });
+
+    function isMobileDevice() {
+      return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+    }
+
+    async function saveGoogleEmployer(user) {
+      const employerRef = doc(db, "employers", user.uid);
+      const employerSnap = await getDoc(employerRef);
+
+      const baseData = {
+        uid: user.uid,
+        name: user.displayName || "",
+        businessName: employerSnap.exists() ? (employerSnap.data().businessName || "") : "",
+        email: user.email || "",
+        phone: user.phoneNumber || "",
+        photoURL: user.photoURL || "",
+        role: "employer",
+        portal: "employer",
+        accountType: "employer",
+        provider: "google",
+        verified: true,
+        lastLoginAt: serverTimestamp()
+      };
+
+      if (!employerSnap.exists()) {
+        baseData.createdAt = serverTimestamp();
+      }
+
+      await setDoc(employerRef, baseData, { merge: true });
+
+      localStorage.setItem("bcc_session_role", "employer");
+      localStorage.setItem("bcc_employer_uid", user.uid);
+      localStorage.setItem("bcc_employer_name", user.displayName || "");
+      localStorage.setItem("bcc_employer_email", user.email || "");
+
+      window.location.href = "Employer_Dashboard.html";
+    }
+
+    window.handleGoogleEmployerAuth = async function (event) {
+      const clickedBtn = event?.currentTarget || null;
+      const originalHtml = clickedBtn ? clickedBtn.innerHTML : "";
+
+      try {
+        if (clickedBtn) {
+          clickedBtn.disabled = true;
+          clickedBtn.innerHTML = "Please wait...";
+        }
+
+        const result = await signInWithPopup(auth, googleProvider);
+        await saveGoogleEmployer(result.user);
+      } catch (error) {
+        console.error("GOOGLE AUTH ERROR:", error);
+
+        if (error.code === "auth/popup-closed-by-user") {
+          alert("Google sign-in was cancelled.");
+        } else if (error.code === "auth/popup-blocked") {
+          alert("Popup was blocked. Please allow popups and try again.");
+        } else if (error.code === "auth/account-exists-with-different-credential") {
+          alert("This email is already registered using another sign-in method.");
+        } else {
+          alert("Google sign-in failed: " + (error.message || error.code));
+        }
+      } finally {
+        if (clickedBtn) {
+          clickedBtn.disabled = false;
+          clickedBtn.innerHTML = originalHtml;
+        }
+      }
+    };
+
+    let confirmationResult = null;
+    let recaptchaVerifier = null;
+    let recaptchaWidgetId = null;
+    let lastPhoneFormatted = "";
+    let otpVerified = false;
+    let resendCooldown = 0;
+    let resendTimer = null;
+
+    function formatPHNumber(raw) {
+      let phone = raw.replace(/\D/g, "");
+      if (phone.startsWith("0")) phone = "63" + phone.slice(1);
+      else if (phone.startsWith("9") && phone.length === 10) phone = "63" + phone;
+      if (phone.length !== 12) return null;
+      return "+" + phone;
+    }
+
+    function phoneToEmail(phone) {
+      const normalized = phone.replace(/\D/g, "");
+      return `${normalized}@bluecollarconnect.local`;
+    }
+
+    function clearOtpInputs() {
+      for (let i = 0; i < 6; i++) {
+        const box = document.getElementById(`otp${i}`);
+        box.value = "";
+        box.classList.remove("filled", "error");
+      }
+    }
+
+    function setOtpError(message = "") {
+      document.getElementById("otp-error").textContent = message;
+    }
+
+    function setPassError(message = "") {
+      document.getElementById("pass-error").textContent = message;
+    }
+
+    async function setupRecaptcha() {
+      if (recaptchaVerifier) return recaptchaVerifier;
+
+      const container = document.getElementById("recaptcha-container");
+      if (!container) {
+        throw new Error("reCAPTCHA container not found.");
+      }
+
+      recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "normal",
+        callback: () => {
+          console.log("reCAPTCHA solved");
+          setOtpError("");
+        },
+        "expired-callback": async () => {
+          console.log("reCAPTCHA expired");
+          setOtpError("reCAPTCHA expired. Please complete it again.");
+          await resetRecaptcha();
+          await setupRecaptcha();
+        }
+      });
+
+      recaptchaWidgetId = await recaptchaVerifier.render();
+      console.log("reCAPTCHA rendered:", recaptchaWidgetId);
+      return recaptchaVerifier;
+    }
+
+    async function resetRecaptcha() {
+      if (recaptchaVerifier) {
+        try {
+          recaptchaVerifier.clear();
+        } catch (error) {
+          console.log("reCAPTCHA clear skipped:", error);
+        }
+      }
+
+      recaptchaVerifier = null;
+      recaptchaWidgetId = null;
+
+      const container = document.getElementById("recaptcha-container");
+      if (container) {
+        container.innerHTML = "";
+      }
+    }
+
+    window.showStep = (step) => {
+      [1, 2, 3, 4].forEach(num => {
+        const el = document.getElementById(`step-${num}`);
+        if (el) el.style.display = (num === step) ? "block" : "none";
+      });
+    };
+
+    window.switchTab = (tab) => {
+      document.getElementById("tab-signin").classList.toggle("active", tab === "signin");
+      document.getElementById("tab-signup").classList.toggle("active", tab === "signup");
+      document.getElementById("pane-signin").classList.toggle("active", tab === "signin");
+      document.getElementById("pane-signup").classList.toggle("active", tab === "signup");
+    };
+
+    window.goToOtp = async function () {
+      const nameInput = document.getElementById("name").value.trim();
+      const phoneInput = document.getElementById("phone").value.trim();
+      const phoneFormatted = formatPHNumber(phoneInput);
+
+      setOtpError("");
+      setPassError("");
+
+      if (!nameInput) {
+        alert("Please enter the contact person name.");
+        return;
+      }
+
+      if (!phoneFormatted) {
+        alert("Please enter a valid Philippines mobile number.");
+        return;
+      }
+
+      try {
+        setButtonLoading("continueOtpBtn", "Sending OTP...", "Continue →", true);
+
+        await sendOtpToPhone(phoneFormatted);
+      } catch (error) {
+        console.error("SMS SEND ERROR:", error);
+        alert("OTP failed: " + (error.message || "Unable to send OTP."));
+      } finally {
+        setButtonLoading("continueOtpBtn", "Sending OTP...", "Continue →", false);
+      }
+    };
+
+    window.verifyOtp = async function () {
+      let code = "";
+      for (let i = 0; i < 6; i++) {
+        code += document.getElementById(`otp${i}`).value.trim();
+      }
+
+      setOtpError("");
+
+      if (code.length !== 6) {
+        setOtpError("Enter the complete 6-digit code.");
+        return;
+      }
+
+      if (!confirmationResult) {
+        setOtpError("OTP session expired. Please request a new code.");
+        return;
+      }
+
+      try {
+        setButtonLoading("verifyOtpBtn", "Verifying...", "Verify Code →", true);
+
+        await confirmationResult.confirm(code);
+        otpVerified = true;
+
+        clearOtpInputs();
+        window.showStep(3);
+      } catch (error) {
+        console.error("OTP VERIFY ERROR:", error);
+        otpVerified = false;
+        setOtpError("Invalid or expired OTP. Please try again.");
+
+        for (let i = 0; i < 6; i++) {
+          document.getElementById(`otp${i}`).classList.add("error");
+        }
+      } finally {
+        setButtonLoading("verifyOtpBtn", "Verifying...", "Verify Code →", false);
+      }
+    };
+
+    window.resendOtp = async function (event) {
+      event.preventDefault();
+
+      if (!lastPhoneFormatted) {
+        setOtpError("Phone number not found. Go back and enter it again.");
+        return;
+      }
+
+      if (resendCooldown > 0) {
+        return;
+      }
+
+      try {
+        setOtpError("Preparing resend...");
+        clearOtpInputs();
+
+        await resetRecaptcha();
+        await setupRecaptcha();
+
+        setOtpError("Complete the reCAPTCHA, then OTP will be sent.");
+
+        confirmationResult = await signInWithPhoneNumber(auth, lastPhoneFormatted, recaptchaVerifier);
+
+        setOtpError("A new verification code has been sent.");
+        startResendCooldown(30);
+
+        setTimeout(() => {
+          const firstBox = document.getElementById("otp0");
+          if (firstBox) firstBox.focus();
+        }, 120);
+      } catch (error) {
+        console.error("RESEND OTP ERROR:", error);
+        setOtpError("Failed to resend OTP: " + error.message);
+      }
+    };
+
+    window.saveUser = async function () {
+      const businessName = document.getElementById("business-name").value.trim();
+      const name = document.getElementById("name").value.trim();
+      const pass = document.getElementById("password").value.trim();
+      const confirmPass = document.getElementById("confirm-password").value.trim();
+
+      setPassError("");
+
+      if (!otpVerified) {
+        setPassError("Please verify your phone number first.");
+        return;
+      }
+
+      if (!name) {
+        setPassError("Name is required.");
+        return;
+      }
+
+      if (pass.length < 8) {
+        setPassError("Password must be at least 8 characters.");
+        return;
+      }
+
+      if (pass !== confirmPass) {
+        setPassError("Passwords do not match.");
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user || !user.phoneNumber) {
+        setPassError("Phone verification session lost. Please try again.");
+        return;
+      }
+
+      const internalEmail = phoneToEmail(user.phoneNumber);
+
+      try {
+        setButtonLoading("finishSignupBtn", "Creating Account...", "Finish Sign Up →", true);
+
+        const credential = EmailAuthProvider.credential(internalEmail, pass);
+        await linkWithCredential(user, credential);
+
+        await setDoc(doc(db, "employers", user.uid), {
+          uid: user.uid,
+          businessName: businessName || "",
+          name,
+          phone: user.phoneNumber,
+          loginEmailAlias: internalEmail,
+          hasLocalPassword: true,
+          role: "employer",
+          portal: "employer",
+          accountType: "employer",
+          provider: "phone_password",
+          verified: true,
+          updatedAt: serverTimestamp(),
+          createdAt: serverTimestamp()
+        }, { merge: true });
+
+        localStorage.setItem("bcc_session_role", "employer");
+        localStorage.setItem("bcc_employer_uid", user.uid);
+        localStorage.setItem("bcc_employer_name", name);
+        localStorage.setItem("bcc_employer_phone", user.phoneNumber);
+
+        document.getElementById("success-name").textContent = name;
+        window.showStep(4);
+
+        setTimeout(() => {
+          window.location.href = "Employer_Dashboard.html";
+        }, 1200);
+      } catch (error) {
+        console.error("LINK PASSWORD ERROR:", error);
+
+        if (error.code === "auth/provider-already-linked") {
+          setPassError("This account already has a password.");
+        } else if (error.code === "auth/email-already-in-use") {
+          setPassError("This phone number is already registered.");
+        } else if (error.code === "auth/requires-recent-login") {
+          setPassError("Session expired. Verify OTP again.");
+        } else {
+          setPassError(error.message || "Failed to create account.");
+        }
+      } finally {
+        setButtonLoading("finishSignupBtn", "Creating Account...", "Finish Sign Up →", false);
+      }
+    };
+
+    function setButtonLoading(buttonId, loadingText, normalText, isLoading) {
+      const btn = document.getElementById(buttonId);
+      if (!btn) return;
+
+      btn.disabled = isLoading;
+      btn.textContent = isLoading ? loadingText : normalText;
+      btn.style.opacity = isLoading ? "0.7" : "1";
+      btn.style.cursor = isLoading ? "not-allowed" : "pointer";
+    }
+
+    function startResendCooldown(seconds = 30) {
+      resendCooldown = seconds;
+
+      const resendLink = document.querySelector(".resend-link");
+      if (!resendLink) return;
+
+      if (resendTimer) clearInterval(resendTimer);
+
+      resendLink.style.pointerEvents = "none";
+      resendLink.style.opacity = "0.6";
+      resendLink.textContent = `Resend in ${resendCooldown}s`;
+
+      resendTimer = setInterval(() => {
+        resendCooldown--;
+
+        if (resendCooldown <= 0) {
+          clearInterval(resendTimer);
+          resendTimer = null;
+          resendLink.style.pointerEvents = "auto";
+          resendLink.style.opacity = "1";
+          resendLink.textContent = "Resend";
+          return;
+        }
+
+        resendLink.textContent = `Resend in ${resendCooldown}s`;
+      }, 1000);
+    }
+
+    async function sendOtpToPhone(phoneFormatted) {
+      if (!phoneFormatted) {
+        throw new Error("Invalid phone number.");
+      }
+
+      if (!recaptchaVerifier) {
+        await setupRecaptcha();
+      }
+
+      console.log("Sending OTP to:", phoneFormatted);
+      confirmationResult = await signInWithPhoneNumber(auth, phoneFormatted, recaptchaVerifier);
+      lastPhoneFormatted = phoneFormatted;
+      otpVerified = false;
+
+      document.getElementById("otp-phone-display").textContent = phoneFormatted;
+      clearOtpInputs();
+      setOtpError("");
+      window.showStep(2);
+
+      setTimeout(() => {
+        const firstBox = document.getElementById("otp0");
+        if (firstBox) firstBox.focus();
+      }, 120);
+
+      startResendCooldown(30);
+    }
+
+    window.handleSignIn = async function () {
+      const phoneInput = document.querySelector('#pane-signin input[type="tel"]').value.trim();
+      const passwordInput = document.querySelector('#pane-signin input[type="password"]').value.trim();
+
+      if (!phoneInput || !passwordInput) {
+        alert("Enter your registered phone and password.");
+        return;
+      }
+
+      const phoneFormatted = formatPHNumber(phoneInput);
+      if (!phoneFormatted) {
+        alert("Please enter a valid Philippines mobile number.");
+        return;
+      }
+
+      const internalEmail = phoneToEmail(phoneFormatted);
+
+      try {
+        const result = await signInWithEmailAndPassword(auth, internalEmail, passwordInput);
+        const user = result.user;
+
+        const employerDoc = await getDoc(doc(db, "employers", user.uid));
+
+        if (!employerDoc.exists()) {
+          alert("Employer profile not found.");
+          return;
+        }
+
+        const employerData = employerDoc.data();
+
+        if (employerData.role !== "employer") {
+          alert("Access denied. This portal is for employers only.");
+          return;
+        }
+
+        localStorage.setItem("bcc_session_role", "employer");
+        localStorage.setItem("bcc_employer_uid", user.uid);
+        localStorage.setItem("bcc_employer_name", employerData.name || "");
+        localStorage.setItem("bcc_employer_phone", employerData.phone || "");
+
+        window.location.href = "Employer_Dashboard.html";
+      } catch (error) {
+        console.error("PHONE PASSWORD SIGN IN ERROR:", error);
+        alert("Login failed:\n" + (error.message || error.code));
+      }
+    };
+
+    document.querySelector('#pane-signin .btn-primary-red').onclick = window.handleSignIn;
+
+    window.otpInput = function (idx) {
+      const box = document.getElementById(`otp${idx}`);
+      box.value = box.value.replace(/\D/g, "").slice(0, 1);
+
+      if (box.value) {
+        box.classList.add("filled");
+        box.classList.remove("error");
+        if (idx < 5) document.getElementById(`otp${idx + 1}`).focus();
+      } else {
+        box.classList.remove("filled");
+      }
+    };
+
+    window.otpKeydown = function (event, idx) {
+      const box = document.getElementById(`otp${idx}`);
+
+      if (event.key === "Backspace" && !box.value && idx > 0) {
+        document.getElementById(`otp${idx - 1}`).focus();
+      }
+
+      if (event.key === "ArrowLeft" && idx > 0) {
+        document.getElementById(`otp${idx - 1}`).focus();
+      }
+
+      if (event.key === "ArrowRight" && idx < 5) {
+        document.getElementById(`otp${idx + 1}`).focus();
+      }
+    };
+
+    window.togglePw = function (id) {
+      const input = document.getElementById(id);
+      input.type = (input.type === "password") ? "text" : "password";
+    };
+
+    window.checkStrength = function () {
+      const password = document.getElementById("password").value;
+      const wrap = document.getElementById("strength-wrap");
+      const fill = document.getElementById("strength-fill");
+      const label = document.getElementById("strength-label");
+
+      if (!password) {
+        wrap.style.display = "none";
+        fill.style.width = "0%";
+        label.textContent = "";
+        return;
+      }
+
+      wrap.style.display = "flex";
+
+      let score = 0;
+      if (password.length >= 8) score++;
+      if (/[A-Z]/.test(password)) score++;
+      if (/[a-z]/.test(password)) score++;
+      if (/[0-9]/.test(password)) score++;
+      if (/[^A-Za-z0-9]/.test(password)) score++;
+
+      if (score <= 2) {
+        fill.style.width = "33%";
+        fill.style.background = "#ef4444";
+        label.textContent = "Weak";
+        label.style.color = "#ef4444";
+      } else if (score <= 4) {
+        fill.style.width = "66%";
+        fill.style.background = "#f59e0b";
+        label.textContent = "Medium";
+        label.style.color = "#f59e0b";
+      } else {
+        fill.style.width = "100%";
+        fill.style.background = "#22c55e";
+        label.textContent = "Strong";
+        label.style.color = "#22c55e";
+      }
+    };
+
+    window.toggleLeft = function () {
+      const left = document.getElementById("leftCollapsible");
+      const chevron = document.getElementById("leftChevron");
+      const toggle = document.getElementById("leftToggle");
+
+      const isOpen = left.classList.toggle("open");
+      chevron.classList.toggle("open", isOpen);
+      toggle.setAttribute("aria-expanded", String(isOpen));
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) console.log("Current Auth UID:", user.uid);
+    });
+
+    try {
+      const redirectResult = await getRedirectResult(auth);
+      if (redirectResult?.user) {
+        await saveGoogleEmployer(redirectResult.user);
+      }
+    } catch (error) {
+      console.error("GOOGLE REDIRECT RESULT ERROR:", error);
+
+      if (error.code === "auth/missing-initial-state") {
+        console.warn("Redirect state missing, skipped safely.");
+      } else {
+        alert("Google redirect sign-in failed: " + (error.message || error.code));
+      }
+    }
+
+    const googleSignInBtn = document.getElementById("googleSignInBtn");
+    const googleSignUpBtn = document.getElementById("googleSignUpBtn");
+
+    if (googleSignInBtn) {
+      googleSignInBtn.addEventListener("click", (event) => window.handleGoogleEmployerAuth(event));
+    }
+
+    if (googleSignUpBtn) {
+      googleSignUpBtn.addEventListener("click", (event) => window.handleGoogleEmployerAuth(event));
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
