@@ -958,8 +958,8 @@
             </svg>
           </div>
           <div>
-            <div class="portal-name">Employer Portal</div>
-            <div class="portal-tagline">Find the right talent</div>
+            <div class="portal-name" data-i18n="portalName">Employer Portal</div>
+            <div class="portal-tagline" data-i18n="portalTagline">Find the right talent</div>
           </div>
         </div>
         <svg class="left-toggle-chevron" id="leftChevron" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -969,8 +969,8 @@
       </button>
 
       <div class="left-collapsible" id="leftCollapsible">
-        <div class="left-headline">Hire Skilled Workers Faster</div>
-        <div class="left-desc">Post jobs, review qualified candidates, and build your team with verified blue-collar
+        <div class="left-headline" data-i18n="leftHeadline">Hire Skilled Workers Faster</div>
+        <div class="left-desc" data-i18n="leftDesc">Post jobs, review qualified candidates, and build your team with verified blue-collar
           professionals.</div>
 
         <ul class="feature-list">
@@ -982,8 +982,8 @@
               </svg>
             </div>
             <div>
-              <div class="feature-title">Qualified Candidates</div>
-              <div class="feature-desc">Access workers with verified skills and peer endorsements</div>
+              <div class="feature-title" data-i18n="feature1Title">Qualified Candidates</div>
+              <div class="feature-desc" data-i18n="feature1Desc">Access workers with verified skills and peer endorsements</div>
             </div>
           </li>
           <li>
@@ -994,8 +994,8 @@
               </svg>
             </div>
             <div>
-              <div class="feature-title">Easy Job Posting</div>
-              <div class="feature-desc">Create job listings in minutes and reach local workers instantly</div>
+              <div class="feature-title" data-i18n="feature2Title">Easy Job Posting</div>
+              <div class="feature-desc" data-i18n="feature2Desc">Create job listings in minutes and reach local workers instantly</div>
             </div>
           </li>
           <li>
@@ -1006,8 +1006,8 @@
               </svg>
             </div>
             <div>
-              <div class="feature-title">Applicant Management</div>
-              <div class="feature-desc">Track applications and communicate directly with candidates</div>
+              <div class="feature-title" data-i18n="feature3Title">Applicant Management</div>
+              <div class="feature-desc" data-i18n="feature3Desc">Track applications and communicate directly with candidates</div>
             </div>
           </li>
         </ul>
@@ -1020,15 +1020,15 @@
     <div class="right-panel">
 
       <div class="tab-switcher">
-        <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
-        <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+        <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')" data-i18n="signIn">Sign In</button>
+        <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')" data-i18n="signUp">Sign Up</button>
       </div>
 
       <!-- ── Sign In ── -->
       <div class="tab-content-pane active" id="pane-signin">
-        <div class="form-heading">Welcome Back!</div>
+        <div class="form-heading" data-i18n="welcomeBack">Welcome Back!</div>
 
-        <label class="field-label">Phone Number</label>
+        <label class="field-label" data-i18n="phoneNumber">Phone Number</label>
         <div class="input-wrap">
           <span class="input-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1041,7 +1041,7 @@
             autocomplete="tel" />
         </div>
 
-        <label class="field-label">Password</label>
+        <label class="field-label" data-i18n="password">Password</label>
         <div class="input-wrap">
           <span class="input-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1056,14 +1056,14 @@
 
         <div class="remember-row">
           <label class="remember-label">
-            <input type="checkbox" /> Remember me
+            <input type="checkbox" /> <span data-i18n="rememberMe">Remember me</span>
           </label>
-          <a href="#" class="forgot-link">Forgot password?</a>
+          <a href="#" class="forgot-link" data-i18n="forgotPassword">Forgot password?</a>
         </div>
 
-        <button class="btn-primary-red">Sign In →</button>
+        <button class="btn-primary-red" data-i18n="signInBtn">Sign In →</button>
 
-        <div class="or-divider">Or continue with</div>
+        <div class="or-divider" data-i18n="orContinueWith">Or continue with</div>
 
         <div class="social-row">
           <button class="btn-social" id="googleSignInBtn">
@@ -1089,7 +1089,7 @@
           </button>
         </div>
 
-        <a href="index.html" class="back-link">← Back to Portal Selection</a>
+        <a href="index.html" class="back-link" data-i18n="backToPortal">← Back to Portal Selection</a>
       </div>
 
       <!-- ── Sign Up ── -->
@@ -1097,7 +1097,7 @@
 
         <!-- STEP 1 -->
         <div id="step-1">
-          <div class="form-heading">Start Hiring Today</div>
+          <div class="form-heading" data-i18n="startHiring">Start Hiring Today</div>
 
           <div class="step-indicator">
             <div class="step-dot active"></div>
@@ -1106,10 +1106,10 @@
             <div class="step-line"></div>
             <div class="step-dot"></div>
           </div>
-          <p class="step-label">Step 1 of 3 — Your Details</p>
+          <p class="step-label" data-i18n="step1">Step 1 of 3 — Your Details</p>
 
           <label class="field-label">
-            Business Name <span class="optional-badge">Optional</span>
+            <span data-i18n="businessName">Business Name</span> <span class="optional-badge" data-i18n="optional">Optional</span>
           </label>
           <div class="input-wrap">
             <span class="input-icon">
@@ -1130,7 +1130,7 @@
               autocomplete="organization" />
           </div>
 
-          <label class="field-label">Contact Person Name</label>
+          <label class="field-label" data-i18n="contactPerson">Contact Person Name</label>
           <div class="input-wrap">
             <span class="input-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1142,7 +1142,7 @@
             <input id="name" type="text" class="form-control-custom" placeholder="Juan Dela Cruz" autocomplete="name" />
           </div>
 
-          <label class="field-label">Phone Number</label>
+          <label class="field-label" data-i18n="phoneNumber">Phone Number</label>
           <div class="input-wrap">
             <span class="input-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1154,12 +1154,12 @@
             <input id="phone" type="tel" class="form-control-custom" placeholder="+63 912 345 6789" inputmode="tel"
               autocomplete="tel" />
           </div>
-          <p class="sms-hint">We'll send you a verification code via SMS</p>
+          <p class="sms-hint" data-i18n="smsHint">We'll send you a verification code via SMS</p>
 
-          <button id="continueOtpBtn" class="btn-primary-red" onclick="goToOtp()">Continue →</button>
+          <button id="continueOtpBtn" class="btn-primary-red" onclick="goToOtp()" data-i18n="continueBtn">Continue →</button>
           <div id="recaptcha-container"></div>
 
-          <div class="or-divider">Or continue with</div>
+          <div class="or-divider" data-i18n="orContinueWith">Or continue with</div>
 
           <div class="social-row">
             <button class="btn-social" id="googleSignUpBtn">
@@ -1186,14 +1186,14 @@
           </div>
 
           <div class="terms-text">
-            By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            <span data-i18n="bySigningUp">By signing up, you agree to our</span> <a href="terms.html" data-i18n="terms">Terms of Service</a> <span data-i18n="and">and</span> <a href="privacy.html" data-i18n="privacy">Privacy Policy</a>
           </div>
-          <a href="index.html" class="back-link">← Back to Portal Selection</a>
+          <a href="index.html" class="back-link" data-i18n="backToPortal">← Back to Portal Selection</a>
         </div>
 
         <!-- STEP 2 -->
         <div id="step-2" style="display:none;">
-          <div class="form-heading">Verify Your Number</div>
+          <div class="form-heading" data-i18n="verifyNumber">Verify Your Number</div>
 
           <div class="step-indicator">
             <div class="step-dot done"></div>
@@ -1202,16 +1202,16 @@
             <div class="step-line"></div>
             <div class="step-dot"></div>
           </div>
-          <p class="step-label">Step 2 of 3 — Enter OTP</p>
+          <p class="step-label" data-i18n="step2">Step 2 of 3 — Enter OTP</p>
 
-          <p class="otp-desc">A 6-digit code was sent to <strong id="otp-phone-display"></strong></p>
+          <p class="otp-desc"><span data-i18n="codeSentTo">A 6-digit code was sent to</span> <strong id="otp-phone-display"></strong></p>
 
           <div class="otp-sms-banner" id="otp-sms-banner">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
-            A real verification code has been sent to your phone number.
+            <span data-i18n="smsBanner">SMS: Your BlueCollar code is</span>&nbsp;<strong id="otp-display">------</strong>
           </div>
 
           <div class="otp-boxes" id="otp-boxes">
@@ -1231,15 +1231,15 @@
 
           <p class="otp-error" id="otp-error"></p>
 
-          <button id="verifyOtpBtn" class="btn-primary-red" onclick="verifyOtp()">Verify Code →</button>
-          <p class="resend-row">Didn't receive a code? <a href="#" class="resend-link"
-              onclick="resendOtp(event)">Resend</a></p>
-          <a href="#" class="back-link" onclick="showStep(1); return false;">← Back</a>
+          <button id="verifyOtpBtn" class="btn-primary-red" onclick="verifyOtp()" data-i18n="verifyBtn">Verify Code →</button>
+          <p class="resend-row"><span data-i18n="didNotReceive">Didn't receive a code?</span> <a href="#" class="resend-link"
+              onclick="resendOtp(event)" data-i18n="resend">Resend</a></p>
+          <a href="#" class="back-link" onclick="showStep(1); return false;" data-i18n="backBtn">← Back</a>
         </div>
 
         <!-- STEP 3 -->
         <div id="step-3" style="display:none;">
-          <div class="form-heading">Create Password</div>
+          <div class="form-heading" data-i18n="createPassword">Create Password</div>
 
           <div class="step-indicator">
             <div class="step-dot done"></div>
@@ -1248,9 +1248,9 @@
             <div class="step-line active"></div>
             <div class="step-dot active"></div>
           </div>
-          <p class="step-label">Step 3 of 3 — Secure Your Account</p>
+          <p class="step-label" data-i18n="step3">Step 3 of 3 — Secure Your Account</p>
 
-          <label class="field-label">Password</label>
+          <label class="field-label" data-i18n="password">Password</label>
           <div class="input-wrap">
             <span class="input-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1277,7 +1277,7 @@
             <span class="strength-label" id="strength-label"></span>
           </div>
 
-          <label class="field-label" style="margin-top:16px;">Confirm Password</label>
+          <label class="field-label" style="margin-top:16px;" data-i18n="confirmPassword">Confirm Password</label>
           <div class="input-wrap">
             <span class="input-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1299,8 +1299,8 @@
 
           <p class="otp-error" id="pass-error"></p>
 
-          <button id="finishSignupBtn" class="btn-primary-red" onclick="saveUser()">Finish Sign Up →</button>
-          <a href="#" class="back-link" style="margin-top:14px;" onclick="showStep(2); return false;">← Back</a>
+          <button id="finishSignupBtn" class="btn-primary-red" onclick="saveUser()" data-i18n="finishSignUpBtn">Finish Sign Up →</button>
+          <a href="#" class="back-link" style="margin-top:14px;" onclick="showStep(2); return false;" data-i18n="backBtn">← Back</a>
         </div>
 
         <!-- STEP 4 -->
@@ -1313,11 +1313,11 @@
             </svg>
           </div>
 
-          <div class="form-heading" style="margin-top:16px; margin-bottom:8px;">Account Created!</div>
+          <div class="form-heading" style="margin-top:16px; margin-bottom:8px;" data-i18n="accountCreated">Account Created!</div>
           <p style="font-size:0.9rem; color:#6b7280; margin-bottom:28px;">
-            Welcome, <strong id="success-name"></strong>! Your employer account is ready.
+            <span data-i18n="welcome">Welcome,</span> <strong id="success-name"></strong>! <span data-i18n="accountReady">Your employer account is ready.</span>
           </p>
-          <button class="btn-primary-red" onclick="switchTab('signin')">Go to Sign In →</button>
+          <button class="btn-primary-red" onclick="switchTab('signin')" data-i18n="goToSignIn">Go to Sign In →</button>
         </div>
       </div>
 
@@ -1933,6 +1933,121 @@
     if (googleSignUpBtn) {
       googleSignUpBtn.addEventListener("click", (event) => window.handleGoogleEmployerAuth(event));
     }
+  </script>
+  <!-- Script for Language Switching -->
+  <script>
+    const translations = {
+      en: {
+        portalName: "Employer Portal",
+        portalTagline: "Find the right talent",
+        leftHeadline: "Hire Skilled Workers Faster",
+        leftDesc: "Post jobs, review qualified candidates, and build your team with verified blue-collar professionals.",
+        feature1Title: "Qualified Candidates",
+        feature1Desc: "Access workers with verified skills and peer endorsements",
+        feature2Title: "Easy Job Posting",
+        feature2Desc: "Create job listings in minutes and reach local workers instantly",
+        feature3Title: "Applicant Management",
+        feature3Desc: "Track applications and communicate directly with candidates",
+        signIn: "Sign In",
+        signUp: "Sign Up",
+        welcomeBack: "Welcome Back!",
+        phoneNumber: "Phone Number",
+        password: "Password",
+        rememberMe: "Remember me",
+        forgotPassword: "Forgot password?",
+        signInBtn: "Sign In →",
+        orContinueWith: "Or continue with",
+        backToPortal: "← Back to Portal Selection",
+        startHiring: "Start Hiring Today",
+        step1: "Step 1 of 3 — Your Details",
+        businessName: "Business Name",
+        optional: "Optional",
+        contactPerson: "Contact Person Name",
+        smsHint: "We'll send you a verification code via SMS",
+        continueBtn: "Continue →",
+        bySigningUp: "By signing up, you agree to our",
+        terms: "Terms of Service",
+        and: "and",
+        privacy: "Privacy Policy",
+        verifyNumber: "Verify Your Number",
+        step2: "Step 2 of 3 — Enter OTP",
+        codeSentTo: "A 6-digit code was sent to",
+        smsBanner: "SMS: Your BlueCollar code is",
+        verifyBtn: "Verify Code →",
+        didNotReceive: "Didn't receive a code?",
+        resend: "Resend",
+        backBtn: "← Back",
+        createPassword: "Create Password",
+        step3: "Step 3 of 3 — Secure Your Account",
+        confirmPassword: "Confirm Password",
+        finishSignUpBtn: "Finish Sign Up →",
+        accountCreated: "Account Created!",
+        welcome: "Welcome,",
+        accountReady: "Your employer account is ready.",
+        goToSignIn: "Go to Sign In →"
+      },
+      war: {
+        portalName: "Portal para han Agaron",
+        portalTagline: "Pamilnga an tama nga talento",
+        leftHeadline: "Pag-hire hin mga Trabahante nga may Abilidad hin Mas Madali",
+        leftDesc: "Pag-post hin mga trabaho, pagrepaso hin mga kwalipikado nga kandidato, ngan pagporma han imo grupo upod an mga beripikado nga propesyonal.",
+        feature1Title: "Mga Kwalipikado nga Kandidato",
+        feature1Desc: "Pag-access ha mga trabahante nga may beripikado nga mga abilidad ngan mga endorso tikang ha iba",
+        feature2Title: "Madali nga Pag-post hin Trabaho",
+        feature2Desc: "Paghimo hin mga listahan han trabaho ha sulod hin mga minuto ngan abuta dayon an mga lokal nga trabahante",
+        feature3Title: "Pagdumara han Aplikante",
+        feature3Desc: "Pag-track han mga aplikasyon ngan direkta nga pakig-istorya ha mga kandidato",
+        signIn: "Pag-sign In",
+        signUp: "Pag-sign Up",
+        welcomeBack: "Maayong Pag-abot!",
+        phoneNumber: "Numero han Telepono",
+        password: "Password",
+        rememberMe: "Hinumdumi ako",
+        forgotPassword: "Nalimot ka han password?",
+        signInBtn: "Pag-sign In →",
+        orContinueWith: "O magpadayon gamit an",
+        backToPortal: "← Balik ha Pagpili hin Portal",
+        startHiring: "Pag-tikang Pag-hire Yana",
+        step1: "Lakang 1 han 3 — Imo mga Detalye",
+        businessName: "Ngaran han Negosyo",
+        optional: "Opsyonal",
+        contactPerson: "Ngaran han Contact Person",
+        smsHint: "Padadad-an ka namon hin verification code pinaagi han SMS",
+        continueBtn: "Padayon →",
+        bySigningUp: "Ha pag-sign up, uyon ka ha amon",
+        terms: "Mga Termino han Serbisyo",
+        and: "ngan",
+        privacy: "Polisiya ha Pagkapribado",
+        verifyNumber: "I-verify an Imo Numero",
+        step2: "Lakang 2 han 3 — Isurat an OTP",
+        codeSentTo: "Usa nga 6-ka-digit nga code an ginpadara ha",
+        smsBanner: "SMS: An imo BlueCollar code amo an",
+        verifyBtn: "I-verify an Code →",
+        didNotReceive: "Waray ka nakarawat hin code?",
+        resend: "Ipadara utro",
+        backBtn: "← Balik",
+        createPassword: "Paghimo hin Password",
+        step3: "Lakang 3 han 3 — I-secure an Imo Account",
+        confirmPassword: "Kumpirmahon an Password",
+        finishSignUpBtn: "Tapuson an Pag-sign Up →",
+        accountCreated: "Nahimo an Account!",
+        welcome: "Maayong pag-abot,",
+        accountReady: "Andam na an imo account han agaron.",
+        goToSignIn: "Kadto ha Sign In →"
+      }
+    };
+
+    function initLanguage() {
+      const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (translations[savedLang] && translations[savedLang][key]) {
+          element.innerHTML = translations[savedLang][key];
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', initLanguage);
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

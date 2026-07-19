@@ -102,6 +102,7 @@
     body.dark-mode .review-name,
     body.dark-mode .stat-line .sl-val,
     body.dark-mode .mini-stat-val,
+    body.dark-mode .meta-val-row,
     body.dark-mode .sk-name {
       color: #f8fafc;
     }

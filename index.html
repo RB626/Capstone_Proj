@@ -317,33 +317,43 @@
       color: #7c3aed;
     }
 
+    /* ── Language Selector ── */
+    .language-selector {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 56px;
+      animation: fadeUp 0.5s 0.30s ease both;
+    }
+
+    .lang-link {
+      font-size: 0.85rem;
+      color: #9ca3af;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.22s ease;
+    }
+
+    .lang-link:hover {
+      color: #374151;
+    }
+
+    .lang-link.active {
+      color: #14b8a6;
+      font-weight: 600;
+    }
+
+    .lang-divider {
+      color: #d1d5db;
+      font-size: 0.8rem;
+    }
+
     /* ── Footer ── */
     .footer-text {
       font-size: 0.9rem;
       color: #6b7280;
-      margin-top: 56px;
-    }
-
-    .footer-link {
-      color: #14b8a6;
-      font-weight: 600;
-      text-decoration: none;
-      position: relative;
-    }
-
-    .footer-link::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: -1px;
-      width: 0;
-      height: 1.5px;
-      background: #14b8a6;
-      transition: width 0.22s ease;
-    }
-
-    .footer-link:hover::after {
-      width: 100%;
+      margin-top: 20px;
+      animation: fadeUp 0.5s 0.35s ease both;
     }
   </style>
 </head>
@@ -361,18 +371,21 @@
     </div>
     <div>
       <div class="brand-title">BlueCollar Connect</div>
-      <div class="brand-subtitle">Community Job Coordination Platform</div>
+      <!-- Added data-i18n attribute here -->
+      <div class="brand-subtitle" data-i18n="subtitle">Community Job Coordination Platform</div>
     </div>
   </div>
 
-  <p class="portal-heading">Choose your portal to get started</p>
+  <!-- Added data-i18n attribute here -->
+  <p class="portal-heading" data-i18n="heading">Choose your portal to get started</p>
 
   <!-- Cards -->
   <div class="cards-wrapper">
-    <div class="row g-4">
+    <!-- Added justify-content-center to center the cards horizontally -->
+    <div class="row g-4 justify-content-center">
 
       <!-- Job Seeker / Worker -->
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-5">
         <div class="portal-card portal-card--worker">
           <div class="icon-wrap icon-wrap--teal">
             <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"
@@ -381,15 +394,16 @@
               <circle cx="12" cy="7" r="4" />
             </svg>
           </div>
-          <div class="card-title">Job Seeker / Worker</div>
-          <div class="card-desc">Find local job opportunities, showcase your skills, and connect with employers.</div>
-          <a href="JobSeeker_Worker_LogInPage.html" class="card-link card-link--teal">Get Started <span
+          <!-- Added data-i18n attributes here -->
+          <div class="card-title" data-i18n="workerTitle">Job Seeker / Worker</div>
+          <div class="card-desc" data-i18n="workerDesc">Find local job opportunities, showcase your skills, and connect with employers.</div>
+          <a href="JobSeeker_Worker_LogInPage.html" class="card-link card-link--teal" data-i18n="getStarted">Get Started <span
               class="arrow">→</span></a>
         </div>
       </div>
 
       <!-- Employer / Business -->
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-5">
         <div class="portal-card portal-card--employer">
           <div class="icon-wrap icon-wrap--red">
             <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round"
@@ -399,28 +413,10 @@
               <path d="M7 7h10M7 11h6" />
             </svg>
           </div>
-          <div class="card-title">Employer / Business</div>
-          <div class="card-desc">Post jobs, find qualified candidates, and build your team with verified workers.</div>
-          <a href="Employer_LogInPage.html" class="card-link card-link--red">Get Started <span
-              class="arrow">→</span></a>
-        </div>
-      </div>
-
-      <!-- Community Representative -->
-      <div class="col-12 col-md-4">
-        <div class="portal-card portal-card--community">
-          <div class="icon-wrap icon-wrap--purple">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </div>
-          <div class="card-title">Community Representative</div>
-          <div class="card-desc">Help workers without devices access the platform and find opportunities.</div>
-          <a href="Representative_LogInPage.html" class="card-link card-link--purple">Get Started <span
+          <!-- Added data-i18n attributes here -->
+          <div class="card-title" data-i18n="employerTitle">Employer / Business</div>
+          <div class="card-desc" data-i18n="employerDesc">Post jobs, find qualified candidates, and build your team with verified workers.</div>
+          <a href="Employer_LogInPage.html" class="card-link card-link--red" data-i18n="getStarted">Get Started <span
               class="arrow">→</span></a>
         </div>
       </div>
@@ -428,10 +424,72 @@
     </div>
   </div>
 
-  <!-- Footer -->
-  <p class="footer-text">Need help? <a href="#" class="footer-link">Contact Support</a></p>
+  <!-- Language Selector with added onclick events and IDs -->
+  <div class="language-selector">
+    <a href="#" id="lang-en" class="lang-link active" onclick="switchLanguage('en', event)">English</a>
+    <span class="lang-divider">•</span>
+    <a href="#" id="lang-war" class="lang-link" onclick="switchLanguage('war', event)">Waray-Waray</a>
+  </div>
+
+  <!-- Added data-i18n attributes for the footer text and link -->
+  <p class="footer-text"><span data-i18n="needHelp">Need help? </span><a href="#" class="footer-link" data-i18n="contactSupport">Contact Support</a></p>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script for Language Switching -->
+  <script>
+    const translations = {
+      en: {
+        subtitle: "Community Job Coordination Platform",
+        heading: "Choose your portal to get started",
+        workerTitle: "Job Seeker / Worker",
+        workerDesc: "Find local job opportunities, showcase your skills, and connect with employers.",
+        employerTitle: "Employer / Business",
+        employerDesc: "Post jobs, find qualified candidates, and build your team with verified workers.",
+        getStarted: 'Get Started <span class="arrow">→</span>',
+        needHelp: "Need help? ",
+        contactSupport: "Contact Support"
+      },
+      war: {
+        subtitle: "Plataporma han Komunidad para Pagbiling hin Trabaho",
+        heading: "Pili-a an imo portal para magtikang",
+        workerTitle: "Nambibiling Trabaho / Trabahante",
+        workerDesc: "Pamiling hin mga trabaho ha lokal, ipakita an imo mga abilidad, ngan makigsumpayan ha mga agaron.",
+        employerTitle: "Agaron / Negosyo",
+        employerDesc: "Pag-post hin mga trabaho, pamiling hin mga kwalipikado nga aplikante, ngan pagporma han imo grupo upod an mga trabahante nga beripikado.",
+        getStarted: 'Magtikang <span class="arrow">→</span>',
+        needHelp: "Kinahanglan hin bulig? ",
+        contactSupport: "Kontaka an Suporta"
+      }
+    };
+
+    function switchLanguage(lang, event) {
+      if (event) event.preventDefault(); 
+
+      // Save the selected language so other pages can use it
+      localStorage.setItem('preferredLanguage', lang);
+
+      // Update active state on links
+      document.querySelectorAll('.lang-link').forEach(link => link.classList.remove('active'));
+      document.getElementById('lang-' + lang).classList.add('active');
+
+      // Update text for all elements with data-i18n
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) {
+          element.innerHTML = translations[lang][key];
+        }
+      });
+    }
+
+    // On page load, check for a saved language and apply it
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('preferredLanguage');
+      if (savedLang) {
+        switchLanguage(savedLang);
+      }
+    });
+  </script>
 </body>
 
 </html>
