@@ -33,7 +33,7 @@
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
       </span>
-      <input type="text" placeholder="Search jobs, skills, or location..." />
+      <input type="text" placeholder="Search jobs, skills, or location..." data-i18n="searchPlaceholder" />
     </div>
 
     <div class="nav-actions">
@@ -70,7 +70,7 @@
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
-              View Profile
+              <span data-i18n="ddViewProfile">View Profile</span>
             </button>
             <button class="dd-item dd-theme-item" type="button" onclick="toggleTheme(event)">
               <span class="dd-theme-left">
@@ -79,7 +79,7 @@
                   <path d="M21 12.79A9 9 0 1 1 11.21 3c0 .28-.01.57-.01.86A7 7 0 0 0 20.14 12c.29 0 .58-.01.86-.01Z">
                   </path>
                 </svg>
-                <span>Dark Mode</span>
+                <span data-i18n="ddDarkMode">Dark Mode</span>
               </span>
 
               <span class="dd-switch" id="themeSwitch" aria-hidden="true">
@@ -93,7 +93,7 @@
                 <path
                   d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
               </svg>
-              Settings
+              <span data-i18n="ddSettings">Settings</span>
             </button>
             <button class="dd-item" onclick="ddAction('help')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -102,7 +102,7 @@
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                 <line x1="12" y1="17" x2="12.01" y2="17" />
               </svg>
-              Help &amp; Support
+              <span data-i18n="ddHelp">Help &amp; Support</span>
             </button>
             <div class="dd-divider"></div>
             <button class="dd-item logout" onclick="ddAction('logout')">
@@ -112,7 +112,7 @@
                 <polyline points="16 17 21 12 16 7" />
                 <line x1="21" y1="12" x2="9" y2="12" />
               </svg>
-              Log Out
+              <span data-i18n="ddLogout">Log Out</span>
             </button>
           </div>
         </div>
@@ -130,7 +130,7 @@
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
         </svg>
-        Home
+        <span data-i18n="sidebarHome">Home</span>
       </button>
       <button class="nav-item" id="nav-jobs" onclick="showPage('jobs')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -138,14 +138,14 @@
           <rect x="2" y="7" width="20" height="14" rx="2" />
           <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
         </svg>
-        Jobs
+        <span data-i18n="sidebarJobs">Jobs</span>
       </button>
       <button class="nav-item" id="nav-messages" onclick="showPage('messages')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
           stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
-        Messages
+        <span data-i18n="sidebarMessages">Messages</span>
       </button>
       <button class="nav-item" id="nav-profile" onclick="showPage('profile')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -153,7 +153,7 @@
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
-        Portfolio
+        <span data-i18n="sidebarPortfolio">Portfolio</span>
       </button>
 
       <div class="profile-card">
@@ -165,17 +165,17 @@
         <div class="profile-role">Carpenter | Painter</div>
         <div class="profile-stats">
           <div class="stat-row">
-            <span>Profile Views</span>
+            <span data-i18n="profileCardViews">Profile Views</span>
             <span class="stat-val">127</span>
           </div>
           <div class="stat-row">
-            <span>Applications</span>
+            <span data-i18n="profileCardApps">Applications</span>
             <span class="stat-val" id="applicationsCount">0</span>
           </div>
         </div>
         <button class="open-work-btn">
           <span class="open-dot"></span>
-          Open for Work
+          <span data-i18n="profileCardOpen">Open for Work</span>
         </button>
       </div>
     </aside>
@@ -186,7 +186,7 @@
       <!-- ════ HOME PAGE ════ -->
       <div class="page-panel active" id="page-home">
 
-        <div class="section-heading">Available Jobs Near You</div>
+        <div class="section-heading" data-i18n="homeJobsNearYou">Available Jobs Near You</div>
         <div class="jobs-list" id="homeJobsList">
           <div class="job-card">
             <div class="job-title">Loading jobs...</div>
@@ -202,15 +202,15 @@
 
           <div class="jobs-panel-header">
             <div>
-              <div class="jobs-panel-title">Find Jobs</div>
-              <div class="jobs-panel-subtitle">6 jobs available in your area</div>
+              <div class="jobs-panel-title" data-i18n="jobsFindJobs">Find Jobs</div>
+              <div class="jobs-panel-subtitle">6 <span data-i18n="jobsAvailable">jobs available in your area</span></div>
             </div>
             <button class="saved-jobs-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
               </svg>
-              Saved Jobs
+              <span data-i18n="jobsSaved">Saved Jobs</span>
             </button>
           </div>
 
@@ -221,15 +221,15 @@
                   <circle cx="11" cy="11" r="8" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg></span>
-              <input class="job-search-input" type="text" placeholder="Search by job title, co..."
+              <input class="job-search-input" type="text" placeholder="Search by job title, co..." data-i18n="jobsSearchPlaceholder"
                 oninput="filterJobItems()" />
             </div>
             <div class="job-type-dropdown-wrap">
               <select class="job-type-dropdown" onchange="setJobTypeFilter(this.value)">
-                <option value="all" selected>All Jobs</option>
-                <option value="fulltime">Full-time</option>
-                <option value="parttime">Part-time</option>
-                <option value="contract">Contract</option>
+                <option value="all" selected data-i18n="jobsAll">All Jobs</option>
+                <option value="fulltime" data-i18n="jobsFullTime">Full-time</option>
+                <option value="parttime" data-i18n="jobsPartTime">Part-time</option>
+                <option value="contract" data-i18n="jobsContract">Contract</option>
               </select>
             </div>
           </div>
@@ -254,86 +254,12 @@
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
               </span>
-              <input class="conv-search" type="text" placeholder="Search conversations..."
+              <input class="conv-search" type="text" placeholder="Search conversations..." data-i18n="msgSearch"
                 oninput="filterConvs(this.value)" />
             </div>
 
-            <div class="conv-items" id="conv-items">
-
-              <!-- Conversation 1 — Maria Reyes -->
-              <div class="conv-item active" onclick="openConv(this,'maria')" data-convid="maria"
-                data-name="Maria Reyes">
-                <div class="conv-avatar-wrap">
-                  <img class="conv-avatar" src="https://i.pravatar.cc/48?img=47" alt="Maria Reyes" />
-                  <span class="conv-online"></span>
-                </div>
-                <div class="conv-body">
-                  <div class="conv-header-row">
-                    <span class="conv-name">Maria Re...</span>
-                    <span class="conv-time">2m ago</span>
-                  </div>
-                  <div class="conv-preview">Thank you! When ...</div>
-                  <div class="conv-footer-row">
-                    <span class="conv-badge employer">Employer</span>
-                    <span class="unread-dot">2</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Conversation 2 — ABC Construction -->
-              <div class="conv-item" onclick="openConv(this,'abc')" data-convid="abc" data-name="ABC Construction">
-                <div class="conv-avatar-wrap">
-                  <img class="conv-avatar" src="https://i.pravatar.cc/48?img=52" alt="ABC Construction" />
-                </div>
-                <div class="conv-body">
-                  <div class="conv-header-row">
-                    <span class="conv-name">ABC Const...</span>
-                    <span class="conv-time">1h ago</span>
-                  </div>
-                  <div class="conv-preview">We'd like to schedu...</div>
-                  <div class="conv-footer-row">
-                    <span class="conv-badge employer">Employer</span>
-                    <span class="unread-dot">1</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Conversation 3 — Representative -->
-              <div class="conv-item" onclick="openConv(this,'rep')" data-convid="rep" data-name="Representative">
-                <div class="conv-avatar-wrap">
-                  <img class="conv-avatar" src="https://i.pravatar.cc/48?img=60" alt="Representative" />
-                  <span class="conv-online"></span>
-                </div>
-                <div class="conv-body">
-                  <div class="conv-header-row">
-                    <span class="conv-name">Represent...</span>
-                    <span class="conv-time">3h ago</span>
-                  </div>
-                  <div class="conv-preview">I found a great opp...</div>
-                  <div class="conv-footer-row">
-                    <span class="conv-badge representative">Representative</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Conversation 4 — Local Hardware -->
-              <div class="conv-item" onclick="openConv(this,'local')" data-convid="local" data-name="Local Hardware">
-                <div class="conv-avatar-wrap">
-                  <img class="conv-avatar" src="https://i.pravatar.cc/48?img=68" alt="Local Hardware" />
-                </div>
-                <div class="conv-body">
-                  <div class="conv-header-row">
-                    <span class="conv-name">Local Har...</span>
-                    <span class="conv-time">1d ago</span>
-                  </div>
-                  <div class="conv-preview">Perfect! See you on...</div>
-                  <div class="conv-footer-row">
-                    <span class="conv-badge employer">Employer</span>
-                  </div>
-                </div>
-              </div>
-
-            </div><!-- /conv-items -->
+            <div class="conv-items" id="conv-items"></div>
+            <!-- /conv-items -->
           </div><!-- /conv-list -->
 
           <!-- Chat Area -->
@@ -342,12 +268,12 @@
             <!-- Chat header -->
             <div class="chat-header">
               <div class="chat-header-avatar-wrap">
-                <img class="chat-header-avatar" id="chat-avatar" src="https://i.pravatar.cc/48?img=47" alt="" />
-                <span class="chat-header-online"></span>
+                <img class="chat-header-avatar" id="chat-avatar" src="https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af" alt="" />
+                <span class="chat-header-online" style="display: none;"></span>
               </div>
               <div class="chat-header-info">
-                <div class="chat-header-name" id="chat-name">Maria Reyes</div>
-                <div class="chat-header-status" id="chat-status">Active now</div>
+                <div class="chat-header-name" id="chat-name" data-i18n="msgSelectConvo">Select a Conversation</div>
+                <div class="chat-header-status" id="chat-status">...</div>
               </div>
               <div class="chat-header-actions">
                 <!-- Back button — mobile only -->
@@ -385,93 +311,17 @@
 
             <!-- Messages -->
             <div class="chat-messages" id="chat-messages">
-
-              <!-- Maria Reyes conversation (default visible) -->
-              <div id="msgs-maria">
-                <div class="msg-bubble-wrap received">
-                  <div class="msg-bubble received">Hi Juan! I reviewed your application for the carpentry position.
-                  </div>
-                </div>
-                <div class="msg-timestamp">10:30 AM</div>
-
-                <div class="msg-bubble-wrap sent">
-                  <div class="msg-bubble sent">Hello! Thank you for considering my application. I'm very interested in
-                    this opportunity.</div>
-                </div>
-                <div class="msg-timestamp right">10:32 AM</div>
-
-                <div class="msg-bubble-wrap received">
-                  <div class="msg-bubble received">Your experience looks great! I see you've worked on similar
-                    projects
-                    before.</div>
-                </div>
-                <div class="msg-timestamp">10:33 AM</div>
-
-                <div class="msg-bubble-wrap sent">
-                  <div class="msg-bubble sent">Yes, I've completed several home renovation projects including kitchen
-                    cabinets and custom shelving. I take pride in quality craftsmanship.</div>
-                </div>
-                <div class="msg-timestamp right">10:35 AM</div>
-              </div>
-
-              <!-- ABC Construction conversation (hidden) -->
-              <div id="msgs-abc" style="display:none;">
-                <div class="msg-bubble-wrap received">
-                  <div class="msg-bubble received">Hello Juan, we reviewed your profile and you seem like a great fit
-                    for our project.</div>
-                </div>
-                <div class="msg-timestamp">9:00 AM</div>
-
-                <div class="msg-bubble-wrap sent">
-                  <div class="msg-bubble sent">Thank you! I'd love to learn more about the position.</div>
-                </div>
-                <div class="msg-timestamp right">9:05 AM</div>
-
-                <div class="msg-bubble-wrap received">
-                  <div class="msg-bubble received">We'd like to schedule an interview at our site. Are you available
-                    this week?</div>
-                </div>
-                <div class="msg-timestamp">9:10 AM</div>
-              </div>
-
-              <!-- Representative conversation (hidden) -->
-              <div id="msgs-rep" style="display:none;">
-                <div class="msg-bubble-wrap received">
-                  <div class="msg-bubble received">Hi Juan! I'm your community representative. I found a great
-                    opportunity that matches your skills.</div>
-                </div>
-                <div class="msg-timestamp">7:00 AM</div>
-
-                <div class="msg-bubble-wrap sent">
-                  <div class="msg-bubble sent">That sounds interesting! Can you tell me more about it?</div>
-                </div>
-                <div class="msg-timestamp right">7:15 AM</div>
-              </div>
-
-              <!-- Local Hardware conversation (hidden) -->
-              <div id="msgs-local" style="display:none;">
-                <div class="msg-bubble-wrap received">
-                  <div class="msg-bubble received">Juan, your application for the store renovation project has been
-                    approved!</div>
-                </div>
-                <div class="msg-timestamp">Yesterday 2:00 PM</div>
-
-                <div class="msg-bubble-wrap sent">
-                  <div class="msg-bubble sent">Wonderful! When do we start?</div>
-                </div>
-                <div class="msg-timestamp right">Yesterday 2:10 PM</div>
-
-                <div class="msg-bubble-wrap received">
-                  <div class="msg-bubble received">Perfect! See you on Monday at 8am.</div>
-                </div>
-                <div class="msg-timestamp">Yesterday 2:15 PM</div>
+              <!-- Messages will be loaded here dynamically -->
+              <div
+                style="text-align:center; color: #9ca3af; padding: 20px; height: 100%; display: flex; align-items: center; justify-content: center;">
+                <div data-i18n="msgStartMessaging">Select a conversation to start messaging.</div>
               </div>
 
             </div><!-- /chat-messages -->
 
             <!-- Input area -->
             <div class="chat-input-area">
-              <input class="chat-input" id="chat-input" type="text" placeholder="Type a message..."
+              <input class="chat-input" id="chat-input" type="text" placeholder="Type a message..." data-i18n="msgTypeMessage"
                 onkeydown="sendOnEnter(event)" />
               <button class="chat-send-btn" onclick="sendMessage()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -495,17 +345,17 @@
 
             <!-- Profile Status -->
             <div class="prof-card">
-              <div class="prof-section-title">Profile Status</div>
+              <div class="prof-section-title" data-i18n="profileStatus">Profile Status</div>
               <div class="status-open">
                 <span class="status-dot-green"></span>
                 <div>
-                  <div class="status-open-title">Open for Work</div>
-                  <div class="status-open-sub">Actively seeking opportunities</div>
+                  <div class="status-open-title" data-i18n="profileOpenForWork">Open for Work</div>
+                  <div class="status-open-sub" data-i18n="profileActivelySeeking">Actively seeking opportunities</div>
                 </div>
               </div>
               <div class="completion-wrap">
                 <div class="completion-row">
-                  <span class="completion-label">Profile Completion</span>
+                  <span class="completion-label" data-i18n="profileCompletion">Profile Completion</span>
                   <span class="completion-pct" id="profileCompletionPct">0%</span>
                 </div>
                 <div class="completion-bar">
@@ -516,14 +366,14 @@
 
             <!-- Statistics -->
             <div class="prof-card">
-              <div class="prof-section-title">Statistics</div>
+              <div class="prof-section-title" data-i18n="profileStats">Statistics</div>
               <div class="stats-list">
                 <div class="stat-line">
                   <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
                     <polygon
                       points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                   </svg>
-                  Rating
+                  <span data-i18n="profileRating">Rating</span>
                   <span class="sl-val">4.8/5.0</span>
                 </div>
                 <div class="stat-line">
@@ -532,7 +382,7 @@
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                     <polyline points="22 4 12 14.01 9 11.01" />
                   </svg>
-                  Completed Jobs
+                  <span data-i18n="profileCompletedJobs">Completed Jobs</span>
                   <span class="sl-val">42</span>
                 </div>
                 <div class="stat-line">
@@ -543,7 +393,7 @@
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
-                  Profile Views
+                  <span data-i18n="profileCardViews">Profile Views</span>
                   <span class="sl-val">127</span>
                 </div>
               </div>
@@ -551,11 +401,11 @@
 
             <!-- Skills & Endorsements -->
             <div class="prof-card">
-              <div class="prof-section-title">Skills</div>
+              <div class="prof-section-title" data-i18n="profileSkills">Skills</div>
 
               <div class="skills-list" id="skillsList"></div>
 
-              <button class="add-skill-btn" id="addSkillBtn">Add Skill</button>
+              <button class="add-skill-btn" id="addSkillBtn" data-i18n="profileAddSkill">Add Skill</button>
             </div>
 
           </div><!-- /profile-left-col -->
@@ -577,7 +427,7 @@
                       </path>
                       <circle cx="12" cy="13" r="4"></circle>
                     </svg>
-                    <span>Change Cover</span>
+                    <span data-i18n="profileChangeCover">Change Cover</span>
                   </span>
                 </div>
               </label>
@@ -632,7 +482,7 @@
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                     <circle cx="12" cy="10" r="3" />
                   </svg>
-                  <span id="profileLocationText">Set current location</span>
+                  <span id="profileLocationText" data-i18n="profileSetLocation">Set current location</span>
                 </div>
                 <div class="prof-meta-item">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -650,7 +500,7 @@
                       stroke-linejoin="round">
                       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
-                    Message
+                    <span data-i18n="profileMessage">Message</span>
                   </button>
                   <button class="prof-btn-contact">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -658,7 +508,7 @@
                       <path
                         d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                     </svg>
-                    Contact
+                    <span data-i18n="profileContact">Contact</span>
                   </button>
                 </div>
               </div>
@@ -667,7 +517,7 @@
             <!-- About -->
             <div class="prof-card">
               <div class="prof-section-title prof-section-title-row">
-                <span>About</span>
+                <span data-i18n="profileAbout">About</span>
                 <button type="button" class="prof-about-edit-btn" id="editAboutBtn" aria-label="Edit about">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round">
@@ -689,7 +539,7 @@
             <!-- Work Experience -->
             <div class="prof-card">
               <div class="prof-section-title prof-section-title-row">
-                <span>Work Experience</span>
+                <span data-i18n="profileWorkExperience">Work Experience</span>
                 <button type="button" class="prof-about-edit-btn" id="addExperienceBtn" aria-label="Add experience">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round">
@@ -704,7 +554,7 @@
 
             <!-- Portfolio -->
             <div class="prof-card">
-              <div class="prof-section-title">My Photos</div>
+              <div class="prof-section-title" data-i18n="profileMyPhotos">My Photos</div>
 
               <div class="portfolio-grid" id="portfolioGrid">
                 <label for="portfolioUploadInput" class="port-add" id="portfolioAddBtn">
@@ -713,7 +563,7 @@
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                   </svg>
-                  <span id="portfolioAddText">Add Photo</span>
+                  <span id="portfolioAddText" data-i18n="profileAddPhoto">Add Photo</span>
                 </label>
               </div>
 
@@ -722,7 +572,7 @@
 
             <!-- Reviews & Ratings -->
             <div class="prof-card">
-              <div class="prof-section-title">Reviews &amp; Ratings</div>
+              <div class="prof-section-title" data-i18n="profileReviews">Reviews &amp; Ratings</div>
               <div class="reviews-list">
                 <div class="review-item">
                   <img class="review-avatar" src="https://i.pravatar.cc/48?img=47" alt="Maria Reyes" />
@@ -810,7 +660,7 @@
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
         </svg>
-        Home
+        <span data-i18n="mobHome">Home</span>
       </button>
       <button class="mobile-nav-item" id="mob-jobs" onclick="showPage('jobs')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -818,14 +668,14 @@
           <rect x="2" y="7" width="20" height="14" rx="2" />
           <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
         </svg>
-        Jobs
+        <span data-i18n="mobJobs">Jobs</span>
       </button>
       <button class="mobile-nav-item" id="mob-messages" onclick="showPage('messages')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
           stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
-        Messages
+        <span data-i18n="mobMessages">Messages</span>
       </button>
       <button class="mobile-nav-item" id="mob-profile" onclick="showPage('profile')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -833,15 +683,18 @@
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
-        Profile
+        <span data-i18n="mobProfile">Profile</span>
       </button>
     </div>
   </nav>
 
   <script>
 
-
     let selectedJobType = "all";
+    let activeConversationId = null;
+    let unsubscribeActiveMessages = null;
+    let unsubscribeActiveParticipant = null;
+
 
     function setJobTypeFilter(type) {
       selectedJobType = type;
@@ -928,6 +781,18 @@
 
       // Scroll to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (page === 'messages') {
+        // After a short delay to allow the page to render,
+        // check if a conversation should be auto-selected.
+        setTimeout(() => {
+          const activeConv = document.querySelector('#conv-items .conv-item.active');
+          if (!activeConv) {
+            const firstConv = document.querySelector('#conv-items .conv-item');
+            if (firstConv) firstConv.click();
+          }
+        }, 100);
+      }
     }
 
     /* ══════════════════════════════════════
@@ -964,50 +829,71 @@
     /* ══════════════════════════════════════
        MESSAGES
     ══════════════════════════════════════ */
-    let activeConv = 'maria';
-
-    const convMeta = {
-      maria: { name: 'Maria Reyes', avatar: 'https://i.pravatar.cc/48?img=47', status: 'Active now', online: true },
-      abc: { name: 'ABC Construction', avatar: 'https://i.pravatar.cc/48?img=52', status: 'Active 1h ago', online: false },
-      rep: { name: 'Representative', avatar: 'https://i.pravatar.cc/48?img=60', status: 'Active now', online: true },
-      local: { name: 'Local Hardware', avatar: 'https://i.pravatar.cc/48?img=68', status: 'Active 1d ago', online: false },
-    };
-
-    function openConv(el, convId) {
-      // Update active state on list items
+    async function openConv(el, convId) {
       document.querySelectorAll('.conv-item').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
-
-      // Remove unread badge on click
       const badge = el.querySelector('.unread-dot');
       if (badge) badge.remove();
+ 
+      activeConversationId = convId;
 
-      // Switch message threads
-      document.querySelectorAll('#chat-messages > div[id^="msgs-"]').forEach(d => d.style.display = 'none');
-      const thread = document.getElementById('msgs-' + convId);
-      if (thread) thread.style.display = '';
+      const fallbackName = el.dataset.name || "Conversation";
+      const fallbackAvatar = el.dataset.avatar || "https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af";
+      document.getElementById('chat-name').textContent = fallbackName;
+      document.getElementById('chat-status').textContent = "Loading...";
+      document.getElementById('chat-avatar').src = fallbackAvatar;
+      document.querySelector('.chat-header-online').style.display = 'none';
 
-      // Update header
-      const meta = convMeta[convId];
-      if (meta) {
-        document.getElementById('chat-name').textContent = meta.name;
-        document.getElementById('chat-status').textContent = meta.status;
-        document.getElementById('chat-avatar').src = meta.avatar;
-        const onlineDot = document.querySelector('.chat-header-online');
-        if (onlineDot) onlineDot.style.display = meta.online ? '' : 'none';
+      if (window.listenToConversationMessages) {
+        window.listenToConversationMessages(convId);
+      }
+ 
+      if (unsubscribeActiveParticipant) {
+        unsubscribeActiveParticipant();
+        unsubscribeActiveParticipant = null;
+      }
+ 
+      try {
+        const convSnap = await getDoc(doc(db, "conversations", convId));
+        if (!convSnap.exists() || !auth.currentUser) {
+          document.getElementById('chat-status').textContent = "Offline";
+          return;
+        }
+
+        const convData = convSnap.data();
+        const otherId = convData.participantIds.find(id => id !== auth.currentUser.uid);
+        if (!otherId) {
+          document.getElementById('chat-status').textContent = "Participant not found";
+          return;
+        }
+
+        const participantRef = doc(db, "employers", otherId);
+        unsubscribeActiveParticipant = onSnapshot(participantRef, (participantSnap) => {
+          if (participantSnap.exists()) {
+            const participantData = participantSnap.data();
+            const name = participantData.name || "Employer";
+            const avatar = participantData.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=fbbf24&color=ffffff`;
+            document.getElementById('chat-name').textContent = name;
+            document.getElementById('chat-status').textContent = "Active recently";
+            document.getElementById('chat-avatar').src = avatar;
+          } else {
+            document.getElementById('chat-status').textContent = "Offline";
+          }
+        }, (error) => {
+          console.error("Participant listener error:", error);
+          document.getElementById('chat-status').textContent = "Error loading status";
+        });
+      } catch (error) {
+        console.error("Failed to open conversation details:", error);
+        document.getElementById('chat-status').textContent = "Failed to load";
       }
 
-      // Mobile: show chat panel, hide conv list
       const shell = document.querySelector('.msg-shell');
       if (window.innerWidth < 900 && shell) {
         shell.classList.add('chat-open');
       }
-
-      // Scroll messages to bottom
       const msgs = document.getElementById('chat-messages');
-      setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 60);
-
-      activeConv = convId;
+      setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 100);
     }
 
     function closeChat() {
@@ -1016,43 +902,17 @@
       if (shell) shell.classList.remove('chat-open');
     }
 
-    function sendMessage() {
+    async function sendMessage() {
       const input = document.getElementById('chat-input');
       const text = input.value.trim();
       if (!text) return;
 
-      const thread = document.getElementById('msgs-' + activeConv);
-      if (!thread) return;
-
-      // Build sent bubble + timestamp
-      const now = new Date();
-      const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-
-      const wrap = document.createElement('div');
-      wrap.className = 'msg-bubble-wrap sent';
-      wrap.innerHTML = `<div class="msg-bubble sent">${text}</div>`;
-
-      const ts = document.createElement('div');
-      ts.className = 'msg-timestamp right';
-      ts.textContent = time;
-
-      thread.appendChild(wrap);
-      thread.appendChild(ts);
-
-      // Update preview in conv list
-      const sel = '.conv-item[onclick*="' + activeConv + '"]';
-      const convItem = document.querySelector(sel);
-      if (convItem) {
-        const preview = convItem.querySelector('.conv-preview');
-        if (preview) preview.textContent = text.length > 22 ? text.substring(0, 22) + '...' : text;
-        const timeEl = convItem.querySelector('.conv-time');
-        if (timeEl) timeEl.textContent = 'now';
+      if (window.sendRealtimeMessage) {
+        await window.sendRealtimeMessage(text);
+        input.value = '';
+      } else {
+        alert("Messaging not initialized.");
       }
-
-      input.value = '';
-
-      const msgs = document.getElementById('chat-messages');
-      msgs.scrollTop = msgs.scrollHeight;
     }
 
     function sendOnEnter(e) {
@@ -1119,6 +979,135 @@
         closeExperienceModal();
       }
     });
+
+    /* ══════════════════════════════════════
+       LANGUAGE TRANSLATION
+    ══════════════════════════════════════ */
+    const translations = {
+      en: {
+        searchPlaceholder: "Search jobs, skills, or location...",
+        ddViewProfile: "View Profile",
+        ddDarkMode: "Dark Mode",
+        ddSettings: "Settings",
+        ddHelp: "Help & Support",
+        ddLogout: "Log Out",
+        sidebarHome: "Home",
+        sidebarJobs: "Jobs",
+        sidebarMessages: "Messages",
+        sidebarPortfolio: "Portfolio",
+        profileCardViews: "Profile Views",
+        profileCardApps: "Applications",
+        profileCardOpen: "Open for Work",
+        homeJobsNearYou: "Available Jobs Near You",
+        jobsFindJobs: "Find Jobs",
+        jobsAvailable: "jobs available in your area",
+        jobsSaved: "Saved Jobs",
+        jobsSearchPlaceholder: "Search by job title, co...",
+        jobsAll: "All Jobs",
+        jobsFullTime: "Full-time",
+        jobsPartTime: "Part-time",
+        jobsContract: "Contract",
+        msgSearch: "Search conversations...",
+        msgSelectConvo: "Select a Conversation",
+        msgStartMessaging: "Select a conversation to start messaging.",
+        msgTypeMessage: "Type a message...",
+        profileStatus: "Profile Status",
+        profileOpenForWork: "Open for Work",
+        profileActivelySeeking: "Actively seeking opportunities",
+        profileCompletion: "Profile Completion",
+        profileStats: "Statistics",
+        profileRating: "Rating",
+        profileCompletedJobs: "Completed Jobs",
+        profileSkills: "Skills",
+        profileAddSkill: "Add Skill",
+        profileChangeCover: "Change Cover",
+        profileSetLocation: "Set current location",
+        profileMessage: "Message",
+        profileContact: "Contact",
+        profileAbout: "About",
+        profileWorkExperience: "Work Experience",
+        profileAddExperience: "Add Experience",
+        profileMyPhotos: "My Photos",
+        profileAddPhoto: "Add Photo",
+        profileReviews: "Reviews & Ratings",
+        mobHome: "Home",
+        mobJobs: "Jobs",
+        mobMessages: "Messages",
+        mobProfile: "Profile",
+      },
+      war: {
+        searchPlaceholder: "Pamiling hin trabaho, abilidad, o lokasyon...",
+        ddViewProfile: "Kitaa an Profile",
+        ddDarkMode: "Dark Mode",
+        ddSettings: "Mga Setting",
+        ddHelp: "Bulig & Suporta",
+        ddLogout: "Pag-log Out",
+        sidebarHome: "Panimalay",
+        sidebarJobs: "Mga Trabaho",
+        sidebarMessages: "Mga Mensahe",
+        sidebarPortfolio: "Portfolio",
+        profileCardViews: "Mga Pagkita han Profile",
+        profileCardApps: "Mga Aplikasyon",
+        profileCardOpen: "Abierto para Trabaho",
+        homeJobsNearYou: "Mga Trabaho nga Harani ha Imo",
+        jobsFindJobs: "Pamiling hin Trabaho",
+        jobsAvailable: "nga trabaho an available ha imo lugar",
+        jobsSaved: "Mga Naisave nga Trabaho",
+        jobsSearchPlaceholder: "Pamiling base ha titulo han trabaho...",
+        jobsAll: "Ngatanan nga Trabaho",
+        jobsFullTime: "Full-time",
+        jobsPartTime: "Part-time",
+        jobsContract: "Kontrata",
+        msgSearch: "Pamiling hin mga istorya...",
+        msgSelectConvo: "Pagpili hin Istorya",
+        msgStartMessaging: "Pagpili hin istorya para magtikang pag-mensahe.",
+        msgTypeMessage: "Pagsurat hin mensahe...",
+        profileStatus: "Status han Profile",
+        profileOpenForWork: "Abierto para Trabaho",
+        profileActivelySeeking: "Aktibo nga namimiling hin oportunidad",
+        profileCompletion: "Pagkakumpleto han Profile",
+        profileStats: "Mga Estadistika",
+        profileRating: "Rating",
+        profileCompletedJobs: "Mga Natapos nga Trabaho",
+        profileSkills: "Mga Abilidad",
+        profileAddSkill: "Pagdugang hin Abilidad",
+        profileChangeCover: "Pag-ilis hin Cover",
+        profileSetLocation: "Ibutang an yana nga lokasyon",
+        profileMessage: "Mensahe",
+        profileContact: "Kontaka",
+        profileAbout: "Mahitungod",
+        profileWorkExperience: "Karanasan ha Trabaho",
+        profileAddExperience: "Pagdugang hin Karanasan",
+        profileMyPhotos: "Akon Mga Litrato",
+        profileAddPhoto: "Pagdugang hin Litrato",
+        profileReviews: "Mga Repaso & Rating",
+        mobHome: "Panimalay",
+        mobJobs: "Mga Trabaho",
+        mobMessages: "Mga Mensahe",
+        mobProfile: "Profile",
+      }
+    };
+
+    function applyTranslations(lang) {
+      if (!translations[lang]) return;
+
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        const translation = translations[lang][key];
+        if (translation) {
+          if (element.placeholder !== undefined) {
+            element.placeholder = translation;
+          } else {
+            element.innerHTML = translation;
+          }
+        }
+      });
+    }
+
+    (function initLanguage() {
+      const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+      applyTranslations(savedLang);
+    })();
   </script>
 
   <!-- Edit profile headline modal -->
@@ -1400,6 +1389,250 @@
     const homeApplicantCountUnsubs = new Map();
     const savedApplicantCountUnsubs = new Map();
 
+    function listenToJobSeekerConversations(userId) {
+      const convItemsContainer = document.getElementById("conv-items");
+      if (!convItemsContainer) return;
+
+      const q = query(
+        collection(db, "conversations"),
+        where("participantIds", "array-contains", userId),
+        orderBy("updatedAt", "desc")
+      );
+
+      onSnapshot(q, (snapshot) => {
+        convItemsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #9ca3af;">Loading conversations...</div>';
+        if (snapshot.empty) {
+          convItemsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #9ca3af;">No conversations yet.</div>';
+          return;
+        }
+
+        convItemsContainer.innerHTML = ''; // Clear loading message
+
+        snapshot.forEach(docSnap => {
+          const convData = docSnap.data();
+          const convId = docSnap.id;
+
+          const otherParticipant = {
+            name: convData.employerName || "Employer",
+            avatar: convData.employerPhotoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(convData.employerName || 'E')}&background=fbbf24&color=ffffff`,
+            status: "Active recently",
+            online: false
+          };
+
+          const lastMessage = escapeHtml(convData.lastMessage || "...");
+          const updatedAt = convData.updatedAt ? formatPostTime(convData.updatedAt) : "now";
+
+          const item = document.createElement("div");
+          item.className = "conv-item";
+          item.dataset.convid = convId;
+          item.dataset.name = otherParticipant.name;
+          item.dataset.avatar = otherParticipant.avatar;
+          item.dataset.status = otherParticipant.status;
+          item.dataset.online = String(otherParticipant.online);
+
+          item.setAttribute('onclick', `window.openConv(this, '${convId}')`);
+
+          item.innerHTML = `
+            <div class="conv-avatar-wrap">
+              <img class="conv-avatar" src="${otherParticipant.avatar}" alt="${escapeHtml(otherParticipant.name)}" />
+              ${otherParticipant.online ? '<span class="conv-online"></span>' : ''}
+            </div>
+            <div class="conv-body">
+              <div class="conv-header-row">
+                <span class="conv-name">${escapeHtml(otherParticipant.name).substring(0, 10)}...</span>
+                <span class="conv-time">${updatedAt}</span>
+              </div>
+              <div class="conv-preview">${lastMessage.substring(0, 22)}${lastMessage.length > 22 ? '...' : ''}</div>
+              <div class="conv-footer-row"><span class="conv-badge employer">Employer</span></div>
+            </div>`;
+          convItemsContainer.appendChild(item);
+        });
+      }, (error) => {
+        console.error("Error listening to conversations:", error);
+        convItemsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #ef4444;">Failed to load conversations.</div>';
+      });
+    }
+
+    function updateConversationSidebarPreview(conversationId, text) {
+      const convItem = document.querySelector(`.conv-item[data-convid="${conversationId}"]`);
+      if (!convItem) return;
+
+      const preview = convItem.querySelector(".conv-preview");
+      if (preview) {
+        preview.textContent = text.length > 22 ? text.substring(0, 22) + "..." : text;
+      }
+
+      const timeEl = convItem.querySelector(".conv-time");
+      if (timeEl) timeEl.textContent = "now";
+
+      const convItems = document.getElementById("conv-items");
+      if (convItems) convItems.prepend(convItem);
+    }
+
+    window.openConv = async function(el, convId) {
+      document.querySelectorAll('.conv-item').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      const badge = el.querySelector('.unread-dot');
+      if (badge) badge.remove();
+ 
+      activeConversationId = convId;
+
+      const fallbackName = el.dataset.name || "Conversation";
+      const fallbackAvatar = el.dataset.avatar || "https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af";
+      document.getElementById('chat-name').textContent = fallbackName;
+      document.getElementById('chat-status').textContent = "Loading...";
+      document.getElementById('chat-avatar').src = fallbackAvatar;
+      document.querySelector('.chat-header-online').style.display = 'none';
+
+      if (window.listenToConversationMessages) {
+        window.listenToConversationMessages(convId);
+      }
+ 
+      if (unsubscribeActiveParticipant) {
+        unsubscribeActiveParticipant();
+        unsubscribeActiveParticipant = null;
+      }
+ 
+      try {
+        const convSnap = await getDoc(doc(db, "conversations", convId));
+        if (!convSnap.exists() || !auth.currentUser) {
+          document.getElementById('chat-status').textContent = "Offline";
+          return;
+        }
+
+        const convData = convSnap.data();
+        const otherId = convData.participantIds.find(id => id !== auth.currentUser.uid);
+        if (!otherId) {
+          document.getElementById('chat-status').textContent = "Participant not found";
+          return;
+        }
+
+        const participantRef = doc(db, "employers", otherId);
+        unsubscribeActiveParticipant = onSnapshot(participantRef, (participantSnap) => {
+          if (participantSnap.exists()) {
+            const participantData = participantSnap.data();
+            const name = participantData.name || "Employer";
+            const avatar = participantData.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=fbbf24&color=ffffff`;
+            document.getElementById('chat-name').textContent = name;
+            document.getElementById('chat-status').textContent = "Active recently";
+            document.getElementById('chat-avatar').src = avatar;
+          } else {
+            document.getElementById('chat-status').textContent = "Offline";
+          }
+        }, (error) => {
+          console.error("Participant listener error:", error);
+          document.getElementById('chat-status').textContent = "Error loading status";
+        });
+      } catch (error) {
+        console.error("Failed to open conversation details:", error);
+        document.getElementById('chat-status').textContent = "Failed to load";
+      }
+
+      const shell = document.querySelector('.msg-shell');
+      if (window.innerWidth < 900 && shell) {
+        shell.classList.add('chat-open');
+      }
+      const msgs = document.getElementById('chat-messages');
+      setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 100);
+    }
+
+    window.sendRealtimeMessage = async function (text) {
+      try {
+        if (!auth.currentUser) {
+          alert("You must be logged in to send a message.");
+          return;
+        }
+
+        if (!activeConversationId) {
+          alert("No active conversation selected.");
+          return;
+        }
+
+        const trimmed = String(text || "").trim();
+        if (!trimmed) return;
+
+        await addDoc(
+          collection(db, "conversations", activeConversationId, "messages"),
+          {
+            senderId: auth.currentUser.uid,
+            text: trimmed,
+            createdAt: serverTimestamp()
+          }
+        );
+
+        await setDoc(
+          doc(db, "conversations", activeConversationId),
+          {
+            lastMessage: trimmed,
+            updatedAt: serverTimestamp()
+          },
+          { merge: true }
+        );
+
+        updateConversationSidebarPreview(activeConversationId, trimmed);
+
+      } catch (error) {
+        console.error("SEND REALTIME MESSAGE ERROR:", error);
+        alert("Failed to send message: " + (error.message || error));
+      }
+    };
+
+    window.listenToConversationMessages = function (conversationId) {
+      try {
+        if (unsubscribeActiveMessages) {
+          unsubscribeActiveMessages();
+          unsubscribeActiveMessages = null;
+        }
+
+        const chatMessages = document.getElementById("chat-messages");
+        if (!chatMessages || !conversationId) return;
+
+        chatMessages.innerHTML = `<div style="text-align:center; color: #9ca3af; padding: 20px;">Loading messages...</div>`;
+
+        const messagesQuery = query(
+          collection(db, "conversations", conversationId, "messages"),
+          orderBy("createdAt", "asc")
+        );
+
+        unsubscribeActiveMessages = onSnapshot(messagesQuery, (snapshot) => {
+          chatMessages.innerHTML = "";
+
+          if (snapshot.empty) {
+            chatMessages.innerHTML = `<div style="text-align:center; color: #9ca3af; padding: 20px;">No messages yet. Start the conversation!</div>`;
+            return;
+          }
+
+          snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const isMine = data.senderId === auth.currentUser.uid;
+            const text = escapeHtml(data.text || "");
+            const createdAt = data.createdAt?.toDate?.();
+            const timeText = createdAt ? createdAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "Sending...";
+
+            const wrap = document.createElement("div");
+            wrap.className = `msg-bubble-wrap ${isMine ? "sent" : "received"}`;
+            wrap.innerHTML = `<div class="msg-bubble ${isMine ? "sent" : "received"}">${text}</div>`;
+
+            const ts = document.createElement("div");
+            ts.className = `msg-timestamp ${isMine ? "right" : ""}`;
+            ts.textContent = timeText;
+
+            chatMessages.appendChild(wrap);
+            chatMessages.appendChild(ts);
+          });
+
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, (error) => {
+          console.error("LISTEN MESSAGES ERROR:", error);
+          const errorMsg = error.code === 'permission-denied' 
+            ? "Permission denied. Please check your Firestore security rules." 
+            : `Failed to load messages. (${error.code || 'unknown'})`;
+          chatMessages.innerHTML = `<div class="msg-bubble-wrap received"><div class="msg-bubble received" style="background-color: #fee2e2; color: #b91c1c;">${errorMsg}</div></div>`;
+        });
+      } catch (error) {
+        console.error("SETUP MESSAGE LISTENER ERROR:", error);
+      }
+    };
 
 
     onAuthStateChanged(auth, async (user) => {
@@ -1452,6 +1685,7 @@
       }
 
       currentUser = user;
+      listenToJobSeekerConversations(user.uid);
       listenToSavedJobs();
       listenToHomeJobs();
       listenToMyApplicationsCount(user.uid);
