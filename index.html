@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BlueCollar Connect</title>
+  <title>BLUESPACE</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -60,14 +60,12 @@
     .brand-logo {
       width: 68px;
       height: 68px;
-      border-radius: 8px;
-      background: linear-gradient(145deg, #f4a07a 0%, #d96b5b 40%, #7bbfb0 100%);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      box-shadow: 0 4px 16px rgba(217, 107, 91, 0.28);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      background: transparent;
+      box-shadow: none;
     }
 
     .brand-logo:hover {
@@ -75,9 +73,11 @@
       box-shadow: 0 10px 28px rgba(217, 107, 91, 0.38);
     }
 
-    .brand-logo svg {
-      width: 34px;
-      height: 34px;
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
     }
 
     .brand-title {
@@ -363,14 +363,10 @@
   <!-- Brand -->
   <div class="brand-block d-flex align-items-center gap-3">
     <div class="brand-logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
-        <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-      </svg>
+      <img src="BlueSpaceIcon.png" alt="BlueSpace Logo">
     </div>
     <div>
-      <div class="brand-title">BlueCollar Connect</div>
+      <div class="brand-title">BLUESPACE</div>
       <!-- Added data-i18n attribute here -->
       <div class="brand-subtitle" data-i18n="subtitle">Community Job Coordination Platform</div>
     </div>
@@ -396,9 +392,10 @@
           </div>
           <!-- Added data-i18n attributes here -->
           <div class="card-title" data-i18n="workerTitle">Job Seeker / Worker</div>
-          <div class="card-desc" data-i18n="workerDesc">Find local job opportunities, showcase your skills, and connect with employers.</div>
-          <a href="JobSeeker_Worker_LogInPage.html" class="card-link card-link--teal" data-i18n="getStarted">Get Started <span
-              class="arrow">→</span></a>
+          <div class="card-desc" data-i18n="workerDesc">Find local job opportunities, showcase your skills, and connect
+            with employers.</div>
+          <a href="JobSeeker_Worker_LogInPage.html" class="card-link card-link--teal" data-i18n="getStarted">Get Started
+            <span class="arrow">→</span></a>
         </div>
       </div>
 
@@ -415,7 +412,8 @@
           </div>
           <!-- Added data-i18n attributes here -->
           <div class="card-title" data-i18n="employerTitle">Employer / Business</div>
-          <div class="card-desc" data-i18n="employerDesc">Post jobs, find qualified candidates, and build your team with verified workers.</div>
+          <div class="card-desc" data-i18n="employerDesc">Post jobs, find qualified candidates, and build your team with
+            verified workers.</div>
           <a href="Employer_LogInPage.html" class="card-link card-link--red" data-i18n="getStarted">Get Started <span
               class="arrow">→</span></a>
         </div>
@@ -427,12 +425,19 @@
   <!-- Language Selector with added onclick events and IDs -->
   <div class="language-selector">
     <a href="#" id="lang-en" class="lang-link active" onclick="switchLanguage('en', event)">English</a>
+
     <span class="lang-divider">•</span>
+
     <a href="#" id="lang-war" class="lang-link" onclick="switchLanguage('war', event)">Waray-Waray</a>
+
+    <span class="lang-divider">•</span>
+
+    <a href="#" id="lang-tl" class="lang-link" onclick="switchLanguage('tl', event)">Tagalog</a>
   </div>
 
   <!-- Added data-i18n attributes for the footer text and link -->
-  <p class="footer-text"><span data-i18n="needHelp">Need help? </span><a href="#" class="footer-link" data-i18n="contactSupport">Contact Support</a></p>
+  <p class="footer-text"><span data-i18n="needHelp">Need help? </span><a href="#" class="footer-link"
+      data-i18n="contactSupport">Contact Support</a></p>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -460,24 +465,48 @@
         getStarted: 'Magtikang <span class="arrow">→</span>',
         needHelp: "Kinahanglan hin bulig? ",
         contactSupport: "Kontaka an Suporta"
+      }, tl: {
+        subtitle: "Plataporma ng Komunidad para sa Koordinasyon ng Trabaho",
+        heading: "Piliin ang iyong portal upang makapagsimula",
+        workerTitle: "Naghahanap ng Trabaho / Manggagawa",
+        workerDesc: "Maghanap ng mga lokal na oportunidad sa trabaho, ipakita ang iyong mga kasanayan, at kumonekta sa mga employer.",
+        employerTitle: "Employer / Negosyo",
+        employerDesc: "Mag-post ng mga trabaho, humanap ng mga kwalipikadong aplikante, at bumuo ng iyong pangkat kasama ang mga beripikadong manggagawa.",
+        getStarted: 'Magsimula <span class="arrow">→</span>',
+        needHelp: "Kailangan ng tulong? ",
+        contactSupport: "Makipag-ugnayan sa Suporta"
       }
     };
 
     function switchLanguage(lang, event) {
-      if (event) event.preventDefault(); 
+      if (event) {
+        event.preventDefault();
+      }
 
-      // Save the selected language so other pages can use it
+      if (!translations[lang]) {
+        console.warn(`Unsupported language: ${lang}`);
+        return;
+      }
+
       localStorage.setItem('preferredLanguage', lang);
+      document.documentElement.lang = lang === 'tl' ? 'fil' : lang;
 
-      // Update active state on links
-      document.querySelectorAll('.lang-link').forEach(link => link.classList.remove('active'));
-      document.getElementById('lang-' + lang).classList.add('active');
+      document.querySelectorAll('.lang-link').forEach(link => {
+        link.classList.remove('active');
+      });
 
-      // Update text for all elements with data-i18n
+      const activeLanguageLink = document.getElementById('lang-' + lang);
+
+      if (activeLanguageLink) {
+        activeLanguageLink.classList.add('active');
+      }
+
       document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
-        if (translations[lang] && translations[lang][key]) {
-          element.innerHTML = translations[lang][key];
+        const translation = translations[lang][key];
+
+        if (translation !== undefined) {
+          element.innerHTML = translation;
         }
       });
     }
@@ -485,8 +514,11 @@
     // On page load, check for a saved language and apply it
     document.addEventListener('DOMContentLoaded', () => {
       const savedLang = localStorage.getItem('preferredLanguage');
-      if (savedLang) {
+
+      if (savedLang && translations[savedLang]) {
         switchLanguage(savedLang);
+      } else {
+        switchLanguage('en');
       }
     });
   </script>

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BlueCollar Connect</title>
+  <title>BLUESPACE</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="Employer_Dashboard.css" />
@@ -16,13 +16,9 @@
   <nav class="topnav">
     <div class="brand" onclick="showPage('home')">
       <div class="brand-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"
-          stroke-linejoin="round">
-          <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-        </svg>
+        <img src="BlueSpaceIcon.png" alt="BlueSpace Logo">
       </div>
-      <span class="brand-name">BlueCollar Connect</span>
+      <span class="brand-name">BLUESPACE</span>
     </div>
 
     <div class="search-bar">
@@ -37,13 +33,57 @@
     </div>
 
     <div class="nav-actions">
-      <div class="notif-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-        </svg>
-        <span class="notif-dot"></span>
+      <div class="notification-wrap" id="notificationWrap">
+
+        <button class="notif-btn" id="notificationButton" type="button" onclick="toggleNotificationPanel(event)"
+          aria-label="Open notifications" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+
+          <span class="notif-dot" id="notificationDot" hidden></span>
+
+          <span class="notification-count" id="notificationCount" hidden>
+            0
+          </span>
+        </button>
+
+        <div class="notification-panel" id="notificationPanel" aria-hidden="true">
+          <div class="notification-header">
+            <h2>Notifications</h2>
+
+            <button class="notification-more-btn" type="button" aria-label="Notification options">
+              •••
+            </button>
+          </div>
+
+          <div class="notification-toolbar">
+            <div class="notification-tabs">
+              <button class="notification-tab active" type="button" data-notification-filter="all"
+                onclick="setNotificationFilter('all', this)">
+                All
+              </button>
+
+              <button class="notification-tab" type="button" data-notification-filter="unread"
+                onclick="setNotificationFilter('unread', this)">
+                Unread
+              </button>
+            </div>
+
+            <button class="notification-mark-all" id="notificationMarkAllButton" type="button"
+              onclick="markAllJobNotificationsRead(event)">
+              Mark all read
+            </button>
+          </div>
+
+          <div class="notification-list" id="notificationList">
+            <div class="notification-loading">
+              Loading notifications...
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Avatar + Dropdown -->
@@ -86,6 +126,50 @@
                 <span class="dd-switch-thumb"></span>
               </span>
             </button>
+
+            <div class="dd-language-wrap">
+              <button class="dd-item dd-language-toggle" type="button" onclick="toggleLanguageMenu(event)"
+                aria-expanded="false" id="languageToggleBtn">
+                <span class="dd-language-left">
+                  <svg class="dd-language-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 0 20"></path>
+                    <path d="M12 2a15.3 15.3 0 0 0 0 20"></path>
+                  </svg>
+
+                  <span data-i18n="ddLanguages">Languages</span>
+                </span>
+
+                <svg class="dd-language-chevron" id="languageChevron" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+
+              <div class="dd-language-menu" id="languageMenu">
+                <button class="dd-language-option" type="button" data-lang="en"
+                  onclick="selectDashboardLanguage('en', event)">
+                  <span>English</span>
+                  <span class="dd-language-check">✓</span>
+                </button>
+
+                <button class="dd-language-option" type="button" data-lang="war"
+                  onclick="selectDashboardLanguage('war', event)">
+                  <span>Waray-Waray</span>
+                  <span class="dd-language-check">✓</span>
+                </button>
+
+                <button class="dd-language-option" type="button" data-lang="tl"
+                  onclick="selectDashboardLanguage('tl', event)">
+                  <span>Tagalog</span>
+                  <span class="dd-language-check">✓</span>
+                </button>
+              </div>
+            </div>
+
             <button class="dd-item" onclick="ddAction('settings')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
@@ -117,7 +201,7 @@
           </div>
         </div>
       </div><!-- /avatar-wrap -->
-    </div>
+    </div><!-- /nav-actions -->
   </nav>
 
   <div class="app-shell">
@@ -165,12 +249,10 @@
         <div class="profile-role">Carpenter | Painter</div>
         <div class="profile-stats">
           <div class="stat-row">
-            <span>Profile Views</span>
             <span data-i18n="profileCardViews">Profile Views</span>
             <span class="stat-val">127</span>
           </div>
           <div class="stat-row">
-            <span>Applications</span>
             <span data-i18n="profileCardApps">Applications</span>
             <span class="stat-val">8</span>
           </div>
@@ -199,8 +281,9 @@
               My Job Post
             </button>
 
-            <button class="applicants-btn" onclick="showApplicants()" data-i18n="homeApplicants">
-              Applicants <span id="applicantsRealtimeCount">(0)</span>
+            <button class="applicants-btn" onclick="showApplicants()">
+              <span data-i18n="homeApplicants">Applicants</span>
+              <span id="applicantsRealtimeCount">(0)</span>
             </button>
           </div>
         </div>
@@ -212,14 +295,14 @@
         <div id="employer-home-applicants" class="employer-home-panel" style="display:none;">
           <div class="applicants-modern-card">
             <div class="applicants-modern-header">
-              <h2 id="applicantsModernTitle">Applicants</h2>
+              <h2 id="applicantsModernTitle" data-i18n="homeApplicants">Applicants</h2>
               <div class="applicants-count-pill" id="applicantsModernCount">0 applicants</div>
             </div>
 
             <div id="applicantsModernList">
               <div class="applicants-empty-state">
-                <div class="applicants-empty-title">No applicants yet</div>
-                <div class="applicants-empty-text">
+                <div class="applicants-empty-title" data-i18n="applicantsEmptyTitle">No applicants yet</div>
+                <div class="applicants-empty-text" data-i18n="applicantsEmptyText">
                   Applicants from all of your job posts will appear here automatically.
                 </div>
               </div>
@@ -236,7 +319,8 @@
           <div class="job-listings-header">
             <div>
               <h1 class="job-listings-title" data-i18n="jobsMyPostings">My Job Postings</h1>
-              <p class="job-listings-subtitle" data-i18n="jobsManageListings">Manage your job listings and view applications</p>
+              <p class="job-listings-subtitle" data-i18n="jobsManageListings">Manage your job listings and view
+                applications</p>
             </div>
 
             <button class="job-listings-post-btn" type="button" onclick="openJobPostModal()">
@@ -258,13 +342,13 @@
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
               </span>
-              <input type="text" class="job-listings-search" placeholder="Search job postings..." data-i18n="jobsSearchPlaceholder"
-                oninput="filterJobPostings()">
+              <input type="text" class="job-listings-search" placeholder="Search job postings..."
+                data-i18n="jobsSearchPlaceholder" oninput="filterJobPostings()">
             </div>
 
             <div class="job-listings-filters">
               <select class="job-status-dropdown" id="jobStatusFilter" onchange="filterJobPostings()">
-                <option value="all" selected data-i18n="jobsAll">All Jobs</option>
+                <option value="all" data-i18n="jobsAll">All Jobs</option>
                 <option value="active" data-i18n="jobsActive">Active</option>
                 <option value="draft" data-i18n="jobsDrafts">Drafts</option>
                 <option value="closed" data-i18n="jobsClosed">Closed</option>
@@ -304,7 +388,8 @@
             <!-- Chat header -->
             <div class="chat-header">
               <div class="chat-header-avatar-wrap">
-                <img class="chat-header-avatar" id="chat-avatar" src="https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af" alt="" />
+                <img class="chat-header-avatar" id="chat-avatar"
+                  src="https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af" alt="" />
                 <span class="chat-header-online" style="display: none;"></span>
               </div>
               <div class="chat-header-info">
@@ -349,7 +434,8 @@
             <div class="chat-messages" id="chat-messages">
               <!-- Messages will be loaded here dynamically -->
               <div
-                style="text-align:center; color: #9ca3af; padding: 20px; height: 100%; display: flex; align-items: center; justify-content: center;">
+                style="text-align:center; color: #9ca3af; padding: 20px; height: 100%; display: flex; align-items: center; justify-content: center;"
+                data-i18n="msgStartMessaging">
                 <div data-i18n="msgStartMessaging">Select a conversation to start messaging.</div>
               </div>
 
@@ -357,8 +443,8 @@
 
             <!-- Input area -->
             <div class="chat-input-area">
-              <input class="chat-input" id="chat-input" type="text" placeholder="Type a message..." data-i18n="msgTypeMessage"
-                onkeydown="sendOnEnter(event)" />
+              <input class="chat-input" id="chat-input" type="text" placeholder="Type a message..."
+                data-i18n="msgTypeMessage" onkeydown="sendOnEnter(event)" />
               <button class="chat-send-btn" onclick="sendMessage()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                   stroke-linejoin="round">
@@ -385,7 +471,7 @@
               <div class="status-open">
                 <span class="status-dot-green"></span>
                 <div>
-                  <div class="status-open-title" data-i18n="profileOpenForWork">Open for Work</div>
+                  <div class="status-open-title" data-i18n="profileOpenForWork">Open for work</div>
                   <div class="status-open-sub" data-i18n="profileActivelySeeking">Actively seeking opportunities</div>
                 </div>
               </div>
@@ -698,7 +784,7 @@
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
         </svg>
-        Home
+        <span data-i18n="mobHome">Home</span>
       </button>
       <button class="mobile-nav-item" id="mob-jobs" onclick="showPage('jobs')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -706,14 +792,14 @@
           <rect x="2" y="7" width="20" height="14" rx="2" />
           <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
         </svg>
-        Job Listings
+        <span data-i18n="mobJobs">Job Listings</span>
       </button>
       <button class="mobile-nav-item" id="mob-messages" onclick="showPage('messages')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
           stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
-        Messages
+        <span data-i18n="mobMessages">Messages</span>
       </button>
       <button class="mobile-nav-item" id="mob-profile" onclick="showPage('profile')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -721,7 +807,7 @@
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
-        Profile
+        <span data-i18n="mobProfile">Profile</span>
       </button>
     </div>
   </nav>
@@ -735,20 +821,135 @@
       filterJobItems();
     }
 
+    let activeNotificationFilter = 'all';
+
+    function toggleNotificationPanel(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      const panel = document.getElementById('notificationPanel');
+      const button = document.getElementById('notificationButton');
+      const avatarDropdown = document.getElementById('avatarDropdown');
+
+      if (!panel) return;
+
+      const willOpen = !panel.classList.contains('open');
+
+      panel.classList.toggle('open', willOpen);
+      panel.setAttribute('aria-hidden', String(!willOpen));
+      button?.setAttribute('aria-expanded', String(willOpen));
+
+      // Avoid overlapping dropdowns.
+      avatarDropdown?.classList.remove('open');
+
+      document.getElementById('languageMenu')?.classList.remove('open');
+      document.getElementById('languageChevron')?.classList.remove('open');
+    }
+
+    function closeNotificationPanel() {
+      const panel = document.getElementById('notificationPanel');
+      const button = document.getElementById('notificationButton');
+
+      panel?.classList.remove('open');
+      panel?.setAttribute('aria-hidden', 'true');
+      button?.setAttribute('aria-expanded', 'false');
+    }
+
+    function setNotificationFilter(filter, button) {
+      activeNotificationFilter = filter;
+
+      document.querySelectorAll('.notification-tab').forEach(tab => {
+        tab.classList.toggle('active', tab === button);
+      });
+
+      document.querySelectorAll('.job-notification-item').forEach(item => {
+        const isUnread = item.dataset.unread === 'true';
+
+        item.hidden =
+          filter === 'unread' &&
+          !isUnread;
+      });
+
+      updateNotificationSectionVisibility();
+    }
+
+    function updateNotificationSectionVisibility() {
+      document.querySelectorAll('.notification-section').forEach(section => {
+        const visibleItems = Array.from(
+          section.querySelectorAll('.job-notification-item')
+        ).filter(item => !item.hidden);
+
+        section.hidden = visibleItems.length === 0;
+      });
+
+      const list = document.getElementById('notificationList');
+
+      if (!list) return;
+
+      const visibleItems = Array.from(
+        list.querySelectorAll('.job-notification-item')
+      ).filter(item => !item.hidden);
+
+      let empty = list.querySelector('.notification-filter-empty');
+
+      if (!visibleItems.length) {
+        if (!empty) {
+          empty = document.createElement('div');
+          empty.className = 'notification-filter-empty';
+          list.appendChild(empty);
+        }
+
+        empty.textContent =
+          activeNotificationFilter === 'unread'
+            ? 'You have no unread notifications.'
+            : 'You have no notifications yet.';
+
+        empty.hidden = false;
+      } else if (empty) {
+        empty.hidden = true;
+      }
+    }
+
     /* ══════════════════════════════════════
        AVATAR DROPDOWN
     ══════════════════════════════════════ */
     function toggleDropdown() {
-      const dd = document.getElementById('avatarDropdown');
-      dd.classList.toggle('open');
+      const dropdown = document.getElementById('avatarDropdown');
+      const willOpen = !dropdown.classList.contains('open');
+
+      dropdown.classList.toggle('open', willOpen);
+
+      if (willOpen) {
+        closeNotificationPanel();
+      }
     }
 
     // Close dropdown when clicking outside
-    document.addEventListener('click', function (e) {
-      const wrap = document.getElementById('avatarWrap');
-      const dd = document.getElementById('avatarDropdown');
-      if (wrap && !wrap.contains(e.target)) {
-        dd.classList.remove('open');
+    document.addEventListener('click', function (event) {
+      const avatarWrap = document.getElementById('avatarWrap');
+      const avatarDropdown = document.getElementById('avatarDropdown');
+
+      if (avatarWrap && !avatarWrap.contains(event.target)) {
+        avatarDropdown?.classList.remove('open');
+
+        document.getElementById('languageMenu')?.classList.remove('open');
+        document.getElementById('languageChevron')?.classList.remove('open');
+
+        document
+          .getElementById('languageToggleBtn')
+          ?.setAttribute('aria-expanded', 'false');
+      }
+
+      const notificationWrap =
+        document.getElementById('notificationWrap');
+
+      if (
+        notificationWrap &&
+        !notificationWrap.contains(event.target)
+      ) {
+        closeNotificationPanel();
       }
     });
 
@@ -767,6 +968,55 @@
           firebaseLogout();
         }
       }
+    }
+
+    function toggleLanguageMenu(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      const menu = document.getElementById('languageMenu');
+      const chevron = document.getElementById('languageChevron');
+      const toggleButton = document.getElementById('languageToggleBtn');
+
+      if (!menu) return;
+
+      const isOpen = menu.classList.toggle('open');
+
+      chevron?.classList.toggle('open', isOpen);
+      toggleButton?.setAttribute('aria-expanded', String(isOpen));
+    }
+
+    function selectDashboardLanguage(lang, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      if (!translations[lang]) {
+        console.warn(`Unsupported language: ${lang}`);
+        return;
+      }
+
+      localStorage.setItem('preferredLanguage', lang);
+      applyTranslations(lang);
+      updateActiveDashboardLanguage(lang);
+
+      document.getElementById('languageMenu')?.classList.remove('open');
+      document.getElementById('languageChevron')?.classList.remove('open');
+      document
+        .getElementById('languageToggleBtn')
+        ?.setAttribute('aria-expanded', 'false');
+    }
+
+    function updateActiveDashboardLanguage(lang) {
+      document.querySelectorAll('.dd-language-option').forEach(option => {
+        option.classList.toggle(
+          'active',
+          option.dataset.lang === lang
+        );
+      });
     }
 
     function applyTheme(theme) {
@@ -796,6 +1046,10 @@
     const pages = ['home', 'jobs', 'messages', 'profile'];
 
     function showPage(page) {
+      localStorage.setItem(
+        'employerCurrentPage',
+        page
+      );
       pages.forEach(p => {
         const panel = document.getElementById('page-' + p);
         if (panel) panel.classList.toggle('active', p === page);
@@ -832,79 +1086,21 @@
       }
     }
 
-    showPage('home');
-    showJobs();
+    const savedEmployerPage =
+      localStorage.getItem(
+        'employerCurrentPage'
+      );
 
-
-    /* ══════════════════════════════════════
-       MESSAGES
-    ══════════════════════════════════════ */
-    async function openConv(el, convId) {
-      document.querySelectorAll('.conv-item').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-      const badge = el.querySelector('.unread-dot');
-      if (badge) badge.remove();
- 
-      activeConversationId = convId;
-
-      const fallbackName = el.dataset.name || "Conversation";
-      const fallbackAvatar = el.dataset.avatar || "https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af";
-      document.getElementById('chat-name').textContent = fallbackName;
-      document.getElementById('chat-status').textContent = "Loading...";
-      document.getElementById('chat-avatar').src = fallbackAvatar;
-      document.querySelector('.chat-header-online').style.display = 'none';
-
-      if (window.listenToConversationMessages) {
-        window.listenToConversationMessages(convId);
-      }
- 
-      if (unsubscribeActiveParticipant) {
-        unsubscribeActiveParticipant();
-        unsubscribeActiveParticipant = null;
-      }
- 
-      try {
-        const convSnap = await getDoc(doc(db, "conversations", convId));
-        if (!convSnap.exists() || !auth.currentUser) {
-          document.getElementById('chat-status').textContent = "Offline";
-          return;
-        }
-
-        const convData = convSnap.data();
-        const otherId = convData.participantIds.find(id => id !== auth.currentUser.uid);
-        if (!otherId) {
-          document.getElementById('chat-status').textContent = "Participant not found";
-          return;
-        }
-
-        const participantRef = doc(db, "users", otherId);
-        unsubscribeActiveParticipant = onSnapshot(participantRef, (participantSnap) => {
-          if (participantSnap.exists()) {
-            const participantData = participantSnap.data();
-            const name = participantData.fullName || "Applicant";
-            const avatar = participantData.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ccfbf1&color=0f766e`;
-            document.getElementById('chat-name').textContent = name;
-            document.getElementById('chat-status').textContent = "Active recently";
-            document.getElementById('chat-avatar').src = avatar;
-          } else {
-            document.getElementById('chat-status').textContent = "Offline";
-          }
-        }, (error) => {
-          console.error("Participant listener error:", error);
-          document.getElementById('chat-status').textContent = "Error loading status";
-        });
-      } catch (error) {
-        console.error("Failed to open conversation details:", error);
-        document.getElementById('chat-status').textContent = "Failed to load";
-      }
- 
-      const shell = document.querySelector('.msg-shell');
-      if (window.innerWidth < 900 && shell) {
-        shell.classList.add('chat-open');
-      }
-
-      const msgs = document.getElementById('chat-messages');
-      setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 100);
+    if (
+      savedEmployerPage === 'messages' &&
+      localStorage.getItem(
+        'activeEmployerConversationId'
+      )
+    ) {
+      showPage('messages');
+    } else {
+      showPage('home');
+      showJobs();
     }
 
     function closeChat() {
@@ -1114,78 +1310,302 @@
       if (convItems) convItems.prepend(convItem);
     }
 
-    window.openConv = async function(el, convId) {
-      document.querySelectorAll('.conv-item').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-      const badge = el.querySelector('.unread-dot');
-      if (badge) badge.remove();
- 
-      activeConversationId = convId;
-
-      const fallbackName = el.dataset.name || "Conversation";
-      const fallbackAvatar = el.dataset.avatar || "https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af";
-      document.getElementById('chat-name').textContent = fallbackName;
-      document.getElementById('chat-status').textContent = "Loading...";
-      document.getElementById('chat-avatar').src = fallbackAvatar;
-      document.querySelector('.chat-header-online').style.display = 'none';
-
-      if (window.listenToConversationMessages) {
-        window.listenToConversationMessages(convId);
-      }
- 
-      if (unsubscribeActiveParticipant) {
-        unsubscribeActiveParticipant();
-        unsubscribeActiveParticipant = null;
-      }
- 
-      try {
-        const convSnap = await getDoc(doc(db, "conversations", convId));
-        if (!convSnap.exists() || !auth.currentUser) {
-          document.getElementById('chat-status').textContent = "Offline";
-          return;
-        }
-
-        const convData = convSnap.data();
-        const otherId = convData.participantIds.find(id => id !== auth.currentUser.uid);
-        if (!otherId) {
-          document.getElementById('chat-status').textContent = "Participant not found";
-          return;
-        }
-
-        const participantRef = doc(db, "users", otherId);
-        unsubscribeActiveParticipant = onSnapshot(participantRef, (participantSnap) => {
-          if (participantSnap.exists()) {
-            const participantData = participantSnap.data();
-            const name = participantData.fullName || "Applicant";
-            const avatar = participantData.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ccfbf1&color=0f766e`;
-            document.getElementById('chat-name').textContent = name;
-            document.getElementById('chat-status').textContent = "Active recently";
-            document.getElementById('chat-avatar').src = avatar;
-          } else {
-            document.getElementById('chat-status').textContent = "Offline";
-          }
-        }, (error) => {
-          console.error("Participant listener error:", error);
-          document.getElementById('chat-status').textContent = "Error loading status";
-        });
-      } catch (error) {
-        console.error("Failed to open conversation details:", error);
-        document.getElementById('chat-status').textContent = "Failed to load";
-      }
- 
-      const shell = document.querySelector('.msg-shell');
-      if (window.innerWidth < 900 && shell) {
-        shell.classList.add('chat-open');
-      }
-
-      const msgs = document.getElementById('chat-messages');
-      setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 100);
-    }
-
-    window.submitJobPost = submitJobPost;
     window.openJobPostModal = openJobPostModal;
     window.closeJobPostModal = closeJobPostModal;
 
+    /* ══════════════════════════════════════
+       LANGUAGE TRANSLATION
+    ══════════════════════════════════════ */
+    const translations = {
+      en: {
+        searchPlaceholder: "Search jobs, skills, or location...",
+        ddViewProfile: "View Profile",
+        ddDarkMode: "Dark Mode",
+        ddLanguages: "Languages",
+        ddSettings: "Settings",
+        ddHelp: "Help & Support",
+        ddLogout: "Log Out",
+        sidebarHome: "Home",
+        sidebarJobs: "Job Listings",
+        sidebarMessages: "Messages",
+        sidebarProfile: "Profile",
+        profileCardViews: "Profile Views",
+        profileCardApps: "Applications",
+        profileOpenForWork: "Open for Work",
+        homeDashboard: "Dashboard",
+        homeManageJobs: "Manage your job posts",
+        homeMyJobs: "My Job Post",
+        homeApplicants: "Applicants",
+        applicantsEmptyTitle: "No applicants yet",
+        applicantsEmptyText: "Applicants from all of your job posts will appear here automatically.",
+        jobsMyPostings: "My Job Postings",
+        jobsManageListings: "Manage your job listings and view applications",
+        jobsPostNew: "Post New Job",
+        jobsSearchPlaceholder: "Search job postings...",
+        jobsAll: "All Jobs",
+        jobsActive: "Active",
+        jobsDrafts: "Drafts",
+        jobsClosed: "Closed",
+        msgSearch: "Search conversations...",
+        msgSelectConvo: "Select a Conversation",
+        msgStartMessaging: "Select a conversation to start messaging.",
+        msgTypeMessage: "Type a message...",
+        profileStatus: "Profile Status",
+        profileActivelySeeking: "Actively seeking opportunities",
+        profileCompletion: "Profile Completion",
+        profileStats: "Statistics",
+        profileRating: "Rating",
+        profileCompletedJobs: "Completed Jobs",
+        profileSkills: "Skills",
+        profileAddSkill: "Add Skill",
+        profileChangeCover: "Change Cover",
+        profileSetLocation: "Set current location",
+        profileMessage: "Message",
+        profileContact: "Contact",
+        profileAbout: "About",
+        profileWorkExperience: "Work Experience",
+        profileMyPhotos: "My Photos",
+        profileAddPhoto: "Add Photo",
+        profileReviews: "Reviews & Ratings",
+        mobHome: "Home",
+        mobJobs: "Job Listings",
+        mobMessages: "Messages",
+        mobProfile: "Profile",
+        modalPostNewJob: "Post New Job",
+        modalCreateJobPost: "Create a job post that matches the style of your listings page.",
+        modalJobTitle: "Job Title",
+        modalEmployerBadge: "Employer Badge",
+        modalIndividual: "Individual",
+        modalCompany: "Company",
+        modalJobType: "Job Type",
+        modalLocation: "Location",
+        modalDuration: "Duration",
+        modalPay: "Pay Range",
+        modalUrgent: "Urgent Tag",
+        modalYes: "Yes",
+        modalNo: "No",
+        modalStatus: "Status",
+        modalSkills: "Skills (comma separated)",
+        modalCancel: "Cancel",
+        modalPostJob: "Post Job",
+      },
+      war: {
+        searchPlaceholder: "Pamiling hin trabaho, abilidad, o lokasyon...",
+        ddViewProfile: "Kitaa an Profile",
+        ddDarkMode: "Dark Mode",
+        ddLanguages: "Mga Pinulongan",
+        ddSettings: "Mga Setting",
+        ddHelp: "Bulig & Suporta",
+        ddLogout: "Pag-log Out",
+        sidebarHome: "Panimalay",
+        sidebarJobs: "Mga Listahan hin Trabaho",
+        sidebarMessages: "Mga Mensahe",
+        sidebarProfile: "Profile",
+        profileCardViews: "Mga Pagkita han Profile",
+        profileCardApps: "Mga Aplikasyon",
+        profileOpenForWork: "Abierto para Trabaho",
+        homeDashboard: "Dashboard",
+        homeManageJobs: "Pagdumara han imo mga post hin trabaho",
+        homeMyJobs: "Akon Mga Post hin Trabaho",
+        homeApplicants: "Mga Aplikante",
+        applicantsEmptyTitle: "Waray pa mga aplikante",
+        applicantsEmptyText: "An mga aplikante tikang ha ngatanan nimo nga mga post hin trabaho mangingita dinhi awtomatiko.",
+        jobsMyPostings: "Akon Mga Job Postings",
+        jobsManageListings: "Pagdumara han imo mga listahan hin trabaho ngan kitaa an mga aplikasyon",
+        jobsPostNew: "Pag-post hin Bag-o nga Trabaho",
+        jobsSearchPlaceholder: "Pamiling hin mga job postings...",
+        jobsAll: "Ngatanan nga Trabaho",
+        jobsActive: "Aktibo",
+        jobsDrafts: "Mga Draft",
+        jobsClosed: "Sarado",
+        msgSearch: "Pamiling hin mga istorya...",
+        msgSelectConvo: "Pagpili hin Istorya",
+        msgStartMessaging: "Pagpili hin istorya para magtikang pag-mensahe.",
+        msgTypeMessage: "Pagsurat hin mensahe...",
+        profileStatus: "Status han Profile",
+        profileActivelySeeking: "Aktibo nga namimiling hin oportunidad",
+        profileCompletion: "Pagkakumpleto han Profile",
+        profileStats: "Mga Estadistika",
+        profileRating: "Rating",
+        profileCompletedJobs: "Mga Natapos nga Trabaho",
+        profileSkills: "Mga Abilidad",
+        profileAddSkill: "Pagdugang hin Abilidad",
+        profileChangeCover: "Pag-ilis hin Cover",
+        profileSetLocation: "Ibutang an yana nga lokasyon",
+        profileMessage: "Mensahe",
+        profileContact: "Kontaka",
+        profileAbout: "Mahitungod",
+        profileWorkExperience: "Karanasan ha Trabaho",
+        profileMyPhotos: "Akon Mga Litrato",
+        profileAddPhoto: "Pagdugang hin Litrato",
+        profileReviews: "Mga Repaso & Rating",
+        mobHome: "Panimalay",
+        mobJobs: "Mga Listahan",
+        mobMessages: "Mga Mensahe",
+        mobProfile: "Profile",
+        modalPostNewJob: "Pag-post hin Bag-o nga Trabaho",
+        modalCreateJobPost: "Paghimo hin post hin trabaho nga angay ha estilo han imo pahina han mga listahan.",
+        modalJobTitle: "Titulo han Trabaho",
+        modalEmployerBadge: "Badge han Agaron",
+        modalIndividual: "Indibidwal",
+        modalCompany: "Kompanya",
+        modalJobType: "Klase han Trabaho",
+        modalLocation: "Lokasyon",
+        modalDuration: "Kadugayon",
+        modalPay: "Sakob han Suhol",
+        modalUrgent: "Urgent Tag",
+        modalYes: "Oo",
+        modalNo: "Diri",
+        modalStatus: "Status",
+        modalSkills: "Mga Abilidad (ibubulag hin comma)",
+        modalCancel: "Kanselahon",
+        modalPostJob: "I-post an Trabaho",
+      }, tl: {
+        searchPlaceholder: "Maghanap ng trabaho, kasanayan, o lokasyon...",
+
+        ddViewProfile: "Tingnan ang Profile",
+        ddDarkMode: "Dark Mode",
+        ddLanguages: "Mga Wika",
+        ddSettings: "Mga Setting",
+        ddHelp: "Tulong at Suporta",
+        ddLogout: "Mag-log Out",
+
+        sidebarHome: "Home",
+        sidebarJobs: "Mga Listahan ng Trabaho",
+        sidebarMessages: "Mga Mensahe",
+        sidebarProfile: "Profile",
+
+        profileCardViews: "Mga Pagtingin sa Profile",
+        profileCardApps: "Mga Aplikasyon",
+        profileOpenForWork: "Bukas para sa Trabaho",
+
+        homeDashboard: "Dashboard",
+        homeManageJobs: "Pamahalaan ang iyong mga job post",
+        homeMyJobs: "Aking mga Job Post",
+        homeApplicants: "Mga Aplikante",
+
+        applicantsEmptyTitle: "Wala pang mga aplikante",
+        applicantsEmptyText: "Awtomatikong lalabas dito ang mga aplikante mula sa lahat ng iyong job post.",
+
+        jobsMyPostings: "Aking mga Job Posting",
+        jobsManageListings: "Pamahalaan ang iyong mga listahan ng trabaho at tingnan ang mga aplikasyon",
+        jobsPostNew: "Mag-post ng Bagong Trabaho",
+        jobsSearchPlaceholder: "Maghanap ng mga job posting...",
+        jobsAll: "Lahat ng Trabaho",
+        jobsActive: "Aktibo",
+        jobsDrafts: "Mga Draft",
+        jobsClosed: "Sarado",
+
+        msgSearch: "Maghanap ng mga pag-uusap...",
+        msgSelectConvo: "Pumili ng Pag-uusap",
+        msgStartMessaging: "Pumili ng pag-uusap upang magsimulang mag-message.",
+        msgTypeMessage: "Mag-type ng mensahe...",
+
+        profileStatus: "Katayuan ng Profile",
+        profileActivelySeeking: "Aktibong naghahanap ng mga oportunidad",
+        profileCompletion: "Pagkakumpleto ng Profile",
+        profileStats: "Mga Estadistika",
+        profileRating: "Rating",
+        profileCompletedJobs: "Mga Natapos na Trabaho",
+        profileSkills: "Mga Kasanayan",
+        profileAddSkill: "Magdagdag ng Kasanayan",
+        profileChangeCover: "Palitan ang Cover",
+        profileSetLocation: "Itakda ang kasalukuyang lokasyon",
+        profileMessage: "Mensahe",
+        profileContact: "Kontak",
+        profileAbout: "Tungkol sa Akin",
+        profileWorkExperience: "Karanasan sa Trabaho",
+        profileMyPhotos: "Aking mga Larawan",
+        profileAddPhoto: "Magdagdag ng Larawan",
+        profileReviews: "Mga Review at Rating",
+
+        mobHome: "Home",
+        mobJobs: "Mga Listahan",
+        mobMessages: "Mga Mensahe",
+        mobProfile: "Profile",
+
+        modalPostNewJob: "Mag-post ng Bagong Trabaho",
+        modalCreateJobPost: "Gumawa ng job post na naaayon sa estilo ng iyong listings page.",
+        modalJobTitle: "Titulo ng Trabaho",
+        modalEmployerBadge: "Badge ng Employer",
+        modalIndividual: "Indibidwal",
+        modalCompany: "Kompanya",
+        modalJobType: "Uri ng Trabaho",
+        modalLocation: "Lokasyon",
+        modalDuration: "Tagal",
+        modalPay: "Saklaw ng Sahod",
+        modalUrgent: "Urgent na Tag",
+        modalYes: "Oo",
+        modalNo: "Hindi",
+        modalStatus: "Katayuan",
+        modalSkills: "Mga Kasanayan (paghiwalayin gamit ang kuwit)",
+        modalCancel: "Kanselahin",
+        modalPostJob: "I-post ang Trabaho",
+      }
+    };
+
+    function applyTranslations(lang) {
+      if (!translations[lang]) {
+        lang = 'en';
+      }
+
+      document.documentElement.lang = lang === 'tl' ? 'fil' : lang;
+
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        const translation = translations[lang]?.[key];
+
+        if (translation === undefined) return;
+
+        if (
+          element.tagName === 'INPUT' ||
+          element.tagName === 'TEXTAREA'
+        ) {
+          element.placeholder = translation;
+        } else {
+          element.textContent = translation;
+        }
+      });
+    }
+
+    function initLanguage() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlLang = urlParams.get('lang');
+      const storedLang = localStorage.getItem('preferredLanguage');
+
+      let selectedLang = 'en';
+
+      // First priority: language sent by the employer login redirect
+      if (urlLang && translations[urlLang]) {
+        selectedLang = urlLang;
+      }
+
+      // Second priority: language saved from the index page
+      else if (storedLang && translations[storedLang]) {
+        selectedLang = storedLang;
+      }
+
+      // Keep all pages synchronized
+      localStorage.setItem('preferredLanguage', selectedLang);
+
+      applyTranslations(selectedLang);
+      updateActiveDashboardLanguage(selectedLang);
+
+      // Remove the language parameter without refreshing the page
+      if (urlLang) {
+        const cleanUrl =
+          window.location.pathname +
+          window.location.hash;
+
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initLanguage);
+    } else {
+      initLanguage();
+    }
   </script>
 
   <!-- Edit profile headline modal -->
@@ -1437,8 +1857,10 @@
       </div>
 
       <div class="job-post-modal-footer">
-        <button type="button" class="job-post-modal-btn secondary" onclick="closeJobPostModal()" data-i18n="modalCancel">Cancel</button>
-        <button type="button" class="job-post-modal-btn primary" onclick="submitJobPost()" data-i18n="modalPostJob">Post Job</button>
+        <button type="button" class="job-post-modal-btn secondary" onclick="closeJobPostModal()"
+          data-i18n="modalCancel">Cancel</button>
+        <button type="button" class="job-post-modal-btn primary" onclick="submitJobPost()" data-i18n="modalPostJob">Post
+          Job</button>
       </div>
     </div>
   </div>
@@ -1677,6 +2099,8 @@
           employerData.photoURL || auth.currentUser?.photoURL || ""
         );
 
+        listenToEmployerConversations(user.uid);
+
         const jobsQuery = query(
           collection(db, "jobs"),
           where("employerId", "==", user.uid)
@@ -1700,6 +2124,11 @@
 
           jobsCache.clear();
           let totalApplicants = 0;
+
+          renderJobNotifications(
+            snapshot.docs,
+            user.uid
+          );
 
           if (snapshot.empty) {
             console.log("No jobs found for this employer.");
@@ -1763,73 +2192,1348 @@
     const employerHomeApplicantCountUnsubs = new Map();
     const employerListingApplicantCountUnsubs = new Map();
 
+    let notificationJobs = [];
+    let notificationApplications = [];
+    let currentNotificationEmployerId = null;
+
+    function getNotificationStorageKey() {
+      if (!currentNotificationEmployerId) {
+        return 'bcc_read_notifications_guest';
+      }
+
+      return `bcc_read_notifications_${currentNotificationEmployerId}`;
+    }
+
+    function getReadJobNotificationIds() {
+      try {
+        const saved = localStorage.getItem(
+          getNotificationStorageKey()
+        );
+
+        const parsed = saved ? JSON.parse(saved) : [];
+
+        return new Set(
+          Array.isArray(parsed) ? parsed : []
+        );
+      } catch (error) {
+        console.warn(
+          'Failed to read notification history:',
+          error
+        );
+
+        return new Set();
+      }
+    }
+
+    function saveReadJobNotificationIds(readIds) {
+      localStorage.setItem(
+        getNotificationStorageKey(),
+        JSON.stringify(Array.from(readIds))
+      );
+    }
+
+    function timestampToMilliseconds(timestamp) {
+      if (!timestamp) return 0;
+
+      if (typeof timestamp.toMillis === 'function') {
+        return timestamp.toMillis();
+      }
+
+      if (timestamp.seconds) {
+        return timestamp.seconds * 1000;
+      }
+
+      const parsed = new Date(timestamp).getTime();
+
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    function isNotificationToday(timestamp) {
+      const milliseconds =
+        timestampToMilliseconds(timestamp);
+
+      if (!milliseconds) return false;
+
+      const date = new Date(milliseconds);
+      const today = new Date();
+
+      return (
+        date.getFullYear() === today.getFullYear() &&
+        date.getMonth() === today.getMonth() &&
+        date.getDate() === today.getDate()
+      );
+    }
+
+    function formatNotificationTime(timestamp) {
+      const milliseconds =
+        timestampToMilliseconds(timestamp);
+
+      if (!milliseconds) return 'Just now';
+
+      const difference = Date.now() - milliseconds;
+
+      const minute = 60 * 1000;
+      const hour = 60 * minute;
+      const day = 24 * hour;
+      const week = 7 * day;
+
+      if (difference < minute) return 'Just now';
+
+      if (difference < hour) {
+        const minutes = Math.floor(difference / minute);
+        return `${minutes}m`;
+      }
+
+      if (difference < day) {
+        const hours = Math.floor(difference / hour);
+        return `${hours}h`;
+      }
+
+      if (difference < week) {
+        const days = Math.floor(difference / day);
+        return `${days}d`;
+      }
+
+      const weeks = Math.floor(difference / week);
+      return `${weeks}w`;
+    }
+
+    function getJobStatusText(status) {
+      switch (String(status || '').toLowerCase()) {
+        case 'active':
+          return 'published';
+        case 'draft':
+          return 'saved as a draft';
+        case 'closed':
+          return 'closed';
+        default:
+          return 'posted';
+      }
+    }
+
+    function createJobNotificationItem(job, readIds) {
+      const notificationId = `job:${job.id}`;
+      const isUnread = !readIds.has(notificationId);
+
+      const item = document.createElement('button');
+
+      item.type = 'button';
+      item.className =
+        `job-notification-item${isUnread ? ' unread' : ''}`;
+
+      item.dataset.notificationId = notificationId;
+      item.dataset.unread = String(isUnread);
+
+      const employerName =
+        job.employerName ||
+        currentEmployerData?.name ||
+        'You';
+
+      const employerPhoto =
+        job.employerPhotoURL ||
+        currentEmployerData?.photoURL ||
+        auth.currentUser?.photoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(employerName)}&background=ccfbf1&color=0f766e`;
+
+      const safeTitle = escapeHtml(
+        job.title || 'Untitled job'
+      );
+
+      const safeEmployerName = escapeHtml(employerName);
+      const safePhoto = escapeHtml(employerPhoto);
+
+      item.innerHTML = `
+    <span class="notification-avatar-wrap">
+      <img
+        class="notification-avatar"
+        src="${safePhoto}"
+        alt="${safeEmployerName}"
+      />
+
+      <span class="notification-job-badge">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect
+            x="2"
+            y="7"
+            width="20"
+            height="14"
+            rx="2"
+          ></rect>
+
+          <path
+            d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"
+          ></path>
+        </svg>
+      </span>
+    </span>
+
+    <span class="notification-item-body">
+      <span class="notification-item-message">
+        You ${getJobStatusText(job.status)}
+        <strong>${safeTitle}</strong>.
+      </span>
+
+      <span class="notification-item-meta">
+        ${escapeHtml(job.location || 'Location not specified')}
+        ·
+        ${formatNotificationTime(job.createdAt)}
+      </span>
+    </span>
+
+    <span
+      class="notification-unread-indicator"
+      aria-hidden="true"
+    ></span>
+  `;
+
+      item.addEventListener('click', () => {
+        markNotificationRead(notificationId);
+
+        closeNotificationPanel();
+
+        if (typeof openJobPreviewModal === 'function') {
+          openJobPreviewModal(job.id, job);
+        }
+      });
+
+      return item;
+    }
+
+    function createApplicationNotificationItem(application, readIds) {
+      const notificationId =
+        `application:${application.jobId}:${application.applicationDocId}`;
+
+      const isUnread = !readIds.has(notificationId);
+
+      const item = document.createElement('button');
+
+      item.type = 'button';
+
+      // Keep job-notification-item because your existing CSS and
+      // unread filtering already use this class.
+      item.className =
+        `job-notification-item applicant-notification-item${isUnread ? ' unread' : ''}`;
+
+      item.dataset.notificationId = notificationId;
+      item.dataset.unread = String(isUnread);
+
+      const applicantName =
+        application.applicantName ||
+        'An applicant';
+
+      const applicantPhoto =
+        application.applicantPhotoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(applicantName)}&background=ccfbf1&color=0f766e`;
+
+      const jobTitle =
+        application.title ||
+        application.jobTitle ||
+        'your job post';
+
+      const safeApplicantName = escapeHtml(applicantName);
+      const safeApplicantPhoto = escapeHtml(applicantPhoto);
+      const safeJobTitle = escapeHtml(jobTitle);
+
+      item.innerHTML = `
+    <span class="notification-avatar-wrap">
+      <img
+        class="notification-avatar"
+        src="${safeApplicantPhoto}"
+        alt="${safeApplicantName}"
+      />
+
+      <span class="notification-job-badge notification-applicant-badge">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </span>
+    </span>
+
+    <span class="notification-item-body">
+      <span class="notification-item-message">
+        <strong>${safeApplicantName}</strong>
+        applied for
+        <strong>${safeJobTitle}</strong>.
+      </span>
+
+      <span class="notification-item-meta">
+        New application ·
+        ${formatNotificationTime(application.appliedAt)}
+      </span>
+    </span>
+
+    <span
+      class="notification-unread-indicator"
+      aria-hidden="true"
+    ></span>
+  `;
+
+      item.addEventListener('click', () => {
+        markNotificationRead(notificationId);
+
+        closeNotificationPanel();
+
+        // Open the existing applicants area.
+        showPage('home');
+        showApplicants();
+
+        requestAnimationFrame(() => {
+          document
+            .getElementById('employer-home-applicants')
+            ?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+        });
+      });
+
+      return item;
+    }
+
+    function createNotificationSection(title, notifications, readIds) {
+      const section = document.createElement('section');
+      section.className = 'notification-section';
+
+      const heading = document.createElement('h3');
+      heading.className = 'notification-section-title';
+      heading.textContent = title;
+
+      const items = document.createElement('div');
+      items.className = 'notification-section-items';
+
+      notifications.forEach(notification => {
+        if (notification.notificationType === 'application') {
+          items.appendChild(
+            createApplicationNotificationItem(notification, readIds)
+          );
+        } else {
+          items.appendChild(
+            createJobNotificationItem(notification, readIds)
+          );
+        }
+      });
+
+      section.append(heading, items);
+
+      return section;
+    }
+
+    function updateNotificationBadge() {
+      const readIds = getReadJobNotificationIds();
+
+      const unreadJobs = notificationJobs.filter(job => {
+        return !readIds.has(`job:${job.id}`);
+      }).length;
+
+      const unreadApplications = notificationApplications.filter(application => {
+        const notificationId =
+          `application:${application.jobId}:${application.applicationDocId}`;
+
+        return !readIds.has(notificationId);
+      }).length;
+
+      const unreadCount =
+        unreadJobs + unreadApplications;
+
+      const dot = document.getElementById('notificationDot');
+      const count = document.getElementById('notificationCount');
+
+      if (dot) {
+        dot.hidden = unreadCount === 0;
+      }
+
+      if (count) {
+        count.hidden = unreadCount === 0;
+        count.textContent =
+          unreadCount > 99 ? '99+' : String(unreadCount);
+      }
+    }
+
+    function renderJobNotifications(jobDocuments, employerId) {
+      currentNotificationEmployerId = employerId;
+
+      notificationJobs = jobDocuments.map(documentSnapshot => ({
+        id: documentSnapshot.id,
+        notificationType: 'job',
+        ...documentSnapshot.data()
+      }));
+
+      renderAllNotifications();
+    }
+
+    function renderAllNotifications() {
+      const list = document.getElementById('notificationList');
+
+      if (!list) return;
+
+      const readIds = getReadJobNotificationIds();
+
+      const allNotifications = [
+        ...notificationJobs,
+        ...notificationApplications
+      ].sort((first, second) => {
+        const firstTimestamp =
+          first.notificationType === 'application'
+            ? first.appliedAt
+            : first.createdAt;
+
+        const secondTimestamp =
+          second.notificationType === 'application'
+            ? second.appliedAt
+            : second.createdAt;
+
+        return (
+          timestampToMilliseconds(secondTimestamp) -
+          timestampToMilliseconds(firstTimestamp)
+        );
+      });
+
+      list.innerHTML = '';
+
+      if (!allNotifications.length) {
+        list.innerHTML = `
+      <div class="notification-empty-state">
+        <div class="notification-empty-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18 8A6 6 0 0 0 6 8"></path>
+            <path d="M6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </div>
+
+        <strong>No notifications yet</strong>
+
+        <span>
+          Job posts and new applications will appear here.
+        </span>
+      </div>
+    `;
+
+        updateNotificationBadge();
+        return;
+      }
+
+      const getTimestamp = notification => {
+        return notification.notificationType === 'application'
+          ? notification.appliedAt
+          : notification.createdAt;
+      };
+
+      const todayNotifications = allNotifications.filter(notification => {
+        return isNotificationToday(getTimestamp(notification));
+      });
+
+      const earlierNotifications = allNotifications.filter(notification => {
+        return !isNotificationToday(getTimestamp(notification));
+      });
+
+      if (todayNotifications.length) {
+        list.appendChild(
+          createNotificationSection(
+            'Today',
+            todayNotifications,
+            readIds
+          )
+        );
+      }
+
+      if (earlierNotifications.length) {
+        list.appendChild(
+          createNotificationSection(
+            'Earlier',
+            earlierNotifications,
+            readIds
+          )
+        );
+      }
+
+      updateNotificationBadge();
+
+      const selectedTab = document.querySelector(
+        `[data-notification-filter="${activeNotificationFilter}"]`
+      );
+
+      setNotificationFilter(
+        activeNotificationFilter,
+        selectedTab
+      );
+    }
+
+    function markNotificationRead(notificationId) {
+      const readIds = getReadJobNotificationIds();
+
+      readIds.add(notificationId);
+      saveReadJobNotificationIds(readIds);
+
+      const item = document.querySelector(
+        `.job-notification-item[data-notification-id="${CSS.escape(notificationId)}"]`
+      );
+
+      if (item) {
+        item.classList.remove('unread');
+        item.dataset.unread = 'false';
+
+        if (activeNotificationFilter === 'unread') {
+          item.hidden = true;
+        }
+      }
+
+      updateNotificationBadge();
+      updateNotificationSectionVisibility();
+    }
+
+    window.markAllJobNotificationsRead = function (event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      const readIds = getReadJobNotificationIds();
+
+      notificationJobs.forEach(job => {
+        readIds.add(`job:${job.id}`);
+      });
+
+      notificationApplications.forEach(application => {
+        readIds.add(
+          `application:${application.jobId}:${application.applicationDocId}`
+        );
+      });
+
+      saveReadJobNotificationIds(readIds);
+
+      document
+        .querySelectorAll('.job-notification-item')
+        .forEach(item => {
+          item.classList.remove('unread');
+          item.dataset.unread = 'false';
+
+          if (activeNotificationFilter === 'unread') {
+            item.hidden = true;
+          }
+        });
+
+      updateNotificationBadge();
+      updateNotificationSectionVisibility();
+    };
+
     // Messaging variables
-    let activeConversationId = null;
+    let activeConversationId =
+      localStorage.getItem('activeEmployerConversationId') || null;
+
+    window.activeConversationId = activeConversationId;
+
     let unsubscribeActiveMessages = null;
     let unsubscribeActiveParticipant = null;
 
-    function listenToEmployerConversations(userId) {
-      const convItemsContainer = document.getElementById("conv-items");
-      if (!convItemsContainer) return;
+    function setActiveEmployerConversation(conversationId) {
+      activeConversationId = conversationId || null;
+      window.activeConversationId = conversationId || null;
 
-      const q = query(
-        collection(db, "conversations"),
-        where("participantIds", "array-contains", userId),
-        orderBy("updatedAt", "desc")
+      if (conversationId) {
+        localStorage.setItem(
+          'activeEmployerConversationId',
+          conversationId
+        );
+
+        showPage('messages');
+
+        localStorage.setItem(
+          'employerCurrentPage',
+          'messages'
+        );
+      } else {
+        localStorage.removeItem(
+          'activeEmployerConversationId'
+        );
+      }
+    }
+
+    let unsubscribeEmployerConversations = null;
+    let employerConversationDocs = [];
+    const employerApplicantsForMessages = new Map();
+
+    window.openConv = async function (element, conversationId) {
+      if (!element || !conversationId) {
+        console.warn(
+          "Cannot open conversation:",
+          element,
+          conversationId
+        );
+        return;
+      }
+
+      if (!auth.currentUser) {
+        console.warn("No authenticated employer.");
+        return;
+      }
+
+      document
+        .querySelectorAll("#conv-items .conv-item")
+        .forEach(item => {
+          item.classList.remove("active");
+        });
+
+      element.classList.add("active");
+
+      const unreadBadge =
+        element.querySelector(".unread-dot");
+
+      unreadBadge?.remove();
+
+      /*
+        Save the active conversation without depending
+        on the old non-module function.
+      */
+      setActiveEmployerConversation(
+        conversationId
       );
 
-      onSnapshot(q, (snapshot) => {
-        convItemsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #9ca3af;">Loading conversations...</div>';
-        if (snapshot.empty) {
-          convItemsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #9ca3af;">No conversations yet.</div>';
+      const fallbackName =
+        element.dataset.name ||
+        "Applicant";
+
+      const fallbackAvatar =
+        element.dataset.avatar ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName)}&background=ccfbf1&color=0f766e`;
+
+      const chatName =
+        document.getElementById("chat-name");
+
+      const chatStatus =
+        document.getElementById("chat-status");
+
+      const chatAvatar =
+        document.getElementById("chat-avatar");
+
+      const onlineIndicator =
+        document.querySelector(
+          ".chat-header-online"
+        );
+
+      if (chatName) {
+        chatName.textContent =
+          fallbackName;
+      }
+
+      if (chatStatus) {
+        chatStatus.textContent =
+          "Loading...";
+      }
+
+      if (chatAvatar) {
+        chatAvatar.src =
+          fallbackAvatar;
+      }
+
+      if (onlineIndicator) {
+        onlineIndicator.style.display =
+          "none";
+      }
+
+      /*
+        Start loading the messages immediately.
+      */
+      window.listenToConversationMessages(
+        conversationId
+      );
+
+      if (unsubscribeActiveParticipant) {
+        unsubscribeActiveParticipant();
+        unsubscribeActiveParticipant = null;
+      }
+
+      try {
+        const conversationSnapshot =
+          await getDoc(
+            doc(
+              db,
+              "conversations",
+              conversationId
+            )
+          );
+
+        if (!conversationSnapshot.exists()) {
+          if (chatStatus) {
+            chatStatus.textContent =
+              "Conversation unavailable";
+          }
+
           return;
         }
 
-        convItemsContainer.innerHTML = ''; // Clear loading message
+        const conversation =
+          conversationSnapshot.data();
 
-        snapshot.forEach(docSnap => {
-          const convData = docSnap.data();
-          const convId = docSnap.id;
+        const participantIds =
+          Array.isArray(
+            conversation.participantIds
+          )
+            ? conversation.participantIds
+            : [];
 
-          const otherParticipant = {
-            name: convData.applicantName || "Applicant",
-            avatar: convData.applicantPhotoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(convData.applicantName || 'A')}&background=ccfbf1&color=0f766e`,
-            status: "Active recently",
-            online: false
-          };
+        const applicantId =
+          conversation.applicantId ||
+          participantIds.find(
+            participantId =>
+              participantId !==
+              auth.currentUser.uid
+          );
 
-          const lastMessage = escapeHtml(convData.lastMessage || "...");
-          const updatedAt = convData.updatedAt ? formatPostTime(convData.updatedAt) : "now";
+        /*
+          Keep the conversation document values visible
+          even when the applicant user document is absent.
+        */
+        const conversationName =
+          conversation.applicantName ||
+          fallbackName;
 
-          const item = document.createElement("div");
-          item.className = "conv-item";
-          item.dataset.convid = convId;
-          item.dataset.name = otherParticipant.name;
-          item.dataset.avatar = otherParticipant.avatar;
-          item.dataset.status = otherParticipant.status;
-          item.dataset.online = String(otherParticipant.online);
+        const conversationAvatar =
+          conversation.applicantPhotoURL ||
+          fallbackAvatar;
 
-          item.setAttribute('onclick', `window.openConv(this, '${convId}')`);
+        if (chatName) {
+          chatName.textContent =
+            conversationName;
+        }
 
-          item.innerHTML = `
-            <div class="conv-avatar-wrap">
-              <img class="conv-avatar" src="${otherParticipant.avatar}" alt="${escapeHtml(otherParticipant.name)}" />
-              ${otherParticipant.online ? '<span class="conv-online"></span>' : ''}
-            </div>
-            <div class="conv-body">
-              <div class="conv-header-row">
-                <span class="conv-name">${escapeHtml(otherParticipant.name).substring(0, 10)}...</span>
-                <span class="conv-time">${updatedAt}</span>
-              </div>
-              <div class="conv-preview">${lastMessage.substring(0, 22)}${lastMessage.length > 22 ? '...' : ''}</div>
-              <div class="conv-footer-row"><span class="conv-badge employer">Applicant</span></div>
-            </div>`;
-          convItemsContainer.appendChild(item);
-        });
-      }, (error) => {
-        console.error("Error listening to conversations:", error);
-        convItemsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #ef4444;">Failed to load conversations.</div>';
+        if (chatAvatar) {
+          chatAvatar.src =
+            conversationAvatar;
+        }
+
+        if (!applicantId) {
+          if (chatStatus) {
+            chatStatus.textContent =
+              "Active recently";
+          }
+
+          return;
+        }
+
+        /*
+          Your applicants may exist in either "users"
+          or "jobSeekers". Try both collections.
+        */
+        let applicantReference =
+          doc(
+            db,
+            "users",
+            applicantId
+          );
+
+        let applicantSnapshot =
+          await getDoc(
+            applicantReference
+          );
+
+        if (!applicantSnapshot.exists()) {
+          applicantReference =
+            doc(
+              db,
+              "jobSeekers",
+              applicantId
+            );
+
+          applicantSnapshot =
+            await getDoc(
+              applicantReference
+            );
+        }
+
+        if (!applicantSnapshot.exists()) {
+          if (chatStatus) {
+            chatStatus.textContent =
+              "Active recently";
+          }
+
+          return;
+        }
+
+        unsubscribeActiveParticipant =
+          onSnapshot(
+            applicantReference,
+
+            liveSnapshot => {
+              if (!liveSnapshot.exists()) {
+                if (chatStatus) {
+                  chatStatus.textContent =
+                    "Active recently";
+                }
+
+                return;
+              }
+
+              const applicant =
+                liveSnapshot.data();
+
+              const liveName =
+                applicant.fullName ||
+                applicant.name ||
+                applicant.displayName ||
+                conversationName;
+
+              const liveAvatar =
+                applicant.photoURL ||
+                applicant.profilePhotoURL ||
+                conversationAvatar;
+
+              if (chatName) {
+                chatName.textContent =
+                  liveName;
+              }
+
+              if (chatAvatar) {
+                chatAvatar.src =
+                  liveAvatar;
+              }
+
+              if (chatStatus) {
+                chatStatus.textContent =
+                  applicant.online
+                    ? "Active now"
+                    : "Active recently";
+              }
+
+              if (onlineIndicator) {
+                onlineIndicator.style.display =
+                  applicant.online
+                    ? "block"
+                    : "none";
+              }
+            },
+
+            error => {
+              console.error(
+                "Participant listener error:",
+                error
+              );
+
+              if (chatStatus) {
+                chatStatus.textContent =
+                  "Active recently";
+              }
+            }
+          );
+      } catch (error) {
+        console.error(
+          "OPEN CONVERSATION ERROR:",
+          error
+        );
+
+        if (chatStatus) {
+          chatStatus.textContent =
+            "Failed to load conversation";
+        }
+      }
+
+      const messageShell =
+        document.querySelector(".msg-shell");
+
+      if (
+        window.innerWidth < 900 &&
+        messageShell
+      ) {
+        messageShell.classList.add(
+          "chat-open"
+        );
+      }
+
+      const chatMessages =
+        document.getElementById(
+          "chat-messages"
+        );
+
+      requestAnimationFrame(() => {
+        if (chatMessages) {
+          chatMessages.scrollTop =
+            chatMessages.scrollHeight;
+        }
       });
+    };
+
+    function listenToEmployerConversations(userId) {
+      const convItemsContainer =
+        document.getElementById("conv-items");
+
+      if (!convItemsContainer || !userId) return;
+
+      if (unsubscribeEmployerConversations) {
+        unsubscribeEmployerConversations();
+        unsubscribeEmployerConversations = null;
+      }
+
+      convItemsContainer.innerHTML = `
+    <div style="
+      padding: 20px;
+      text-align: center;
+      color: #9ca3af;
+    ">
+      Loading conversations...
+    </div>
+  `;
+
+      const conversationsQuery = query(
+        collection(db, "conversations"),
+        where(
+          "participantIds",
+          "array-contains",
+          userId
+        )
+      );
+
+      unsubscribeEmployerConversations = onSnapshot(
+        conversationsQuery,
+
+        (snapshot) => {
+          employerConversationDocs = snapshot.docs
+            .map(docSnap => ({
+              id: docSnap.id,
+              ...docSnap.data()
+            }))
+            .sort((first, second) => {
+              return (
+                timestampToMilliseconds(second.updatedAt) -
+                timestampToMilliseconds(first.updatedAt)
+              );
+            });
+
+          renderEmployerMessageSidebar();
+        },
+
+        (error) => {
+          console.error(
+            "Error listening to conversations:",
+            error
+          );
+
+          convItemsContainer.innerHTML = `
+        <div style="
+          padding: 20px;
+          text-align: center;
+          color: #ef4444;
+        ">
+          Failed to load conversations:
+          ${escapeHtml(error.code || "unknown")}
+        </div>
+      `;
+        }
+      );
+    }
+
+    function renderEmployerMessageSidebar() {
+      const container =
+        document.getElementById("conv-items");
+
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      /*
+        Track which applicants already have conversations.
+      */
+      const applicantsWithConversation =
+        new Set();
+
+      employerConversationDocs.forEach(conversation => {
+        if (conversation.applicantId) {
+          applicantsWithConversation.add(
+            conversation.applicantId
+          );
+        }
+
+        container.appendChild(
+          createExistingConversationItem(
+            conversation
+          )
+        );
+      });
+
+      /*
+        One applicant may have applied for multiple jobs.
+        Keep only the newest application for each applicant.
+      */
+      const newestApplicationByApplicant =
+        new Map();
+
+      employerApplicantsForMessages
+        .forEach(applicant => {
+          const applicantId =
+            applicant.applicantId;
+
+          if (!applicantId) return;
+
+          /*
+            Do not create a duplicate sidebar entry when an
+            existing conversation already represents them.
+          */
+          if (
+            applicantsWithConversation.has(
+              applicantId
+            )
+          ) {
+            return;
+          }
+
+          const existing =
+            newestApplicationByApplicant.get(
+              applicantId
+            );
+
+          if (
+            !existing ||
+            timestampToMilliseconds(
+              applicant.appliedAt
+            ) >
+            timestampToMilliseconds(
+              existing.appliedAt
+            )
+          ) {
+            newestApplicationByApplicant.set(
+              applicantId,
+              applicant
+            );
+          }
+        });
+
+      const unmessagedApplicants =
+        Array.from(
+          newestApplicationByApplicant.values()
+        ).sort((first, second) => {
+          return (
+            timestampToMilliseconds(
+              second.appliedAt
+            ) -
+            timestampToMilliseconds(
+              first.appliedAt
+            )
+          );
+        });
+
+      unmessagedApplicants.forEach(applicant => {
+        container.appendChild(
+          createUnmessagedApplicantItem(
+            applicant
+          )
+        );
+      });
+
+      if (!container.children.length) {
+        container.innerHTML = `
+      <div style="
+        padding: 20px;
+        text-align: center;
+        color: #9ca3af;
+      ">
+        No applicants or conversations yet.
+      </div>
+    `;
+
+        resetEmployerChatArea();
+        return;
+      }
+
+      restoreEmployerConversation(container);
+    }
+
+    function createExistingConversationItem(
+      conversation
+    ) {
+      const conversationId =
+        conversation.id;
+
+      const applicantName =
+        conversation.applicantName ||
+        "Applicant";
+
+      const applicantAvatar =
+        conversation.applicantPhotoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(applicantName)}&background=ccfbf1&color=0f766e`;
+
+      const lastMessage =
+        conversation.lastMessage ||
+        "Conversation started";
+
+      const updatedAtText =
+        conversation.updatedAt
+          ? formatPostTime(
+            conversation.updatedAt
+          )
+          : "now";
+
+      const item =
+        document.createElement("div");
+
+      item.className = "conv-item";
+      item.dataset.convid =
+        conversationId;
+      item.dataset.applicantId =
+        conversation.applicantId || "";
+      item.dataset.name =
+        applicantName;
+      item.dataset.avatar =
+        applicantAvatar;
+      item.dataset.status =
+        "Active recently";
+      item.dataset.online = "false";
+      item.dataset.type = "conversation";
+
+      item.innerHTML = `
+    <div class="conv-avatar-wrap">
+      <img
+        class="conv-avatar"
+        src="${escapeHtml(applicantAvatar)}"
+        alt="${escapeHtml(applicantName)}"
+      />
+    </div>
+
+    <div class="conv-body">
+      <div class="conv-header-row">
+        <span class="conv-name">
+          ${escapeHtml(applicantName)}
+        </span>
+
+        <span class="conv-time">
+          ${escapeHtml(updatedAtText)}
+        </span>
+      </div>
+
+      <div class="conv-preview">
+        ${escapeHtml(lastMessage)}
+      </div>
+
+      <div class="conv-footer-row">
+        <span class="conv-badge employer">
+          Applicant
+        </span>
+      </div>
+    </div>
+  `;
+
+      item.addEventListener(
+        "click",
+        () => {
+          window.openConv(
+            item,
+            conversationId
+          );
+        }
+      );
+
+      return item;
+    }
+
+    function createUnmessagedApplicantItem(
+      applicant
+    ) {
+      const applicantName =
+        applicant.applicantName ||
+        "Applicant";
+
+      const applicantAvatar =
+        applicant.applicantPhotoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(applicantName)}&background=ccfbf1&color=0f766e`;
+
+      const appliedJob =
+        applicant.title ||
+        "your job post";
+
+      const appliedTime =
+        applicant.appliedAt
+          ? formatPostTime(
+            applicant.appliedAt
+          )
+          : "Recently";
+
+      const item =
+        document.createElement("div");
+
+      item.className =
+        "conv-item pending-applicant";
+
+      item.dataset.applicantId =
+        applicant.applicantId || "";
+
+      item.dataset.name =
+        applicantName;
+
+      item.dataset.avatar =
+        applicantAvatar;
+
+      item.dataset.type =
+        "pending-applicant";
+
+      item.innerHTML = `
+    <div class="conv-avatar-wrap">
+      <img
+        class="conv-avatar"
+        src="${escapeHtml(applicantAvatar)}"
+        alt="${escapeHtml(applicantName)}"
+      />
+
+      <span class="conv-online"></span>
+    </div>
+
+    <div class="conv-body">
+      <div class="conv-header-row">
+        <span class="conv-name">
+          ${escapeHtml(applicantName)}
+        </span>
+
+        <span class="conv-time">
+          ${escapeHtml(appliedTime)}
+        </span>
+      </div>
+
+      <div class="conv-preview">
+        Applied for ${escapeHtml(appliedJob)}
+      </div>
+
+      <div class="conv-footer-row">
+        <span class="conv-badge new-applicant">
+          New applicant
+        </span>
+      </div>
+    </div>
+  `;
+
+      item.addEventListener(
+        "click",
+        async () => {
+          /*
+            The conversation is created only when the
+            employer selects this applicant.
+          */
+          await window.openApplicantConversation(
+            applicant
+          );
+        }
+      );
+
+      return item;
+    }
+
+    function restoreEmployerConversation(
+      container
+    ) {
+      if (!container) return;
+
+      const savedConversationId =
+        localStorage.getItem(
+          "activeEmployerConversationId"
+        );
+
+      let itemToOpen = null;
+
+      if (savedConversationId) {
+        itemToOpen =
+          container.querySelector(
+            `.conv-item[data-type="conversation"][data-convid="${CSS.escape(savedConversationId)}"]`
+          );
+      }
+
+      /*
+        When the saved conversation does not exist,
+        open the first real conversation.
+      */
+      if (!itemToOpen) {
+        itemToOpen =
+          container.querySelector(
+            '.conv-item[data-type="conversation"][data-convid]'
+          );
+      }
+
+      if (!itemToOpen) {
+        resetEmployerChatArea();
+        return;
+      }
+
+      const conversationId =
+        itemToOpen.dataset.convid;
+
+      if (!conversationId) {
+        resetEmployerChatArea();
+        return;
+      }
+
+      /*
+        Do not only add the active class.
+        Actually invoke the module-based opener so the
+        header and messages are loaded.
+      */
+      window.openConv(
+        itemToOpen,
+        conversationId
+      );
+    }
+
+    function resetEmployerChatArea() {
+      const chatName =
+        document.getElementById("chat-name");
+
+      const chatStatus =
+        document.getElementById("chat-status");
+
+      const chatAvatar =
+        document.getElementById("chat-avatar");
+
+      const chatMessages =
+        document.getElementById(
+          "chat-messages"
+        );
+
+      if (chatName) {
+        chatName.textContent =
+          "Select a Conversation";
+      }
+
+      if (chatStatus) {
+        chatStatus.textContent = "...";
+      }
+
+      if (chatAvatar) {
+        chatAvatar.src =
+          "https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af";
+      }
+
+      if (chatMessages) {
+        chatMessages.innerHTML = `
+      <div style="
+        text-align: center;
+        color: #9ca3af;
+        padding: 20px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">
+        Select a conversation to start messaging.
+      </div>
+    `;
+      }
     }
 
     function escapeHtml(value) {
@@ -2025,20 +3729,38 @@
     window.sendRealtimeMessage = async function (text) {
       try {
         if (!auth.currentUser) {
-          alert("You are not logged in.");
+          alert('You are not logged in.');
           return;
         }
 
-        if (!window.activeConversationId) {
-          alert("No active conversation selected.");
+        const conversationId =
+          activeConversationId ||
+          window.activeConversationId ||
+          localStorage.getItem(
+            'activeEmployerConversationId'
+          );
+
+        if (!conversationId) {
+          alert('No active conversation selected.');
           return;
         }
 
-        const trimmed = String(text || "").trim();
+        setActiveEmployerConversation(
+          conversationId
+        );
+
+        const trimmed =
+          String(text || '').trim();
+
         if (!trimmed) return;
 
         await addDoc(
-          collection(db, "conversations", window.activeConversationId, "messages"),
+          collection(
+            db,
+            'conversations',
+            conversationId,
+            'messages'
+          ),
           {
             senderId: auth.currentUser.uid,
             text: trimmed,
@@ -2047,19 +3769,34 @@
         );
 
         await setDoc(
-          doc(db, "conversations", activeConversationId),
+          doc(
+            db,
+            'conversations',
+            conversationId
+          ),
           {
             lastMessage: trimmed,
             updatedAt: serverTimestamp()
           },
-          { merge: true }
+          {
+            merge: true
+          }
         );
-        
-        updateConversationSidebarPreview(activeConversationId, trimmed);
 
+        updateConversationSidebarPreview(
+          conversationId,
+          trimmed
+        );
       } catch (error) {
-        console.error("SEND REALTIME MESSAGE ERROR:", error);
-        alert("Failed to send message: " + (error.message || error));
+        console.error(
+          'SEND REALTIME MESSAGE ERROR:',
+          error
+        );
+
+        alert(
+          'Failed to send message: ' +
+          (error.message || error)
+        );
       }
     };
 
@@ -2481,7 +4218,8 @@
           applicantName: applicant.applicantName || "Applicant",
           applicantPhotoURL: applicant.applicantPhotoURL || "",
 
-          lastMessage: "",
+          lastMessage: "Conversation started",
+          createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         }, { merge: true });
 
@@ -2513,9 +4251,15 @@
       `;
         }
 
-        window.activeConversationId = conversationId;
+        setActiveEmployerConversation(conversationId);
+
         window.activeApplicantId = applicantId;
-        window.listenToConversationMessages(conversationId);
+
+        window.listenToConversationMessages(
+          conversationId
+        );
+
+        renderEmployerMessageSidebar();
 
       } catch (error) {
         console.error("OPEN APPLICANT CONVERSATION ERROR:", error);
@@ -2541,11 +4285,24 @@
       );
 
       if (!employerJobs.length) {
-        renderApplicantsEmptyState("No one has applied to your job posts yet.");
+        employerApplicantsForMessages.clear();
+
+        notificationApplications = [];
+        renderAllNotifications();
+
+        renderEmployerMessageSidebar();
+
+        renderApplicantsEmptyState(
+          "No one has applied to your job posts yet."
+        );
+
         return;
       }
 
-      const applicationsMap = new Map();
+      employerApplicantsForMessages.clear();
+
+      const applicationsMap =
+        employerApplicantsForMessages;
 
       function renderMergedApplicants() {
         const applicants = Array.from(applicationsMap.values()).sort((a, b) => {
@@ -2586,13 +4343,35 @@
           snapshot.forEach((docSnap) => {
             const applicant = {
               id: `${job.id}__${docSnap.id}`,
+
+              // Needed by the notification system.
+              applicationDocId: docSnap.id,
+              jobId: job.id,
+              notificationType: 'application',
+
+              // Keep the job title even if an old application
+              // document did not save its own title.
+              title:
+                docSnap.data().title ||
+                job.title ||
+                'Untitled Job',
+
               ...docSnap.data()
             };
 
-            applicationsMap.set(`${job.id}__${docSnap.id}`, applicant);
+            applicationsMap.set(
+              `${job.id}__${docSnap.id}`,
+              applicant
+            );
           });
 
+          // Update the global notification history.
+          notificationApplications =
+            Array.from(applicationsMap.values());
+
           renderMergedApplicants();
+          renderAllNotifications();
+          renderEmployerMessageSidebar();
         }, (error) => {
           console.error("FAILED TO LOAD APPLICANTS FOR JOB:", job.id, error);
         });
@@ -2687,6 +4466,25 @@
         if (applicantsListUnsubscribe) {
           applicantsListUnsubscribe();
           applicantsListUnsubscribe = null;
+        }
+
+        if (
+          unsubscribeEmployerConversations
+        ) {
+          unsubscribeEmployerConversations();
+          unsubscribeEmployerConversations =
+            null;
+        }
+
+        if (unsubscribeActiveMessages) {
+          unsubscribeActiveMessages();
+          unsubscribeActiveMessages = null;
+        }
+
+        if (unsubscribeActiveParticipant) {
+          unsubscribeActiveParticipant();
+          unsubscribeActiveParticipant =
+            null;
         }
 
         cleanupApplicantsListListeners();

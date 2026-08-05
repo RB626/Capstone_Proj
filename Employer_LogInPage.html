@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Employer Portal – BlueCollar Connect</title>
+  <title>Employer Portal – BLUESPACE</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -970,7 +970,8 @@
 
       <div class="left-collapsible" id="leftCollapsible">
         <div class="left-headline" data-i18n="leftHeadline">Hire Skilled Workers Faster</div>
-        <div class="left-desc" data-i18n="leftDesc">Post jobs, review qualified candidates, and build your team with verified blue-collar
+        <div class="left-desc" data-i18n="leftDesc">Post jobs, review qualified candidates, and build your team with
+          verified blue-collar
           professionals.</div>
 
         <ul class="feature-list">
@@ -983,7 +984,8 @@
             </div>
             <div>
               <div class="feature-title" data-i18n="feature1Title">Qualified Candidates</div>
-              <div class="feature-desc" data-i18n="feature1Desc">Access workers with verified skills and peer endorsements</div>
+              <div class="feature-desc" data-i18n="feature1Desc">Access workers with verified skills and peer
+                endorsements</div>
             </div>
           </li>
           <li>
@@ -995,7 +997,8 @@
             </div>
             <div>
               <div class="feature-title" data-i18n="feature2Title">Easy Job Posting</div>
-              <div class="feature-desc" data-i18n="feature2Desc">Create job listings in minutes and reach local workers instantly</div>
+              <div class="feature-desc" data-i18n="feature2Desc">Create job listings in minutes and reach local workers
+                instantly</div>
             </div>
           </li>
           <li>
@@ -1007,7 +1010,8 @@
             </div>
             <div>
               <div class="feature-title" data-i18n="feature3Title">Applicant Management</div>
-              <div class="feature-desc" data-i18n="feature3Desc">Track applications and communicate directly with candidates</div>
+              <div class="feature-desc" data-i18n="feature3Desc">Track applications and communicate directly with
+                candidates</div>
             </div>
           </li>
         </ul>
@@ -1109,7 +1113,8 @@
           <p class="step-label" data-i18n="step1">Step 1 of 3 — Your Details</p>
 
           <label class="field-label">
-            <span data-i18n="businessName">Business Name</span> <span class="optional-badge" data-i18n="optional">Optional</span>
+            <span data-i18n="businessName">Business Name</span> <span class="optional-badge"
+              data-i18n="optional">Optional</span>
           </label>
           <div class="input-wrap">
             <span class="input-icon">
@@ -1156,7 +1161,8 @@
           </div>
           <p class="sms-hint" data-i18n="smsHint">We'll send you a verification code via SMS</p>
 
-          <button id="continueOtpBtn" class="btn-primary-red" onclick="goToOtp()" data-i18n="continueBtn">Continue →</button>
+          <button id="continueOtpBtn" class="btn-primary-red" onclick="goToOtp()" data-i18n="continueBtn">Continue
+            →</button>
           <div id="recaptcha-container"></div>
 
           <div class="or-divider" data-i18n="orContinueWith">Or continue with</div>
@@ -1186,7 +1192,9 @@
           </div>
 
           <div class="terms-text">
-            <span data-i18n="bySigningUp">By signing up, you agree to our</span> <a href="terms.html" data-i18n="terms">Terms of Service</a> <span data-i18n="and">and</span> <a href="privacy.html" data-i18n="privacy">Privacy Policy</a>
+            <span data-i18n="bySigningUp">By signing up, you agree to our</span> <a href="terms.html"
+              data-i18n="terms">Terms of Service</a> <span data-i18n="and">and</span> <a href="privacy.html"
+              data-i18n="privacy">Privacy Policy</a>
           </div>
           <a href="index.html" class="back-link" data-i18n="backToPortal">← Back to Portal Selection</a>
         </div>
@@ -1204,14 +1212,16 @@
           </div>
           <p class="step-label" data-i18n="step2">Step 2 of 3 — Enter OTP</p>
 
-          <p class="otp-desc"><span data-i18n="codeSentTo">A 6-digit code was sent to</span> <strong id="otp-phone-display"></strong></p>
+          <p class="otp-desc"><span data-i18n="codeSentTo">A 6-digit code was sent to</span> <strong
+              id="otp-phone-display"></strong></p>
 
           <div class="otp-sms-banner" id="otp-sms-banner">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
-            <span data-i18n="smsBanner">SMS: Your BlueCollar code is</span>&nbsp;<strong id="otp-display">------</strong>
+            <span data-i18n="smsBanner">SMS: Your BlueCollar code is</span>&nbsp;<strong
+              id="otp-display">------</strong>
           </div>
 
           <div class="otp-boxes" id="otp-boxes">
@@ -1231,9 +1241,10 @@
 
           <p class="otp-error" id="otp-error"></p>
 
-          <button id="verifyOtpBtn" class="btn-primary-red" onclick="verifyOtp()" data-i18n="verifyBtn">Verify Code →</button>
-          <p class="resend-row"><span data-i18n="didNotReceive">Didn't receive a code?</span> <a href="#" class="resend-link"
-              onclick="resendOtp(event)" data-i18n="resend">Resend</a></p>
+          <button id="verifyOtpBtn" class="btn-primary-red" onclick="verifyOtp()" data-i18n="verifyBtn">Verify Code
+            →</button>
+          <p class="resend-row"><span data-i18n="didNotReceive">Didn't receive a code?</span> <a href="#"
+              class="resend-link" onclick="resendOtp(event)" data-i18n="resend">Resend</a></p>
           <a href="#" class="back-link" onclick="showStep(1); return false;" data-i18n="backBtn">← Back</a>
         </div>
 
@@ -1299,8 +1310,10 @@
 
           <p class="otp-error" id="pass-error"></p>
 
-          <button id="finishSignupBtn" class="btn-primary-red" onclick="saveUser()" data-i18n="finishSignUpBtn">Finish Sign Up →</button>
-          <a href="#" class="back-link" style="margin-top:14px;" onclick="showStep(2); return false;" data-i18n="backBtn">← Back</a>
+          <button id="finishSignupBtn" class="btn-primary-red" onclick="saveUser()" data-i18n="finishSignUpBtn">Finish
+            Sign Up →</button>
+          <a href="#" class="back-link" style="margin-top:14px;" onclick="showStep(2); return false;"
+            data-i18n="backBtn">← Back</a>
         </div>
 
         <!-- STEP 4 -->
@@ -1313,9 +1326,11 @@
             </svg>
           </div>
 
-          <div class="form-heading" style="margin-top:16px; margin-bottom:8px;" data-i18n="accountCreated">Account Created!</div>
+          <div class="form-heading" style="margin-top:16px; margin-bottom:8px;" data-i18n="accountCreated">Account
+            Created!</div>
           <p style="font-size:0.9rem; color:#6b7280; margin-bottom:28px;">
-            <span data-i18n="welcome">Welcome,</span> <strong id="success-name"></strong>! <span data-i18n="accountReady">Your employer account is ready.</span>
+            <span data-i18n="welcome">Welcome,</span> <strong id="success-name"></strong>! <span
+              data-i18n="accountReady">Your employer account is ready.</span>
           </p>
           <button class="btn-primary-red" onclick="switchTab('signin')" data-i18n="goToSignIn">Go to Sign In →</button>
         </div>
@@ -1384,7 +1399,14 @@
       localStorage.setItem("bcc_employer_name", user.displayName || "");
       localStorage.setItem("bcc_employer_email", user.email || "");
 
-      window.location.href = "Employer_Dashboard.html";
+      goToEmployerDashboard();
+    }
+
+    function goToEmployerDashboard() {
+      const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+
+      window.location.href =
+        `Employer_Dashboard.html?lang=${encodeURIComponent(savedLang)}`;
     }
 
     window.handleGoogleEmployerAuth = async function (event) {
@@ -1687,7 +1709,7 @@
         window.showStep(4);
 
         setTimeout(() => {
-          window.location.href = "Employer_Dashboard.html";
+          goToEmployerDashboard();
         }, 1200);
       } catch (error) {
         console.error("LINK PASSWORD ERROR:", error);
@@ -1811,7 +1833,7 @@
         localStorage.setItem("bcc_employer_name", employerData.name || "");
         localStorage.setItem("bcc_employer_phone", employerData.phone || "");
 
-        window.location.href = "Employer_Dashboard.html";
+        goToEmployerDashboard();
       } catch (error) {
         console.error("PHONE PASSWORD SIGN IN ERROR:", error);
         alert("Login failed:\n" + (error.message || error.code));
@@ -2034,22 +2056,101 @@
         welcome: "Maayong pag-abot,",
         accountReady: "Andam na an imo account han agaron.",
         goToSignIn: "Kadto ha Sign In →"
+      }, tl: {
+        portalName: "Portal ng Employer",
+        portalTagline: "Hanapin ang tamang talento",
+        leftHeadline: "Mas Mabilis na Kumuha ng Mahuhusay na Manggagawa",
+        leftDesc: "Mag-post ng mga trabaho, suriin ang mga kwalipikadong kandidato, at bumuo ng iyong pangkat kasama ang mga beripikadong propesyonal.",
+
+        feature1Title: "Mga Kwalipikadong Kandidato",
+        feature1Desc: "Makahanap ng mga manggagawang may beripikadong kasanayan at mga pagpapatunay mula sa iba",
+
+        feature2Title: "Madaling Pag-post ng Trabaho",
+        feature2Desc: "Gumawa ng mga job listing sa loob ng ilang minuto at agad na maabot ang mga lokal na manggagawa",
+
+        feature3Title: "Pamamahala ng mga Aplikante",
+        feature3Desc: "Subaybayan ang mga aplikasyon at direktang makipag-usap sa mga kandidato",
+
+        signIn: "Mag-sign In",
+        signUp: "Mag-sign Up",
+        welcomeBack: "Maligayang Pagbabalik!",
+        phoneNumber: "Numero ng Telepono",
+        password: "Password",
+        rememberMe: "Tandaan ako",
+        forgotPassword: "Nakalimutan ang password?",
+        signInBtn: "Mag-sign In →",
+        orContinueWith: "O magpatuloy gamit ang",
+        backToPortal: "← Bumalik sa Pagpili ng Portal",
+
+        startHiring: "Magsimulang Kumuha ng Manggagawa Ngayon",
+        step1: "Hakbang 1 ng 3 — Iyong mga Detalye",
+        businessName: "Pangalan ng Negosyo",
+        optional: "Opsyonal",
+        contactPerson: "Pangalan ng Contact Person",
+        smsHint: "Padadalhan ka namin ng verification code sa pamamagitan ng SMS",
+        continueBtn: "Magpatuloy →",
+
+        bySigningUp: "Sa pag-sign up, sumasang-ayon ka sa aming",
+        terms: "Mga Tuntunin ng Serbisyo",
+        and: "at",
+        privacy: "Patakaran sa Privacy",
+
+        verifyNumber: "I-verify ang Iyong Numero",
+        step2: "Hakbang 2 ng 3 — Ilagay ang OTP",
+        codeSentTo: "Isang 6-digit na code ang ipinadala sa",
+        smsBanner: "SMS: Ang iyong BlueCollar code ay",
+        verifyBtn: "I-verify ang Code →",
+        didNotReceive: "Hindi nakatanggap ng code?",
+        resend: "Ipadala Muli",
+        backBtn: "← Bumalik",
+
+        createPassword: "Gumawa ng Password",
+        step3: "Hakbang 3 ng 3 — Protektahan ang Iyong Account",
+        confirmPassword: "Kumpirmahin ang Password",
+        finishSignUpBtn: "Tapusin ang Pag-sign Up →",
+
+        accountCreated: "Nagawa na ang Account!",
+        welcome: "Maligayang pagdating,",
+        accountReady: "Handa na ang iyong employer account.",
+        goToSignIn: "Pumunta sa Sign In →"
       }
     };
 
     function initLanguage() {
-      const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlLang = urlParams.get('lang');
+      const savedLang = localStorage.getItem('preferredLanguage');
+
+      let selectedLang = 'en';
+
+      if (urlLang && translations[urlLang]) {
+        selectedLang = urlLang;
+      } else if (savedLang && translations[savedLang]) {
+        selectedLang = savedLang;
+      }
+
+      localStorage.setItem('preferredLanguage', selectedLang);
+      document.documentElement.lang = selectedLang === 'tl' ? 'fil' : selectedLang;
+
       document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
-        if (translations[savedLang] && translations[savedLang][key]) {
-          element.innerHTML = translations[savedLang][key];
+        const translation = translations[selectedLang]?.[key];
+
+        if (translation === undefined) return;
+
+        if (
+          element.tagName === 'INPUT' ||
+          element.tagName === 'TEXTAREA'
+        ) {
+          element.placeholder = translation;
+        } else {
+          element.textContent = translation;
         }
       });
     }
 
     document.addEventListener('DOMContentLoaded', initLanguage);
   </script>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BlueCollar Connect</title>
+  <title>BLUESPACE</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="JobSeeker_Dashboard.css" />
@@ -16,13 +16,9 @@
   <nav class="topnav">
     <div class="brand" onclick="showPage('home')">
       <div class="brand-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"
-          stroke-linejoin="round">
-          <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-        </svg>
+        <img src="BlueSpaceIcon.png" alt="BlueSpace Logo">
       </div>
-      <span class="brand-name">BlueCollar Connect</span>
+      <span class="brand-name">BLUESPACE</span>
     </div>
 
     <div class="search-bar">
@@ -37,13 +33,56 @@
     </div>
 
     <div class="nav-actions">
-      <div class="notif-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-        </svg>
-        <span class="notif-dot"></span>
+      <div class="notification-wrap" id="jobSeekerNotificationWrap">
+
+        <button class="notif-btn" id="jobSeekerNotificationButton" type="button"
+          onclick="toggleJobSeekerNotifications(event)" aria-label="Open notifications" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+
+          <span class="notif-dot" id="jobSeekerNotificationDot" hidden></span>
+
+          <span class="notification-count" id="jobSeekerNotificationCount" hidden>
+            0
+          </span>
+        </button>
+
+        <div class="notification-panel" id="jobSeekerNotificationPanel" aria-hidden="true">
+          <div class="notification-header">
+            <h2>Notifications</h2>
+
+            <button class="notification-more-btn" type="button" aria-label="Notification options">
+              •••
+            </button>
+          </div>
+
+          <div class="notification-toolbar">
+            <div class="notification-tabs">
+              <button class="notification-tab active" type="button" data-js-notification-filter="all"
+                onclick="setJobSeekerNotificationFilter('all', this)">
+                All
+              </button>
+
+              <button class="notification-tab" type="button" data-js-notification-filter="unread"
+                onclick="setJobSeekerNotificationFilter('unread', this)">
+                Unread
+              </button>
+            </div>
+
+            <button class="notification-mark-all" type="button" onclick="markAllJobSeekerNotificationsRead(event)">
+              Mark all read
+            </button>
+          </div>
+
+          <div class="notification-list" id="jobSeekerNotificationList">
+            <div class="notification-loading">
+              Loading notifications...
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Avatar + Dropdown -->
@@ -86,6 +125,50 @@
                 <span class="dd-switch-thumb"></span>
               </span>
             </button>
+
+            <div class="dd-language-wrap">
+              <button class="dd-item dd-language-toggle" type="button" onclick="toggleLanguageMenu(event)"
+                aria-expanded="false" id="languageToggleBtn">
+                <span class="dd-language-left">
+                  <svg class="dd-language-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 0 20"></path>
+                    <path d="M12 2a15.3 15.3 0 0 0 0 20"></path>
+                  </svg>
+
+                  <span data-i18n="ddLanguages">Languages</span>
+                </span>
+
+                <svg class="dd-language-chevron" id="languageChevron" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+
+              <div class="dd-language-menu" id="languageMenu">
+                <button class="dd-language-option" type="button" data-lang="en"
+                  onclick="selectDashboardLanguage('en', event)">
+                  <span>English</span>
+                  <span class="dd-language-check">✓</span>
+                </button>
+
+                <button class="dd-language-option" type="button" data-lang="war"
+                  onclick="selectDashboardLanguage('war', event)">
+                  <span>Waray-Waray</span>
+                  <span class="dd-language-check">✓</span>
+                </button>
+
+                <button class="dd-language-option" type="button" data-lang="tl"
+                  onclick="selectDashboardLanguage('tl', event)">
+                  <span>Tagalog</span>
+                  <span class="dd-language-check">✓</span>
+                </button>
+              </div>
+            </div>
+
             <button class="dd-item" onclick="ddAction('settings')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
@@ -203,7 +286,8 @@
           <div class="jobs-panel-header">
             <div>
               <div class="jobs-panel-title" data-i18n="jobsFindJobs">Find Jobs</div>
-              <div class="jobs-panel-subtitle">6 <span data-i18n="jobsAvailable">jobs available in your area</span></div>
+              <div class="jobs-panel-subtitle">6 <span data-i18n="jobsAvailable">jobs available in your area</span>
+              </div>
             </div>
             <button class="saved-jobs-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -221,8 +305,8 @@
                   <circle cx="11" cy="11" r="8" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg></span>
-              <input class="job-search-input" type="text" placeholder="Search by job title, co..." data-i18n="jobsSearchPlaceholder"
-                oninput="filterJobItems()" />
+              <input class="job-search-input" type="text" placeholder="Search by job title, co..."
+                data-i18n="jobsSearchPlaceholder" oninput="filterJobItems()" />
             </div>
             <div class="job-type-dropdown-wrap">
               <select class="job-type-dropdown" onchange="setJobTypeFilter(this.value)">
@@ -268,7 +352,8 @@
             <!-- Chat header -->
             <div class="chat-header">
               <div class="chat-header-avatar-wrap">
-                <img class="chat-header-avatar" id="chat-avatar" src="https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af" alt="" />
+                <img class="chat-header-avatar" id="chat-avatar"
+                  src="https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af" alt="" />
                 <span class="chat-header-online" style="display: none;"></span>
               </div>
               <div class="chat-header-info">
@@ -321,8 +406,8 @@
 
             <!-- Input area -->
             <div class="chat-input-area">
-              <input class="chat-input" id="chat-input" type="text" placeholder="Type a message..." data-i18n="msgTypeMessage"
-                onkeydown="sendOnEnter(event)" />
+              <input class="chat-input" id="chat-input" type="text" placeholder="Type a message..."
+                data-i18n="msgTypeMessage" onkeydown="sendOnEnter(event)" />
               <button class="chat-send-btn" onclick="sendMessage()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                   stroke-linejoin="round">
@@ -710,11 +795,18 @@
     }
 
     // Close dropdown when clicking outside
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', function (event) {
       const wrap = document.getElementById('avatarWrap');
-      const dd = document.getElementById('avatarDropdown');
-      if (wrap && !wrap.contains(e.target)) {
-        dd.classList.remove('open');
+      const dropdown = document.getElementById('avatarDropdown');
+
+      if (wrap && !wrap.contains(event.target)) {
+        dropdown?.classList.remove('open');
+
+        document.getElementById('languageMenu')?.classList.remove('open');
+        document.getElementById('languageChevron')?.classList.remove('open');
+        document
+          .getElementById('languageToggleBtn')
+          ?.setAttribute('aria-expanded', 'false');
       }
     });
 
@@ -740,6 +832,55 @@
       document.body.classList.toggle('dark-mode', isDark);
       document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
       localStorage.setItem('bcc-theme', isDark ? 'dark' : 'light');
+    }
+
+    function toggleLanguageMenu(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      const menu = document.getElementById('languageMenu');
+      const chevron = document.getElementById('languageChevron');
+      const toggleButton = document.getElementById('languageToggleBtn');
+
+      if (!menu) return;
+
+      const isOpen = menu.classList.toggle('open');
+
+      chevron?.classList.toggle('open', isOpen);
+      toggleButton?.setAttribute('aria-expanded', String(isOpen));
+    }
+
+    function selectDashboardLanguage(lang, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      if (!translations[lang]) {
+        console.warn(`Unsupported language: ${lang}`);
+        return;
+      }
+
+      localStorage.setItem('preferredLanguage', lang);
+      applyTranslations(lang);
+      updateActiveDashboardLanguage(lang);
+
+      document.getElementById('languageMenu')?.classList.remove('open');
+      document.getElementById('languageChevron')?.classList.remove('open');
+      document
+        .getElementById('languageToggleBtn')
+        ?.setAttribute('aria-expanded', 'false');
+    }
+
+    function updateActiveDashboardLanguage(lang) {
+      document.querySelectorAll('.dd-language-option').forEach(option => {
+        option.classList.toggle(
+          'active',
+          option.dataset.lang === lang
+        );
+      });
     }
 
     function toggleTheme(event) {
@@ -834,7 +975,7 @@
       el.classList.add('active');
       const badge = el.querySelector('.unread-dot');
       if (badge) badge.remove();
- 
+
       activeConversationId = convId;
 
       const fallbackName = el.dataset.name || "Conversation";
@@ -847,12 +988,12 @@
       if (window.listenToConversationMessages) {
         window.listenToConversationMessages(convId);
       }
- 
+
       if (unsubscribeActiveParticipant) {
         unsubscribeActiveParticipant();
         unsubscribeActiveParticipant = null;
       }
- 
+
       try {
         const convSnap = await getDoc(doc(db, "conversations", convId));
         if (!convSnap.exists() || !auth.currentUser) {
@@ -988,6 +1129,7 @@
         searchPlaceholder: "Search jobs, skills, or location...",
         ddViewProfile: "View Profile",
         ddDarkMode: "Dark Mode",
+        ddLanguages: "Languages",
         ddSettings: "Settings",
         ddHelp: "Help & Support",
         ddLogout: "Log Out",
@@ -1039,6 +1181,7 @@
         searchPlaceholder: "Pamiling hin trabaho, abilidad, o lokasyon...",
         ddViewProfile: "Kitaa an Profile",
         ddDarkMode: "Dark Mode",
+        ddLanguages: "Mga Pinulongan",
         ddSettings: "Mga Setting",
         ddHelp: "Bulig & Suporta",
         ddLogout: "Pag-log Out",
@@ -1085,28 +1228,109 @@
         mobJobs: "Mga Trabaho",
         mobMessages: "Mga Mensahe",
         mobProfile: "Profile",
+      }, tl: {
+        searchPlaceholder: "Maghanap ng trabaho, kasanayan, o lokasyon...",
+
+        ddViewProfile: "Tingnan ang Profile",
+        ddDarkMode: "Dark Mode",
+        ddLanguages: "Mga Wika",
+        ddSettings: "Mga Setting",
+        ddHelp: "Tulong at Suporta",
+        ddLogout: "Mag-log Out",
+
+        sidebarHome: "Home",
+        sidebarJobs: "Mga Trabaho",
+        sidebarMessages: "Mga Mensahe",
+        sidebarPortfolio: "Portfolio",
+
+        profileCardViews: "Mga Pagtingin sa Profile",
+        profileCardApps: "Mga Aplikasyon",
+        profileCardOpen: "Bukas para sa Trabaho",
+
+        homeJobsNearYou: "Mga Trabahong Malapit sa Iyo",
+
+        jobsFindJobs: "Maghanap ng Trabaho",
+        jobsAvailable: "trabahong available sa iyong lugar",
+        jobsSaved: "Mga Naka-save na Trabaho",
+        jobsSearchPlaceholder: "Maghanap ayon sa titulo ng trabaho...",
+        jobsAll: "Lahat ng Trabaho",
+        jobsFullTime: "Full-time",
+        jobsPartTime: "Part-time",
+        jobsContract: "Kontrata",
+
+        msgSearch: "Maghanap ng mga pag-uusap...",
+        msgSelectConvo: "Pumili ng Pag-uusap",
+        msgStartMessaging: "Pumili ng pag-uusap upang magsimulang mag-message.",
+        msgTypeMessage: "Mag-type ng mensahe...",
+
+        profileStatus: "Katayuan ng Profile",
+        profileOpenForWork: "Bukas para sa Trabaho",
+        profileActivelySeeking: "Aktibong naghahanap ng mga oportunidad",
+        profileCompletion: "Pagkakumpleto ng Profile",
+        profileStats: "Mga Estadistika",
+        profileRating: "Rating",
+        profileCompletedJobs: "Mga Natapos na Trabaho",
+
+        profileSkills: "Mga Kasanayan",
+        profileAddSkill: "Magdagdag ng Kasanayan",
+        profileChangeCover: "Palitan ang Cover",
+        profileSetLocation: "Itakda ang kasalukuyang lokasyon",
+        profileMessage: "Mensahe",
+        profileContact: "Kontak",
+        profileAbout: "Tungkol sa Akin",
+        profileWorkExperience: "Karanasan sa Trabaho",
+        profileAddExperience: "Magdagdag ng Karanasan",
+        profileMyPhotos: "Aking mga Larawan",
+        profileAddPhoto: "Magdagdag ng Larawan",
+        profileReviews: "Mga Review at Rating",
+
+        mobHome: "Home",
+        mobJobs: "Mga Trabaho",
+        mobMessages: "Mga Mensahe",
+        mobProfile: "Profile",
       }
     };
 
     function applyTranslations(lang) {
-      if (!translations[lang]) return;
+      if (!translations[lang]) {
+        lang = 'en';
+      }
+
+      document.documentElement.lang = lang === 'tl' ? 'fil' : lang;
 
       document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
-        const translation = translations[lang][key];
-        if (translation) {
-          if (element.placeholder !== undefined) {
-            element.placeholder = translation;
-          } else {
-            element.innerHTML = translation;
-          }
+        const translation = translations[lang]?.[key];
+
+        if (translation === undefined) return;
+
+        if (
+          element.tagName === 'INPUT' ||
+          element.tagName === 'TEXTAREA'
+        ) {
+          element.placeholder = translation;
+        } else {
+          element.textContent = translation;
         }
       });
     }
 
     (function initLanguage() {
-      const savedLang = localStorage.getItem('preferredLanguage') || 'en';
-      applyTranslations(savedLang);
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlLang = urlParams.get('lang');
+      const savedLang = localStorage.getItem('preferredLanguage');
+
+      let selectedLang = 'en';
+
+      if (urlLang && translations[urlLang]) {
+        selectedLang = urlLang;
+      } else if (savedLang && translations[savedLang]) {
+        selectedLang = savedLang;
+      }
+
+      localStorage.setItem('preferredLanguage', selectedLang);
+      applyTranslations(selectedLang);
+      updateActiveDashboardLanguage(selectedLang);
     })();
   </script>
 
@@ -1376,6 +1600,9 @@
     let portfolioPhotos = [];
     let unsubscribeSkillsList = null;
     let unsubscribeApplicationsCount = null;
+    let unsubscribeApplicationNotifications = null;
+    let jobSeekerApplicationNotifications = [];
+    let activeJobSeekerNotificationFilter = "all";
 
     let latestUserProfileData = {};
     let latestSkillsCount = 0;
@@ -1389,68 +1616,287 @@
     const homeApplicantCountUnsubs = new Map();
     const savedApplicantCountUnsubs = new Map();
 
-    function listenToJobSeekerConversations(userId) {
-      const convItemsContainer = document.getElementById("conv-items");
-      if (!convItemsContainer) return;
+    let unsubscribeJobSeekerConversations = null;
 
-      const q = query(
+    function listenToJobSeekerConversations(userId) {
+      const convItemsContainer =
+        document.getElementById("conv-items");
+
+      if (!convItemsContainer || !userId) return;
+
+      if (unsubscribeJobSeekerConversations) {
+        unsubscribeJobSeekerConversations();
+        unsubscribeJobSeekerConversations = null;
+      }
+
+      convItemsContainer.innerHTML = `
+    <div style="
+      padding: 20px;
+      text-align: center;
+      color: #9ca3af;
+    ">
+      Loading conversations...
+    </div>
+  `;
+
+      const conversationsQuery = query(
         collection(db, "conversations"),
-        where("participantIds", "array-contains", userId),
-        orderBy("updatedAt", "desc")
+        where(
+          "participantIds",
+          "array-contains",
+          userId
+        )
       );
 
-      onSnapshot(q, (snapshot) => {
-        convItemsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #9ca3af;">Loading conversations...</div>';
-        if (snapshot.empty) {
-          convItemsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #9ca3af;">No conversations yet.</div>';
-          return;
-        }
+      unsubscribeJobSeekerConversations = onSnapshot(
+        conversationsQuery,
 
-        convItemsContainer.innerHTML = ''; // Clear loading message
+        (snapshot) => {
+          if (snapshot.empty) {
+            convItemsContainer.innerHTML = `
+          <div style="
+            padding: 20px;
+            text-align: center;
+            color: #9ca3af;
+          ">
+            No conversations yet.
+          </div>
+        `;
 
-        snapshot.forEach(docSnap => {
-          const convData = docSnap.data();
-          const convId = docSnap.id;
+            resetJobSeekerChatArea();
+            return;
+          }
 
-          const otherParticipant = {
-            name: convData.employerName || "Employer",
-            avatar: convData.employerPhotoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(convData.employerName || 'E')}&background=fbbf24&color=ffffff`,
-            status: "Active recently",
-            online: false
-          };
+          const conversations = snapshot.docs
+            .map(docSnap => ({
+              id: docSnap.id,
+              ...docSnap.data()
+            }))
+            .sort((first, second) => {
+              return (
+                timestampToMilliseconds(
+                  second.updatedAt
+                ) -
+                timestampToMilliseconds(
+                  first.updatedAt
+                )
+              );
+            });
 
-          const lastMessage = escapeHtml(convData.lastMessage || "...");
-          const updatedAt = convData.updatedAt ? formatPostTime(convData.updatedAt) : "now";
+          convItemsContainer.innerHTML = "";
 
-          const item = document.createElement("div");
-          item.className = "conv-item";
-          item.dataset.convid = convId;
-          item.dataset.name = otherParticipant.name;
-          item.dataset.avatar = otherParticipant.avatar;
-          item.dataset.status = otherParticipant.status;
-          item.dataset.online = String(otherParticipant.online);
+          conversations.forEach(conversation => {
+            const conversationId =
+              conversation.id;
 
-          item.setAttribute('onclick', `window.openConv(this, '${convId}')`);
+            const employerName =
+              conversation.employerName ||
+              "Employer";
 
-          item.innerHTML = `
-            <div class="conv-avatar-wrap">
-              <img class="conv-avatar" src="${otherParticipant.avatar}" alt="${escapeHtml(otherParticipant.name)}" />
-              ${otherParticipant.online ? '<span class="conv-online"></span>' : ''}
+            const employerAvatar =
+              conversation.employerPhotoURL ||
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(employerName)}&background=fbbf24&color=ffffff`;
+
+            const lastMessage =
+              conversation.lastMessage ||
+              "Conversation started";
+
+            const updatedAt =
+              conversation.updatedAt
+                ? formatPostTime(
+                  conversation.updatedAt
+                )
+                : "now";
+
+            const item =
+              document.createElement("div");
+
+            item.className = "conv-item";
+            item.dataset.convid =
+              conversationId;
+            item.dataset.name =
+              employerName;
+            item.dataset.avatar =
+              employerAvatar;
+            item.dataset.status =
+              "Active recently";
+            item.dataset.online = "false";
+
+            item.innerHTML = `
+          <div class="conv-avatar-wrap">
+            <img
+              class="conv-avatar"
+              src="${escapeHtml(employerAvatar)}"
+              alt="${escapeHtml(employerName)}"
+            />
+          </div>
+
+          <div class="conv-body">
+            <div class="conv-header-row">
+              <span class="conv-name">
+                ${escapeHtml(employerName)}
+              </span>
+
+              <span class="conv-time">
+                ${escapeHtml(updatedAt)}
+              </span>
             </div>
-            <div class="conv-body">
-              <div class="conv-header-row">
-                <span class="conv-name">${escapeHtml(otherParticipant.name).substring(0, 10)}...</span>
-                <span class="conv-time">${updatedAt}</span>
-              </div>
-              <div class="conv-preview">${lastMessage.substring(0, 22)}${lastMessage.length > 22 ? '...' : ''}</div>
-              <div class="conv-footer-row"><span class="conv-badge employer">Employer</span></div>
-            </div>`;
-          convItemsContainer.appendChild(item);
-        });
-      }, (error) => {
-        console.error("Error listening to conversations:", error);
-        convItemsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #ef4444;">Failed to load conversations.</div>';
-      });
+
+            <div class="conv-preview">
+              ${escapeHtml(lastMessage)}
+            </div>
+
+            <div class="conv-footer-row">
+              <span class="conv-badge employer">
+                Employer
+              </span>
+            </div>
+          </div>
+        `;
+
+            item.addEventListener(
+              "click",
+              () => {
+                window.openConv(
+                  item,
+                  conversationId
+                );
+              }
+            );
+
+            convItemsContainer.appendChild(
+              item
+            );
+          });
+
+          restoreJobSeekerConversation(
+            convItemsContainer
+          );
+        },
+
+        (error) => {
+          console.error(
+            "Error listening to conversations:",
+            error
+          );
+
+          convItemsContainer.innerHTML = `
+        <div style="
+          padding: 20px;
+          text-align: center;
+          color: #ef4444;
+        ">
+          Failed to load conversations:
+          ${escapeHtml(error.code || "unknown error")}
+        </div>
+      `;
+        }
+      );
+    }
+
+    function timestampToMilliseconds(timestamp) {
+      if (!timestamp) return 0;
+
+      if (
+        typeof timestamp.toMillis ===
+        "function"
+      ) {
+        return timestamp.toMillis();
+      }
+
+      if (timestamp.seconds) {
+        return timestamp.seconds * 1000;
+      }
+
+      const milliseconds =
+        new Date(timestamp).getTime();
+
+      return Number.isNaN(milliseconds)
+        ? 0
+        : milliseconds;
+    }
+
+    function restoreJobSeekerConversation(
+      convItemsContainer
+    ) {
+      const savedConversationId =
+        localStorage.getItem(
+          "activeJobSeekerConversationId"
+        );
+
+      let conversationToOpen = null;
+
+      if (savedConversationId) {
+        conversationToOpen =
+          convItemsContainer.querySelector(
+            `.conv-item[data-convid="${CSS.escape(savedConversationId)}"]`
+          );
+      }
+
+      if (!conversationToOpen) {
+        conversationToOpen =
+          convItemsContainer.querySelector(
+            ".conv-item"
+          );
+      }
+
+      if (!conversationToOpen) return;
+
+      const conversationId =
+        conversationToOpen.dataset.convid;
+
+      if (!conversationId) return;
+
+      window.openConv(
+        conversationToOpen,
+        conversationId
+      );
+    }
+
+    function resetJobSeekerChatArea() {
+      const chatName =
+        document.getElementById("chat-name");
+
+      const chatStatus =
+        document.getElementById("chat-status");
+
+      const chatAvatar =
+        document.getElementById("chat-avatar");
+
+      const chatMessages =
+        document.getElementById(
+          "chat-messages"
+        );
+
+      if (chatName) {
+        chatName.textContent =
+          "Select a Conversation";
+      }
+
+      if (chatStatus) {
+        chatStatus.textContent = "...";
+      }
+
+      if (chatAvatar) {
+        chatAvatar.src =
+          "https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af";
+      }
+
+      if (chatMessages) {
+        chatMessages.innerHTML = `
+      <div style="
+        text-align: center;
+        color: #9ca3af;
+        padding: 20px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">
+        Select a conversation to start messaging.
+      </div>
+    `;
+      }
     }
 
     function updateConversationSidebarPreview(conversationId, text) {
@@ -1469,13 +1915,20 @@
       if (convItems) convItems.prepend(convItem);
     }
 
-    window.openConv = async function(el, convId) {
+    window.openConv = async function (el, convId) {
       document.querySelectorAll('.conv-item').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
       const badge = el.querySelector('.unread-dot');
       if (badge) badge.remove();
- 
+
       activeConversationId = convId;
+
+      window.activeConversationId = convId;
+
+      localStorage.setItem(
+        "activeJobSeekerConversationId",
+        convId
+      );
 
       const fallbackName = el.dataset.name || "Conversation";
       const fallbackAvatar = el.dataset.avatar || "https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af";
@@ -1487,12 +1940,12 @@
       if (window.listenToConversationMessages) {
         window.listenToConversationMessages(convId);
       }
- 
+
       if (unsubscribeActiveParticipant) {
         unsubscribeActiveParticipant();
         unsubscribeActiveParticipant = null;
       }
- 
+
       try {
         const convSnap = await getDoc(doc(db, "conversations", convId));
         if (!convSnap.exists() || !auth.currentUser) {
@@ -1624,8 +2077,8 @@
           chatMessages.scrollTop = chatMessages.scrollHeight;
         }, (error) => {
           console.error("LISTEN MESSAGES ERROR:", error);
-          const errorMsg = error.code === 'permission-denied' 
-            ? "Permission denied. Please check your Firestore security rules." 
+          const errorMsg = error.code === 'permission-denied'
+            ? "Permission denied. Please check your Firestore security rules."
             : `Failed to load messages. (${error.code || 'unknown'})`;
           chatMessages.innerHTML = `<div class="msg-bubble-wrap received"><div class="msg-bubble received" style="background-color: #fee2e2; color: #b91c1c;">${errorMsg}</div></div>`;
         });
@@ -1633,6 +2086,767 @@
         console.error("SETUP MESSAGE LISTENER ERROR:", error);
       }
     };
+
+    window.toggleJobSeekerNotifications = function (event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      const panel =
+        document.getElementById(
+          "jobSeekerNotificationPanel"
+        );
+
+      const button =
+        document.getElementById(
+          "jobSeekerNotificationButton"
+        );
+
+      if (!panel) return;
+
+      const willOpen =
+        !panel.classList.contains("open");
+
+      panel.classList.toggle(
+        "open",
+        willOpen
+      );
+
+      panel.setAttribute(
+        "aria-hidden",
+        String(!willOpen)
+      );
+
+      button?.setAttribute(
+        "aria-expanded",
+        String(willOpen)
+      );
+
+      document
+        .getElementById("avatarDropdown")
+        ?.classList.remove("open");
+    };
+
+    function closeJobSeekerNotifications() {
+      const panel =
+        document.getElementById(
+          "jobSeekerNotificationPanel"
+        );
+
+      const button =
+        document.getElementById(
+          "jobSeekerNotificationButton"
+        );
+
+      panel?.classList.remove("open");
+
+      panel?.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+      button?.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+    }
+
+    window.setJobSeekerNotificationFilter =
+      function (filter, button) {
+        activeJobSeekerNotificationFilter =
+          filter;
+
+        document
+          .querySelectorAll(
+            "[data-js-notification-filter]"
+          )
+          .forEach(tab => {
+            tab.classList.toggle(
+              "active",
+              tab === button
+            );
+          });
+
+        document
+          .querySelectorAll(
+            ".jobseeker-notification-item"
+          )
+          .forEach(item => {
+            const isUnread =
+              item.dataset.unread === "true";
+
+            item.hidden =
+              filter === "unread" &&
+              !isUnread;
+          });
+
+        updateJobSeekerNotificationSections();
+      };
+
+    function getJobSeekerNotificationStorageKey() {
+      const uid =
+        auth.currentUser?.uid ||
+        "guest";
+
+      return `bluespace_jobseeker_read_notifications_${uid}`;
+    }
+
+    function getReadJobSeekerNotificationIds() {
+      try {
+        const stored =
+          localStorage.getItem(
+            getJobSeekerNotificationStorageKey()
+          );
+
+        const parsed =
+          stored
+            ? JSON.parse(stored)
+            : [];
+
+        return new Set(
+          Array.isArray(parsed)
+            ? parsed
+            : []
+        );
+      } catch (error) {
+        console.error(
+          "Failed to read notification state:",
+          error
+        );
+
+        return new Set();
+      }
+    }
+
+    function saveReadJobSeekerNotificationIds(
+      readIds
+    ) {
+      localStorage.setItem(
+        getJobSeekerNotificationStorageKey(),
+        JSON.stringify(
+          Array.from(readIds)
+        )
+      );
+    }
+
+    function getApplicationNotificationId(
+      application
+    ) {
+      return `application:${application.jobId || application.id}`;
+    }
+
+    function notificationTimestampToMillis(
+      timestamp
+    ) {
+      if (!timestamp) return 0;
+
+      if (
+        typeof timestamp.toMillis ===
+        "function"
+      ) {
+        return timestamp.toMillis();
+      }
+
+      if (timestamp.seconds) {
+        return timestamp.seconds * 1000;
+      }
+
+      const milliseconds =
+        new Date(timestamp).getTime();
+
+      return Number.isNaN(milliseconds)
+        ? 0
+        : milliseconds;
+    }
+
+    function isNotificationFromToday(
+      timestamp
+    ) {
+      const milliseconds =
+        notificationTimestampToMillis(
+          timestamp
+        );
+
+      if (!milliseconds) return false;
+
+      const date =
+        new Date(milliseconds);
+
+      const today =
+        new Date();
+
+      return (
+        date.getFullYear() ===
+        today.getFullYear() &&
+        date.getMonth() ===
+        today.getMonth() &&
+        date.getDate() ===
+        today.getDate()
+      );
+    }
+
+    function createApplicationHistoryNotification(
+      application,
+      readIds
+    ) {
+      const notificationId =
+        getApplicationNotificationId(
+          application
+        );
+
+      const isUnread =
+        !readIds.has(notificationId);
+
+      const jobTitle =
+        application.title ||
+        "Untitled job";
+
+      const employerName =
+        application.employerName ||
+        "Employer";
+
+      const employerPhoto =
+        application.employerPhotoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(employerName)}&background=ccfbf1&color=0f766e`;
+
+      const status =
+        application.status ||
+        "pending";
+
+      const item =
+        document.createElement("button");
+
+      item.type = "button";
+
+      item.className =
+        `jobseeker-notification-item${isUnread ? " unread" : ""
+        }`;
+
+      item.dataset.notificationId =
+        notificationId;
+
+      item.dataset.jobId =
+        application.jobId ||
+        application.id ||
+        "";
+
+      item.dataset.unread =
+        String(isUnread);
+
+      item.innerHTML = `
+    <span class="notification-avatar-wrap">
+      <img
+        class="notification-avatar"
+        src="${escapeHtml(employerPhoto)}"
+        alt="${escapeHtml(employerName)}"
+      />
+
+      <span class="notification-application-badge">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect
+            x="2"
+            y="7"
+            width="20"
+            height="14"
+            rx="2"
+          ></rect>
+
+          <path
+            d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"
+          ></path>
+
+          <polyline
+            points="9 14 11 16 15 12"
+          ></polyline>
+        </svg>
+      </span>
+    </span>
+
+    <span class="notification-item-body">
+      <span class="notification-item-message">
+        You applied for
+        <strong>${escapeHtml(jobTitle)}</strong>
+        at
+        <strong>${escapeHtml(employerName)}</strong>.
+      </span>
+
+      <span class="notification-item-meta">
+        ${escapeHtml(formatApplicationStatus(status))}
+        ·
+        ${escapeHtml(formatPostTime(application.appliedAt))}
+      </span>
+    </span>
+
+    <span
+      class="notification-unread-indicator"
+      aria-hidden="true"
+    ></span>
+  `;
+
+      item.addEventListener(
+        "click",
+        () => {
+          markJobSeekerNotificationRead(
+            notificationId
+          );
+
+          closeJobSeekerNotifications();
+
+          openAppliedJobFromNotification(
+            application
+          );
+        }
+      );
+
+      return item;
+    }
+
+    function formatApplicationStatus(status) {
+      switch (
+      String(status || "")
+        .toLowerCase()
+      ) {
+        case "accepted":
+          return "Application accepted";
+
+        case "rejected":
+          return "Application not selected";
+
+        case "reviewing":
+        case "under-review":
+          return "Application under review";
+
+        case "shortlisted":
+          return "You were shortlisted";
+
+        default:
+          return "Application pending";
+      }
+    }
+
+    function createJobSeekerNotificationSection(
+      title,
+      applications,
+      readIds
+    ) {
+      const section =
+        document.createElement("section");
+
+      section.className =
+        "jobseeker-notification-section";
+
+      const heading =
+        document.createElement("h3");
+
+      heading.className =
+        "notification-section-title";
+
+      heading.textContent =
+        title;
+
+      const items =
+        document.createElement("div");
+
+      applications.forEach(application => {
+        items.appendChild(
+          createApplicationHistoryNotification(
+            application,
+            readIds
+          )
+        );
+      });
+
+      section.append(
+        heading,
+        items
+      );
+
+      return section;
+    }
+
+    function renderJobSeekerNotifications() {
+      const list =
+        document.getElementById(
+          "jobSeekerNotificationList"
+        );
+
+      if (!list) return;
+
+      list.innerHTML = "";
+
+      const readIds =
+        getReadJobSeekerNotificationIds();
+
+      if (
+        !jobSeekerApplicationNotifications.length
+      ) {
+        list.innerHTML = `
+      <div class="notification-empty-state">
+        <div class="notification-empty-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18 8A6 6 0 0 0 6 8"></path>
+            <path d="M6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </div>
+
+        <strong>No notifications yet</strong>
+
+        <span>
+          Jobs you apply for will appear here.
+        </span>
+      </div>
+    `;
+
+        updateJobSeekerNotificationBadge();
+        return;
+      }
+
+      const todayApplications =
+        jobSeekerApplicationNotifications.filter(
+          application =>
+            isNotificationFromToday(
+              application.appliedAt
+            )
+        );
+
+      const earlierApplications =
+        jobSeekerApplicationNotifications.filter(
+          application =>
+            !isNotificationFromToday(
+              application.appliedAt
+            )
+        );
+
+      if (todayApplications.length) {
+        list.appendChild(
+          createJobSeekerNotificationSection(
+            "Today",
+            todayApplications,
+            readIds
+          )
+        );
+      }
+
+      if (earlierApplications.length) {
+        list.appendChild(
+          createJobSeekerNotificationSection(
+            "Earlier",
+            earlierApplications,
+            readIds
+          )
+        );
+      }
+
+      updateJobSeekerNotificationBadge();
+
+      const activeTab =
+        document.querySelector(
+          `[data-js-notification-filter="${activeJobSeekerNotificationFilter}"]`
+        );
+
+      window.setJobSeekerNotificationFilter(
+        activeJobSeekerNotificationFilter,
+        activeTab
+      );
+    }
+
+    function listenToJobSeekerApplicationNotifications(
+      uid
+    ) {
+      if (!uid) return;
+
+      if (
+        unsubscribeApplicationNotifications
+      ) {
+        unsubscribeApplicationNotifications();
+        unsubscribeApplicationNotifications =
+          null;
+      }
+
+      const applicationsReference =
+        collection(
+          db,
+          "users",
+          uid,
+          "applications"
+        );
+
+      unsubscribeApplicationNotifications =
+        onSnapshot(
+          applicationsReference,
+
+          snapshot => {
+            jobSeekerApplicationNotifications =
+              snapshot.docs
+                .map(documentSnapshot => ({
+                  id: documentSnapshot.id,
+                  ...documentSnapshot.data()
+                }))
+                .sort((first, second) => {
+                  return (
+                    notificationTimestampToMillis(
+                      second.appliedAt
+                    ) -
+                    notificationTimestampToMillis(
+                      first.appliedAt
+                    )
+                  );
+                });
+
+            renderJobSeekerNotifications();
+          },
+
+          error => {
+            console.error(
+              "Failed to load application notifications:",
+              error
+            );
+
+            const list =
+              document.getElementById(
+                "jobSeekerNotificationList"
+              );
+
+            if (list) {
+              list.innerHTML = `
+            <div class="notification-filter-empty">
+              Failed to load notifications.
+            </div>
+          `;
+            }
+          }
+        );
+    }
+
+    function updateJobSeekerNotificationBadge() {
+      const readIds =
+        getReadJobSeekerNotificationIds();
+
+      const unreadCount =
+        jobSeekerApplicationNotifications
+          .filter(application => {
+            return !readIds.has(
+              getApplicationNotificationId(
+                application
+              )
+            );
+          })
+          .length;
+
+      const dot =
+        document.getElementById(
+          "jobSeekerNotificationDot"
+        );
+
+      const count =
+        document.getElementById(
+          "jobSeekerNotificationCount"
+        );
+
+      if (dot) {
+        dot.hidden =
+          unreadCount === 0;
+      }
+
+      if (count) {
+        count.hidden =
+          unreadCount === 0;
+
+        count.textContent =
+          unreadCount > 99
+            ? "99+"
+            : String(unreadCount);
+      }
+    }
+
+    function markJobSeekerNotificationRead(
+      notificationId
+    ) {
+      const readIds =
+        getReadJobSeekerNotificationIds();
+
+      readIds.add(notificationId);
+
+      saveReadJobSeekerNotificationIds(
+        readIds
+      );
+
+      const item =
+        document.querySelector(
+          `.jobseeker-notification-item[data-notification-id="${CSS.escape(notificationId)}"]`
+        );
+
+      if (item) {
+        item.classList.remove("unread");
+        item.dataset.unread = "false";
+
+        if (
+          activeJobSeekerNotificationFilter ===
+          "unread"
+        ) {
+          item.hidden = true;
+        }
+      }
+
+      updateJobSeekerNotificationBadge();
+      updateJobSeekerNotificationSections();
+    }
+
+    window.markAllJobSeekerNotificationsRead =
+      function (event) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        const readIds =
+          getReadJobSeekerNotificationIds();
+
+        jobSeekerApplicationNotifications
+          .forEach(application => {
+            readIds.add(
+              getApplicationNotificationId(
+                application
+              )
+            );
+          });
+
+        saveReadJobSeekerNotificationIds(
+          readIds
+        );
+
+        document
+          .querySelectorAll(
+            ".jobseeker-notification-item"
+          )
+          .forEach(item => {
+            item.classList.remove("unread");
+            item.dataset.unread = "false";
+
+            if (
+              activeJobSeekerNotificationFilter ===
+              "unread"
+            ) {
+              item.hidden = true;
+            }
+          });
+
+        updateJobSeekerNotificationBadge();
+        updateJobSeekerNotificationSections();
+      };
+
+    function updateJobSeekerNotificationSections() {
+      document
+        .querySelectorAll(
+          ".jobseeker-notification-section"
+        )
+        .forEach(section => {
+          const visibleItems =
+            Array.from(
+              section.querySelectorAll(
+                ".jobseeker-notification-item"
+              )
+            ).filter(item => !item.hidden);
+
+          section.hidden =
+            visibleItems.length === 0;
+        });
+
+      const list =
+        document.getElementById(
+          "jobSeekerNotificationList"
+        );
+
+      if (!list) return;
+
+      const visibleItems =
+        Array.from(
+          list.querySelectorAll(
+            ".jobseeker-notification-item"
+          )
+        ).filter(item => !item.hidden);
+
+      let empty =
+        list.querySelector(
+          ".notification-filter-empty"
+        );
+
+      if (
+        !visibleItems.length &&
+        jobSeekerApplicationNotifications.length
+      ) {
+        if (!empty) {
+          empty =
+            document.createElement("div");
+
+          empty.className =
+            "notification-filter-empty";
+
+          list.appendChild(empty);
+        }
+
+        empty.textContent =
+          activeJobSeekerNotificationFilter ===
+            "unread"
+            ? "You have no unread notifications."
+            : "You have no notifications yet.";
+
+        empty.hidden = false;
+      } else if (empty) {
+        empty.hidden = true;
+      }
+    }
+
+    function openAppliedJobFromNotification(
+      application
+    ) {
+      showPage("home");
+
+      const jobId =
+        application.jobId ||
+        application.id;
+
+      requestAnimationFrame(() => {
+        const relatedCard =
+          document.querySelector(
+            `.job-card[data-job-id="${CSS.escape(jobId)}"]`
+          );
+
+        if (relatedCard) {
+          relatedCard.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+
+          relatedCard.classList.add(
+            "notification-job-highlight"
+          );
+
+          setTimeout(() => {
+            relatedCard.classList.remove(
+              "notification-job-highlight"
+            );
+          }, 2500);
+        }
+      });
+    }
 
 
     onAuthStateChanged(auth, async (user) => {
@@ -1689,6 +2903,9 @@
       listenToSavedJobs();
       listenToHomeJobs();
       listenToMyApplicationsCount(user.uid);
+      listenToJobSeekerApplicationNotifications(
+        user.uid
+      );
 
       if (unsubscribeUserDoc) {
         unsubscribeUserDoc();
@@ -3048,6 +4265,7 @@
     function createHomeJobCard(jobId, job) {
       const card = document.createElement("div");
       card.className = "job-card";
+      card.dataset.jobId = jobId;
 
       card.dataset.title = [
         job.title || "",
@@ -3231,9 +4449,27 @@
       });
     }
 
+    document.addEventListener(
+      "click",
+      event => {
+        const wrap =
+          document.getElementById(
+            "jobSeekerNotificationWrap"
+          );
+
+        if (
+          wrap &&
+          !wrap.contains(event.target)
+        ) {
+          closeJobSeekerNotifications();
+        }
+      }
+    );
+
     function createSavedJobItem(jobId, job) {
       const card = document.createElement("div");
       card.className = "job-card";
+      card.dataset.jobId = jobId;
 
       card.dataset.title = [
         job.title || "",
@@ -3544,6 +4780,33 @@
         if (unsubscribeSavedJobs) {
           unsubscribeSavedJobs();
           unsubscribeSavedJobs = null;
+        }
+
+        if (
+          unsubscribeJobSeekerConversations
+        ) {
+          unsubscribeJobSeekerConversations();
+          unsubscribeJobSeekerConversations =
+            null;
+        }
+
+        if (unsubscribeActiveMessages) {
+          unsubscribeActiveMessages();
+          unsubscribeActiveMessages = null;
+        }
+
+        if (unsubscribeActiveParticipant) {
+          unsubscribeActiveParticipant();
+          unsubscribeActiveParticipant =
+            null;
+        }
+
+        if (
+          unsubscribeApplicationNotifications
+        ) {
+          unsubscribeApplicationNotifications();
+          unsubscribeApplicationNotifications =
+            null;
         }
 
         await signOut(auth);
