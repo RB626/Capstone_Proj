@@ -2060,11 +2060,22 @@ body {
 }
 
 .applicant-actions-wide .employer-btn-secondary,
+.applicant-actions-wide .employer-btn-review,
 .applicant-actions-wide .employer-btn-primary {
   min-width: 130px;
-  padding: 9px 16px;
+  height: 38px;
+  padding: 0 16px;
+
   font-size: 0.85rem;
+  line-height: 1;
+
   border-radius: 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap;
 }
 
 
@@ -7108,8 +7119,7 @@ body.dark-mode .dd-language-option.active .dd-language-check {
   background: transparent;
 }
 
-.job-notification-item.unread
-.notification-unread-indicator {
+.job-notification-item.unread .notification-unread-indicator {
   background: #1688f8;
 }
 
@@ -7249,5 +7259,372 @@ body.dark-mode .notification-job-badge {
 
   .notification-mark-all {
     font-size: 0.72rem;
+  }
+}
+
+/* ══════════════════════════════════════
+   RATE & REVIEW
+══════════════════════════════════════ */
+/* ══════════════════════════════════════
+   RATE & REVIEW BUTTON
+   MATCH MESSAGE + VIEW PROFILE
+══════════════════════════════════════ */
+
+.employer-btn-review {
+  min-width: 130px;
+  padding: 9px 16px;
+
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+
+  background: #ffffff;
+  color: #0f172a;
+
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+
+  line-height: 1.2;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.employer-btn-review:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+/* Overlay */
+
+.review-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.52);
+}
+
+.review-modal-overlay.open {
+  display: flex;
+}
+
+
+/* Modal */
+
+.review-modal {
+  width: min(540px, 100%);
+  overflow: hidden;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow:
+    0 24px 80px rgba(15, 23, 42, 0.24);
+}
+
+.review-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px 26px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.review-modal-header h3 {
+  margin: 0 0 5px;
+  color: #111827;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.review-modal-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.review-modal-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.review-modal-body {
+  padding: 22px 26px;
+}
+
+
+/* Applicant preview */
+
+.review-worker-preview {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 24px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.review-worker-preview img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.review-worker-name {
+  color: #111827;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.review-worker-job {
+  margin-top: 3px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+
+/* Fields */
+
+.review-field {
+  margin-top: 20px;
+}
+
+.review-field label {
+  display: block;
+  margin-bottom: 9px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+
+/* Stars */
+
+.review-star-picker {
+  display: flex;
+  gap: 6px;
+}
+
+.review-star-picker button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #d1d5db;
+  font-size: 36px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.review-star-picker button:hover {
+  transform: scale(1.1);
+}
+
+.review-star-picker button.active {
+  color: #f59e0b;
+}
+
+.review-rating-label {
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+
+/* Review textarea */
+
+#reviewCommentInput {
+  width: 100%;
+  resize: vertical;
+  min-height: 110px;
+  padding: 13px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  outline: none;
+  color: #111827;
+  font: inherit;
+}
+
+#reviewCommentInput:focus {
+  border-color: #2dd4bf;
+  box-shadow:
+    0 0 0 3px rgba(45, 212, 191, 0.12);
+}
+
+.review-character-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 7px;
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.review-modal-error {
+  min-height: 18px;
+  margin-top: 12px;
+  color: #dc2626;
+  font-size: 13px;
+}
+
+
+/* Footer */
+
+.review-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px 26px 24px;
+}
+
+.review-modal-btn {
+  min-width: 120px;
+  height: 44px;
+  border-radius: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.review-modal-btn.secondary {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.review-modal-btn.primary {
+  border: none;
+  background: #2dd4bf;
+  color: #ffffff;
+}
+
+.review-modal-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+
+/* Dark mode */
+
+body.dark-mode .review-modal {
+  background: #111827;
+}
+
+body.dark-mode .review-modal-header {
+  border-color: #334155;
+}
+
+body.dark-mode .review-modal-header h3,
+body.dark-mode .review-worker-name {
+  color: #f8fafc;
+}
+
+body.dark-mode .review-worker-preview {
+  background: #1e293b;
+}
+
+body.dark-mode #reviewCommentInput {
+  border-color: #334155;
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+/* ══════════════════════════════════════
+   APPLICANT ACTIONS RESPONSIVE
+══════════════════════════════════════ */
+
+@media (max-width: 900px) {
+  .applicant-actions-wide {
+    margin-left: 0;
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .applicant-actions-wide .employer-btn-secondary,
+  .applicant-actions-wide .employer-btn-review,
+  .applicant-actions-wide .employer-btn-primary {
+    flex: 1 1 calc(33.333% - 8px);
+    min-width: 110px;
+    height: 38px;
+    padding: 0 12px;
+
+    font-size: 0.8rem;
+  }
+}
+
+
+/* ══════════════════════════════════════
+   APPLICANT ACTIONS RESPONSIVE
+══════════════════════════════════════ */
+
+@media (max-width: 900px) {
+  .applicant-actions-wide {
+    margin-left: 0;
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .applicant-actions-wide .employer-btn-secondary,
+  .applicant-actions-wide .employer-btn-review,
+  .applicant-actions-wide .employer-btn-primary {
+    flex: 1 1 calc(33.333% - 8px);
+    min-width: 110px;
+    height: 38px;
+    padding: 0 12px;
+
+    font-size: 0.8rem;
+  }
+}
+
+
+@media (max-width: 600px) {
+  .applicant-actions-wide {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .applicant-actions-wide .employer-btn-secondary,
+  .applicant-actions-wide .employer-btn-review,
+  .applicant-actions-wide .employer-btn-primary {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+
+    flex: none;
+
+    padding: 0 14px;
+    font-size: 0.82rem;
   }
 }

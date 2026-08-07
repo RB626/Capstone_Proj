@@ -459,7 +459,9 @@
                       points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                   </svg>
                   <span data-i18n="profileRating">Rating</span>
-                  <span class="sl-val">4.8/5.0</span>
+                  <span class="sl-val" id="profileAverageRating">
+                    0.0/5.0
+                  </span>
                 </div>
                 <div class="stat-line">
                   <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-dark)" stroke-width="2" stroke-linecap="round"
@@ -657,76 +659,17 @@
 
             <!-- Reviews & Ratings -->
             <div class="prof-card">
-              <div class="prof-section-title" data-i18n="profileReviews">Reviews &amp; Ratings</div>
-              <div class="reviews-list">
-                <div class="review-item">
-                  <img class="review-avatar" src="https://i.pravatar.cc/48?img=47" alt="Maria Reyes" />
-                  <div class="review-body">
-                    <div class="review-header">
-                      <span class="review-name">Maria Reyes</span>
-                      <span class="review-time">2 weeks ago</span>
-                    </div>
-                    <div class="review-stars">
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    </div>
-                    <div class="review-text">Excellent work! Juan completed the carpentry project on time and with
-                      great
-                      attention to detail. Highly recommended!</div>
-                  </div>
-                </div>
-                <div class="review-item">
-                  <img class="review-avatar" src="https://i.pravatar.cc/48?img=52" alt="ABC Construction" />
-                  <div class="review-body">
-                    <div class="review-header">
-                      <span class="review-name">ABC Construction</span>
-                      <span class="review-time">1 month ago</span>
-                    </div>
-                    <div class="review-stars">
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    </div>
-                    <div class="review-text">Professional and reliable. Great addition to our team for the residential
-                      project.</div>
-                  </div>
+
+              <div class="prof-section-title">
+                Reviews &amp; Ratings
+              </div>
+
+              <div class="reviews-list" id="profileReviewsList">
+                <div class="reviews-empty-state">
+                  No reviews yet.
                 </div>
               </div>
+
             </div>
 
           </div><!-- /profile-right-col -->
@@ -1505,7 +1448,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, onSnapshot, setDoc, serverTimestamp, collection, addDoc, collectionGroup, updateDoc, deleteDoc, query, orderBy, increment, where, limit, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, getDocs, onSnapshot, setDoc, serverTimestamp, collection, addDoc, collectionGroup, updateDoc, deleteDoc, query, orderBy, increment, where, limit, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
     const firebaseConfig = {
@@ -1617,6 +1560,322 @@
     const savedApplicantCountUnsubs = new Map();
 
     let unsubscribeJobSeekerConversations = null;
+    let unsubscribeProfileReviews = null;
+
+    function createReviewStars(rating) {
+      const numericRating =
+        Math.max(
+          0,
+          Math.min(
+            5,
+            Number(rating) || 0
+          )
+        );
+
+      let html = "";
+
+      for (
+        let star = 1;
+        star <= 5;
+        star++
+      ) {
+        html += `
+      <span
+        class="profile-review-star ${star <= numericRating
+            ? "filled"
+            : ""
+          }"
+      >
+        ★
+      </span>
+    `;
+      }
+
+      return html;
+    }
+
+    function formatReviewTime(timestamp) {
+      if (!timestamp) {
+        return "Just now";
+      }
+
+      const date =
+        timestamp?.toDate
+          ? timestamp.toDate()
+          : new Date(timestamp);
+
+      if (
+        !(date instanceof Date) ||
+        Number.isNaN(date.getTime())
+      ) {
+        return "Just now";
+      }
+
+      const difference =
+        Date.now() -
+        date.getTime();
+
+      const minute =
+        60 * 1000;
+
+      const hour =
+        60 * minute;
+
+      const day =
+        24 * hour;
+
+      const week =
+        7 * day;
+
+      const month =
+        30 * day;
+
+
+      if (difference < minute) {
+        return "Just now";
+      }
+
+      if (difference < hour) {
+        return `${Math.floor(
+          difference / minute
+        )
+          }m ago`;
+      }
+
+      if (difference < day) {
+        return `${Math.floor(
+          difference / hour
+        )
+          }h ago`;
+      }
+
+      if (difference < week) {
+        const days =
+          Math.floor(
+            difference / day
+          );
+
+        return `${days} day${days === 1 ? "" : "s"
+          } ago`;
+      }
+
+      if (difference < month) {
+        const weeks =
+          Math.floor(
+            difference / week
+          );
+
+        return `${weeks} week${weeks === 1 ? "" : "s"
+          } ago`;
+      }
+
+      const months =
+        Math.floor(
+          difference / month
+        );
+
+      return `${months} month${months === 1 ? "" : "s"
+        } ago`;
+    }
+
+    function listenToProfileReviews(userId) {
+      const reviewsList =
+        document.getElementById(
+          "profileReviewsList"
+        );
+
+      const averageElement =
+        document.getElementById(
+          "profileAverageRating"
+        );
+
+      if (!reviewsList || !userId) {
+        return;
+      }
+
+
+      if (unsubscribeProfileReviews) {
+        unsubscribeProfileReviews();
+
+        unsubscribeProfileReviews =
+          null;
+      }
+
+
+      const reviewsQuery =
+        query(
+          collection(
+            db,
+            "users",
+            userId,
+            "reviews"
+          ),
+          orderBy(
+            "createdAt",
+            "desc"
+          )
+        );
+
+
+      unsubscribeProfileReviews =
+        onSnapshot(
+          reviewsQuery,
+
+          snapshot => {
+            reviewsList.innerHTML = "";
+
+            if (snapshot.empty) {
+              reviewsList.innerHTML = `
+            <div class="reviews-empty-state">
+              No reviews yet.
+            </div>
+          `;
+
+              if (averageElement) {
+                averageElement.textContent =
+                  "0.0/5.0";
+              }
+
+              return;
+            }
+
+
+            let ratingTotal = 0;
+            let ratingCount = 0;
+
+
+            snapshot.forEach(
+              reviewDocument => {
+
+                const review =
+                  reviewDocument.data();
+
+                const rating =
+                  Number(
+                    review.rating || 0
+                  );
+
+                if (
+                  rating >= 1 &&
+                  rating <= 5
+                ) {
+                  ratingTotal += rating;
+                  ratingCount++;
+                }
+
+
+                const reviewerName =
+                  review.reviewerName ||
+                  "Employer";
+
+                const reviewerPhoto =
+                  review.reviewerPhotoURL ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    reviewerName
+                  )}&background=0f766e&color=ffffff`;
+
+
+                const reviewItem =
+                  document.createElement(
+                    "div"
+                  );
+
+                reviewItem.className =
+                  "review-item";
+
+
+                reviewItem.innerHTML = `
+              <img
+                class="review-avatar"
+                src="${escapeHtml(
+                  reviewerPhoto
+                )}"
+                alt="${escapeHtml(
+                  reviewerName
+                )}"
+              />
+
+              <div class="review-body">
+
+                <div class="review-header">
+
+                  <span class="review-name">
+                    ${escapeHtml(
+                  reviewerName
+                )}
+                  </span>
+
+                  <span class="review-time">
+                    ${formatReviewTime(
+                  review.createdAt
+                )}
+                  </span>
+
+                </div>
+
+                <div class="review-stars">
+                  ${createReviewStars(
+                  rating
+                )}
+                </div>
+
+                ${review.jobTitle
+                    ? `
+                      <div class="review-job-title">
+                        ${escapeHtml(
+                      review.jobTitle
+                    )}
+                      </div>
+                    `
+                    : ""
+                  }
+
+                <div class="review-text">
+                  ${escapeHtml(
+                    review.comment ||
+                    ""
+                  )}
+                </div>
+
+              </div>
+            `;
+
+                reviewsList.appendChild(
+                  reviewItem
+                );
+              }
+            );
+
+
+            const average =
+              ratingCount
+                ? ratingTotal /
+                ratingCount
+                : 0;
+
+
+            if (averageElement) {
+              averageElement.textContent =
+                `${average.toFixed(
+                  1
+                )}/5.0`;
+            }
+          },
+
+          error => {
+            console.error(
+              "PROFILE REVIEWS LISTENER ERROR:",
+              error
+            );
+
+            reviewsList.innerHTML = `
+          <div class="reviews-empty-state">
+            Failed to load reviews.
+          </div>
+        `;
+          }
+        );
+    }
 
     function listenToJobSeekerConversations(userId) {
       const convItemsContainer =
@@ -2906,6 +3165,7 @@
       listenToJobSeekerApplicationNotifications(
         user.uid
       );
+      listenToProfileReviews(user.uid);
 
       if (unsubscribeUserDoc) {
         unsubscribeUserDoc();
@@ -3840,14 +4100,6 @@
         const userSnap = await getDoc(userRef);
         const existingData = userSnap.exists() ? userSnap.data() : {};
 
-        if (existingData.photoPath) {
-          try {
-            await deleteObject(ref(storage, existingData.photoPath));
-          } catch (deleteError) {
-            console.warn("Old profile photo could not be deleted:", deleteError);
-          }
-        }
-
         await setDoc(userRef, {
           photoURL: downloadURL,
           photoPath: filePath,
@@ -4143,6 +4395,19 @@
       }
     }
 
+    function makeFallbackAvatar(name = "User") {
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2dd4bf&color=ffffff&size=128`;
+    }
+
+    function protectAvatar(img, name = "User") {
+      if (!img) return;
+
+      img.onerror = function () {
+        this.onerror = null;
+        this.src = makeFallbackAvatar(name);
+      };
+    }
+
     function listenToSavedJobs() {
       if (!currentUser) return;
 
@@ -4178,7 +4443,15 @@
       }
 
       try {
-        const userRef = doc(db, "users", auth.currentUser.uid);
+        const currentUserId = auth.currentUser.uid;
+
+        // Get main user profile
+        const userRef = doc(
+          db,
+          "users",
+          currentUserId
+        );
+
         const userSnap = await getDoc(userRef);
 
         if (!userSnap.exists()) {
@@ -4188,34 +4461,122 @@
 
         const userData = userSnap.data();
 
+        // ══════════════════════════════════════
+        // LOAD THE JOB SEEKER'S ACTUAL SKILLS
+        // users/{uid}/skills
+        // ══════════════════════════════════════
+        const skillsSnapshot = await getDocs(
+          collection(
+            db,
+            "users",
+            currentUserId,
+            "skills"
+          )
+        );
+
+        const applicantSkills = skillsSnapshot.docs
+          .map(skillDoc => {
+            const skillData = skillDoc.data();
+
+            return String(
+              skillData.name || ""
+            ).trim();
+          })
+          .filter(Boolean);
+
+        console.log(
+          "Skills being sent with application:",
+          applicantSkills
+        );
+
+        // Employer-side application
         const applicationRef = doc(
           db,
           "jobs",
           jobId,
           "applications",
-          auth.currentUser.uid
+          currentUserId
         );
 
+        // Job seeker-side application history
         const userApplicationRef = doc(
           db,
           "users",
-          auth.currentUser.uid,
+          currentUserId,
           "applications",
           jobId
         );
 
-        const existingApplication = await getDoc(applicationRef);
+        const existingApplication =
+          await getDoc(applicationRef);
 
+        // ══════════════════════════════════════
+        // ALREADY APPLIED
+        // Also refresh their skills so old
+        // applications can be repaired.
+        // ══════════════════════════════════════
         if (existingApplication.exists()) {
-          const existingData = existingApplication.data();
+          const existingData =
+            existingApplication.data();
 
-          await setDoc(userApplicationRef, {
+          const updatedApplicationData = {
             ...existingData,
-            applicantId: auth.currentUser.uid,
-            jobId
-          }, { merge: true });
 
-          alert("You already applied to this job.");
+            applicantId: currentUserId,
+
+            applicantName:
+              userData.fullName ||
+              userData.name ||
+              auth.currentUser.displayName ||
+              "Applicant",
+
+            applicantEmail:
+              userData.email ||
+              auth.currentUser.email ||
+              "",
+
+            applicantPhotoURL:
+              userData.photoURL ||
+              auth.currentUser.photoURL ||
+              "",
+
+            phoneNumber:
+              userData.phoneNumber || "",
+
+            location:
+              userData.location ||
+              userData.locationText ||
+              "",
+
+            // IMPORTANT
+            skills: applicantSkills,
+
+            jobId,
+
+            updatedAt:
+              serverTimestamp()
+          };
+
+          await setDoc(
+            applicationRef,
+            updatedApplicationData,
+            {
+              merge: true
+            }
+          );
+
+          await setDoc(
+            userApplicationRef,
+            updatedApplicationData,
+            {
+              merge: true
+            }
+          );
+
+          alert(
+            "You already applied to this job. Your profile information has been updated."
+          );
+
           return;
         }
 
@@ -4224,41 +4585,104 @@
           clickedButton.textContent = "Applying...";
         }
 
+        // ══════════════════════════════════════
+        // NEW APPLICATION
+        // ══════════════════════════════════════
         const applicationData = {
-          applicantId: auth.currentUser.uid,
-          applicantName: userData.fullName || userData.name || auth.currentUser.displayName || "Applicant",
-          applicantEmail: userData.email || auth.currentUser.email || "",
-          applicantPhotoURL: userData.photoURL || auth.currentUser.photoURL || "",
-          phoneNumber: userData.phoneNumber || "",
-          location: userData.location || userData.locationText || "",
-          skills: Array.isArray(userData.skills) ? userData.skills : [],
+          applicantId: currentUserId,
+
+          applicantName:
+            userData.fullName ||
+            userData.name ||
+            auth.currentUser.displayName ||
+            "Applicant",
+
+          applicantEmail:
+            userData.email ||
+            auth.currentUser.email ||
+            "",
+
+          applicantPhotoURL:
+            userData.photoURL ||
+            auth.currentUser.photoURL ||
+            "",
+
+          phoneNumber:
+            userData.phoneNumber || "",
+
+          location:
+            userData.location ||
+            userData.locationText ||
+            "",
+
+          // IMPORTANT:
+          // actual skills from the skills subcollection
+          skills: applicantSkills,
+
           jobId,
-          employerId: job.employerId || "",
-          employerName: job.employerName || "",
-          title: job.title || "",
-          jobType: job.jobType || "",
-          status: "pending",
-          appliedAt: serverTimestamp()
+
+          employerId:
+            job.employerId || "",
+
+          employerName:
+            job.employerName || "",
+
+          title:
+            job.title || "",
+
+          jobType:
+            job.jobType || "",
+
+          status:
+            "pending",
+
+          appliedAt:
+            serverTimestamp(),
+
+          updatedAt:
+            serverTimestamp()
         };
 
-        await setDoc(applicationRef, applicationData);
-        await setDoc(userApplicationRef, applicationData);
+        await setDoc(
+          applicationRef,
+          applicationData
+        );
+
+        await setDoc(
+          userApplicationRef,
+          applicationData
+        );
 
         if (clickedButton) {
-          clickedButton.textContent = "Applied";
-          clickedButton.disabled = true;
+          clickedButton.textContent =
+            "Applied";
+
+          clickedButton.disabled =
+            true;
         }
 
-        alert("Application submitted successfully.");
+        alert(
+          "Application submitted successfully."
+        );
+
       } catch (error) {
-        console.error("APPLY TO JOB ERROR:", error);
+        console.error(
+          "APPLY TO JOB ERROR:",
+          error
+        );
 
         if (clickedButton) {
-          clickedButton.disabled = false;
-          clickedButton.textContent = "Apply Now";
+          clickedButton.disabled =
+            false;
+
+          clickedButton.textContent =
+            "Apply Now";
         }
 
-        alert("Failed to apply: " + (error.message || error));
+        alert(
+          error.message ||
+          "Failed to submit application. Please try again."
+        );
       }
     }
 
@@ -4807,6 +5231,11 @@
           unsubscribeApplicationNotifications();
           unsubscribeApplicationNotifications =
             null;
+        }
+
+        if (unsubscribeProfileReviews) {
+          unsubscribeProfileReviews();
+          unsubscribeProfileReviews = null;
         }
 
         await signOut(auth);

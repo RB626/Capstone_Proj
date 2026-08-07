@@ -1278,20 +1278,258 @@
         .replaceAll("'", '&#039;');
     }
 
-    function showApplicants() {
-      const jobsPanel = document.getElementById('employer-home-jobs');
-      const applicantsPanel = document.getElementById('employer-home-applicants');
+    function showApplicants(jobId = null) {
+      const jobsPanel =
+        document.getElementById("employer-home-jobs");
 
-      if (jobsPanel) jobsPanel.style.display = 'none';
-      if (applicantsPanel) applicantsPanel.style.display = 'block';
+      const applicantsPanel =
+        document.getElementById("employer-home-applicants");
+
+      if (jobsPanel) {
+        jobsPanel.style.display = "none";
+      }
+
+      if (applicantsPanel) {
+        applicantsPanel.style.display = "block";
+      }
+
+      selectedApplicantsJobId = jobId || null;
+
+      if (jobId) {
+        showApplicantsForJob(jobId);
+      } else {
+        showAllApplicants();
+      }
     }
 
     function showJobs() {
-      const jobsPanel = document.getElementById('employer-home-jobs');
-      const applicantsPanel = document.getElementById('employer-home-applicants');
+      const jobsPanel =
+        document.getElementById("employer-home-jobs");
 
-      if (jobsPanel) jobsPanel.style.display = 'block';
-      if (applicantsPanel) applicantsPanel.style.display = 'none';
+      const applicantsPanel =
+        document.getElementById("employer-home-applicants");
+
+      selectedApplicantsJobId = null;
+
+      if (jobsPanel) {
+        jobsPanel.style.display = "block";
+      }
+
+      if (applicantsPanel) {
+        applicantsPanel.style.display = "none";
+      }
+    }
+
+    function showApplicantsForJob(jobId) {
+      const list =
+        document.getElementById("applicantsModernList");
+
+      const pill =
+        document.getElementById("applicantsModernCount");
+
+      const title =
+        document.getElementById("applicantsModernTitle");
+
+      if (!list || !jobId) {
+        return;
+      }
+
+      const job =
+        jobsCache.get(jobId);
+
+      if (!job) {
+        console.warn(
+          "Job not found in cache:",
+          jobId
+        );
+
+        renderApplicantsEmptyState(
+          "Unable to find this job post."
+        );
+
+        return;
+      }
+
+      selectedApplicantsJobId = jobId;
+
+      if (title) {
+        title.textContent =
+          `Applicants — ${job.title || "Untitled Job"}`;
+      }
+
+      list.innerHTML = `
+    <div class="applicants-empty-state">
+      <div class="applicants-empty-text">
+        Loading applicants...
+      </div>
+    </div>
+  `;
+
+      if (pill) {
+        pill.textContent =
+          "Loading...";
+      }
+
+      /*
+        Stop the previous single-job listener,
+        if one is already active.
+      */
+      if (applicantsListUnsubscribe) {
+        applicantsListUnsubscribe();
+        applicantsListUnsubscribe = null;
+      }
+
+      const applicationsQuery = query(
+        collection(
+          db,
+          "jobs",
+          jobId,
+          "applications"
+        ),
+        orderBy(
+          "appliedAt",
+          "desc"
+        )
+      );
+
+      applicantsListUnsubscribe =
+        onSnapshot(
+          applicationsQuery,
+
+          snapshot => {
+            /*
+              Ignore this listener if the employer
+              has since opened another job.
+            */
+            if (
+              selectedApplicantsJobId !== jobId
+            ) {
+              return;
+            }
+
+            list.innerHTML = "";
+
+            const count =
+              snapshot.size;
+
+            if (pill) {
+              pill.textContent =
+                `${count} applicant${count === 1 ? "" : "s"}`;
+            }
+
+            if (snapshot.empty) {
+              list.innerHTML = `
+            <div class="applicants-empty-state">
+
+              <div class="applicants-empty-title">
+                No applicants yet
+              </div>
+
+              <div class="applicants-empty-text">
+                No one has applied for
+                ${escapeHtml(
+                job.title ||
+                "this job"
+              )}
+                yet.
+              </div>
+
+            </div>
+          `;
+
+              return;
+            }
+
+            snapshot.forEach(docSnap => {
+              const applicationData =
+                docSnap.data();
+
+              const applicant = {
+                id:
+                  `${jobId}__${docSnap.id}`,
+
+                applicationDocId:
+                  docSnap.id,
+
+                jobId,
+
+                notificationType:
+                  "application",
+
+                title:
+                  applicationData.title ||
+                  job.title ||
+                  "Untitled Job",
+
+                ...applicationData
+              };
+
+              list.appendChild(
+                createApplicantCard(
+                  applicant.id,
+                  applicant
+                )
+              );
+            });
+          },
+
+          error => {
+            console.error(
+              "FAILED TO LOAD APPLICANTS FOR JOB:",
+              jobId,
+              error
+            );
+
+            if (
+              selectedApplicantsJobId !== jobId
+            ) {
+              return;
+            }
+
+            list.innerHTML = `
+          <div class="applicants-empty-state">
+
+            <div class="applicants-empty-title">
+              Failed to load applicants
+            </div>
+
+            <div class="applicants-empty-text">
+              Please try again.
+            </div>
+
+          </div>
+        `;
+
+            if (pill) {
+              pill.textContent =
+                "0 applicants";
+            }
+          }
+        );
+    }
+
+    function showAllApplicants() {
+      selectedApplicantsJobId = null;
+
+      /*
+        Remove any specific-job listener.
+      */
+      if (applicantsListUnsubscribe) {
+        applicantsListUnsubscribe();
+        applicantsListUnsubscribe = null;
+      }
+
+      const title =
+        document.getElementById(
+          "applicantsModernTitle"
+        );
+
+      if (title) {
+        title.textContent =
+          "Applicants";
+      }
+
+      renderAllEmployerApplicants();
     }
 
     function updateConversationSidebarPreview(conversationId, text) {
@@ -1930,6 +2168,100 @@
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════
+     APPLICANT REVIEW MODAL
+══════════════════════════════════════ -->
+  <div class="review-modal-overlay" id="applicantReviewOverlay" onclick="closeApplicantReviewModal(event)">
+    <div class="review-modal" onclick="event.stopPropagation()">
+
+      <div class="review-modal-header">
+        <div>
+          <h3>Rate & Review</h3>
+
+          <p id="reviewApplicantSubtitle">
+            Share your experience with this worker.
+          </p>
+        </div>
+
+        <button class="review-modal-close" type="button" onclick="closeApplicantReviewModal()" aria-label="Close">
+          ×
+        </button>
+      </div>
+
+      <div class="review-modal-body">
+
+        <div class="review-worker-preview">
+          <img id="reviewApplicantAvatar" src="" alt="Applicant">
+
+          <div>
+            <div class="review-worker-name" id="reviewApplicantName">
+              Applicant
+            </div>
+
+            <div class="review-worker-job" id="reviewApplicantJob">
+              Job
+            </div>
+          </div>
+        </div>
+
+
+        <div class="review-field">
+          <label>Your rating</label>
+
+          <div class="review-star-picker" id="reviewStarPicker">
+            <button type="button" data-rating="1">★</button>
+            <button type="button" data-rating="2">★</button>
+            <button type="button" data-rating="3">★</button>
+            <button type="button" data-rating="4">★</button>
+            <button type="button" data-rating="5">★</button>
+          </div>
+
+          <div class="review-rating-label" id="reviewRatingLabel">
+            Select a rating
+          </div>
+        </div>
+
+
+        <div class="review-field">
+          <label for="reviewCommentInput">
+            Review
+          </label>
+
+          <textarea id="reviewCommentInput" maxlength="500" rows="5"
+            placeholder="Describe your experience working with this applicant..."></textarea>
+
+          <div class="review-character-row">
+            <span>
+              Keep your review professional and relevant.
+            </span>
+
+            <span id="reviewCharacterCount">
+              0/500
+            </span>
+          </div>
+        </div>
+
+
+        <div class="review-modal-error" id="reviewModalError"></div>
+
+      </div>
+
+
+      <div class="review-modal-footer">
+
+        <button class="review-modal-btn secondary" type="button" onclick="closeApplicantReviewModal()">
+          Cancel
+        </button>
+
+        <button class="review-modal-btn primary" id="submitApplicantReviewBtn" type="button">
+          Submit Review
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -2103,7 +2435,8 @@
 
         const jobsQuery = query(
           collection(db, "jobs"),
-          where("employerId", "==", user.uid)
+          where("employerId", "==", user.uid),
+          orderBy("createdAt", "desc")
         );
 
         const jobsContainer = document.getElementById("employerJobsList");
@@ -2167,7 +2500,7 @@
             }
           });
 
-          listenToAllApplicants();
+          renderAllEmployerApplicants();
 
           updateApplicantsRealtimeCount(totalApplicants);
           filterHeaderSearch();
@@ -2181,6 +2514,439 @@
         console.error("AUTH CHECK ERROR:", err);
       }
     });
+
+    let activeReviewApplicant = null;
+    let selectedApplicantRating = 0;
+
+    function updateReviewStars(rating) {
+      selectedApplicantRating =
+        Number(rating) || 0;
+
+      const buttons =
+        document.querySelectorAll(
+          "#reviewStarPicker button"
+        );
+
+      buttons.forEach(button => {
+        const buttonRating =
+          Number(button.dataset.rating);
+
+        button.classList.toggle(
+          "active",
+          buttonRating <= selectedApplicantRating
+        );
+      });
+
+      const label =
+        document.getElementById(
+          "reviewRatingLabel"
+        );
+
+      if (!label) return;
+
+      const labels = {
+        0: "Select a rating",
+        1: "1 star — Poor",
+        2: "2 stars — Fair",
+        3: "3 stars — Good",
+        4: "4 stars — Very good",
+        5: "5 stars — Excellent"
+      };
+
+      label.textContent =
+        labels[selectedApplicantRating];
+    }
+
+    document
+      .querySelectorAll(
+        "#reviewStarPicker button"
+      )
+      .forEach(button => {
+        button.addEventListener(
+          "click",
+          () => {
+            updateReviewStars(
+              button.dataset.rating
+            );
+          }
+        );
+      });
+
+    document
+      .getElementById(
+        "reviewCommentInput"
+      )
+      ?.addEventListener(
+        "input",
+        event => {
+          const count =
+            document.getElementById(
+              "reviewCharacterCount"
+            );
+
+          if (count) {
+            count.textContent =
+              `${event.target.value.length}/500`;
+          }
+        }
+      );
+
+    window.openApplicantReviewModal =
+      async function (applicant) {
+
+        if (
+          !applicant ||
+          !applicant.applicantId
+        ) {
+          alert(
+            "Applicant information is missing."
+          );
+
+          return;
+        }
+
+        activeReviewApplicant =
+          applicant;
+
+        selectedApplicantRating = 0;
+
+        const overlay =
+          document.getElementById(
+            "applicantReviewOverlay"
+          );
+
+        const avatar =
+          document.getElementById(
+            "reviewApplicantAvatar"
+          );
+
+        const name =
+          document.getElementById(
+            "reviewApplicantName"
+          );
+
+        const job =
+          document.getElementById(
+            "reviewApplicantJob"
+          );
+
+        const comment =
+          document.getElementById(
+            "reviewCommentInput"
+          );
+
+        const error =
+          document.getElementById(
+            "reviewModalError"
+          );
+
+        if (name) {
+          name.textContent =
+            applicant.applicantName ||
+            "Applicant";
+        }
+
+        if (job) {
+          job.textContent =
+            `Applied for: ${applicant.title ||
+            "Job"
+            }`;
+        }
+
+        if (avatar) {
+          avatar.src =
+            applicant.applicantPhotoURL ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+              applicant.applicantName ||
+              "Applicant"
+            )}&background=ccfbf1&color=0f766e`;
+        }
+
+        if (comment) {
+          comment.value = "";
+        }
+
+        if (error) {
+          error.textContent = "";
+        }
+
+        document.getElementById(
+          "reviewCharacterCount"
+        ).textContent = "0/500";
+
+        updateReviewStars(0);
+
+
+        /*
+          Check whether this employer already
+          reviewed this applicant for this job.
+        */
+        try {
+          if (
+            auth.currentUser &&
+            applicant.jobId
+          ) {
+            const reviewId =
+              `${applicant.jobId}_${auth.currentUser.uid}`;
+
+            const reviewRef =
+              doc(
+                db,
+                "users",
+                applicant.applicantId,
+                "reviews",
+                reviewId
+              );
+
+            const reviewSnap =
+              await getDoc(reviewRef);
+
+            if (reviewSnap.exists()) {
+              const review =
+                reviewSnap.data();
+
+              updateReviewStars(
+                Number(review.rating || 0)
+              );
+
+              if (comment) {
+                comment.value =
+                  review.comment || "";
+
+                document.getElementById(
+                  "reviewCharacterCount"
+                ).textContent =
+                  `${comment.value.length}/500`;
+              }
+            }
+          }
+        } catch (error) {
+          console.error(
+            "FAILED TO LOAD EXISTING REVIEW:",
+            error
+          );
+        }
+
+        overlay?.classList.add("open");
+
+        document.body.style.overflow =
+          "hidden";
+      };
+
+    window.closeApplicantReviewModal =
+      function (event) {
+
+        if (
+          event &&
+          event.target !== event.currentTarget
+        ) {
+          return;
+        }
+
+        document
+          .getElementById(
+            "applicantReviewOverlay"
+          )
+          ?.classList.remove("open");
+
+        activeReviewApplicant = null;
+        selectedApplicantRating = 0;
+
+        document.body.style.overflow =
+          "";
+      };
+
+    document
+      .getElementById(
+        "submitApplicantReviewBtn"
+      )
+      ?.addEventListener(
+        "click",
+        async () => {
+
+          const errorElement =
+            document.getElementById(
+              "reviewModalError"
+            );
+
+          const submitButton =
+            document.getElementById(
+              "submitApplicantReviewBtn"
+            );
+
+          const comment =
+            document
+              .getElementById(
+                "reviewCommentInput"
+              )
+              ?.value.trim() || "";
+
+
+          if (!auth.currentUser) {
+            if (errorElement) {
+              errorElement.textContent =
+                "You must be logged in.";
+            }
+
+            return;
+          }
+
+
+          if (
+            !activeReviewApplicant ||
+            !activeReviewApplicant.applicantId ||
+            !activeReviewApplicant.jobId
+          ) {
+            if (errorElement) {
+              errorElement.textContent =
+                "Applicant or job information is missing.";
+            }
+
+            return;
+          }
+
+
+          if (
+            selectedApplicantRating < 1 ||
+            selectedApplicantRating > 5
+          ) {
+            if (errorElement) {
+              errorElement.textContent =
+                "Please choose a rating from 1 to 5 stars.";
+            }
+
+            return;
+          }
+
+
+          if (!comment) {
+            if (errorElement) {
+              errorElement.textContent =
+                "Please write a short review.";
+            }
+
+            return;
+          }
+
+
+          try {
+            if (submitButton) {
+              submitButton.disabled = true;
+              submitButton.textContent =
+                "Saving...";
+            }
+
+            if (errorElement) {
+              errorElement.textContent = "";
+            }
+
+
+            const applicantId =
+              activeReviewApplicant.applicantId;
+
+            const employerId =
+              auth.currentUser.uid;
+
+            const jobId =
+              activeReviewApplicant.jobId;
+
+            const reviewId =
+              `${jobId}_${employerId}`;
+
+
+            const reviewRef =
+              doc(
+                db,
+                "users",
+                applicantId,
+                "reviews",
+                reviewId
+              );
+
+
+            /*
+              Preserve createdAt when editing an
+              existing review.
+            */
+            const existingReview =
+              await getDoc(reviewRef);
+
+            const reviewData = {
+              rating:
+                selectedApplicantRating,
+
+              comment,
+
+              reviewerId:
+                employerId,
+
+              reviewerName:
+                currentEmployerData?.name ||
+                auth.currentUser.displayName ||
+                "Employer",
+
+              reviewerPhotoURL:
+                currentEmployerData?.photoURL ||
+                auth.currentUser.photoURL ||
+                "",
+
+              jobId,
+
+              jobTitle:
+                activeReviewApplicant.title ||
+                "Job",
+
+              applicantId,
+
+              updatedAt:
+                serverTimestamp()
+            };
+
+
+            if (!existingReview.exists()) {
+              reviewData.createdAt =
+                serverTimestamp();
+            }
+
+
+            await setDoc(
+              reviewRef,
+              reviewData,
+              {
+                merge: true
+              }
+            );
+
+
+            closeApplicantReviewModal();
+
+            alert(
+              existingReview.exists()
+                ? "Review updated successfully."
+                : "Review submitted successfully."
+            );
+
+          } catch (error) {
+            console.error(
+              "SUBMIT REVIEW ERROR:",
+              error
+            );
+
+            if (errorElement) {
+              errorElement.textContent =
+                error.message ||
+                "Failed to save review.";
+            }
+
+          } finally {
+            if (submitButton) {
+              submitButton.disabled = false;
+              submitButton.textContent =
+                "Submit Review";
+            }
+          }
+        }
+      );
 
     let currentEmployerData = null;
     let jobsUnsubscribe = null;
@@ -3696,11 +4462,39 @@
     </div>
   `;
 
-      const viewApplicantsBtn = card.querySelector(".btn-apply");
+      const viewApplicantsBtn =
+        card.querySelector(".btn-apply");
+
       if (viewApplicantsBtn) {
-        viewApplicantsBtn.addEventListener("click", () => {
-          switchPage("page-applicants");
-        });
+        viewApplicantsBtn.addEventListener(
+          "click",
+          event => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            /*
+              Move to Home because the applicant
+              panel belongs to the Home page.
+            */
+            showPage("home");
+
+            /*
+              Display only this job's applicants.
+            */
+            showApplicants(jobId);
+
+            requestAnimationFrame(() => {
+              document
+                .getElementById(
+                  "employer-home-applicants"
+                )
+                ?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start"
+                });
+            });
+          }
+        );
       }
 
       const applicantsCountEl = card.querySelector(".employer-job-applicants-count");
@@ -4063,6 +4857,351 @@
   `;
     }
 
+    async function loadApplicantSkills(applicant, wrapper) {
+      const skillsContainer =
+        wrapper.querySelector(".applicant-modern-skills");
+
+      const matchElement =
+        wrapper.querySelector(".applicant-modern-match");
+
+      if (!skillsContainer) return;
+
+      const applicantId =
+        applicant.applicantId;
+
+      let skills = [];
+
+      // 1. First check skills already copied into the application.
+      if (Array.isArray(applicant.skills)) {
+        skills = applicant.skills
+          .map(skill => {
+            if (typeof skill === "string") {
+              return skill.trim();
+            }
+
+            if (skill && typeof skill === "object") {
+              return String(
+                skill.name ||
+                skill.skillName ||
+                skill.skill ||
+                skill.title ||
+                ""
+              ).trim();
+            }
+
+            return "";
+          })
+          .filter(Boolean);
+      }
+
+      if (applicantId) {
+        try {
+          // ══════════════════════════════════════
+          // 2. CHECK MAIN USERS DOCUMENT
+          // users/{uid}
+          // ══════════════════════════════════════
+          const userRef =
+            doc(
+              db,
+              "users",
+              applicantId
+            );
+
+          const userSnap =
+            await getDoc(userRef);
+
+          if (userSnap.exists()) {
+            const userData =
+              userSnap.data();
+
+            console.log(
+              "APPLICANT USER DATA:",
+              applicantId,
+              userData
+            );
+
+            if (
+              Array.isArray(userData.skills) &&
+              userData.skills.length
+            ) {
+              const userSkills =
+                userData.skills
+                  .map(skill => {
+                    if (
+                      typeof skill === "string"
+                    ) {
+                      return skill.trim();
+                    }
+
+                    if (
+                      skill &&
+                      typeof skill === "object"
+                    ) {
+                      return String(
+                        skill.name ||
+                        skill.skillName ||
+                        skill.skill ||
+                        skill.title ||
+                        ""
+                      ).trim();
+                    }
+
+                    return "";
+                  })
+                  .filter(Boolean);
+
+              if (userSkills.length) {
+                skills = userSkills;
+              }
+            }
+          }
+
+
+          // ══════════════════════════════════════
+          // 3. CHECK users/{uid}/skills
+          // ══════════════════════════════════════
+          const skillsSnapshot =
+            await getDocs(
+              collection(
+                db,
+                "users",
+                applicantId,
+                "skills"
+              )
+            );
+
+          console.log(
+            "USER SKILLS DOCUMENT COUNT:",
+            applicantId,
+            skillsSnapshot.size
+          );
+
+          const subcollectionSkills =
+            skillsSnapshot.docs
+              .map(skillDoc => {
+                const data =
+                  skillDoc.data();
+
+                console.log(
+                  "SKILL DOCUMENT:",
+                  skillDoc.id,
+                  data
+                );
+
+                /*
+                  Support different field names.
+                */
+                return String(
+                  data.name ||
+                  data.skillName ||
+                  data.skill ||
+                  data.title ||
+                  data.label ||
+                  ""
+                ).trim();
+              })
+              .filter(Boolean);
+
+          if (subcollectionSkills.length) {
+            skills =
+              subcollectionSkills;
+          }
+
+
+          // ══════════════════════════════════════
+          // 4. FALLBACK:
+          // jobSeekers/{uid}
+          // ══════════════════════════════════════
+          if (!skills.length) {
+            const jobSeekerRef =
+              doc(
+                db,
+                "jobSeekers",
+                applicantId
+              );
+
+            const jobSeekerSnap =
+              await getDoc(
+                jobSeekerRef
+              );
+
+            if (jobSeekerSnap.exists()) {
+              const jobSeekerData =
+                jobSeekerSnap.data();
+
+              console.log(
+                "JOB SEEKER DATA:",
+                applicantId,
+                jobSeekerData
+              );
+
+              if (
+                Array.isArray(
+                  jobSeekerData.skills
+                )
+              ) {
+                skills =
+                  jobSeekerData.skills
+                    .map(skill => {
+                      if (
+                        typeof skill ===
+                        "string"
+                      ) {
+                        return skill.trim();
+                      }
+
+                      if (
+                        skill &&
+                        typeof skill ===
+                        "object"
+                      ) {
+                        return String(
+                          skill.name ||
+                          skill.skillName ||
+                          skill.skill ||
+                          skill.title ||
+                          ""
+                        ).trim();
+                      }
+
+                      return "";
+                    })
+                    .filter(Boolean);
+              }
+            }
+          }
+
+
+          // ══════════════════════════════════════
+          // 5. FALLBACK:
+          // jobSeekers/{uid}/skills
+          // ══════════════════════════════════════
+          if (!skills.length) {
+            const jobSeekerSkillsSnapshot =
+              await getDocs(
+                collection(
+                  db,
+                  "jobSeekers",
+                  applicantId,
+                  "skills"
+                )
+              );
+
+            console.log(
+              "JOBSEEKER SKILLS COUNT:",
+              jobSeekerSkillsSnapshot.size
+            );
+
+            const jobSeekerSkills =
+              jobSeekerSkillsSnapshot.docs
+                .map(skillDoc => {
+                  const data =
+                    skillDoc.data();
+
+                  console.log(
+                    "JOBSEEKER SKILL DOCUMENT:",
+                    skillDoc.id,
+                    data
+                  );
+
+                  return String(
+                    data.name ||
+                    data.skillName ||
+                    data.skill ||
+                    data.title ||
+                    data.label ||
+                    ""
+                  ).trim();
+                })
+                .filter(Boolean);
+
+            if (
+              jobSeekerSkills.length
+            ) {
+              skills =
+                jobSeekerSkills;
+            }
+          }
+
+        } catch (error) {
+          console.error(
+            "FAILED TO LOAD APPLICANT SKILLS:",
+            applicantId,
+            error
+          );
+        }
+      }
+
+      /*
+        Remove duplicates.
+      */
+      skills = [
+        ...new Set(
+          skills
+            .flatMap(skill =>
+              String(skill)
+                .split(",")
+                .map(part => part.trim())
+            )
+            .filter(Boolean)
+        )
+      ];
+
+      console.log(
+        "FINAL APPLICANT SKILLS:",
+        applicantId,
+        skills
+      );
+
+
+      // ══════════════════════════════════════
+      // RENDER SKILLS
+      // ══════════════════════════════════════
+      skillsContainer.innerHTML =
+        "";
+
+      if (skills.length) {
+        skills.forEach(skill => {
+          const skillElement =
+            document.createElement(
+              "span"
+            );
+
+          skillElement.className =
+            "applicant-modern-skill";
+
+          skillElement.textContent =
+            skill;
+
+          skillsContainer.appendChild(
+            skillElement
+          );
+        });
+      } else {
+        skillsContainer.innerHTML = `
+      <span class="applicant-modern-skill">
+        No skills listed
+      </span>
+    `;
+      }
+
+
+      // Update match
+      if (matchElement) {
+        const matchPercentage =
+          skills.length
+            ? Math.min(
+              95,
+              70 +
+              skills.length * 5
+            )
+            : 70;
+
+        matchElement.textContent =
+          `${matchPercentage}% match`;
+      }
+    }
+
     function createApplicantCard(applicationId, applicant) {
       const applicantName = escapeHtml(applicant.applicantName || "Applicant");
       const applicantPhoto =
@@ -4073,12 +5212,35 @@
       const appliedJobTitle = escapeHtml(applicant.title || "Untitled Job");
       const appliedAtText = formatPostTime(applicant.appliedAt);
 
-      const skills = Array.isArray(applicant.skills) ? applicant.skills : [];
-      const skillHTML = skills.length
-        ? skills.map(skill => `<span class="applicant-modern-skill">${escapeHtml(skill)}</span>`).join("")
-        : `<span class="applicant-modern-skill">No skills listed</span>`;
+      const skills =
+        Array.isArray(applicant.skills)
+          ? applicant.skills
+            .map(skill =>
+              String(skill).trim()
+            )
+            .filter(Boolean)
+          : [];
 
-      const matchText = skills.length ? `${Math.min(95, 70 + skills.length * 5)}% match` : "92% match";
+      const skillHTML =
+        skills.length
+          ? skills
+            .map(skill =>
+              `<span class="applicant-modern-skill">${escapeHtml(skill)}</span>`
+            )
+            .join("")
+          : `
+      <span class="applicant-modern-skill">
+        Loading skills...
+      </span>
+    `;
+
+      const matchText =
+        skills.length
+          ? `${Math.min(
+            95,
+            70 + skills.length * 5
+          )}% match`
+          : "Loading...";
       const badgeText = escapeHtml(applicant.badge || "Individual");
 
       const wrapper = document.createElement("div");
@@ -4125,14 +5287,49 @@
       </div>
 
       <div class="applicant-modern-actions applicant-actions-wide">
-        <button class="employer-btn-secondary applicant-message-btn" type="button">Message</button>
-        <button class="employer-btn-primary applicant-profile-btn" type="button">View Profile</button>
-      </div>
+
+  <button
+    class="employer-btn-secondary applicant-message-btn"
+    type="button"
+  >
+    Message
+  </button>
+
+  <button
+  class="employer-btn-review applicant-review-btn"
+  type="button"
+>
+  Rate & Review
+</button>
+
+  <button
+    class="employer-btn-primary applicant-profile-btn"
+    type="button"
+  >
+    View Profile
+  </button>
+
+</div>
     </div>
   `;
 
-      const messageBtn = wrapper.querySelector(".applicant-message-btn");
-      const profileBtn = wrapper.querySelector(".applicant-profile-btn");
+      const messageBtn =
+        wrapper.querySelector(".applicant-message-btn");
+
+      const reviewBtn =
+        wrapper.querySelector(".applicant-review-btn");
+
+      const profileBtn =
+        wrapper.querySelector(".applicant-profile-btn");
+
+      if (reviewBtn) {
+        reviewBtn.addEventListener(
+          "click",
+          () => {
+            openApplicantReviewModal(applicant);
+          }
+        );
+      }
 
       if (messageBtn) {
         messageBtn.addEventListener("click", () => {
@@ -4141,10 +5338,24 @@
       }
 
       if (profileBtn) {
-        profileBtn.addEventListener("click", () => {
-          alert(`Open profile for ${applicantName}`);
-        });
+        profileBtn.addEventListener(
+          "click",
+          () => {
+            alert(
+              `Open profile for ${applicant.applicantName || "Applicant"}`
+            );
+          }
+        );
       }
+
+      /*
+        Load the applicant's actual current skills
+        from Firestore.
+      */
+      loadApplicantSkills(
+        applicant,
+        wrapper
+      );
 
       return wrapper;
     }
@@ -4267,7 +5478,20 @@
       }
     };
 
-    function listenToAllApplicants() {
+    function makeFallbackAvatar(name = "User") {
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2dd4bf&color=ffffff&size=128`;
+    }
+
+    function protectAvatar(img, name = "User") {
+      if (!img) return;
+
+      img.onerror = function () {
+        this.onerror = null;
+        this.src = makeFallbackAvatar(name);
+      };
+    }
+
+    function renderAllEmployerApplicants() {
       const list = document.getElementById("applicantsModernList");
       const pill = document.getElementById("applicantsModernCount");
       const title = document.getElementById("applicantsModernTitle");
@@ -4310,6 +5534,10 @@
           const bTime = b.appliedAt?.toDate ? b.appliedAt.toDate().getTime() : 0;
           return bTime - aTime;
         });
+
+        if (selectedApplicantsJobId) {
+          return;
+        }
 
         list.innerHTML = "";
 

@@ -4899,3 +4899,35 @@ body.dark-mode .jobseeker-notification-item.unread {
     max-height: calc(100vh - 78px);
   }
 }
+
+.reviews-empty-state {
+  padding: 24px 0;
+  color: #9ca3af;
+  text-align: center;
+  font-size: 14px;
+}
+
+.profile-review-star {
+  color: #d1d5db;
+  font-size: 17px;
+}
+
+.profile-review-star.filled {
+  color: #f59e0b;
+}
+
+.review-job-title {
+  display: inline-flex;
+  margin: 5px 0 7px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #f0fdfa;
+  color: #0f766e;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+body.dark-mode .review-job-title {
+  background: rgba(45, 212, 191, 0.12);
+  color: #5eead4;
+}
