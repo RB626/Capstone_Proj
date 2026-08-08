@@ -4931,3 +4931,48 @@ body.dark-mode .review-job-title {
   background: rgba(45, 212, 191, 0.12);
   color: #5eead4;
 }
+
+/* ══════════════════════════════════════
+   REVIEW NOTIFICATIONS
+══════════════════════════════════════ */
+
+.jobseeker-review-badge {
+  background: #fff7ed;
+  color: #f59e0b;
+}
+
+.jobseeker-review-badge svg {
+  width: 13px;
+  height: 13px;
+}
+
+.jobseeker-review-notification-comment {
+  display: block;
+
+  max-width: 300px;
+  margin-top: 4px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: #64748b;
+
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+
+body.dark-mode .jobseeker-review-badge {
+  background: rgba(245,
+      158,
+      11,
+      0.15);
+
+  color: #fbbf24;
+}
+
+
+body.dark-mode .jobseeker-review-notification-comment {
+  color: #94a3b8;
+}

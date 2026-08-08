@@ -1545,6 +1545,7 @@
     let unsubscribeApplicationsCount = null;
     let unsubscribeApplicationNotifications = null;
     let jobSeekerApplicationNotifications = [];
+    let jobSeekerReviewNotifications = [];
     let activeJobSeekerNotificationFilter = "all";
 
     let latestUserProfileData = {};
@@ -1723,6 +1724,37 @@
 
           snapshot => {
             reviewsList.innerHTML = "";
+
+            jobSeekerReviewNotifications =
+              snapshot.docs.map(reviewDocument => ({
+                id: reviewDocument.id,
+                notificationType: "review",
+                ...reviewDocument.data()
+              }));
+
+            jobSeekerReviewNotifications.sort(
+              (first, second) => {
+
+                const firstTime =
+                  first.updatedAt ||
+                  first.createdAt;
+
+                const secondTime =
+                  second.updatedAt ||
+                  second.createdAt;
+
+                return (
+                  notificationTimestampToMillis(
+                    secondTime
+                  ) -
+                  notificationTimestampToMillis(
+                    firstTime
+                  )
+                );
+              }
+            );
+
+            renderJobSeekerNotifications();
 
             if (snapshot.empty) {
               reviewsList.innerHTML = `
@@ -2495,6 +2527,10 @@
       return `application:${application.jobId || application.id}`;
     }
 
+    function getReviewNotificationId(review) {
+      return `review:${review.id}`;
+    }
+
     function notificationTimestampToMillis(
       timestamp
     ) {
@@ -2543,6 +2579,153 @@
         date.getDate() ===
         today.getDate()
       );
+    }
+
+    function createReviewHistoryNotification(
+      review,
+      readIds
+    ) {
+      const notificationId =
+        getReviewNotificationId(review);
+
+      const isUnread =
+        !readIds.has(notificationId);
+
+      const reviewerName =
+        review.reviewerName ||
+        "An employer";
+
+      const reviewerPhoto =
+        review.reviewerPhotoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          reviewerName
+        )}&background=fef3c7&color=d97706`;
+
+      const jobTitle =
+        review.jobTitle ||
+        "your job";
+
+      const rating =
+        Math.max(
+          1,
+          Math.min(
+            5,
+            Number(review.rating) || 1
+          )
+        );
+
+      const comment =
+        String(
+          review.comment || ""
+        ).trim();
+
+      const item =
+        document.createElement("button");
+
+      item.type = "button";
+
+      item.className =
+        `jobseeker-notification-item review-history-notification${isUnread ? " unread" : ""}`;
+
+      item.dataset.notificationId =
+        notificationId;
+
+      item.dataset.unread =
+        String(isUnread);
+
+      item.innerHTML = `
+    <span class="notification-avatar-wrap">
+
+      <img
+        class="notification-avatar"
+        src="${escapeHtml(reviewerPhoto)}"
+        alt="${escapeHtml(reviewerName)}"
+      />
+
+    </span>
+
+
+    <span class="notification-item-body">
+
+      <span class="notification-item-message">
+
+        <strong>
+          ${escapeHtml(reviewerName)}
+        </strong>
+
+        rated you
+
+        <strong>
+          ${rating} star${rating === 1 ? "" : "s"}
+        </strong>
+
+        for
+
+        <strong>
+          ${escapeHtml(jobTitle)}
+        </strong>.
+
+      </span>
+
+      ${comment
+          ? `
+            <span class="jobseeker-review-notification-comment">
+              “${escapeHtml(comment)}”
+            </span>
+          `
+          : ""
+        }
+
+      <span class="notification-item-meta">
+        Review received ·
+        ${escapeHtml(
+          formatReviewTime(
+            review.updatedAt ||
+            review.createdAt
+          )
+        )}
+      </span>
+
+    </span>
+
+
+    <span
+      class="notification-unread-indicator"
+      aria-hidden="true"
+    ></span>
+  `;
+
+
+      item.addEventListener(
+        "click",
+        () => {
+
+          markJobSeekerNotificationRead(
+            notificationId
+          );
+
+          closeJobSeekerNotifications();
+
+          /*
+            Go directly to the worker's
+            Reviews & Ratings section.
+          */
+          showPage("profile");
+
+          requestAnimationFrame(() => {
+            document
+              .getElementById(
+                "profileReviewsList"
+              )
+              ?.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+              });
+          });
+        }
+      );
+
+      return item;
     }
 
     function createApplicationHistoryNotification(
@@ -2694,7 +2877,7 @@
 
     function createJobSeekerNotificationSection(
       title,
-      applications,
+      notifications,
       readIds
     ) {
       const section =
@@ -2715,14 +2898,35 @@
       const items =
         document.createElement("div");
 
-      applications.forEach(application => {
-        items.appendChild(
-          createApplicationHistoryNotification(
-            application,
-            readIds
-          )
-        );
-      });
+
+      notifications.forEach(
+        notification => {
+
+          if (
+            notification.notificationType ===
+            "review"
+          ) {
+
+            items.appendChild(
+              createReviewHistoryNotification(
+                notification,
+                readIds
+              )
+            );
+
+          } else {
+
+            items.appendChild(
+              createApplicationHistoryNotification(
+                notification,
+                readIds
+              )
+            );
+
+          }
+        }
+      );
+
 
       section.append(
         heading,
@@ -2745,11 +2949,62 @@
       const readIds =
         getReadJobSeekerNotificationIds();
 
-      if (
-        !jobSeekerApplicationNotifications.length
-      ) {
+
+      /*
+        Combine applications + reviews.
+      */
+      const allNotifications = [
+        ...jobSeekerApplicationNotifications.map(
+          application => ({
+            ...application,
+            notificationType:
+              "application"
+          })
+        ),
+
+        ...jobSeekerReviewNotifications
+      ];
+
+
+      /*
+        Sort newest first.
+      */
+      allNotifications.sort(
+        (first, second) => {
+
+          const getTimestamp =
+            notification => {
+
+              if (
+                notification.notificationType ===
+                "review"
+              ) {
+                return (
+                  notification.updatedAt ||
+                  notification.createdAt
+                );
+              }
+
+              return notification.appliedAt;
+            };
+
+
+          return (
+            notificationTimestampToMillis(
+              getTimestamp(second)
+            ) -
+            notificationTimestampToMillis(
+              getTimestamp(first)
+            )
+          );
+        }
+      );
+
+
+      if (!allNotifications.length) {
         list.innerHTML = `
       <div class="notification-empty-state">
+
         <div class="notification-empty-icon">
           <svg
             viewBox="0 0 24 24"
@@ -2765,60 +3020,88 @@
           </svg>
         </div>
 
-        <strong>No notifications yet</strong>
+        <strong>
+          No notifications yet
+        </strong>
 
         <span>
-          Jobs you apply for will appear here.
+          Applications and reviews will appear here.
         </span>
+
       </div>
     `;
 
         updateJobSeekerNotificationBadge();
+
         return;
       }
 
-      const todayApplications =
-        jobSeekerApplicationNotifications.filter(
-          application =>
+
+      const getTimestamp =
+        notification => {
+
+          if (
+            notification.notificationType ===
+            "review"
+          ) {
+            return (
+              notification.updatedAt ||
+              notification.createdAt
+            );
+          }
+
+          return notification.appliedAt;
+        };
+
+
+      const todayNotifications =
+        allNotifications.filter(
+          notification =>
             isNotificationFromToday(
-              application.appliedAt
+              getTimestamp(notification)
             )
         );
 
-      const earlierApplications =
-        jobSeekerApplicationNotifications.filter(
-          application =>
+
+      const earlierNotifications =
+        allNotifications.filter(
+          notification =>
             !isNotificationFromToday(
-              application.appliedAt
+              getTimestamp(notification)
             )
         );
 
-      if (todayApplications.length) {
+
+      if (todayNotifications.length) {
         list.appendChild(
           createJobSeekerNotificationSection(
             "Today",
-            todayApplications,
+            todayNotifications,
             readIds
           )
         );
       }
 
-      if (earlierApplications.length) {
+
+      if (earlierNotifications.length) {
         list.appendChild(
           createJobSeekerNotificationSection(
             "Earlier",
-            earlierApplications,
+            earlierNotifications,
             readIds
           )
         );
       }
 
+
       updateJobSeekerNotificationBadge();
+
 
       const activeTab =
         document.querySelector(
           `[data-js-notification-filter="${activeJobSeekerNotificationFilter}"]`
         );
+
 
       window.setJobSeekerNotificationFilter(
         activeJobSeekerNotificationFilter,
@@ -2898,7 +3181,7 @@
       const readIds =
         getReadJobSeekerNotificationIds();
 
-      const unreadCount =
+      const unreadApplications =
         jobSeekerApplicationNotifications
           .filter(application => {
             return !readIds.has(
@@ -2908,6 +3191,23 @@
             );
           })
           .length;
+
+
+      const unreadReviews =
+        jobSeekerReviewNotifications
+          .filter(review => {
+            return !readIds.has(
+              getReviewNotificationId(
+                review
+              )
+            );
+          })
+          .length;
+
+
+      const unreadCount =
+        unreadApplications +
+        unreadReviews;
 
       const dot =
         document.getElementById(
@@ -2987,6 +3287,15 @@
             );
           });
 
+        jobSeekerReviewNotifications
+          .forEach(review => {
+            readIds.add(
+              getReviewNotificationId(
+                review
+              )
+            );
+          });
+
         saveReadJobSeekerNotificationIds(
           readIds
         );
@@ -3047,9 +3356,14 @@
           ".notification-filter-empty"
         );
 
+      const hasNotifications =
+        jobSeekerApplicationNotifications.length +
+        jobSeekerReviewNotifications.length > 0;
+
+
       if (
         !visibleItems.length &&
-        jobSeekerApplicationNotifications.length
+        hasNotifications
       ) {
         if (!empty) {
           empty =
