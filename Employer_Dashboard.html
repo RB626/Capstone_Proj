@@ -1086,22 +1086,9 @@
       }
     }
 
-    const savedEmployerPage =
-      localStorage.getItem(
-        'employerCurrentPage'
-      );
-
-    if (
-      savedEmployerPage === 'messages' &&
-      localStorage.getItem(
-        'activeEmployerConversationId'
-      )
-    ) {
-      showPage('messages');
-    } else {
-      showPage('home');
-      showJobs();
-    }
+    // Always start the employer dashboard on Home.
+    showPage('home');
+    showJobs();
 
     function closeChat() {
       // Mobile: go back to conversation list
@@ -3516,20 +3503,16 @@
     let unsubscribeActiveParticipant = null;
 
     function setActiveEmployerConversation(conversationId) {
-      activeConversationId = conversationId || null;
-      window.activeConversationId = conversationId || null;
+      activeConversationId =
+        conversationId || null;
+
+      window.activeConversationId =
+        conversationId || null;
 
       if (conversationId) {
         localStorage.setItem(
           'activeEmployerConversationId',
           conversationId
-        );
-
-        showPage('messages');
-
-        localStorage.setItem(
-          'employerCurrentPage',
-          'messages'
         );
       } else {
         localStorage.removeItem(
