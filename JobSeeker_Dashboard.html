@@ -2674,7 +2674,23 @@
     function getApplicationNotificationId(
       application
     ) {
-      return `application:${application.jobId || application.id}`;
+
+      const jobId =
+        application.jobId ||
+        application.id ||
+        "unknown";
+
+
+      const status =
+        String(
+          application.status ||
+          "pending"
+        )
+          .trim()
+          .toLowerCase();
+
+
+      return `application:${jobId}:${status}`;
     }
 
     function getReviewNotificationId(review) {
@@ -2882,6 +2898,12 @@
       application,
       readIds
     ) {
+
+      const notificationTime =
+        application.updatedAt ||
+        application.reviewedAt ||
+        application.appliedAt;
+
       const notificationId =
         getApplicationNotificationId(
           application
@@ -2905,6 +2927,64 @@
       const status =
         application.status ||
         "pending";
+
+      const normalizedStatus =
+        String(status)
+          .trim()
+          .toLowerCase();
+
+
+      let notificationMessage = "";
+
+
+      if (
+        normalizedStatus ===
+        "rejected"
+      ) {
+
+        notificationMessage = `
+    Your application for
+    <strong>${escapeHtml(jobTitle)}</strong>
+    at
+    <strong>${escapeHtml(employerName)}</strong>
+    was not selected.
+  `;
+
+      } else if (
+        normalizedStatus ===
+        "accepted"
+      ) {
+
+        notificationMessage = `
+    Your application for
+    <strong>${escapeHtml(jobTitle)}</strong>
+    at
+    <strong>${escapeHtml(employerName)}</strong>
+    was accepted.
+  `;
+
+      } else if (
+        normalizedStatus ===
+        "shortlisted"
+      ) {
+
+        notificationMessage = `
+    You were shortlisted for
+    <strong>${escapeHtml(jobTitle)}</strong>
+    at
+    <strong>${escapeHtml(employerName)}</strong>.
+  `;
+
+      } else {
+
+        notificationMessage = `
+    You applied for
+    <strong>${escapeHtml(jobTitle)}</strong>
+    at
+    <strong>${escapeHtml(employerName)}</strong>.
+  `;
+
+      }
 
       const item =
         document.createElement("button");
@@ -2963,18 +3043,18 @@
       </span>
     </span>
 
-    <span class="notification-item-body">
-      <span class="notification-item-message">
-        You applied for
-        <strong>${escapeHtml(jobTitle)}</strong>
-        at
-        <strong>${escapeHtml(employerName)}</strong>.
-      </span>
+    <span class="notification-item-message">
+  ${notificationMessage}
+</span>
 
       <span class="notification-item-meta">
         ${escapeHtml(formatApplicationStatus(status))}
         ·
-        ${escapeHtml(formatPostTime(application.appliedAt))}
+        ${escapeHtml(
+        formatPostTime(
+          notificationTime
+        )
+      )}
       </span>
     </span>
 
@@ -3135,7 +3215,11 @@
                 );
               }
 
-              return notification.appliedAt;
+              return (
+                notification.updatedAt ||
+                notification.reviewedAt ||
+                notification.appliedAt
+              );
             };
 
 
@@ -3194,13 +3278,27 @@
             notification.notificationType ===
             "review"
           ) {
+
             return (
               notification.updatedAt ||
               notification.createdAt
             );
+
           }
 
-          return notification.appliedAt;
+
+          /*
+            Application notification.
+      
+            Status changes such as rejected
+            should use their newest update time.
+          */
+          return (
+            notification.updatedAt ||
+            notification.reviewedAt ||
+            notification.appliedAt
+          );
+
         };
 
 
@@ -3292,14 +3390,28 @@
                   ...documentSnapshot.data()
                 }))
                 .sort((first, second) => {
+
+                  const firstTimestamp =
+                    first.updatedAt ||
+                    first.reviewedAt ||
+                    first.appliedAt;
+
+
+                  const secondTimestamp =
+                    second.updatedAt ||
+                    second.reviewedAt ||
+                    second.appliedAt;
+
+
                   return (
                     notificationTimestampToMillis(
-                      second.appliedAt
+                      secondTimestamp
                     ) -
                     notificationTimestampToMillis(
-                      first.appliedAt
+                      firstTimestamp
                     )
                   );
+
                 });
 
             renderJobSeekerNotifications();

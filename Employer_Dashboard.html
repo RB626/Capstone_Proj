@@ -5862,7 +5862,23 @@
 
       try {
 
-        const applicationRef =
+        const applicantId =
+          applicant?.applicantId;
+
+
+        if (!applicantId) {
+          alert(
+            "Applicant ID is missing."
+          );
+
+          return;
+        }
+
+
+        /*
+          Employer-side application
+        */
+        const employerApplicationRef =
           doc(
             db,
             "jobs",
@@ -5872,15 +5888,51 @@
           );
 
 
+        /*
+          Job seeker-side application history.
+        
+          This is what the Job Seeker
+          notification system listens to.
+        */
+        const jobSeekerApplicationRef =
+          doc(
+            db,
+            "users",
+            applicantId,
+            "applications",
+            jobId
+          );
+
+
+        const rejectionData = {
+          status: "rejected",
+
+          reviewedBy:
+            auth.currentUser.uid,
+
+          reviewedAt:
+            serverTimestamp(),
+
+          updatedAt:
+            serverTimestamp()
+        };
+
+
+        /*
+          Update employer copy.
+        */
         await updateDoc(
-          applicationRef,
-          {
-            status: "rejected",
-            reviewedBy:
-              auth.currentUser.uid,
-            reviewedAt:
-              serverTimestamp()
-          }
+          employerApplicationRef,
+          rejectionData
+        );
+
+
+        /*
+          Update job seeker's copy.
+        */
+        await updateDoc(
+          jobSeekerApplicationRef,
+          rejectionData
         );
 
 

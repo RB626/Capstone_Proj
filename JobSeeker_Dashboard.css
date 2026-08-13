@@ -5415,3 +5415,214 @@ body.dark-mode .jobseeker-review-notification-comment {
   }
 
 }
+
+/* ══════════════════════════════════════
+   FIX JOB SEEKER NOTIFICATION LAYOUT
+══════════════════════════════════════ */
+
+/* Prevent horizontal scrolling */
+#jobSeekerNotificationPanel {
+  overflow: hidden;
+}
+
+#jobSeekerNotificationList {
+  width: 100%;
+  max-width: 100%;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+
+/* Each notification */
+.jobseeker-notification-item {
+  position: relative;
+
+  width: 100%;
+  max-width: 100%;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 14px;
+
+  padding: 12px 16px;
+
+  box-sizing: border-box;
+
+  text-align: left;
+
+  overflow: hidden;
+}
+
+
+/* Avatar stays fixed */
+.jobseeker-notification-item .notification-avatar-wrap {
+  flex: 0 0 auto;
+
+  width: 58px;
+  min-width: 58px;
+}
+
+
+/* Main notification content */
+.jobseeker-notification-item .notification-item-body {
+  flex: 1 1 auto;
+
+  min-width: 0;
+  width: auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  gap: 5px;
+
+  overflow: hidden;
+}
+
+
+/* Main text */
+.jobseeker-notification-item .notification-item-message {
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+
+  margin: 0;
+
+  color: #475569;
+
+  font-size: 0.94rem;
+  line-height: 1.45;
+
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+
+/* Keep strong text looking like your UI */
+.jobseeker-notification-item .notification-item-message strong {
+  color: #172033;
+  font-weight: 700;
+}
+
+
+/* IMPORTANT:
+   Status/time must stay BELOW the message */
+.jobseeker-notification-item .notification-item-meta {
+  position: static !important;
+
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+
+  margin: 0 !important;
+  padding: 0;
+
+  color: #71809a;
+
+  font-size: 0.82rem;
+  line-height: 1.35;
+
+  text-align: left;
+
+  white-space: normal;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* Review comment */
+.jobseeker-review-notification-comment {
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+
+  color: #71809a;
+
+  font-size: 0.84rem;
+  line-height: 1.4;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* Unread blue dot */
+.jobseeker-notification-item .notification-unread-indicator {
+  position: absolute;
+
+  right: 12px;
+  top: 50%;
+
+  width: 10px;
+  height: 10px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  transform: translateY(-50%);
+}
+
+
+/*
+  Leave room for unread dot so text
+  does not collide with it.
+*/
+.jobseeker-notification-item.unread .notification-item-body {
+  padding-right: 18px;
+}
+
+
+/* Notification sections must also fit panel */
+.jobseeker-notification-section,
+.jobseeker-notification-section>div {
+  width: 100%;
+  max-width: 100%;
+
+  box-sizing: border-box;
+}
+
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  .jobseeker-notification-item {
+    gap: 11px;
+
+    padding: 11px 12px;
+  }
+
+
+  .jobseeker-notification-item .notification-avatar-wrap {
+    width: 52px;
+    min-width: 52px;
+  }
+
+
+  .jobseeker-notification-item .notification-item-message {
+    font-size: 0.88rem;
+  }
+
+
+  .jobseeker-notification-item .notification-item-meta {
+    font-size: 0.78rem;
+  }
+
+
+  .jobseeker-notification-item .notification-unread-indicator {
+    right: 9px;
+  }
+
+}
