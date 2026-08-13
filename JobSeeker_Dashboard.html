@@ -1683,6 +1683,7 @@
     const homeJobsList = document.getElementById("homeJobsList");
 
     let currentUser = null;
+    let currentJobSeekerSkills = [];
 
     let unsubscribeHomeJobs = null;
     let unsubscribeUserDoc = null;
@@ -3608,6 +3609,7 @@
         savedJobIds = new Set();
         savedJobsData = [];
         allHomeJobs = [];
+        currentJobSeekerSkills = [];
         cleanupApplicantCountListeners(homeApplicantCountUnsubs);
         cleanupApplicantCountListeners(savedApplicantCountUnsubs);
 
@@ -4327,14 +4329,94 @@
 
       const q = query(getSkillsCollectionRef(uid), orderBy("createdAt", "desc"));
 
-      unsubscribeSkillsList = onSnapshot(q, (snapshot) => {
-        latestSkillsCount = snapshot.docs.length;
-        renderSkillsList(snapshot.docs);
-        refreshProfileCompletion();
-      }, (error) => {
-        console.error("Failed to load skills:", error);
-        skillsList.innerHTML = `<div class="skills-empty-state">Failed to load skills.</div>`;
-      });
+      unsubscribeSkillsList =
+        onSnapshot(
+          q,
+
+          (snapshot) => {
+
+            latestSkillsCount =
+              snapshot.docs.length;
+
+
+            /*
+              Build the realtime skill list
+              used by job matching.
+            */
+            currentJobSeekerSkills =
+              [
+                ...new Set(
+                  snapshot.docs
+                    .flatMap(docSnap => {
+
+                      const data =
+                        docSnap.data();
+
+                      return String(
+                        data.name || ""
+                      )
+                        .split(",")
+                        .map(skill =>
+                          normalizeSkillForMatch(
+                            skill
+                          )
+                        )
+                        .filter(Boolean);
+
+                    })
+                )
+              ];
+
+
+            console.log(
+              "REALTIME JOB SEEKER SKILLS:",
+              currentJobSeekerSkills
+            );
+
+
+            /*
+              Existing profile logic.
+            */
+            renderSkillsList(
+              snapshot.docs
+            );
+
+            refreshProfileCompletion();
+
+
+            /*
+              Recalculate all displayed
+              job percentages immediately.
+            */
+            renderHomeJobs();
+
+            if (
+              typeof renderSavedJobsPage ===
+              "function"
+            ) {
+              renderSavedJobsPage();
+            }
+
+          },
+
+          (error) => {
+
+            console.error(
+              "Failed to load skills:",
+              error
+            );
+
+            currentJobSeekerSkills = [];
+
+            skillsList.innerHTML = `
+        <div class="skills-empty-state">
+          Failed to load skills.
+        </div>
+      `;
+
+          }
+        );
+
     }
 
     async function saveExperience() {
@@ -5602,6 +5684,132 @@
       }
     }
 
+    /* ══════════════════════════════════════
+   JOB MATCHING
+══════════════════════════════════════ */
+
+    function normalizeSkillForMatch(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+    }
+
+
+    function calculateJobMatch(job) {
+
+      const requiredSkills =
+        Array.isArray(job?.skills)
+          ? job.skills
+            .flatMap(skill =>
+              String(skill)
+                .split(",")
+                .map(part =>
+                  normalizeSkillForMatch(part)
+                )
+            )
+            .filter(Boolean)
+          : [];
+
+
+      const uniqueRequiredSkills = [
+        ...new Set(requiredSkills)
+      ];
+
+
+      /*
+        Employer did not specify skills.
+      */
+      if (!uniqueRequiredSkills.length) {
+        return {
+          percentage: null,
+          matchedSkills: [],
+          missingSkills: [],
+          requiredSkills: []
+        };
+      }
+
+
+      const workerSkills =
+        new Set(
+          currentJobSeekerSkills
+        );
+
+
+      const matchedSkills =
+        uniqueRequiredSkills.filter(skill =>
+          workerSkills.has(skill)
+        );
+
+
+      const missingSkills =
+        uniqueRequiredSkills.filter(skill =>
+          !workerSkills.has(skill)
+        );
+
+
+      const percentage =
+        Math.round(
+          (
+            matchedSkills.length /
+            uniqueRequiredSkills.length
+          ) * 100
+        );
+
+
+      return {
+        percentage,
+        matchedSkills,
+        missingSkills,
+        requiredSkills:
+          uniqueRequiredSkills
+      };
+    }
+
+
+    function getJobMatchDisplay(job) {
+
+      const result =
+        calculateJobMatch(job);
+
+
+      if (result.percentage === null) {
+        return {
+          ...result,
+          text: "No match data",
+          width: 0,
+          tooltip:
+            "The employer did not specify required skills."
+        };
+      }
+
+
+      const matchedText =
+        result.matchedSkills.length
+          ? result.matchedSkills.join(", ")
+          : "None";
+
+
+      const missingText =
+        result.missingSkills.length
+          ? result.missingSkills.join(", ")
+          : "None";
+
+
+      return {
+        ...result,
+
+        text:
+          `${result.percentage}% match`,
+
+        width:
+          result.percentage,
+
+        tooltip:
+          `Matched: ${matchedText} | Missing: ${missingText}`
+      };
+    }
+
     function createHomeJobCard(jobId, job) {
       const card = document.createElement("div");
       card.className = "job-card";
@@ -5625,6 +5833,8 @@
       const urgentHTML = job.urgent
         ? `<span class="urgent-badge">Urgent</span>`
         : "";
+      const match =
+        getJobMatchDisplay(job);
 
       const employerName = escapeHtml(job.employerName || "Employer");
       const employerBadge = escapeHtml(job.badge || "Individual");
@@ -5728,12 +5938,23 @@
     <div class="job-footer">
       <div class="job-footer-left">
         ${urgentHTML}
-        <div class="match-row">
-          <div class="match-bar">
-            <div class="match-fill" style="width:95%"></div>
-          </div>
-          <span>95% match</span>
-        </div>
+        <div
+  class="match-row"
+  title="${escapeHtml(match.tooltip)}"
+>
+  <div class="match-bar">
+
+    <div
+      class="match-fill"
+      style="width:${match.width}%"
+    ></div>
+
+  </div>
+
+  <span>
+    ${escapeHtml(match.text)}
+  </span>
+</div>
       </div>
 
       <div class="job-actions">
@@ -5909,6 +6130,8 @@
       const urgentHTML = job.urgent
         ? `<span class="urgent-badge">Urgent</span>`
         : "";
+      const match =
+        getJobMatchDisplay(job);
 
       const employerName = escapeHtml(job.employerName || "Employer");
       const employerBadge = escapeHtml(job.badge || "Individual");
@@ -6020,12 +6243,23 @@
 
     <div class="job-footer">
       ${urgentHTML}
-      <div class="match-row">
-        <div class="match-bar">
-          <div class="match-fill" style="width:95%"></div>
-        </div>
-        95% match
-      </div>
+      <div
+  class="match-row"
+  title="${escapeHtml(match.tooltip)}"
+>
+  <div class="match-bar">
+
+    <div
+      class="match-fill"
+      style="width:${match.width}%"
+    ></div>
+
+  </div>
+
+  <span>
+    ${escapeHtml(match.text)}
+  </span>
+</div>
 
       <div class="job-actions">
         <button class="btn-view" type="button" data-job-id="${jobId}">View Details</button>
