@@ -279,6 +279,155 @@
       </div>
       <!-- /page-home -->
 
+      <!-- ══════════════════════════════════════
+           JOB DETAILS MODAL
+      ══════════════════════════════════════ -->
+      <div class="job-details-overlay" id="jobDetailsOverlay">
+
+        <div class="job-details-modal" role="dialog" aria-modal="true" aria-labelledby="jobDetailsTitle">
+
+          <!-- HEADER -->
+          <div class="job-details-header">
+
+            <div class="job-details-employer">
+
+              <img id="jobDetailsEmployerPhoto" class="job-details-employer-photo" src="" alt="Employer">
+
+              <div>
+
+                <div class="job-details-employer-row">
+
+                  <span id="jobDetailsEmployerName" class="job-details-employer-name">
+                    Employer
+                  </span>
+
+                  <span id="jobDetailsEmployerBadge" class="employer-badge">
+                    Individual
+                  </span>
+
+                </div>
+
+                <div id="jobDetailsPostTime" class="job-details-post-time">
+                  Just now
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <button type="button" class="job-details-close" id="jobDetailsCloseBtn" aria-label="Close job details">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M18 6L6 18"></path>
+                <path d="M6 6l12 12"></path>
+              </svg>
+            </button>
+
+          </div>
+
+
+          <!-- BODY -->
+          <div class="job-details-body">
+
+            <div class="job-details-title-row">
+
+              <div>
+
+                <h2 id="jobDetailsTitle">
+                  Job Title
+                </h2>
+
+                <div id="jobDetailsSkills" class="job-details-skills"></div>
+
+              </div>
+
+              <span id="jobDetailsUrgent" class="urgent-badge" hidden>
+                Urgent
+              </span>
+
+            </div>
+
+
+            <!-- JOB INFORMATION -->
+            <div class="job-details-info-grid">
+
+              <div class="job-details-info">
+                <span class="job-details-label">
+                  LOCATION
+                </span>
+
+                <span id="jobDetailsLocation" class="job-details-value">
+                  Not specified
+                </span>
+              </div>
+
+
+              <div class="job-details-info">
+                <span class="job-details-label">
+                  DURATION
+                </span>
+
+                <span id="jobDetailsDuration" class="job-details-value">
+                  Not specified
+                </span>
+              </div>
+
+
+              <div class="job-details-info">
+                <span class="job-details-label">
+                  PAY
+                </span>
+
+                <span id="jobDetailsPay" class="job-details-value">
+                  Not specified
+                </span>
+              </div>
+
+
+              <div class="job-details-info">
+                <span class="job-details-label">
+                  JOB TYPE
+                </span>
+
+                <span id="jobDetailsType" class="job-details-value">
+                  Not specified
+                </span>
+              </div>
+
+
+              <div class="job-details-info">
+                <span class="job-details-label">
+                  APPLICANTS
+                </span>
+
+                <span id="jobDetailsApplicants" class="job-details-value">
+                  0 applied
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+
+          <!-- FOOTER -->
+          <div class="job-details-footer">
+
+            <button type="button" class="job-details-secondary" id="jobDetailsCancelBtn">
+              Close
+            </button>
+
+            <button type="button" class="job-details-primary" id="jobDetailsApplyBtn">
+              Apply Now
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+      <!-- END JOB DETAILS MODAL -->
+
       <!-- ════ JOBS PAGE ════ -->
       <div class="page-panel" id="page-jobs">
         <div class="jobs-page-card">
@@ -4722,6 +4871,459 @@
       };
     }
 
+    /* ══════════════════════════════════════
+   JOB DETAILS MODAL
+══════════════════════════════════════ */
+
+    let activeJobDetailsId = null;
+    let activeJobDetailsData = null;
+
+
+    function openJobDetailsModal(jobId, job) {
+
+      if (!jobId || !job) {
+        console.error(
+          "Cannot open job details:",
+          jobId,
+          job
+        );
+
+        return;
+      }
+
+
+      activeJobDetailsId = jobId;
+      activeJobDetailsData = job;
+
+
+      /* ══════════════════════════════════════
+         EMPLOYER
+      ══════════════════════════════════════ */
+
+      const employerName =
+        job.employerName ||
+        "Employer";
+
+
+      const employerPhoto =
+        job.employerPhotoURL ||
+        makeFallbackAvatar(
+          employerName
+        );
+
+
+      const employerNameEl =
+        document.getElementById(
+          "jobDetailsEmployerName"
+        );
+
+
+      const employerPhotoEl =
+        document.getElementById(
+          "jobDetailsEmployerPhoto"
+        );
+
+
+      const employerBadgeEl =
+        document.getElementById(
+          "jobDetailsEmployerBadge"
+        );
+
+
+      const postTimeEl =
+        document.getElementById(
+          "jobDetailsPostTime"
+        );
+
+
+      employerNameEl.textContent =
+        employerName;
+
+
+      employerBadgeEl.textContent =
+        job.badge ||
+        "Individual";
+
+
+      postTimeEl.textContent =
+        formatPostTime(
+          job.createdAt
+        );
+
+
+      protectAvatar(
+        employerPhotoEl,
+        employerName
+      );
+
+
+      employerPhotoEl.src =
+        employerPhoto;
+
+
+      /* ══════════════════════════════════════
+         JOB TITLE
+      ══════════════════════════════════════ */
+
+      document.getElementById(
+        "jobDetailsTitle"
+      ).textContent =
+        job.title ||
+        "Untitled Job";
+
+
+      /* ══════════════════════════════════════
+         LOCATION
+      ══════════════════════════════════════ */
+
+      document.getElementById(
+        "jobDetailsLocation"
+      ).textContent =
+        job.location ||
+        "Not specified";
+
+
+      /* ══════════════════════════════════════
+         DURATION
+      ══════════════════════════════════════ */
+
+      document.getElementById(
+        "jobDetailsDuration"
+      ).textContent =
+        job.duration ||
+        "Not specified";
+
+
+      /* ══════════════════════════════════════
+         PAY
+      ══════════════════════════════════════ */
+
+      const rawPay =
+        String(job.pay || "").trim();
+
+      document.getElementById(
+        "jobDetailsPay"
+      ).textContent =
+        rawPay
+          ? rawPay.startsWith("₱")
+            ? rawPay
+            : `₱${rawPay}`
+          : "Not specified";
+
+
+      /* ══════════════════════════════════════
+         JOB TYPE
+      ══════════════════════════════════════ */
+
+      document.getElementById(
+        "jobDetailsType"
+      ).textContent =
+        (
+          job.jobType ||
+          "Not specified"
+        )
+          .replace(/-/g, " ")
+          .toUpperCase();
+
+
+      /* ══════════════════════════════════════
+         APPLICANTS
+      ══════════════════════════════════════ */
+
+      const modalApplicantsElement =
+        document.getElementById(
+          "jobDetailsApplicants"
+        );
+
+      modalApplicantsElement.textContent =
+        "Loading...";
+
+      const modalApplicationsRef =
+        collection(
+          db,
+          "jobs",
+          jobId,
+          "applications"
+        );
+
+      getDocs(
+        modalApplicationsRef
+      )
+        .then(snapshot => {
+
+          const count =
+            snapshot.size;
+
+          modalApplicantsElement.textContent =
+            `${count} applied`;
+
+        })
+        .catch(error => {
+
+          console.error(
+            "Failed to load modal applicant count:",
+            error
+          );
+
+          modalApplicantsElement.textContent =
+            "0 applied";
+
+        });
+
+      /* ══════════════════════════════════════
+         SKILLS
+      ══════════════════════════════════════ */
+
+      const skillsContainer =
+        document.getElementById(
+          "jobDetailsSkills"
+        );
+
+
+      skillsContainer.innerHTML = "";
+
+
+      const skills =
+        Array.isArray(job.skills)
+          ? job.skills
+          : [];
+
+
+      if (skills.length > 0) {
+
+        skills.forEach(skill => {
+
+          const skillElement =
+            document.createElement(
+              "span"
+            );
+
+
+          skillElement.className =
+            "skill-tag";
+
+
+          skillElement.textContent =
+            skill;
+
+
+          skillsContainer.appendChild(
+            skillElement
+          );
+
+        });
+
+      } else {
+
+        const noSkillElement =
+          document.createElement(
+            "span"
+          );
+
+
+        noSkillElement.className =
+          "skill-tag";
+
+
+        noSkillElement.textContent =
+          "No skills specified";
+
+
+        skillsContainer.appendChild(
+          noSkillElement
+        );
+
+      }
+
+
+      /* ══════════════════════════════════════
+         URGENT BADGE
+      ══════════════════════════════════════ */
+
+      const urgentElement =
+        document.getElementById(
+          "jobDetailsUrgent"
+        );
+
+
+      urgentElement.hidden =
+        !job.urgent;
+
+
+      /* ══════════════════════════════════════
+         APPLY BUTTON
+      ══════════════════════════════════════ */
+
+      const applyButton =
+        document.getElementById(
+          "jobDetailsApplyBtn"
+        );
+
+
+      applyButton.disabled =
+        false;
+
+
+      applyButton.textContent =
+        "Apply Now";
+
+
+      applyButton.onclick =
+        async function () {
+
+          await applyToJob(
+            jobId,
+            job,
+            applyButton
+          );
+
+        };
+
+
+      /* ══════════════════════════════════════
+         SHOW MODAL
+      ══════════════════════════════════════ */
+
+      const overlay =
+        document.getElementById(
+          "jobDetailsOverlay"
+        );
+
+
+      overlay.classList.add(
+        "open"
+      );
+
+
+      document.body.style.overflow =
+        "hidden";
+    }
+
+
+    /* ══════════════════════════════════════
+       CLOSE JOB DETAILS
+    ══════════════════════════════════════ */
+
+    function closeJobDetailsModal() {
+
+      const overlay =
+        document.getElementById(
+          "jobDetailsOverlay"
+        );
+
+
+      if (!overlay) return;
+
+
+      overlay.classList.remove(
+        "open"
+      );
+
+
+      document.body.style.overflow =
+        "";
+
+
+      activeJobDetailsId =
+        null;
+
+
+      activeJobDetailsData =
+        null;
+
+
+    }
+
+    /* ══════════════════════════════════════
+   JOB DETAILS MODAL EVENTS
+══════════════════════════════════════ */
+
+    const jobDetailsOverlay =
+      document.getElementById(
+        "jobDetailsOverlay"
+      );
+
+
+    const jobDetailsCloseBtn =
+      document.getElementById(
+        "jobDetailsCloseBtn"
+      );
+
+
+    const jobDetailsCancelBtn =
+      document.getElementById(
+        "jobDetailsCancelBtn"
+      );
+
+
+    /* X BUTTON */
+
+    if (jobDetailsCloseBtn) {
+
+      jobDetailsCloseBtn.addEventListener(
+        "click",
+        closeJobDetailsModal
+      );
+
+    }
+
+
+    /* CLOSE BUTTON */
+
+    if (jobDetailsCancelBtn) {
+
+      jobDetailsCancelBtn.addEventListener(
+        "click",
+        closeJobDetailsModal
+      );
+
+    }
+
+
+    /* CLICK DARK BACKGROUND */
+
+    if (jobDetailsOverlay) {
+
+      jobDetailsOverlay.addEventListener(
+        "click",
+        (e) => {
+
+          if (
+            e.target ===
+            jobDetailsOverlay
+          ) {
+
+            closeJobDetailsModal();
+
+          }
+
+        }
+      );
+
+    }
+
+
+    /* ESCAPE KEY */
+
+    document.addEventListener(
+      "keydown",
+      (e) => {
+
+        if (
+          e.key === "Escape" &&
+          jobDetailsOverlay
+            ?.classList.contains(
+              "open"
+            )
+        ) {
+
+          closeJobDetailsModal();
+
+        }
+
+      }
+    );
+
     function listenToSavedJobs() {
       if (!currentUser) return;
 
@@ -5141,24 +5743,104 @@
     </div>
   `;
 
-      const bookmarkBtn = card.querySelector(".home-bookmark-btn");
-      bookmarkBtn.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        await toggleSaveJob(jobId, job, bookmarkBtn);
-        renderHomeJobs();
-        renderSavedJobsPage();
-      });
+      const bookmarkBtn =
+        card.querySelector(
+          ".home-bookmark-btn"
+        );
 
-      const applyBtn = card.querySelector(".btn-apply");
-      if (applyBtn) {
-        applyBtn.addEventListener("click", async (e) => {
+
+      bookmarkBtn.addEventListener(
+        "click",
+        async (e) => {
+
           e.stopPropagation();
-          await applyToJob(jobId, job, applyBtn);
-        });
+
+          await toggleSaveJob(
+            jobId,
+            job,
+            bookmarkBtn
+          );
+
+          renderHomeJobs();
+          renderSavedJobsPage();
+
+        }
+      );
+
+
+      /* ══════════════════════════════════════
+         VIEW DETAILS
+      ══════════════════════════════════════ */
+
+      const viewBtn =
+        card.querySelector(
+          ".btn-view"
+        );
+
+
+      if (viewBtn) {
+
+        viewBtn.addEventListener(
+          "click",
+          (e) => {
+
+            e.stopPropagation();
+
+            openJobDetailsModal(
+              jobId,
+              job
+            );
+
+          }
+        );
+
       }
 
-      const applicantsCountEl = card.querySelector(".job-applicants-count");
-      bindRealtimeApplicantCount(jobId, applicantsCountEl, homeApplicantCountUnsubs);
+
+      /* ══════════════════════════════════════
+         APPLY NOW
+      ══════════════════════════════════════ */
+
+      const applyBtn =
+        card.querySelector(
+          ".btn-apply"
+        );
+
+
+      if (applyBtn) {
+
+        applyBtn.addEventListener(
+          "click",
+          async (e) => {
+
+            e.stopPropagation();
+
+            await applyToJob(
+              jobId,
+              job,
+              applyBtn
+            );
+
+          }
+        );
+
+      }
+
+
+      /* REALTIME APPLICANT COUNT */
+
+      const applicantsCountEl =
+        card.querySelector(
+          ".job-applicants-count"
+        );
+
+
+      bindRealtimeApplicantCount(
+        jobId,
+        applicantsCountEl,
+        homeApplicantCountUnsubs
+      );
+
 
       return card;
     }
@@ -5359,6 +6041,34 @@
         renderHomeJobs();
         renderSavedJobsPage();
       });
+
+      /* ══════════════════════════════════════
+   VIEW DETAILS - SAVED JOB
+══════════════════════════════════════ */
+
+      const viewBtn =
+        card.querySelector(
+          ".btn-view"
+        );
+
+
+      if (viewBtn) {
+
+        viewBtn.addEventListener(
+          "click",
+          (e) => {
+
+            e.stopPropagation();
+
+            openJobDetailsModal(
+              jobId,
+              job
+            );
+
+          }
+        );
+
+      }
 
       const applyBtn = card.querySelector(".btn-apply");
       if (applyBtn) {
