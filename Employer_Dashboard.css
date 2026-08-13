@@ -7628,3 +7628,203 @@ body.dark-mode #reviewCommentInput {
     font-size: 0.82rem;
   }
 }
+
+/* ══════════════════════════════════════
+   JOB 3-DOT MENU
+══════════════════════════════════════ */
+
+.job-more-wrap {
+  position: relative;
+
+  margin-left: auto;
+
+  flex-shrink: 0;
+}
+
+
+.job-more-btn {
+  width: 38px;
+  height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 9px;
+
+  background: transparent;
+
+  color: #98a2b3;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+
+.job-more-btn:hover {
+  background: #f3f4f6;
+
+  color: #344054;
+}
+
+
+.job-more-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+
+/* DROPDOWN */
+.job-more-menu {
+  position: absolute;
+
+  top: calc(100% + 5px);
+  right: 0;
+
+  z-index: 100;
+
+  width: 180px;
+
+  padding: 6px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 10px 28px rgba(15, 23, 42, 0.12);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transform: translateY(-4px);
+
+  transition:
+    opacity 0.15s ease,
+    visibility 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+.job-more-menu.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+
+  transform: translateY(0);
+}
+
+
+/* DELETE */
+.job-delete-btn {
+  width: 100%;
+  min-height: 40px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 9px 11px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #dc2626;
+
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+
+.job-delete-btn:hover {
+  background: #fef2f2;
+}
+
+
+.job-delete-btn svg {
+  width: 18px;
+  height: 18px;
+
+  flex-shrink: 0;
+}
+
+
+/* MOBILE */
+@media (max-width: 700px) {
+
+  .job-more-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+
+  .job-more-menu {
+    width: 170px;
+  }
+
+}
+
+/* ══════════════════════════════════════
+   APPLICANT 3-DOT POSITION
+══════════════════════════════════════ */
+
+.applicant-card-wide {
+  position: relative;
+}
+
+
+.applicant-more-wrap {
+  position: absolute;
+
+  top: 14px;
+  right: 14px;
+
+  z-index: 20;
+
+  margin: 0;
+}
+
+
+.applicant-more-wrap .job-more-menu {
+  top: calc(100% + 4px);
+  right: 0;
+}
+
+
+@media (max-width: 700px) {
+
+  .applicant-more-wrap {
+    top: 10px;
+    right: 10px;
+  }
+
+}
+
+.applicant-reject-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  white-space: nowrap;
+}
+
+.applicant-reject-btn span {
+  display: inline-block;
+  white-space: nowrap;
+}

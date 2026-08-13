@@ -1399,8 +1399,15 @@
 
             list.innerHTML = "";
 
+            const visibleApplications =
+              snapshot.docs.filter(
+                docSnap =>
+                  docSnap.data().status !==
+                  "rejected"
+              );
+
             const count =
-              snapshot.size;
+              visibleApplications.length;
 
             if (pill) {
               pill.textContent =
@@ -1430,37 +1437,38 @@
               return;
             }
 
-            snapshot.forEach(docSnap => {
-              const applicationData =
-                docSnap.data();
+            visibleApplications.forEach(
+              docSnap => {
+                const applicationData =
+                  docSnap.data();
 
-              const applicant = {
-                id:
-                  `${jobId}__${docSnap.id}`,
+                const applicant = {
+                  id:
+                    `${jobId}__${docSnap.id}`,
 
-                applicationDocId:
-                  docSnap.id,
+                  applicationDocId:
+                    docSnap.id,
 
-                jobId,
+                  jobId,
 
-                notificationType:
-                  "application",
+                  notificationType:
+                    "application",
 
-                title:
-                  applicationData.title ||
-                  job.title ||
-                  "Untitled Job",
+                  title:
+                    applicationData.title ||
+                    job.title ||
+                    "Untitled Job",
 
-                ...applicationData
-              };
+                  ...applicationData
+                };
 
-              list.appendChild(
-                createApplicantCard(
-                  applicant.id,
-                  applicant
-                )
-              );
-            });
+                list.appendChild(
+                  createApplicantCard(
+                    applicant.id,
+                    applicant
+                  )
+                );
+              });
           },
 
           error => {
@@ -1553,6 +1561,7 @@
         ddSettings: "Settings",
         ddHelp: "Help & Support",
         ddLogout: "Log Out",
+        applicantMenuReject: "Reject Application",
         profileCardJobs: "My Job Post",
         sidebarHome: "Home",
         sidebarJobs: "Job Listings",
@@ -1626,6 +1635,7 @@
         ddSettings: "Mga Setting",
         ddHelp: "Bulig & Suporta",
         ddLogout: "Pag-log Out",
+        applicantMenuReject: "Isalikway an Aplikasyon",
         profileCardJobs: "Akon Mga Job Post",
         sidebarHome: "Panimalay",
         sidebarJobs: "Mga Listahan hin Trabaho",
@@ -1699,6 +1709,7 @@
         ddSettings: "Mga Setting",
         ddHelp: "Tulong at Suporta",
         ddLogout: "Mag-log Out",
+        applicantMenuReject: "Tanggihan ang Aplikasyon",
         profileCardJobs: "Aking Mga Job Post",
 
         sidebarHome: "Home",
@@ -2258,7 +2269,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, updateDoc, query, where, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, updateDoc, deleteDoc, query, where, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDnEkuV1HsfZWhhqVCFKPc5o-PjfoCUGTk",
@@ -4327,6 +4338,137 @@
       return `${diffDay} day${diffDay > 1 ? "s" : ""} ago`;
     }
 
+    /* ══════════════════════════════════════
+   DELETE EMPLOYER JOB
+══════════════════════════════════════ */
+
+    async function deleteEmployerJob(
+      jobId,
+      job
+    ) {
+
+      if (!auth.currentUser) {
+
+        alert(
+          "You must be logged in."
+        );
+
+        return;
+      }
+
+
+      if (!jobId) {
+
+        console.error(
+          "Missing job ID."
+        );
+
+        return;
+      }
+
+
+      /*
+        Extra client-side ownership check.
+      */
+      if (
+        job?.employerId &&
+        job.employerId !==
+        auth.currentUser.uid
+      ) {
+
+        alert(
+          "You cannot delete this job post."
+        );
+
+        return;
+      }
+
+
+      const jobTitle =
+        job?.title ||
+        "this job post";
+
+
+      const confirmed =
+        confirm(
+          `Delete "${jobTitle}"?\n\nThis action cannot be undone.`
+        );
+
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      try {
+
+        await deleteDoc(
+          doc(
+            db,
+            "jobs",
+            jobId
+          )
+        );
+
+
+        console.log(
+          "JOB DELETED:",
+          jobId
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "DELETE JOB ERROR:",
+          error
+        );
+
+
+        alert(
+          "Failed to delete job post: " +
+          (
+            error.message ||
+            error
+          )
+        );
+
+      }
+    }
+
+    document.addEventListener(
+      "click",
+      () => {
+
+        document
+          .querySelectorAll(
+            ".job-more-menu.open"
+          )
+          .forEach(menu => {
+
+            menu.classList.remove(
+              "open"
+            );
+
+          });
+
+
+        document
+          .querySelectorAll(
+            ".job-more-btn[aria-expanded='true']"
+          )
+          .forEach(button => {
+
+            button.setAttribute(
+              "aria-expanded",
+              "false"
+            );
+
+          });
+
+      }
+    );
+
     function renderJobCard(jobId, job, source = "listing") {
       const card = document.createElement("div");
       card.className = "job-card dynamic-post";
@@ -4373,11 +4515,47 @@
         <div class="post-time">${postTime}</div>
       </div>
 
-      <button class="home-bookmark-btn" type="button" aria-label="Save job">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path>
-        </svg>
-      </button>
+      <div class="job-more-wrap">
+
+  <button class="job-more-btn type="button" aria-label="Job options" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="5" cy="12" r="1.8"></circle>
+      <circle cx="12" cy="12" r="1.8"></circle>
+      <circle cx="19" cy="12" r="1.8"></circle>
+    </svg>
+  </button>
+
+  <div class="job-more-menu">
+
+    <button  class="job-delete-btn"  type="button">
+      <svg  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round" aria-hidden="true">
+        <polyline points="3 6 5 6 21 6"></polyline>
+
+        <path
+          d="M19 6l-1 14H6L5 6"
+        ></path>
+
+        <path
+          d="M10 11v6"
+        ></path>
+
+        <path
+          d="M14 11v6"
+        ></path>
+
+        <path
+          d="M9 6V4h6v2"
+        ></path>
+      </svg>
+
+      <span data-i18n="jobMenuDelete">
+        Delete Job Post
+      </span>
+    </button>
+
+  </div>
+
+</div>
     </div>
 
     <div class="job-title">${title}</div>
@@ -4459,6 +4637,107 @@
       </div>
     </div>
   `;
+
+      /* ══════════════════════════════════════
+         JOB 3-DOT MENU
+      ══════════════════════════════════════ */
+
+      const moreButton =
+        card.querySelector(
+          ".job-more-btn"
+        );
+
+      const moreMenu =
+        card.querySelector(
+          ".job-more-menu"
+        );
+
+      const deleteButton =
+        card.querySelector(
+          ".job-delete-btn"
+        );
+
+
+      if (moreButton && moreMenu) {
+
+        moreButton.addEventListener(
+          "click",
+          (event) => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            /*
+              Close other job menus first.
+            */
+            document
+              .querySelectorAll(
+                ".job-more-menu.open"
+              )
+              .forEach(menu => {
+
+                if (menu !== moreMenu) {
+                  menu.classList.remove(
+                    "open"
+                  );
+                }
+
+              });
+
+
+            const willOpen =
+              !moreMenu.classList.contains(
+                "open"
+              );
+
+
+            moreMenu.classList.toggle(
+              "open",
+              willOpen
+            );
+
+
+            moreButton.setAttribute(
+              "aria-expanded",
+              String(willOpen)
+            );
+
+          }
+        );
+
+      }
+
+      if (deleteButton) {
+
+        deleteButton.addEventListener(
+          "click",
+          async (event) => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            moreMenu?.classList.remove(
+              "open"
+            );
+
+
+            moreButton?.setAttribute(
+              "aria-expanded",
+              "false"
+            );
+
+
+            await deleteEmployerJob(
+              jobId,
+              job
+            );
+
+          }
+        );
+
+      }
 
       const viewApplicantsBtn =
         card.querySelector(".btn-apply");
@@ -4825,7 +5104,17 @@
       const appsRef = collection(db, "jobs", jobId, "applications");
 
       const unsubscribe = onSnapshot(appsRef, (snapshot) => {
-        const count = snapshot.size;
+        const count =
+          snapshot.docs.filter(
+            applicationDoc => {
+
+              return (
+                applicationDoc.data().status !==
+                "rejected"
+              );
+
+            }
+          ).length;
         countElement.textContent = `${count} applied`;
 
         if (typeof onCountChange === "function") {
@@ -5282,7 +5571,57 @@
             <span class="applicant-modern-match">${matchText}</span>
           </div>
         </div>
+            </div>
+
+
+      <!-- APPLICANT 3-DOT MENU -->
+      <div class="job-more-wrap applicant-more-wrap">
+
+        <button
+          class="job-more-btn applicant-more-btn"
+          type="button"
+          aria-label="Applicant options"
+          aria-expanded="false"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <circle cx="5" cy="12" r="1.8"></circle>
+            <circle cx="12" cy="12" r="1.8"></circle>
+            <circle cx="19" cy="12" r="1.8"></circle>
+          </svg>
+        </button>
+
+
+        <div class="job-more-menu applicant-more-menu">
+
+          <button
+            class="job-delete-btn applicant-reject-btn"
+            type="button"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="9"></circle>
+              <line x1="8" y1="8" x2="16" y2="16"></line>
+            </svg>
+
+            <span data-i18n="applicantMenuReject">
+              Reject Application
+            </span>
+          </button>
+
+        </div>
+
       </div>
+
 
       <div class="applicant-modern-actions applicant-actions-wide">
 
@@ -5312,13 +5651,117 @@
   `;
 
       const messageBtn =
-        wrapper.querySelector(".applicant-message-btn");
+        wrapper.querySelector(
+          ".applicant-message-btn"
+        );
 
       const reviewBtn =
-        wrapper.querySelector(".applicant-review-btn");
+        wrapper.querySelector(
+          ".applicant-review-btn"
+        );
 
       const profileBtn =
-        wrapper.querySelector(".applicant-profile-btn");
+        wrapper.querySelector(
+          ".applicant-profile-btn"
+        );
+
+
+      /* APPLICANT 3-DOT MENU */
+
+      const moreButton =
+        wrapper.querySelector(
+          ".applicant-more-btn"
+        );
+
+      const moreMenu =
+        wrapper.querySelector(
+          ".applicant-more-menu"
+        );
+
+      const rejectButton =
+        wrapper.querySelector(
+          ".applicant-reject-btn"
+        );
+
+
+      if (moreButton && moreMenu) {
+
+        moreButton.addEventListener(
+          "click",
+          (event) => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            /*
+              Close any other open
+              3-dot menus first.
+            */
+            document
+              .querySelectorAll(
+                ".job-more-menu.open"
+              )
+              .forEach(menu => {
+
+                if (menu !== moreMenu) {
+                  menu.classList.remove(
+                    "open"
+                  );
+                }
+
+              });
+
+
+            const willOpen =
+              !moreMenu.classList.contains(
+                "open"
+              );
+
+
+            moreMenu.classList.toggle(
+              "open",
+              willOpen
+            );
+
+
+            moreButton.setAttribute(
+              "aria-expanded",
+              String(willOpen)
+            );
+
+          }
+        );
+
+      }
+
+
+      if (rejectButton) {
+
+        rejectButton.addEventListener(
+          "click",
+          async (event) => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            moreMenu?.classList.remove(
+              "open"
+            );
+
+            moreButton?.setAttribute(
+              "aria-expanded",
+              "false"
+            );
+
+            await rejectApplicantApplication(
+              applicant
+            );
+
+          }
+        );
+
+      }
 
       if (reviewBtn) {
         reviewBtn.addEventListener(
@@ -5356,6 +5799,114 @@
       );
 
       return wrapper;
+    }
+
+    /* ══════════════════════════════════════
+   REJECT APPLICANT
+══════════════════════════════════════ */
+
+    async function rejectApplicantApplication(
+      applicant
+    ) {
+
+      if (!auth.currentUser) {
+
+        alert(
+          "You must be logged in."
+        );
+
+        return;
+      }
+
+
+      const jobId =
+        applicant?.jobId;
+
+      const applicationDocId =
+        applicant?.applicationDocId;
+
+
+      if (
+        !jobId ||
+        !applicationDocId
+      ) {
+
+        console.error(
+          "Missing application information:",
+          applicant
+        );
+
+        alert(
+          "Unable to find this application."
+        );
+
+        return;
+      }
+
+
+      const applicantName =
+        applicant.applicantName ||
+        "this applicant";
+
+
+      const confirmed =
+        confirm(
+          `Reject ${applicantName}'s application?`
+        );
+
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      try {
+
+        const applicationRef =
+          doc(
+            db,
+            "jobs",
+            jobId,
+            "applications",
+            applicationDocId
+          );
+
+
+        await updateDoc(
+          applicationRef,
+          {
+            status: "rejected",
+            reviewedBy:
+              auth.currentUser.uid,
+            reviewedAt:
+              serverTimestamp()
+          }
+        );
+
+
+        console.log(
+          "APPLICATION REJECTED:",
+          applicationDocId
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "REJECT APPLICATION ERROR:",
+          error
+        );
+
+
+        alert(
+          "Failed to reject application: " +
+          (
+            error.message ||
+            error
+          )
+        );
+
+      }
     }
 
     function openApplicantChatPreview(applicant) {
@@ -5527,11 +6078,37 @@
         employerApplicantsForMessages;
 
       function renderMergedApplicants() {
-        const applicants = Array.from(applicationsMap.values()).sort((a, b) => {
-          const aTime = a.appliedAt?.toDate ? a.appliedAt.toDate().getTime() : 0;
-          const bTime = b.appliedAt?.toDate ? b.appliedAt.toDate().getTime() : 0;
-          return bTime - aTime;
-        });
+        const applicants =
+          Array.from(
+            applicationsMap.values()
+          )
+            .filter(applicant => {
+
+              return (
+                applicant.status !==
+                "rejected"
+              );
+
+            })
+            .sort((a, b) => {
+
+              const aTime =
+                a.appliedAt?.toDate
+                  ? a.appliedAt
+                    .toDate()
+                    .getTime()
+                  : 0;
+
+              const bTime =
+                b.appliedAt?.toDate
+                  ? b.appliedAt
+                    .toDate()
+                    .getTime()
+                  : 0;
+
+              return bTime - aTime;
+
+            });
 
         if (selectedApplicantsJobId) {
           return;
