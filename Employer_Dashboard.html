@@ -253,8 +253,11 @@
             <span class="stat-val">127</span>
           </div>
           <div class="stat-row">
-            <span data-i18n="profileCardApps">Applications</span>
-            <span class="stat-val">8</span>
+            <span data-i18n="profileCardJobs">My Job Post</span>
+
+            <span class="stat-val" id="employerJobPostCount">
+              0
+            </span>
           </div>
         </div>
         <button class="open-work-btn">
@@ -1550,6 +1553,7 @@
         ddSettings: "Settings",
         ddHelp: "Help & Support",
         ddLogout: "Log Out",
+        profileCardJobs: "My Job Post",
         sidebarHome: "Home",
         sidebarJobs: "Job Listings",
         sidebarMessages: "Messages",
@@ -1622,6 +1626,7 @@
         ddSettings: "Mga Setting",
         ddHelp: "Bulig & Suporta",
         ddLogout: "Pag-log Out",
+        profileCardJobs: "Akon Mga Job Post",
         sidebarHome: "Panimalay",
         sidebarJobs: "Mga Listahan hin Trabaho",
         sidebarMessages: "Mga Mensahe",
@@ -1694,6 +1699,7 @@
         ddSettings: "Mga Setting",
         ddHelp: "Tulong at Suporta",
         ddLogout: "Mag-log Out",
+        profileCardJobs: "Aking Mga Job Post",
 
         sidebarHome: "Home",
         sidebarJobs: "Mga Listahan ng Trabaho",
@@ -2436,6 +2442,15 @@
 
         jobsUnsubscribe = onSnapshot(jobsQuery, (snapshot) => {
           console.log("SNAPSHOT SIZE:", snapshot.size);
+
+          // Update My Job Post count
+          const employerJobPostCount =
+            document.getElementById("employerJobPostCount");
+
+          if (employerJobPostCount) {
+            employerJobPostCount.textContent =
+              String(snapshot.size);
+          }
 
           if (jobsContainer) jobsContainer.innerHTML = "";
           if (homeList) homeList.innerHTML = "";
