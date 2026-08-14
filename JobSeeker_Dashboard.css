@@ -5626,3 +5626,525 @@ body.dark-mode .jobseeker-review-notification-comment {
   }
 
 }
+
+/* ══════════════════════════════════════
+   JOB CATEGORY FILTER
+══════════════════════════════════════ */
+
+.job-category-dropdown-wrap {
+  position: relative;
+
+  width: 180px;
+  flex: 0 0 180px;
+
+  min-width: 0;
+}
+
+
+/* MAIN BUTTON */
+.job-category-dropdown-btn {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  padding: 10px 12px 10px 14px;
+
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  line-height: normal;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+
+.job-category-dropdown-btn:hover {
+  border-color: #cbd5e1;
+}
+
+
+.job-category-dropdown-wrap.open .job-category-dropdown-btn {
+  border-color: #2dd4bf;
+
+  box-shadow:
+    0 0 0 3px rgba(45, 212, 191, 0.12);
+}
+
+
+.job-category-main-chevron {
+  width: 14px;
+  height: 14px;
+
+  flex-shrink: 0;
+
+  color: #9ca3af;
+
+  transition: transform 0.18s ease;
+}
+
+
+.job-category-dropdown-wrap.open .job-category-main-chevron {
+  transform: rotate(180deg);
+}
+
+
+/* ══════════════════════════════════════
+   MENU
+══════════════════════════════════════ */
+
+.job-category-menu {
+  position: absolute;
+
+  top: calc(100% + 8px);
+  right: 0;
+
+  z-index: 1000;
+
+  width: 315px;
+  max-height: 410px;
+
+  padding: 7px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 16px 38px rgba(15, 23, 42, 0.14);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transform: translateY(-5px);
+
+  transition:
+    opacity 0.15s ease,
+    visibility 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+.job-category-dropdown-wrap.open .job-category-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+
+  transform: translateY(0);
+}
+
+
+/* ALL CATEGORIES */
+.job-category-all-btn {
+  width: 100%;
+  min-height: 42px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 9px 12px;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: transparent;
+
+  color: #172033;
+
+  font-family: inherit;
+  font-size: 0.87rem;
+  font-weight: 700;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+
+.job-category-all-btn:hover {
+  background: #f0fdfa;
+
+  color: #0fbaa8;
+}
+
+
+/* DIVIDER AFTER ALL */
+.job-category-all-btn::after {
+  content: "";
+}
+
+
+/* CATEGORY */
+.job-category-group {
+  width: 100%;
+}
+
+
+.job-category-group-btn {
+  width: 100%;
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 10px 12px;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: transparent;
+
+  color: #344054;
+
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+
+.job-category-group-btn:hover {
+  background: #f8fafc;
+
+  color: #0fbaa8;
+}
+
+
+.job-category-group.open .job-category-group-btn {
+  background: #f0fdfa;
+
+  color: #0fbaa8;
+}
+
+
+.job-category-group-btn svg {
+  width: 17px;
+  height: 17px;
+
+  flex-shrink: 0;
+
+  transition:
+    transform 0.18s ease;
+}
+
+
+.job-category-group.open .job-category-group-btn svg {
+  transform: rotate(90deg);
+}
+
+
+/* ══════════════════════════════════════
+   SUBMENU / JOB ROLES
+══════════════════════════════════════ */
+
+.job-category-submenu {
+  display: none;
+
+  padding:
+    3px 0 6px 12px;
+}
+
+
+.job-category-group.open .job-category-submenu {
+  display: block;
+}
+
+
+.job-category-role-btn {
+  position: relative;
+
+  width: 100%;
+  min-height: 38px;
+
+  display: flex;
+  align-items: center;
+
+  padding:
+    8px 10px 8px 22px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #667085;
+
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+
+/* little submenu marker */
+.job-category-role-btn::before {
+  content: "";
+
+  position: absolute;
+
+  left: 8px;
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #cbd5e1;
+}
+
+
+.job-category-role-btn:hover {
+  background: #f8fafc;
+
+  color: #0fbaa8;
+}
+
+
+.job-category-role-btn:hover::before {
+  background: #2dd4bf;
+}
+
+
+.job-category-role-btn.active {
+  background: #f0fdfa;
+
+  color: #0fbaa8;
+
+  font-weight: 700;
+}
+
+
+.job-category-role-btn.active::before {
+  background: #2dd4bf;
+}
+
+
+/* SCROLLBAR */
+.job-category-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+
+.job-category-menu::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+
+  background: #d1d5db;
+}
+
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+
+@media (max-width: 1050px) {
+
+  .search-filter-row {
+    flex-wrap: wrap;
+  }
+
+
+  .job-search-wrap {
+    flex: 1 1 100%;
+  }
+
+
+  .job-type-dropdown-wrap,
+  .job-category-dropdown-wrap {
+    flex: 1 1 220px;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .job-type-dropdown-wrap,
+  .job-category-dropdown-wrap {
+    flex: 1 1 100%;
+
+    width: 100%;
+  }
+
+
+  .job-category-menu {
+    left: 0;
+    right: auto;
+
+    width: min(315px,
+        calc(100vw - 40px));
+  }
+
+}
+
+/* ══════════════════════════════════════
+   MATCH BOTH JOB FILTER DROPDOWNS
+══════════════════════════════════════ */
+
+.job-type-dropdown-wrap,
+.job-category-dropdown-wrap {
+  width: 180px;
+  flex: 0 0 180px;
+}
+
+.job-type-dropdown,
+.job-category-dropdown-btn {
+  width: 100%;
+  height: 42px;
+
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  color: #374151;
+  background-color: #ffffff;
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE JOB CATEGORY FILTER
+══════════════════════════════════════ */
+
+/* Keep desktop size */
+.job-category-dropdown-wrap {
+  width: 180px;
+  flex: 0 0 180px;
+  min-width: 0;
+}
+
+.job-category-dropdown-btn {
+  width: 100%;
+  max-width: 100%;
+  height: 42px;
+
+  box-sizing: border-box;
+
+  min-width: 0;
+}
+
+/* Prevent long selected role names from breaking layout */
+#jobCategoryDropdownLabel {
+  min-width: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* ══════════════════════════════════════
+   TABLET
+══════════════════════════════════════ */
+
+@media (max-width: 1050px) {
+
+  .search-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* Search takes full first row */
+  .job-search-wrap {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  /* Both dropdowns share second row */
+  .job-type-dropdown-wrap,
+  .job-category-dropdown-wrap {
+    width: auto;
+    max-width: none;
+
+    flex: 1 1 calc(50% - 6px);
+  }
+
+  .job-type-dropdown,
+  .job-category-dropdown-btn {
+    width: 100%;
+  }
+}
+
+
+/* ══════════════════════════════════════
+   MOBILE
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  .search-filter-row {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+  .job-search-wrap,
+  .job-type-dropdown-wrap,
+  .job-category-dropdown-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+
+    flex: 1 1 100% !important;
+  }
+
+  .job-type-dropdown,
+  .job-category-dropdown-btn {
+    width: 100%;
+
+    height: 44px;
+
+    box-sizing: border-box;
+  }
+
+
+  /* Dropdown menu also stays inside screen */
+  .job-category-menu {
+    left: 0;
+    right: auto;
+
+    width: 100%;
+    max-width: calc(100vw - 32px);
+
+    box-sizing: border-box;
+  }
+}
