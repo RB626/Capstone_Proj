@@ -883,6 +883,8 @@ let selectedJobType = "all";
 
     ];
 
+    let selectedEmployerJobRole = "all";
+
     /* ══════════════════════════════════════
    EMPLOYER JOB CATEGORY MENU
 ══════════════════════════════════════ */

@@ -8168,3 +8168,827 @@ body.dark-mode #reviewCommentInput {
   }
 
 }
+
+/* ══════════════════════════════════════
+   DARK MODE - JOB PREVIEW / EDIT MODAL
+══════════════════════════════════════ */
+
+/* Main modal */
+body.dark-mode .job-preview-modal {
+  background: #111827;
+  border-color: #1f2937;
+
+  color: #e5e7eb;
+}
+
+
+/* Header and footer borders */
+body.dark-mode .job-preview-header,
+body.dark-mode .job-preview-footer {
+  border-color: #1f2937;
+}
+
+
+/* Title */
+body.dark-mode .job-preview-header h3 {
+  color: #f8fafc;
+}
+
+
+/* Employer name / subtitle */
+body.dark-mode .job-preview-header p {
+  color: #94a3b8;
+}
+
+
+/* Labels:
+   BADGE, JOB TYPE, LOCATION, etc.
+*/
+body.dark-mode .job-preview-field label {
+  color: #94a3b8;
+}
+
+
+/* ══════════════════════════════════════
+   FIX THE WHITE VALUE BOXES
+══════════════════════════════════════ */
+
+body.dark-mode .job-preview-field>div {
+  background: #0f172a !important;
+
+  border-color: #334155 !important;
+
+  color: #e5e7eb !important;
+}
+
+
+/* Skills container */
+body.dark-mode .job-preview-skills {
+  background: transparent;
+}
+
+
+/* Individual skill chips */
+body.dark-mode .job-preview-skill {
+  background:
+    rgba(45, 212, 191, 0.10);
+
+  border-color:
+    rgba(45, 212, 191, 0.28);
+
+  color: #5eead4;
+}
+
+
+/* ══════════════════════════════════════
+   STATUS DROPDOWN
+══════════════════════════════════════ */
+
+body.dark-mode .job-preview-status {
+  background: #0f172a;
+
+  border-color: #334155;
+
+  color: #e5e7eb;
+}
+
+
+body.dark-mode .job-preview-status:focus {
+  border-color: var(--teal);
+
+  box-shadow:
+    0 0 0 4px rgba(45, 212, 191, 0.12);
+}
+
+
+/* Native dropdown options */
+body.dark-mode .job-preview-status option {
+  background: #0f172a;
+
+  color: #e5e7eb;
+}
+
+
+/* ══════════════════════════════════════
+   CLOSE BUTTON
+══════════════════════════════════════ */
+
+body.dark-mode .job-preview-close {
+  background: #0f172a;
+
+  border-color: #334155;
+
+  color: #cbd5e1;
+}
+
+
+body.dark-mode .job-preview-close:hover {
+  background: #172033;
+
+  border-color: #475569;
+
+  color: #ffffff;
+}
+
+
+/* ══════════════════════════════════════
+   CANCEL BUTTON
+══════════════════════════════════════ */
+
+body.dark-mode .job-preview-btn.secondary {
+  background: #0f172a;
+
+  border-color: #334155;
+
+  color: #e5e7eb;
+}
+
+
+body.dark-mode .job-preview-btn.secondary:hover {
+  background: #172033;
+
+  border-color: #475569;
+
+  color: #ffffff;
+}
+
+
+/* Save Changes stays teal */
+body.dark-mode .job-preview-btn.primary {
+  background:
+    linear-gradient(135deg,
+      #14b8a6,
+      #0f766e);
+
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 18px rgba(20, 184, 166, 0.25);
+}
+
+
+body.dark-mode .job-preview-btn.primary:hover {
+  background:
+    linear-gradient(135deg,
+      #0f766e,
+      #115e59);
+}
+
+/* ══════════════════════════════════════
+   DARK MODE — RATE & REVIEW
+══════════════════════════════════════ */
+
+/* Main Rate & Review button on applicant card */
+body.dark-mode .employer-btn-review {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e5e7eb;
+}
+
+body.dark-mode .employer-btn-review:hover {
+  background: #172033;
+  border-color: #475569;
+  color: #ffffff;
+}
+
+
+/* Modal */
+body.dark-mode .review-modal {
+  background: #111827;
+  border: 1px solid #1f2937;
+
+  color: #e5e7eb;
+
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+
+/* Header */
+body.dark-mode .review-modal-header {
+  border-bottom-color: #1f2937;
+}
+
+body.dark-mode .review-modal-header h3 {
+  color: #f8fafc;
+}
+
+body.dark-mode .review-modal-header p {
+  color: #94a3b8;
+}
+
+
+/* Close X button */
+body.dark-mode .review-modal-close {
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: #94a3b8;
+}
+
+body.dark-mode .review-modal-close:hover {
+  background: #172033;
+  border-color: #475569;
+  color: #ffffff;
+}
+
+
+/* Applicant preview */
+body.dark-mode .review-worker-preview {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+body.dark-mode .review-worker-name {
+  color: #f8fafc;
+}
+
+body.dark-mode .review-worker-job {
+  color: #94a3b8;
+}
+
+
+/* Labels:
+   Your rating / Review
+*/
+body.dark-mode .review-field label {
+  color: #cbd5e1;
+}
+
+
+/* Stars */
+body.dark-mode .review-star-picker button {
+  color: #64748b;
+}
+
+body.dark-mode .review-star-picker button.active {
+  color: #f59e0b;
+}
+
+
+/* Rating description:
+   "4 stars — Very good"
+*/
+body.dark-mode .review-rating-label {
+  color: #94a3b8;
+}
+
+
+/* Review textarea */
+body.dark-mode #reviewCommentInput {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+body.dark-mode #reviewCommentInput::placeholder {
+  color: #64748b;
+}
+
+body.dark-mode #reviewCommentInput:focus {
+  background: #0f172a;
+  border-color: #2dd4bf;
+
+  box-shadow:
+    0 0 0 3px rgba(45, 212, 191, 0.12);
+}
+
+
+/* Helper text + character counter */
+body.dark-mode .review-character-row {
+  color: #94a3b8;
+}
+
+
+/* Error remains visible */
+body.dark-mode .review-modal-error {
+  color: #f87171;
+}
+
+
+/* Modal footer */
+body.dark-mode .review-modal-footer {
+  border-top-color: #1f2937;
+}
+
+
+/* Cancel */
+body.dark-mode .review-modal-btn.secondary {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e5e7eb;
+}
+
+body.dark-mode .review-modal-btn.secondary:hover {
+  background: #172033;
+  border-color: #475569;
+  color: #ffffff;
+}
+
+
+/* Submit Review */
+body.dark-mode .review-modal-btn.primary {
+  background:
+    linear-gradient(135deg,
+      #14b8a6,
+      #0f766e);
+
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 18px rgba(20, 184, 166, 0.25);
+}
+
+body.dark-mode .review-modal-btn.primary:hover {
+  background:
+    linear-gradient(135deg,
+      #0f766e,
+      #115e59);
+}
+
+
+/* Disabled Submit Review */
+body.dark-mode .review-modal-btn.primary:disabled {
+  background: #334155;
+  color: #94a3b8;
+
+  box-shadow: none;
+}
+
+
+/* Overlay slightly darker in dark mode */
+body.dark-mode .review-modal-overlay {
+  background:
+    rgba(2, 6, 23, 0.76);
+}
+
+/* ══════════════════════════════════════
+   DARK MODE — EMPLOYER JOB CATEGORY
+══════════════════════════════════════ */
+
+/* MAIN CLOSED BUTTON */
+body.dark-mode .employer-job-category-btn {
+  background: #0f172a !important;
+
+  border-color: #334155 !important;
+
+  color: #e5e7eb !important;
+}
+
+
+body.dark-mode .employer-job-category-btn:hover {
+  background: #172033 !important;
+
+  border-color: #475569 !important;
+
+  color: #ffffff !important;
+}
+
+
+/* OPEN / ACTIVE BUTTON */
+body.dark-mode .employer-job-category-wrap.open .employer-job-category-btn {
+  background: #0f172a !important;
+
+  border-color: #2dd4bf !important;
+
+  color: #f8fafc !important;
+
+  box-shadow:
+    0 0 0 4px rgba(45, 212, 191, 0.12) !important;
+}
+
+
+/* MAIN ARROW */
+body.dark-mode .employer-job-category-chevron {
+  color: #94a3b8;
+}
+
+
+/* ══════════════════════════════════════
+   OPEN DROPDOWN MENU
+══════════════════════════════════════ */
+
+body.dark-mode .employer-job-category-menu {
+  background: #111827 !important;
+
+  border-color: #334155 !important;
+
+  color: #e5e7eb !important;
+
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.45) !important;
+}
+
+
+/* ALL CATEGORIES */
+body.dark-mode .employer-category-all-btn {
+  background: transparent;
+
+  color: #f8fafc;
+}
+
+
+body.dark-mode .employer-category-all-btn:hover {
+  background: #172033;
+
+  color: #5eead4;
+}
+
+
+/* ══════════════════════════════════════
+   CATEGORY HEADERS
+══════════════════════════════════════ */
+
+body.dark-mode .employer-category-group-btn {
+  background: transparent;
+
+  color: #e5e7eb;
+}
+
+
+body.dark-mode .employer-category-group-btn:hover {
+  background: #172033;
+
+  color: #5eead4;
+}
+
+
+/* Selected / expanded category */
+body.dark-mode .employer-category-group.open .employer-category-group-btn {
+  background:
+    rgba(45, 212, 191, 0.10);
+
+  color: #5eead4;
+}
+
+
+/* Category arrow */
+body.dark-mode .employer-category-group-btn svg {
+  color: #94a3b8;
+}
+
+
+body.dark-mode .employer-category-group.open .employer-category-group-btn svg {
+  color: #2dd4bf;
+}
+
+
+/* ══════════════════════════════════════
+   JOB ROLES
+══════════════════════════════════════ */
+
+body.dark-mode .employer-category-role-btn {
+  background: transparent;
+
+  color: #94a3b8;
+}
+
+
+body.dark-mode .employer-category-role-btn:hover {
+  background: #172033;
+
+  color: #5eead4;
+}
+
+
+/* Selected occupation */
+body.dark-mode .employer-category-role-btn.active {
+  background:
+    rgba(45, 212, 191, 0.12);
+
+  color: #5eead4;
+
+  font-weight: 700;
+}
+
+
+/* Small bullet */
+body.dark-mode .employer-category-role-btn::before {
+  background: #475569;
+}
+
+
+body.dark-mode .employer-category-role-btn:hover::before,
+body.dark-mode .employer-category-role-btn.active::before {
+  background: #2dd4bf;
+}
+
+
+/* ══════════════════════════════════════
+   DROPDOWN SCROLLBAR
+══════════════════════════════════════ */
+
+body.dark-mode .employer-job-category-menu::-webkit-scrollbar {
+  width: 7px;
+}
+
+
+body.dark-mode .employer-job-category-menu::-webkit-scrollbar-track {
+  background: #111827;
+}
+
+
+body.dark-mode .employer-job-category-menu::-webkit-scrollbar-thumb {
+  background: #334155;
+
+  border-radius: 999px;
+}
+
+
+body.dark-mode .employer-job-category-menu::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* ══════════════════════════════════════
+   DARK MODE — APPLICANT JOB TITLE
+══════════════════════════════════════ */
+
+body.dark-mode .applicant-card-wide-jobline {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .applicant-card-wide-jobline strong {
+  color: #f8fafc !important;
+}
+
+/* ══════════════════════════════════════
+   DARK MODE — JOB 3-DOT DELETE MENU
+══════════════════════════════════════ */
+
+/* Dropdown box */
+body.dark-mode .job-more-menu {
+  background: #111827 !important;
+  border-color: #334155 !important;
+
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.40) !important;
+}
+
+
+/* Delete Job Post button */
+body.dark-mode .job-delete-btn {
+  background: transparent !important;
+
+  color: #f87171 !important;
+}
+
+
+/* Delete hover */
+body.dark-mode .job-delete-btn:hover {
+  background:
+    rgba(239, 68, 68, 0.10) !important;
+
+  color: #fca5a5 !important;
+}
+
+
+/* Trash icon */
+body.dark-mode .job-delete-btn svg {
+  color: #f87171 !important;
+  stroke: #f87171 !important;
+}
+
+
+/* 3-dot button itself */
+body.dark-mode .job-more-btn {
+  color: #94a3b8;
+}
+
+
+body.dark-mode .job-more-btn:hover {
+  background: #172033;
+
+  color: #f8fafc;
+}
+
+/* ══════════════════════════════════════
+   DARK MODE — POST NEW JOB MODAL
+══════════════════════════════════════ */
+
+/* Overlay */
+body.dark-mode .job-post-modal-overlay {
+  background: rgba(2, 6, 23, 0.78);
+}
+
+
+/* Main modal */
+body.dark-mode .job-post-modal {
+  background: #111827 !important;
+
+  border: 1px solid #1f2937;
+
+  color: #e5e7eb;
+
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.48);
+}
+
+
+/* Header divider */
+body.dark-mode .job-post-modal-header {
+  border-bottom-color: #1f2937;
+}
+
+
+/* Modal title */
+body.dark-mode .job-post-modal-header h3 {
+  color: #f8fafc;
+}
+
+
+/* Subtitle */
+body.dark-mode .job-post-modal-header p {
+  color: #94a3b8;
+}
+
+
+/* ══════════════════════════════════════
+   CLOSE BUTTON
+══════════════════════════════════════ */
+
+body.dark-mode .job-post-modal-close {
+  background: #0f172a;
+
+  border: 1px solid #334155;
+
+  color: #94a3b8;
+}
+
+
+body.dark-mode .job-post-modal-close:hover {
+  background: #172033;
+
+  border-color: #475569;
+
+  color: #ffffff;
+}
+
+
+/* ══════════════════════════════════════
+   FORM LABELS
+══════════════════════════════════════ */
+
+body.dark-mode .job-post-field label {
+  color: #e2e8f0;
+}
+
+
+/* ══════════════════════════════════════
+   INPUTS / SELECTS / TEXTAREA
+══════════════════════════════════════ */
+
+body.dark-mode .job-post-field input,
+body.dark-mode .job-post-field select,
+body.dark-mode .job-post-field textarea {
+  background: #0f172a !important;
+
+  border-color: #334155 !important;
+
+  color: #f8fafc !important;
+}
+
+
+/* Placeholder */
+body.dark-mode .job-post-field input::placeholder,
+body.dark-mode .job-post-field textarea::placeholder {
+  color: #64748b;
+}
+
+
+/* Focus */
+body.dark-mode .job-post-field input:focus,
+body.dark-mode .job-post-field select:focus,
+body.dark-mode .job-post-field textarea:focus {
+  background: #0f172a !important;
+
+  border-color: #2dd4bf !important;
+
+  box-shadow:
+    0 0 0 4px rgba(45, 212, 191, 0.12);
+}
+
+
+/* Native select options */
+body.dark-mode .job-post-field select option {
+  background: #0f172a;
+
+  color: #e5e7eb;
+}
+
+
+/* ══════════════════════════════════════
+   SPECIFIC SELECTS
+══════════════════════════════════════ */
+
+body.dark-mode #jobPostBadge,
+body.dark-mode #jobPostType,
+body.dark-mode #jobPostUrgent,
+body.dark-mode #jobPostStatus {
+  background-color: #0f172a !important;
+
+  border-color: #334155 !important;
+
+  color: #f8fafc !important;
+}
+
+
+/* ══════════════════════════════════════
+   BODY SCROLLBAR
+══════════════════════════════════════ */
+
+body.dark-mode .job-post-modal-body::-webkit-scrollbar {
+  width: 7px;
+}
+
+
+body.dark-mode .job-post-modal-body::-webkit-scrollbar-track {
+  background: #111827;
+}
+
+
+body.dark-mode .job-post-modal-body::-webkit-scrollbar-thumb {
+  background: #334155;
+
+  border-radius: 999px;
+}
+
+
+body.dark-mode .job-post-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+
+body.dark-mode .job-post-modal-footer {
+  border-top: 1px solid #1f2937;
+
+  background: #111827;
+}
+
+
+/* Cancel */
+body.dark-mode .job-post-modal-btn.secondary {
+  background: #0f172a;
+
+  border: 1px solid #334155;
+
+  color: #e5e7eb;
+}
+
+
+body.dark-mode .job-post-modal-btn.secondary:hover {
+  background: #172033;
+
+  border-color: #475569;
+
+  color: #ffffff;
+}
+
+
+/* Post Job stays teal */
+body.dark-mode .job-post-modal-btn.primary {
+  background:
+    linear-gradient(135deg,
+      #14b8a6,
+      #0f766e);
+
+  color: #ffffff;
+
+  box-shadow:
+    0 10px 22px rgba(20, 184, 166, 0.24);
+}
+
+
+body.dark-mode .job-post-modal-btn.primary:hover {
+  background:
+    linear-gradient(135deg,
+      #0f766e,
+      #115e59);
+}
+
+/* Top notification bell */
+body.dark-mode .notif-btn {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+
+body.dark-mode .notif-btn svg {
+  color: #e5e7eb;
+}
+
+
+body.dark-mode .notif-btn:hover {
+  background: #1e293b;
+}
+
+
+/* Keep red notification count visible */
+body.dark-mode .notif-count,
+body.dark-mode .notif-badge {
+  background: #ef4444;
+
+  color: #ffffff;
+}
