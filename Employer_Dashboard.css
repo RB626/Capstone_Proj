@@ -7828,3 +7828,343 @@ body.dark-mode #reviewCommentInput {
   display: inline-block;
   white-space: nowrap;
 }
+
+/* ══════════════════════════════════════
+   EMPLOYER JOB CATEGORY FILTER
+══════════════════════════════════════ */
+
+.employer-job-category-wrap {
+  position: relative;
+
+  width: 180px;
+  min-width: 180px;
+}
+
+
+.employer-job-category-btn {
+  width: 100%;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding: 0 16px;
+
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  color: #0f172a;
+
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  outline: none;
+  cursor: pointer;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+
+.employer-job-category-btn:hover {
+  border-color: #cbd5e1;
+}
+
+
+.employer-job-category-wrap.open .employer-job-category-btn {
+  border-color: var(--teal);
+
+  box-shadow:
+    0 0 0 4px rgba(45, 212, 191, 0.12);
+}
+
+
+#employerJobCategoryLabel {
+  min-width: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.employer-job-category-chevron {
+  width: 16px;
+  height: 16px;
+
+  flex-shrink: 0;
+
+  color: #6b7280;
+
+  transition:
+    transform 0.18s ease;
+}
+
+
+.employer-job-category-wrap.open .employer-job-category-chevron {
+  transform: rotate(180deg);
+}
+
+
+/* DROPDOWN */
+.employer-job-category-menu {
+  position: absolute;
+
+  top: calc(100% + 8px);
+  right: 0;
+
+  z-index: 1000;
+
+  width: 315px;
+  max-height: 410px;
+
+  padding: 7px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 16px 38px rgba(15, 23, 42, 0.14);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transform: translateY(-5px);
+
+  transition:
+    opacity 0.15s ease,
+    visibility 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+.employer-job-category-wrap.open .employer-job-category-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+
+  transform: translateY(0);
+}
+
+
+/* ALL CATEGORIES */
+.employer-category-all-btn,
+.employer-category-group-btn,
+.employer-category-role-btn {
+  width: 100%;
+
+  border: none;
+
+  font-family: 'Inter', sans-serif;
+
+  text-align: left;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+
+.employer-category-all-btn {
+  min-height: 42px;
+
+  padding: 9px 12px;
+
+  border-radius: 9px;
+
+  color: #172033;
+
+  font-size: 0.87rem;
+  font-weight: 700;
+}
+
+
+.employer-category-all-btn:hover {
+  background: #f0fdfa;
+
+  color: #0fbaa8;
+}
+
+
+/* CATEGORY */
+.employer-category-group-btn {
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding: 10px 12px;
+
+  border-radius: 9px;
+
+  color: #344054;
+
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+
+.employer-category-group-btn:hover,
+.employer-category-group.open .employer-category-group-btn {
+  background: #f0fdfa;
+
+  color: #0fbaa8;
+}
+
+
+.employer-category-group-btn svg {
+  width: 17px;
+  height: 17px;
+
+  flex-shrink: 0;
+
+  transition:
+    transform 0.18s ease;
+}
+
+
+.employer-category-group.open .employer-category-group-btn svg {
+  transform: rotate(90deg);
+}
+
+
+/* OCCUPATIONS */
+.employer-category-submenu {
+  display: none;
+
+  padding:
+    3px 0 6px 12px;
+}
+
+
+.employer-category-group.open .employer-category-submenu {
+  display: block;
+}
+
+
+.employer-category-role-btn {
+  position: relative;
+
+  min-height: 38px;
+
+  padding:
+    8px 10px 8px 22px;
+
+  border-radius: 8px;
+
+  color: #667085;
+
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+
+.employer-category-role-btn::before {
+  content: "";
+
+  position: absolute;
+
+  left: 8px;
+  top: 50%;
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #cbd5e1;
+
+  transform: translateY(-50%);
+}
+
+
+.employer-category-role-btn:hover,
+.employer-category-role-btn.active {
+  background: #f0fdfa;
+
+  color: #0fbaa8;
+}
+
+
+.employer-category-role-btn.active {
+  font-weight: 700;
+}
+
+
+.employer-category-role-btn.active::before {
+  background: var(--teal);
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE EMPLOYER FILTERS
+══════════════════════════════════════ */
+
+@media (max-width: 900px) {
+
+  .job-listings-filters {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+  }
+
+
+  .job-status-dropdown,
+  .employer-job-category-wrap,
+  .employer-job-category-btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  .employer-job-category-menu {
+    right: 0;
+
+    width: min(315px,
+        calc(100vw - 40px));
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .job-listings-filters {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .employer-job-category-wrap {
+    width: 100%;
+  }
+
+
+  .employer-job-category-menu {
+    left: 0;
+    right: auto;
+
+    width: 100%;
+  }
+
+}
