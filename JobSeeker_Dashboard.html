@@ -247,14 +247,25 @@
         <div class="profile-name">Loading Name...</div>
         <div class="profile-role">Job Seeker</div>
         <div class="profile-stats">
+          <!-- PROFILE VIEWS -->
           <div class="stat-row">
-            <span data-i18n="profileCardViews">Profile Views</span>
-            <span class="stat-val">127</span>
+            <span data-i18n="profileCardViews">
+              Profile Views
+            </span>
+            <span class="stat-val" id="sidebarProfileViewsCount">
+              0
+            </span>
           </div>
+          <!-- APPLICATIONS -->
           <div class="stat-row">
-            <span data-i18n="profileCardApps">Applications</span>
-            <span class="stat-val" id="applicationsCount">0</span>
+            <span data-i18n="profileCardApps">
+              Applications
+            </span>
+            <span class="stat-val" id="applicationsCount">
+              0
+            </span>
           </div>
+
         </div>
         <button class="open-work-btn">
           <span class="open-dot"></span>
@@ -655,8 +666,13 @@
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
-                  <span data-i18n="profileCardViews">Profile Views</span>
-                  <span class="sl-val">127</span>
+                  <span data-i18n="profileCardViews">
+                    Profile Views
+                  </span>
+                  <span class="sl-val" id="profileViewsCount">
+                    0
+                  </span>
+
                 </div>
               </div>
             </div>
@@ -3293,6 +3309,39 @@
 
           latestUserProfileData = data;
           refreshProfileCompletion();
+
+          const profileViews =
+            Number(
+              data.profileViews || 0
+            );
+
+
+          const profileViewsCount =
+            document.getElementById(
+              "profileViewsCount"
+            );
+
+
+          const sidebarProfileViewsCount =
+            document.getElementById(
+              "sidebarProfileViewsCount"
+            );
+
+
+          if (profileViewsCount) {
+
+            profileViewsCount.textContent =
+              profileViews;
+
+          }
+
+
+          if (sidebarProfileViewsCount) {
+
+            sidebarProfileViewsCount.textContent =
+              profileViews;
+
+          }
 
           const safeRealtimeFullName =
             data.fullName &&
