@@ -9008,3 +9008,102 @@ body.dark-mode .notif-badge {
     border-color 0.25s ease,
     box-shadow 0.25s ease;
 }
+
+/* ══════════════════════════════════════
+   PUBLIC JOB SEEKER PROFILE
+══════════════════════════════════════ */
+
+.worker-public-profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 18px;
+}
+
+
+.worker-public-back-btn {
+  min-height: 44px;
+
+  padding: 0 18px;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #344054;
+
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.worker-public-back-btn:hover {
+  background: #f8fafc;
+}
+
+
+.worker-public-profile-label {
+  color: #667085;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+
+.worker-public-cover {
+  cursor: default !important;
+}
+
+
+/* Public portfolio photos */
+#workerPublicPortfolioGrid {
+  align-items: stretch;
+}
+
+
+#workerPublicPortfolioGrid .portfolio-item {
+  cursor: default;
+}
+
+
+/* Dark mode */
+body.dark-mode .worker-public-back-btn {
+  background: #0f172a;
+
+  border-color: #334155;
+
+  color: #e5e7eb;
+}
+
+
+body.dark-mode .worker-public-back-btn:hover {
+  background: #172033;
+}
+
+
+body.dark-mode .worker-public-profile-label {
+  color: #94a3b8;
+}
+
+
+/* Responsive */
+@media (max-width: 700px) {
+
+  .worker-public-profile-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+
+  .worker-public-back-btn {
+    width: 100%;
+  }
+
+}

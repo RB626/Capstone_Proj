@@ -227,7 +227,7 @@ function toggleTheme(event) {
 /* ══════════════════════════════════════
    PAGE NAVIGATION
 ══════════════════════════════════════ */
-const pages = ['home', 'jobs', 'messages', 'profile'];
+const pages = ['home', 'jobs', 'messages', 'profile', 'worker-profile'];
 
 function showPage(page) {
   localStorage.setItem(

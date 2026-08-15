@@ -812,6 +812,355 @@
         </div>
       </div>
 
+      <!-- ══════════════════════════════════════
+     PUBLIC JOB SEEKER PROFILE
+══════════════════════════════════════ -->
+      <div class="page-panel" id="page-worker-profile">
+
+        <div class="worker-public-profile-header">
+
+          <button type="button" class="worker-public-back-btn" id="workerPublicBackBtn">
+            ← Back to Applicants
+          </button>
+
+          <div class="worker-public-profile-label">
+            Job Seeker Profile
+          </div>
+
+        </div>
+
+
+        <div class="profile-layout">
+
+          <!-- LEFT SIDE -->
+          <div class="profile-left-col">
+
+
+            <!-- PROFILE STATUS -->
+            <div class="prof-card">
+
+              <div class="prof-section-title">
+                Profile Status
+              </div>
+
+              <div class="status-open">
+
+                <span class="status-dot-green"></span>
+
+                <div>
+
+                  <div class="status-open-title">
+                    Open for Work
+                  </div>
+
+                  <div class="status-open-sub">
+                    Actively seeking opportunities
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="completion-wrap">
+
+                <div class="completion-row">
+
+                  <span class="completion-label">
+                    Profile Completion
+                  </span>
+
+                  <span class="completion-pct" id="workerPublicCompletionPct">
+                    0%
+                  </span>
+
+                </div>
+
+
+                <div class="completion-bar">
+
+                  <div class="completion-fill" id="workerPublicCompletionFill" style="width: 0%;"></div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- STATISTICS -->
+            <div class="prof-card">
+
+              <div class="prof-section-title">
+                Statistics
+              </div>
+
+
+              <div class="stats-list">
+
+                <!-- REALTIME RATING -->
+                <div class="stat-line">
+
+                  <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
+                    <polygon points="
+                  12 2
+                  15.09 8.26
+                  22 9.27
+                  17 14.14
+                  18.18 21.02
+                  12 17.77
+                  5.82 21.02
+                  7 14.14
+                  2 9.27
+                  8.91 8.26
+                  12 2
+                "></polygon>
+                  </svg>
+
+                  <span>
+                    Rating
+                  </span>
+
+                  <span class="sl-val" id="workerPublicAverageRating">
+                    0.0/5.0
+                  </span>
+
+                </div>
+
+
+                <!-- KEEP STATIC FOR NOW -->
+                <div class="stat-line">
+
+                  <span>
+                    ✓
+                  </span>
+
+                  <span>
+                    Completed Jobs
+                  </span>
+
+                  <span class="sl-val">
+                    42
+                  </span>
+
+                </div>
+
+
+                <!-- KEEP STATIC FOR NOW -->
+                <div class="stat-line">
+
+                  <span>
+                    ◉
+                  </span>
+
+                  <span>
+                    Profile Views
+                  </span>
+
+                  <span class="sl-val">
+                    127
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- SKILLS -->
+            <div class="prof-card">
+
+              <div class="prof-section-title">
+                Skills
+              </div>
+
+              <div class="skills-list" id="workerPublicSkillsList">
+
+                <div class="skills-empty-state">
+                  Loading skills...
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- RIGHT SIDE -->
+          <div class="profile-right-col">
+
+
+            <!-- HERO -->
+            <div class="prof-card prof-hero">
+
+              <div class="prof-cover-wrap worker-public-cover">
+
+                <img id="workerPublicCover" class="prof-cover" src="" alt="Cover Photo" />
+
+              </div>
+
+
+              <div class="prof-identity">
+
+                <div class="prof-pic-wrap">
+
+                  <img id="workerPublicAvatar" class="prof-pic" src="" alt="Job Seeker" />
+
+
+                  <span class="prof-verified">
+
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+
+                  </span>
+
+                </div>
+
+
+                <div class="prof-name-block">
+
+                  <div class="prof-name" id="workerPublicName">
+                    Loading...
+                  </div>
+
+
+                  <div class="prof-role-wrap">
+
+                    <div class="prof-role" id="workerPublicHeadline">
+                      Job Seeker
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="prof-meta-bar">
+
+                <!-- LOCATION -->
+                <div class="prof-meta-item">
+
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+
+                  <span id="workerPublicLocation">
+                    Location not provided
+                  </span>
+
+                </div>
+
+
+                <!-- MEMBER SINCE -->
+                <div class="prof-meta-item">
+
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+
+                  <span id="workerPublicMemberSince">
+                    Member since --
+                  </span>
+
+                </div>
+
+
+                <!-- ACTIONS -->
+                <div class="prof-actions">
+
+                  <button type="button" class="prof-btn-msg" id="workerPublicMessageBtn">
+                    Message
+                  </button>
+
+
+                  <button type="button" class="prof-btn-contact" id="workerPublicContactBtn">
+                    Contact
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- ABOUT -->
+            <div class="prof-card">
+
+              <div class="prof-section-title">
+                About
+              </div>
+
+              <div class="prof-about-text" id="workerPublicAbout">
+                Loading profile...
+              </div>
+
+            </div>
+
+
+            <!-- EXPERIENCE -->
+            <div class="prof-card">
+
+              <div class="prof-section-title">
+                Work Experience
+              </div>
+
+              <div class="exp-list" id="workerPublicExperienceList">
+
+                <div class="exp-empty-state">
+                  Loading work experience...
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- PHOTOS -->
+            <div class="prof-card">
+
+              <div class="prof-section-title">
+                My Photos
+              </div>
+
+              <div class="portfolio-grid" id="workerPublicPortfolioGrid"></div>
+
+            </div>
+
+
+            <!-- REVIEWS -->
+            <div class="prof-card">
+
+              <div class="prof-section-title">
+                Reviews &amp; Ratings
+              </div>
+
+              <div class="reviews-list" id="workerPublicReviewsList">
+
+                <div class="reviews-empty-state">
+                  Loading reviews...
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
     </div><!-- /main-content -->
   </div><!-- /app-shell -->
 
@@ -1550,6 +1899,1183 @@
 
     let activeReviewApplicant = null;
     let selectedApplicantRating = 0;
+
+    /* ══════════════════════════════════════
+   PUBLIC JOB SEEKER PROFILE
+══════════════════════════════════════ */
+
+    let activePublicApplicant =
+      null;
+
+
+    let workerPublicProfileUnsubs =
+      [];
+
+
+    let workerPublicProfileState = {
+      profileData: {},
+      skillsCount: 0,
+      experienceCount: 0
+    };
+
+    function cleanupWorkerPublicProfile() {
+
+      workerPublicProfileUnsubs
+        .forEach(
+          unsubscribe => {
+
+            try {
+              unsubscribe();
+            } catch (error) {
+              console.warn(
+                "Failed to unsubscribe worker profile:",
+                error
+              );
+            }
+
+          }
+        );
+
+
+      workerPublicProfileUnsubs = [];
+    }
+
+
+    window.cleanupWorkerPublicProfile =
+      cleanupWorkerPublicProfile;
+
+    function formatWorkerMemberSince(
+      dateValue
+    ) {
+
+      if (!dateValue) {
+        return "Member since --";
+      }
+
+
+      let date = null;
+
+
+      if (
+        typeof dateValue?.toDate ===
+        "function"
+      ) {
+
+        date =
+          dateValue.toDate();
+
+      } else {
+
+        date =
+          new Date(
+            dateValue
+          );
+
+      }
+
+
+      if (
+        !date ||
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+
+        return "Member since --";
+      }
+
+
+      return `Member since ${date.toLocaleDateString(
+        "en-US",
+        {
+          year: "numeric",
+          month: "long"
+        }
+      )
+        }`;
+    }
+
+    function refreshWorkerPublicCompletion() {
+
+      const data =
+        workerPublicProfileState
+          .profileData || {};
+
+
+      const checks = [
+
+        !!(
+          data.fullName ||
+          data.name
+        ),
+
+        !!data.profileHeadline,
+
+        !!data.profileAbout,
+
+        !!(
+          data.locationText &&
+          data.locationText !==
+          "Set current location"
+        ),
+
+        !!data.photoURL,
+
+        !!data.coverPhotoURL,
+
+        workerPublicProfileState
+          .skillsCount > 0,
+
+        workerPublicProfileState
+          .experienceCount > 0,
+
+        Array.isArray(
+          data.portfolioPhotos
+        ) &&
+        data.portfolioPhotos.length > 0
+
+      ];
+
+
+      const percentage =
+        Math.round(
+          (
+            checks.filter(Boolean).length /
+            checks.length
+          ) * 100
+        );
+
+
+      const text =
+        document.getElementById(
+          "workerPublicCompletionPct"
+        );
+
+
+      const fill =
+        document.getElementById(
+          "workerPublicCompletionFill"
+        );
+
+
+      if (text) {
+        text.textContent =
+          `${percentage}%`;
+      }
+
+
+      if (fill) {
+        fill.style.width =
+          `${percentage}%`;
+      }
+    }
+
+    function renderWorkerPublicSkills(
+      documents
+    ) {
+
+      const container =
+        document.getElementById(
+          "workerPublicSkillsList"
+        );
+
+
+      if (!container) return;
+
+
+      const skills = [
+        ...new Set(
+          documents
+            .flatMap(
+              documentSnapshot => {
+
+                const data =
+                  documentSnapshot.data();
+
+
+                return String(
+                  data.name || ""
+                )
+                  .split(",")
+                  .map(
+                    skill =>
+                      skill.trim()
+                  )
+                  .filter(Boolean);
+
+              }
+            )
+        )
+      ];
+
+
+      workerPublicProfileState
+        .skillsCount =
+        skills.length;
+
+
+      refreshWorkerPublicCompletion();
+
+
+      if (!skills.length) {
+
+        container.innerHTML = `
+      <div class="skills-empty-state">
+        No skills listed.
+      </div>
+    `;
+
+        return;
+      }
+
+
+      container.innerHTML =
+        skills
+          .map(
+            skill => `
+          <div class="skill-row">
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--teal-dark)"
+              stroke-width="2"
+            >
+              <circle
+                cx="12"
+                cy="8"
+                r="6"
+              ></circle>
+
+              <path
+                d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"
+              ></path>
+            </svg>
+
+            <span class="sk-name">
+              ${escapeHtml(skill)}
+            </span>
+
+          </div>
+        `
+          )
+          .join("");
+    }
+
+    function renderWorkerPublicExperience(
+      documents
+    ) {
+
+      const container =
+        document.getElementById(
+          "workerPublicExperienceList"
+        );
+
+
+      if (!container) return;
+
+
+      workerPublicProfileState
+        .experienceCount =
+        documents.length;
+
+
+      refreshWorkerPublicCompletion();
+
+
+      if (!documents.length) {
+
+        container.innerHTML = `
+      <div class="exp-empty-state">
+        No work experience listed.
+      </div>
+    `;
+
+        return;
+      }
+
+
+      container.innerHTML =
+        documents
+          .map(
+            documentSnapshot => {
+
+              const data =
+                documentSnapshot.data();
+
+
+              const tags =
+                Array.isArray(
+                  data.tags
+                )
+                  ? data.tags
+                  : [];
+
+
+              return `
+            <div class="exp-item">
+
+              <div class="exp-dot">
+              </div>
+
+
+              <div class="exp-body">
+
+                <div class="exp-title">
+                  ${escapeHtml(
+                data.title ||
+                "Untitled Role"
+              )
+                }
+                </div>
+
+
+                <div class="exp-company">
+                  ${escapeHtml(
+                  data.company ||
+                  "No company"
+                )
+                }
+                </div>
+
+
+                <div class="exp-date">
+                  ${escapeHtml(
+                  data.date ||
+                  "--"
+                )
+                }
+                </div>
+
+
+                <div class="exp-desc">
+                  ${escapeHtml(
+                  data.description ||
+                  ""
+                )
+                }
+                </div>
+
+
+                <div class="exp-tags">
+
+                  ${tags
+                  .map(
+                    tag => `
+                          <span class="exp-tag">
+                            ${escapeHtml(tag)}
+                          </span>
+                        `
+                  )
+                  .join("")
+                }
+
+                </div>
+
+              </div>
+
+            </div>
+          `;
+
+            }
+          )
+          .join("");
+    }
+
+    function renderWorkerPublicPortfolio(
+      photos
+    ) {
+
+      const grid =
+        document.getElementById(
+          "workerPublicPortfolioGrid"
+        );
+
+
+      if (!grid) return;
+
+
+      const safePhotos =
+        Array.isArray(photos)
+          ? photos
+          : [];
+
+
+      if (!safePhotos.length) {
+
+        grid.innerHTML = `
+      <div class="reviews-empty-state">
+        No photos added yet.
+      </div>
+    `;
+
+        return;
+      }
+
+
+      grid.innerHTML =
+        safePhotos
+          .map(
+            (photo, index) => `
+          <div class="portfolio-item">
+
+            <img
+              class="port-img"
+              src="${escapeHtml(
+              photo.url || ""
+            )}"
+              alt="Portfolio photo ${index + 1}"
+            />
+
+          </div>
+        `
+          )
+          .join("");
+    }
+
+    function createWorkerPublicStars(
+      rating
+    ) {
+
+      const safeRating =
+        Math.max(
+          0,
+          Math.min(
+            5,
+            Number(rating) || 0
+          )
+        );
+
+
+      let stars = "";
+
+
+      for (
+        let number = 1;
+        number <= 5;
+        number++
+      ) {
+
+        stars += `
+      <span
+        class="profile-review-star ${number <= safeRating
+            ? "filled"
+            : ""
+          }"
+      >
+        ★
+      </span>
+    `;
+
+      }
+
+
+      return stars;
+    }
+
+    function renderWorkerPublicReviews(
+      documents
+    ) {
+
+      const container =
+        document.getElementById(
+          "workerPublicReviewsList"
+        );
+
+
+      const averageElement =
+        document.getElementById(
+          "workerPublicAverageRating"
+        );
+
+
+      if (!container) return;
+
+
+      if (!documents.length) {
+
+        container.innerHTML = `
+      <div class="reviews-empty-state">
+        No reviews yet.
+      </div>
+    `;
+
+
+        if (averageElement) {
+          averageElement.textContent =
+            "0.0/5.0";
+        }
+
+
+        return;
+      }
+
+
+      let totalRating = 0;
+      let ratingCount = 0;
+
+
+      container.innerHTML =
+        documents
+          .map(
+            documentSnapshot => {
+
+              const review =
+                documentSnapshot.data();
+
+
+              const rating =
+                Number(
+                  review.rating || 0
+                );
+
+
+              if (
+                rating >= 1 &&
+                rating <= 5
+              ) {
+
+                totalRating += rating;
+
+                ratingCount++;
+
+              }
+
+
+              const reviewerName =
+                review.reviewerName ||
+                "Employer";
+
+
+              const reviewerPhoto =
+                review.reviewerPhotoURL ||
+                makeFallbackAvatar(
+                  reviewerName
+                );
+
+
+              return `
+            <div class="review-item">
+
+              <img
+                class="review-avatar"
+                src="${escapeHtml(
+                reviewerPhoto
+              )}"
+                alt="${escapeHtml(
+                reviewerName
+              )}"
+              />
+
+
+              <div class="review-body">
+
+                <div class="review-header">
+
+                  <span class="review-name">
+                    ${escapeHtml(
+                reviewerName
+              )}
+                  </span>
+
+                </div>
+
+
+                <div class="review-stars">
+                  ${createWorkerPublicStars(
+                rating
+              )
+                }
+                </div>
+
+
+                ${review.jobTitle
+                  ? `
+                      <div class="review-job-title">
+                        ${escapeHtml(
+                    review.jobTitle
+                  )}
+                      </div>
+                    `
+                  : ""
+                }
+
+
+                <div class="review-text">
+                  ${escapeHtml(
+                  review.comment || ""
+                )}
+                </div>
+
+              </div>
+
+            </div>
+          `;
+
+            }
+          )
+          .join("");
+
+
+      const average =
+        ratingCount
+          ? totalRating /
+          ratingCount
+          : 0;
+
+
+      if (averageElement) {
+
+        averageElement.textContent =
+          `${average.toFixed(1)}/5.0`;
+
+      }
+    }
+
+    window.openApplicantPublicProfile =
+      function (
+        applicant
+      ) {
+
+        if (
+          !applicant ||
+          !applicant.applicantId
+        ) {
+
+          alert(
+            "Applicant profile information is missing."
+          );
+
+          return;
+        }
+
+
+        cleanupWorkerPublicProfile();
+
+
+        activePublicApplicant = {
+          ...applicant
+        };
+
+
+        const applicantId =
+          applicant.applicantId;
+
+
+        /*
+          Immediately switch to the
+          public worker profile.
+        */
+        showPage(
+          "worker-profile"
+        );
+
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+
+
+        /*
+          Show the information from the
+          application immediately while
+          Firestore loads the full profile.
+        */
+        const initialName =
+          applicant.applicantName ||
+          "Job Seeker";
+
+
+        const initialPhoto =
+          applicant.applicantPhotoURL ||
+          makeFallbackAvatar(
+            initialName
+          );
+
+
+        document.getElementById(
+          "workerPublicName"
+        ).textContent =
+          initialName;
+
+
+        document.getElementById(
+          "workerPublicAvatar"
+        ).src =
+          initialPhoto;
+
+
+        /*
+          ══════════════════════════════════
+          MAIN PROFILE DOCUMENT
+          users/{applicantId}
+          ══════════════════════════════════
+        */
+
+        const userRef =
+          doc(
+            db,
+            "users",
+            applicantId
+          );
+
+
+        const unsubscribeUser =
+          onSnapshot(
+            userRef,
+
+            snapshot => {
+
+              if (!snapshot.exists()) {
+
+                alert(
+                  "This Job Seeker profile no longer exists."
+                );
+
+                return;
+              }
+
+
+              const data =
+                snapshot.data();
+
+
+              workerPublicProfileState
+                .profileData =
+                data;
+
+
+              const name =
+                data.fullName ||
+                data.name ||
+                applicant.applicantName ||
+                "Job Seeker";
+
+
+              const photo =
+                data.photoURL ||
+                applicant.applicantPhotoURL ||
+                makeFallbackAvatar(name);
+
+
+              const cover =
+                data.coverPhotoURL ||
+                "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&h=220&fit=crop&crop=center";
+
+
+              const headline =
+                data.profileHeadline ||
+                "Job Seeker";
+
+
+              const location =
+                data.locationText ||
+                data.location ||
+                applicant.location ||
+                "Location not provided";
+
+
+              const about =
+                data.profileAbout ||
+                "No information provided yet.";
+
+
+              const memberSince =
+                data.createdAt ||
+                data.authCreatedAt ||
+                null;
+
+
+              /*
+                Keep conversation info updated
+                with the newest profile values.
+              */
+              activePublicApplicant = {
+                ...activePublicApplicant,
+
+                applicantId,
+
+                applicantName:
+                  name,
+
+                applicantPhotoURL:
+                  photo,
+
+                phoneNumber:
+                  data.phoneNumber ||
+                  applicant.phoneNumber ||
+                  ""
+              };
+
+
+              const nameElement =
+                document.getElementById(
+                  "workerPublicName"
+                );
+
+
+              const avatarElement =
+                document.getElementById(
+                  "workerPublicAvatar"
+                );
+
+
+              const coverElement =
+                document.getElementById(
+                  "workerPublicCover"
+                );
+
+
+              const headlineElement =
+                document.getElementById(
+                  "workerPublicHeadline"
+                );
+
+
+              const locationElement =
+                document.getElementById(
+                  "workerPublicLocation"
+                );
+
+
+              const memberElement =
+                document.getElementById(
+                  "workerPublicMemberSince"
+                );
+
+
+              const aboutElement =
+                document.getElementById(
+                  "workerPublicAbout"
+                );
+
+
+              if (nameElement) {
+                nameElement.textContent =
+                  name;
+              }
+
+
+              if (avatarElement) {
+                avatarElement.src =
+                  photo;
+
+                avatarElement.alt =
+                  name;
+              }
+
+
+              if (coverElement) {
+                coverElement.src =
+                  cover;
+              }
+
+
+              if (headlineElement) {
+                headlineElement.textContent =
+                  headline;
+              }
+
+
+              if (locationElement) {
+                locationElement.textContent =
+                  location;
+              }
+
+
+              if (memberElement) {
+                memberElement.textContent =
+                  formatWorkerMemberSince(
+                    memberSince
+                  );
+              }
+
+
+              if (aboutElement) {
+                aboutElement.textContent =
+                  about;
+              }
+
+
+              renderWorkerPublicPortfolio(
+                data.portfolioPhotos ||
+                []
+              );
+
+
+              refreshWorkerPublicCompletion();
+
+            },
+
+            error => {
+
+              console.error(
+                "PUBLIC PROFILE USER ERROR:",
+                error
+              );
+
+            }
+          );
+
+
+        workerPublicProfileUnsubs.push(
+          unsubscribeUser
+        );
+
+
+        /*
+          ══════════════════════════════════
+          SKILLS
+          users/{uid}/skills
+          ══════════════════════════════════
+        */
+
+        const skillsQuery =
+          query(
+            collection(
+              db,
+              "users",
+              applicantId,
+              "skills"
+            ),
+            orderBy(
+              "createdAt",
+              "desc"
+            )
+          );
+
+
+        const unsubscribeSkills =
+          onSnapshot(
+            skillsQuery,
+
+            snapshot => {
+
+              renderWorkerPublicSkills(
+                snapshot.docs
+              );
+
+            },
+
+            error => {
+
+              console.error(
+                "PUBLIC PROFILE SKILLS ERROR:",
+                error
+              );
+
+
+              document.getElementById(
+                "workerPublicSkillsList"
+              ).innerHTML = `
+            <div class="skills-empty-state">
+              Unable to load skills.
+            </div>
+          `;
+
+            }
+          );
+
+
+        workerPublicProfileUnsubs.push(
+          unsubscribeSkills
+        );
+
+
+        /*
+          ══════════════════════════════════
+          WORK EXPERIENCE
+          users/{uid}/workExperience
+          ══════════════════════════════════
+        */
+
+        const experienceQuery =
+          query(
+            collection(
+              db,
+              "users",
+              applicantId,
+              "workExperience"
+            ),
+            orderBy(
+              "createdAt",
+              "desc"
+            )
+          );
+
+
+        const unsubscribeExperience =
+          onSnapshot(
+            experienceQuery,
+
+            snapshot => {
+
+              renderWorkerPublicExperience(
+                snapshot.docs
+              );
+
+            },
+
+            error => {
+
+              console.error(
+                "PUBLIC PROFILE EXPERIENCE ERROR:",
+                error
+              );
+
+
+              document.getElementById(
+                "workerPublicExperienceList"
+              ).innerHTML = `
+            <div class="exp-empty-state">
+              Unable to load work experience.
+            </div>
+          `;
+
+            }
+          );
+
+
+        workerPublicProfileUnsubs.push(
+          unsubscribeExperience
+        );
+
+
+        /*
+          ══════════════════════════════════
+          REVIEWS
+          users/{uid}/reviews
+          ══════════════════════════════════
+        */
+
+        const reviewsQuery =
+          query(
+            collection(
+              db,
+              "users",
+              applicantId,
+              "reviews"
+            ),
+            orderBy(
+              "createdAt",
+              "desc"
+            )
+          );
+
+
+        const unsubscribeReviews =
+          onSnapshot(
+            reviewsQuery,
+
+            snapshot => {
+
+              renderWorkerPublicReviews(
+                snapshot.docs
+              );
+
+            },
+
+            error => {
+
+              console.error(
+                "PUBLIC PROFILE REVIEWS ERROR:",
+                error
+              );
+
+
+              document.getElementById(
+                "workerPublicReviewsList"
+              ).innerHTML = `
+            <div class="reviews-empty-state">
+              Unable to load reviews.
+            </div>
+          `;
+
+            }
+          );
+
+
+        workerPublicProfileUnsubs.push(
+          unsubscribeReviews
+        );
+
+      };
+
+    document
+      .getElementById(
+        "workerPublicMessageBtn"
+      )
+      ?.addEventListener(
+        "click",
+        async () => {
+
+          if (!activePublicApplicant) {
+            return;
+          }
+
+
+          await window
+            .openApplicantConversation(
+              activePublicApplicant
+            );
+
+        }
+      );
+
+    document
+      .getElementById(
+        "workerPublicContactBtn"
+      )
+      ?.addEventListener(
+        "click",
+        () => {
+
+          const phone =
+            activePublicApplicant
+              ?.phoneNumber;
+
+
+          if (!phone) {
+
+            alert(
+              "This Job Seeker has not provided a phone number."
+            );
+
+            return;
+          }
+
+
+          window.location.href =
+            `tel:${phone}`;
+
+        }
+      );
+
+    document
+      .getElementById(
+        "workerPublicBackBtn"
+      )
+      ?.addEventListener(
+        "click",
+        () => {
+
+          cleanupWorkerPublicProfile();
+
+
+          activePublicApplicant =
+            null;
+
+
+          showPage(
+            "home"
+          );
+
+
+          showApplicants();
+
+        }
+      );
 
     function updateReviewStars(rating) {
       selectedApplicantRating =
@@ -4995,14 +6521,23 @@
       }
 
       if (profileBtn) {
+
         profileBtn.addEventListener(
           "click",
-          () => {
-            alert(
-              `Open profile for ${applicant.applicantName || "Applicant"}`
-            );
+          event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            window
+              .openApplicantPublicProfile(
+                applicant
+              );
+
           }
         );
+
       }
 
       /*
