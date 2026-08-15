@@ -1794,6 +1794,10 @@ const translations = {
     ddSettings: "Settings",
     ddHelp: "Help & Support",
     ddLogout: "Log Out",
+    workerBackApplicants: "Back to Applicants",
+    workerProfileLabel: "Job Seeker Profile",
+    workerOpenForWork: "Open for Work",
+    workerJobSeeker: "Job Seeker",
     applicantMenuReject: "Reject Application",
     profileCardJobs: "My Job Post",
     sidebarHome: "Home",
@@ -1870,6 +1874,14 @@ const translations = {
     ddSettings: "Mga Setting",
     ddHelp: "Bulig & Suporta",
     ddLogout: "Pag-log Out",
+    workerBackApplicants:
+      "Balik ha mga Aplikante",
+    workerProfileLabel:
+      "Profile han Nangita hin Trabaho",
+    workerOpenForWork:
+      "Abierto para Trabaho",
+    workerJobSeeker:
+      "Nangita hin Trabaho",
     applicantMenuReject: "Isalikway an Aplikasyon",
     profileCardJobs: "Akon Mga Job Post",
     sidebarHome: "Panimalay",
@@ -1946,6 +1958,14 @@ const translations = {
     ddSettings: "Mga Setting",
     ddHelp: "Tulong at Suporta",
     ddLogout: "Mag-log Out",
+    workerBackApplicants:
+      "Bumalik sa mga Aplikante",
+    workerProfileLabel:
+      "Profile ng Job Seeker",
+    workerOpenForWork:
+      "Bukas para sa Trabaho",
+    workerJobSeeker:
+      "Job Seeker",
     applicantMenuReject: "Tanggihan ang Aplikasyon",
     profileCardJobs: "Aking Mga Job Post",
 

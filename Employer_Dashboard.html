@@ -820,10 +820,14 @@
         <div class="worker-public-profile-header">
 
           <button type="button" class="worker-public-back-btn" id="workerPublicBackBtn">
-            ← Back to Applicants
+            <span aria-hidden="true">←</span>
+
+            <span data-i18n="workerBackApplicants">
+              Back to Applicants
+            </span>
           </button>
 
-          <div class="worker-public-profile-label">
+          <div class="worker-public-profile-label" data-i18n="workerProfileLabel">
             Job Seeker Profile
           </div>
 
@@ -839,7 +843,7 @@
             <!-- PROFILE STATUS -->
             <div class="prof-card">
 
-              <div class="prof-section-title">
+              <div class="prof-section-title" data-i18n="profileStatus">
                 Profile Status
               </div>
 
@@ -849,11 +853,11 @@
 
                 <div>
 
-                  <div class="status-open-title">
+                  <div class="status-open-title" data-i18n="workerOpenForWork">
                     Open for Work
                   </div>
 
-                  <div class="status-open-sub">
+                  <div class="status-open-sub" data-i18n="profileActivelySeeking">
                     Actively seeking opportunities
                   </div>
 
@@ -866,7 +870,7 @@
 
                 <div class="completion-row">
 
-                  <span class="completion-label">
+                  <span class="completion-label" data-i18n="profileCompletion">
                     Profile Completion
                   </span>
 
@@ -891,7 +895,7 @@
             <!-- STATISTICS -->
             <div class="prof-card">
 
-              <div class="prof-section-title">
+              <div class="prof-section-title" data-i18n="profileStats">
                 Statistics
               </div>
 
@@ -917,7 +921,7 @@
                 "></polygon>
                   </svg>
 
-                  <span>
+                  <span data-i18n="profileRating">
                     Rating
                   </span>
 
@@ -935,7 +939,7 @@
                     ✓
                   </span>
 
-                  <span>
+                  <span data-i18n="profileCompletedJobs">
                     Completed Jobs
                   </span>
 
@@ -953,7 +957,7 @@
                     ◉
                   </span>
 
-                  <span>
+                  <span data-i18n="profileCardViews">
                     Profile Views
                   </span>
 
@@ -971,7 +975,7 @@
             <!-- SKILLS -->
             <div class="prof-card">
 
-              <div class="prof-section-title">
+              <div class="prof-section-title" data-i18n="profileSkills">
                 Skills
               </div>
 
@@ -1079,12 +1083,16 @@
                 <div class="prof-actions">
 
                   <button type="button" class="prof-btn-msg" id="workerPublicMessageBtn">
-                    Message
+                    <span data-i18n="profileMessage">
+                      Message
+                    </span>
                   </button>
 
 
                   <button type="button" class="prof-btn-contact" id="workerPublicContactBtn">
-                    Contact
+                    <span data-i18n="profileContact">
+                      Contact
+                    </span>
                   </button>
 
                 </div>
@@ -1097,7 +1105,7 @@
             <!-- ABOUT -->
             <div class="prof-card">
 
-              <div class="prof-section-title">
+              <div class="prof-section-title" data-i18n="profileAbout">
                 About
               </div>
 
@@ -1111,7 +1119,7 @@
             <!-- EXPERIENCE -->
             <div class="prof-card">
 
-              <div class="prof-section-title">
+              <div class="prof-section-title" data-i18n="profileWorkExperience">
                 Work Experience
               </div>
 
@@ -1129,7 +1137,7 @@
             <!-- PHOTOS -->
             <div class="prof-card">
 
-              <div class="prof-section-title">
+              <div class="prof-section-title" data-i18n="profileMyPhotos">
                 My Photos
               </div>
 
@@ -1141,7 +1149,7 @@
             <!-- REVIEWS -->
             <div class="prof-card">
 
-              <div class="prof-section-title">
+              <div class="prof-section-title" data-i18n="profileReviews">
                 Reviews &amp; Ratings
               </div>
 
@@ -2451,8 +2459,8 @@
           );
 
         return `${days} day${days === 1
-            ? ""
-            : "s"
+          ? ""
+          : "s"
           } ago`;
 
       }
@@ -2466,8 +2474,8 @@
           );
 
         return `${weeks} week${weeks === 1
-            ? ""
-            : "s"
+          ? ""
+          : "s"
           } ago`;
 
       }
@@ -2480,8 +2488,8 @@
 
 
       return `${months} month${months === 1
-          ? ""
-          : "s"
+        ? ""
+        : "s"
         } ago`;
 
     }
@@ -2826,9 +2834,15 @@
                 "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&h=220&fit=crop&crop=center";
 
 
+              const realHeadline =
+                String(
+                  data.profileHeadline || ""
+                ).trim();
+
+
               const headline =
-                data.profileHeadline ||
-                "Job Seeker";
+                realHeadline ||
+                getWorkerJobSeekerFallback();
 
 
               const location =
