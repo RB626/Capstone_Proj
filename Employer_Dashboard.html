@@ -2110,6 +2110,177 @@
       }
     }
 
+    /* ══════════════════════════════════════
+   OPEN JOB POST FROM NOTIFICATION
+══════════════════════════════════════ */
+
+    function openEmployerJobFromNotification(
+      jobId
+    ) {
+
+      if (!jobId) {
+        return;
+      }
+
+
+      /*
+        1. Close notifications.
+      */
+      closeNotificationPanel();
+
+
+      /*
+        2. Go to Job Listings page.
+      */
+      showPage("jobs");
+
+
+      /*
+        3. Reset the normal job filters so
+           the target job cannot be hidden.
+      */
+
+      const searchInput =
+        document.querySelector(
+          ".job-listings-search"
+        );
+
+      if (searchInput) {
+        searchInput.value = "";
+      }
+
+
+      const statusFilter =
+        document.getElementById(
+          "jobStatusFilter"
+        );
+
+      if (statusFilter) {
+        statusFilter.value = "all";
+      }
+
+
+      /*
+        Reset Job Category too.
+      */
+      if (
+        typeof window.selectEmployerJobRole ===
+        "function"
+      ) {
+
+        window.selectEmployerJobRole(
+          "all",
+          "Job Category"
+        );
+
+      } else {
+
+        /*
+          Fallback in case the function
+          isn't exposed through window.
+        */
+        const categoryLabel =
+          document.getElementById(
+            "employerJobCategoryLabel"
+          );
+
+        if (categoryLabel) {
+          categoryLabel.textContent =
+            "Job Category";
+
+          categoryLabel.setAttribute(
+            "data-i18n",
+            "jobsCategory"
+          );
+        }
+
+      }
+
+
+      /*
+        Re-run your existing filters.
+      */
+      if (
+        typeof window.filterJobPostings ===
+        "function"
+      ) {
+        window.filterJobPostings();
+      }
+
+
+      /*
+        4. Wait until the Jobs page
+           becomes visible.
+      */
+      setTimeout(
+        () => {
+
+          const cards =
+            document.querySelectorAll(
+              "#employerJobsList .job-card"
+            );
+
+
+          const targetCard =
+            Array.from(cards).find(
+              card =>
+                card.dataset.jobId ===
+                jobId
+            );
+
+
+          if (!targetCard) {
+
+            console.warn(
+              "Job card not found:",
+              jobId
+            );
+
+            return;
+          }
+
+
+          /*
+            Make sure the target cannot
+            remain hidden by an old filter.
+          */
+          targetCard.style.display = "";
+
+
+          /*
+            5. Scroll directly to the
+               exact published job.
+          */
+          targetCard.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+
+
+          /*
+            6. Temporary highlight.
+          */
+          targetCard.classList.add(
+            "notification-target-job"
+          );
+
+
+          setTimeout(
+            () => {
+
+              targetCard.classList.remove(
+                "notification-target-job"
+              );
+
+            },
+            2200
+          );
+
+        },
+        120
+      );
+    }
+
     function createJobNotificationItem(job, readIds) {
       const notificationId = `job:${job.id}`;
       const isUnread = !readIds.has(notificationId);
@@ -2192,15 +2363,28 @@
     ></span>
   `;
 
-      item.addEventListener('click', () => {
-        markNotificationRead(notificationId);
+      item.addEventListener(
+        "click",
+        () => {
 
-        closeNotificationPanel();
+          /*
+            Keep existing read logic.
+          */
+          markNotificationRead(
+            notificationId
+          );
 
-        if (typeof openJobPreviewModal === 'function') {
-          openJobPreviewModal(job.id, job);
+
+          /*
+            Go directly to this
+            specific job post.
+          */
+          openEmployerJobFromNotification(
+            job.id
+          );
+
         }
-      });
+      );
 
       return item;
     }

@@ -8992,3 +8992,19 @@ body.dark-mode .notif-badge {
 
   color: #ffffff;
 }
+
+/* ══════════════════════════════════════
+   JOB OPENED FROM NOTIFICATION
+══════════════════════════════════════ */
+
+#employerJobsList .job-card.notification-target-job {
+  border-color: #2dd4bf;
+
+  box-shadow:
+    0 0 0 3px rgba(45, 212, 191, 0.14),
+    0 14px 34px rgba(15, 23, 42, 0.10);
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
