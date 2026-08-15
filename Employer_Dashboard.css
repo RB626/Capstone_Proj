@@ -9107,3 +9107,164 @@ body.dark-mode .worker-public-profile-label {
   }
 
 }
+
+/* ══════════════════════════════════════
+   PUBLIC WORKER PROFILE — REVIEWS
+══════════════════════════════════════ */
+
+#workerPublicReviewsList .worker-public-review-item {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 16px;
+
+  padding: 4px 0;
+}
+
+
+/* Avatar */
+#workerPublicReviewsList .review-avatar {
+  width: 52px;
+  height: 52px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 1px solid #dbe2ea;
+}
+
+
+/* Content takes remaining width */
+#workerPublicReviewsList .review-body {
+  min-width: 0;
+
+  flex: 1;
+}
+
+
+/* Employer + time */
+#workerPublicReviewsList .review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 4px;
+}
+
+
+#workerPublicReviewsList .review-name {
+  color: #172033;
+
+  font-size: 0.95rem;
+  font-weight: 750;
+}
+
+
+#workerPublicReviewsList .review-time {
+  flex-shrink: 0;
+
+  color: #98a2b3;
+
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+
+/* Stars */
+.worker-public-review-stars {
+  display: flex;
+  align-items: center;
+
+  gap: 2px;
+
+  margin-bottom: 5px;
+
+  line-height: 1;
+}
+
+
+.worker-public-review-star {
+  color: #d1d5db;
+
+  font-size: 17px;
+
+  line-height: 1;
+}
+
+
+.worker-public-review-star.filled {
+  color: #f59e0b;
+}
+
+
+/* Job title pill */
+.worker-public-review-job {
+  display: inline-flex;
+  align-items: center;
+
+  width: fit-content;
+
+  margin:
+    5px 0 7px;
+
+  padding:
+    5px 10px;
+
+  border-radius: 999px;
+
+  background: #f0fdfa;
+
+  color: #0f766e;
+
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+
+/* Comment */
+#workerPublicReviewsList .review-text {
+  color: #667085;
+
+  font-size: 0.88rem;
+
+  line-height: 1.5;
+}
+
+/* DARK MODE */
+body.dark-mode #workerPublicReviewsList .review-name {
+  color: #f8fafc;
+}
+
+
+body.dark-mode #workerPublicReviewsList .review-time,
+body.dark-mode #workerPublicReviewsList .review-text {
+  color: #94a3b8;
+}
+
+
+body.dark-mode #workerPublicReviewsList .review-avatar {
+  border-color: #334155;
+}
+
+
+body.dark-mode .worker-public-review-star {
+  color: #475569;
+}
+
+
+body.dark-mode .worker-public-review-star.filled {
+  color: #f59e0b;
+}
+
+
+body.dark-mode .worker-public-review-job {
+  background:
+    rgba(45, 212, 191, 0.12);
+
+  color: #5eead4;
+}
