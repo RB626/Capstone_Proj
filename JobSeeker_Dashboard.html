@@ -870,6 +870,56 @@
     </div><!-- /main-content -->
   </div><!-- /app-shell -->
 
+  <!-- ══════════════════════════════════════
+     PORTFOLIO PHOTO VIEWER
+══════════════════════════════════════ -->
+  <div class="portfolio-viewer" id="portfolioViewer" aria-hidden="true">
+
+    <!-- CLOSE -->
+    <button type="button" class="portfolio-viewer-close" id="portfolioViewerClose" aria-label="Close photo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M18 6L6 18"></path>
+        <path d="M6 6l12 12"></path>
+      </svg>
+    </button>
+
+
+    <!-- PHOTO COUNTER -->
+    <div class="portfolio-viewer-counter" id="portfolioViewerCounter">
+      1 / 1
+    </div>
+
+
+    <!-- PREVIOUS -->
+    <button type="button" class="portfolio-viewer-nav portfolio-viewer-prev" id="portfolioViewerPrev"
+      aria-label="Previous photo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+
+
+    <!-- IMAGE AREA -->
+    <div class="portfolio-viewer-content">
+
+      <img id="portfolioViewerImage" class="portfolio-viewer-image" src="" alt="Portfolio photo" />
+
+    </div>
+
+
+    <!-- NEXT -->
+    <button type="button" class="portfolio-viewer-nav portfolio-viewer-next" id="portfolioViewerNext"
+      aria-label="Next photo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+
+  </div>
+
   <!-- Mobile bottom nav -->
   <nav class="mobile-nav">
     <div class="mobile-nav-inner">
@@ -1163,6 +1213,14 @@
 
     const portfolioGrid = document.getElementById("portfolioGrid");
     const portfolioUploadInput = document.getElementById("portfolioUploadInput");
+    const portfolioViewer = document.getElementById("portfolioViewer");
+    const portfolioViewerImage = document.getElementById("portfolioViewerImage");
+    const portfolioViewerClose = document.getElementById("portfolioViewerClose");
+    const portfolioViewerPrev = document.getElementById("portfolioViewerPrev");
+    const portfolioViewerNext = document.getElementById("portfolioViewerNext");
+    const portfolioViewerCounter = document.getElementById("portfolioViewerCounter");
+
+    let activePortfolioPhotoIndex = 0;
     const homeJobsList = document.getElementById("homeJobsList");
 
     let currentUser = null;
@@ -3726,6 +3784,242 @@
         .replaceAll("'", "&#39;");
     }
 
+    /* ══════════════════════════════════════
+   FULL-SCREEN PORTFOLIO VIEWER
+══════════════════════════════════════ */
+
+    function updatePortfolioViewer() {
+
+      if (
+        !portfolioPhotos.length ||
+        !portfolioViewerImage
+      ) {
+        return;
+      }
+
+      if (
+        activePortfolioPhotoIndex < 0
+      ) {
+
+        activePortfolioPhotoIndex =
+          portfolioPhotos.length - 1;
+
+      }
+
+
+      if (
+        activePortfolioPhotoIndex >=
+        portfolioPhotos.length
+      ) {
+
+        activePortfolioPhotoIndex = 0;
+
+      }
+
+
+      const photo =
+        portfolioPhotos[
+        activePortfolioPhotoIndex
+        ];
+
+
+      if (!photo?.url) {
+        return;
+      }
+
+
+      portfolioViewerImage.src =
+        photo.url;
+
+
+      portfolioViewerImage.alt =
+        `Portfolio photo ${activePortfolioPhotoIndex + 1
+        }`;
+
+
+      if (portfolioViewerCounter) {
+
+        portfolioViewerCounter.textContent =
+          `${activePortfolioPhotoIndex + 1
+          } / ${portfolioPhotos.length}`;
+
+      }
+
+
+      /*
+        Hide arrows when there is
+        only one photo.
+      */
+      const hasMultiplePhotos =
+        portfolioPhotos.length > 1;
+
+
+      if (portfolioViewerPrev) {
+        portfolioViewerPrev.hidden =
+          !hasMultiplePhotos;
+      }
+
+
+      if (portfolioViewerNext) {
+        portfolioViewerNext.hidden =
+          !hasMultiplePhotos;
+      }
+
+    }
+
+
+    function openPortfolioViewer(
+      index
+    ) {
+
+      if (
+        !portfolioViewer ||
+        !portfolioPhotos.length
+      ) {
+        return;
+      }
+
+
+      const safeIndex =
+        Number(index);
+
+
+      if (
+        Number.isNaN(safeIndex) ||
+        !portfolioPhotos[safeIndex]
+      ) {
+        return;
+      }
+
+
+      activePortfolioPhotoIndex =
+        safeIndex;
+
+
+      updatePortfolioViewer();
+
+
+      portfolioViewer.classList.add(
+        "open"
+      );
+
+
+      portfolioViewer.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+
+      /*
+        Prevent dashboard scrolling
+        behind the viewer.
+      */
+      document.body.style.overflow =
+        "hidden";
+
+    }
+
+
+    function closePortfolioViewer() {
+
+      if (!portfolioViewer) {
+        return;
+      }
+
+
+      portfolioViewer.classList.remove(
+        "open"
+      );
+
+
+      portfolioViewer.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      document.body.style.overflow =
+        "";
+
+
+      /*
+        Remove old image after animation.
+      */
+      setTimeout(
+        () => {
+
+          if (
+            !portfolioViewer.classList.contains(
+              "open"
+            ) &&
+            portfolioViewerImage
+          ) {
+
+            portfolioViewerImage.src =
+              "";
+
+          }
+
+        },
+        180
+      );
+
+    }
+
+
+    function showPreviousPortfolioPhoto() {
+
+      if (
+        portfolioPhotos.length <= 1
+      ) {
+        return;
+      }
+
+
+      activePortfolioPhotoIndex--;
+
+
+      if (
+        activePortfolioPhotoIndex < 0
+      ) {
+
+        activePortfolioPhotoIndex =
+          portfolioPhotos.length - 1;
+
+      }
+
+
+      updatePortfolioViewer();
+
+    }
+
+
+    function showNextPortfolioPhoto() {
+
+      if (
+        portfolioPhotos.length <= 1
+      ) {
+        return;
+      }
+
+
+      activePortfolioPhotoIndex++;
+
+
+      if (
+        activePortfolioPhotoIndex >=
+        portfolioPhotos.length
+      ) {
+
+        activePortfolioPhotoIndex = 0;
+
+      }
+
+
+      updatePortfolioViewer();
+
+    }
+
     function renderPortfolio(photos = []) {
       if (!portfolioGrid) return;
 
@@ -3745,7 +4039,14 @@
         const item = document.createElement("div");
         item.className = "portfolio-item";
         item.innerHTML = `
-      <img class="port-img" src="${escapeHtml(photo.url)}" alt="Portfolio photo ${index + 1}">
+      <img
+  class="port-img portfolio-viewer-trigger"
+  src="${escapeHtml(photo.url)}"
+  alt="Portfolio photo ${index + 1}"
+  data-index="${index}"
+  role="button"
+  tabindex="0"
+>
       <button type="button" class="portfolio-delete-btn" data-index="${index}" title="Delete photo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -4327,13 +4628,194 @@
       await uploadPortfolioPhoto(file);
     });
 
-    portfolioGrid?.addEventListener("click", async (e) => {
-      const deleteBtn = e.target.closest(".portfolio-delete-btn");
-      if (!deleteBtn) return;
+    portfolioGrid?.addEventListener(
+      "click",
+      async event => {
 
-      const index = Number(deleteBtn.dataset.index);
-      await deletePortfolioPhoto(index);
-    });
+        const deleteBtn =
+          event.target.closest(
+            ".portfolio-delete-btn"
+          );
+
+
+        if (deleteBtn) {
+
+          event.preventDefault();
+          event.stopPropagation();
+
+
+          const index =
+            Number(
+              deleteBtn.dataset.index
+            );
+
+
+          await deletePortfolioPhoto(
+            index
+          );
+
+
+          return;
+        }
+
+        const photo =
+          event.target.closest(
+            ".portfolio-viewer-trigger"
+          );
+
+
+        if (!photo) {
+          return;
+        }
+
+
+        const index =
+          Number(
+            photo.dataset.index
+          );
+
+
+        openPortfolioViewer(
+          index
+        );
+
+      }
+    );
+
+    portfolioViewerClose
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          closePortfolioViewer();
+
+        }
+      );
+
+    portfolioViewerPrev
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          showPreviousPortfolioPhoto();
+
+        }
+      );
+
+    portfolioViewerNext
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          showNextPortfolioPhoto();
+
+        }
+      );
+
+    portfolioViewer
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target ===
+            portfolioViewer
+          ) {
+
+            closePortfolioViewer();
+
+          }
+
+        }
+      );
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          !portfolioViewer?.classList.contains(
+            "open"
+          )
+        ) {
+          return;
+        }
+
+
+        if (
+          event.key ===
+          "Escape"
+        ) {
+
+          closePortfolioViewer();
+
+          return;
+        }
+
+
+        if (
+          event.key ===
+          "ArrowLeft"
+        ) {
+
+          showPreviousPortfolioPhoto();
+
+          return;
+        }
+
+
+        if (
+          event.key ===
+          "ArrowRight"
+        ) {
+
+          showNextPortfolioPhoto();
+
+        }
+
+      }
+    );
+
+    portfolioGrid?.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key !== "Enter" &&
+          event.key !== " "
+        ) {
+          return;
+        }
+
+
+        const photo =
+          event.target.closest(
+            ".portfolio-viewer-trigger"
+          );
+
+
+        if (!photo) {
+          return;
+        }
+
+
+        event.preventDefault();
+
+
+        openPortfolioViewer(
+          Number(
+            photo.dataset.index
+          )
+        );
+
+      }
+    );
 
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && experienceModalOverlay.classList.contains("open")) {
