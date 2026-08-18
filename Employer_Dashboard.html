@@ -1172,6 +1172,60 @@
     </div><!-- /main-content -->
   </div><!-- /app-shell -->
 
+  <!-- ══════════════════════════════════════
+     JOB SEEKER PUBLIC PHOTO VIEWER
+══════════════════════════════════════ -->
+  <div class="worker-photo-viewer" id="workerPhotoViewer" aria-hidden="true">
+
+    <!-- CLOSE -->
+    <button type="button" class="worker-photo-viewer-close" id="workerPhotoViewerClose" aria-label="Close photo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M18 6L6 18"></path>
+        <path d="M6 6l12 12"></path>
+      </svg>
+    </button>
+
+
+    <!-- COUNTER -->
+    <div class="worker-photo-viewer-counter" id="workerPhotoViewerCounter">
+      1 / 1
+    </div>
+
+
+    <!-- PREVIOUS -->
+    <button type="button" class="
+      worker-photo-viewer-nav
+      worker-photo-viewer-prev
+    " id="workerPhotoViewerPrev" aria-label="Previous photo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+
+
+    <!-- PHOTO -->
+    <div class="worker-photo-viewer-content">
+
+      <img class="worker-photo-viewer-image" id="workerPhotoViewerImage" src="" alt="Job Seeker portfolio photo" />
+
+    </div>
+
+
+    <!-- NEXT -->
+    <button type="button" class="
+      worker-photo-viewer-nav
+      worker-photo-viewer-next
+    " id="workerPhotoViewerNext" aria-label="Next photo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+
+  </div>
+
   <!-- Mobile bottom nav -->
   <nav class="mobile-nav">
     <div class="mobile-nav-inner">
@@ -1926,6 +1980,50 @@
       experienceCount: 0
     };
 
+    let workerPublicPortfolioPhotos = [];
+    let activeWorkerPublicPhotoIndex = 0;
+
+    const workerPhotoViewer =
+      document.getElementById(
+        "workerPhotoViewer"
+      );
+
+
+    const workerPhotoViewerImage =
+      document.getElementById(
+        "workerPhotoViewerImage"
+      );
+
+
+    const workerPhotoViewerClose =
+      document.getElementById(
+        "workerPhotoViewerClose"
+      );
+
+
+    const workerPhotoViewerPrev =
+      document.getElementById(
+        "workerPhotoViewerPrev"
+      );
+
+
+    const workerPhotoViewerNext =
+      document.getElementById(
+        "workerPhotoViewerNext"
+      );
+
+
+    const workerPhotoViewerCounter =
+      document.getElementById(
+        "workerPhotoViewerCounter"
+      );
+
+
+    const workerPublicPortfolioGrid =
+      document.getElementById(
+        "workerPublicPortfolioGrid"
+      );
+
     function cleanupWorkerPublicProfile() {
 
       workerPublicProfileUnsubs
@@ -2300,16 +2398,29 @@
         );
 
 
-      if (!grid) return;
+      if (!grid) {
+        return;
+      }
 
 
-      const safePhotos =
+      /*
+        Keep the current Job Seeker's
+        realtime photos available to
+        the fullscreen viewer.
+      */
+      workerPublicPortfolioPhotos =
         Array.isArray(photos)
-          ? photos
+          ? photos.filter(
+            photo =>
+              photo &&
+              photo.url
+          )
           : [];
 
 
-      if (!safePhotos.length) {
+      if (
+        !workerPublicPortfolioPhotos.length
+      ) {
 
         grid.innerHTML = `
       <div class="reviews-empty-state">
@@ -2322,24 +2433,463 @@
 
 
       grid.innerHTML =
-        safePhotos
+        workerPublicPortfolioPhotos
           .map(
             (photo, index) => `
+
           <div class="portfolio-item">
 
             <img
-              class="port-img"
+              class="
+                port-img
+                worker-public-photo-trigger
+              "
               src="${escapeHtml(
-              photo.url || ""
+              photo.url
             )}"
               alt="Portfolio photo ${index + 1}"
+              data-index="${index}"
+              role="button"
+              tabindex="0"
             />
 
           </div>
+
         `
           )
           .join("");
+
     }
+
+    /* ══════════════════════════════════════
+   PUBLIC JOB SEEKER PHOTO VIEWER
+══════════════════════════════════════ */
+
+    function updateWorkerPhotoViewer() {
+
+      if (
+        !workerPublicPortfolioPhotos.length ||
+        !workerPhotoViewerImage
+      ) {
+        return;
+      }
+
+
+      /*
+        Loop from first → last
+        and last → first.
+      */
+      if (
+        activeWorkerPublicPhotoIndex < 0
+      ) {
+
+        activeWorkerPublicPhotoIndex =
+          workerPublicPortfolioPhotos.length - 1;
+
+      }
+
+
+      if (
+        activeWorkerPublicPhotoIndex >=
+        workerPublicPortfolioPhotos.length
+      ) {
+
+        activeWorkerPublicPhotoIndex =
+          0;
+
+      }
+
+
+      const photo =
+        workerPublicPortfolioPhotos[
+        activeWorkerPublicPhotoIndex
+        ];
+
+
+      if (!photo?.url) {
+        return;
+      }
+
+
+      workerPhotoViewerImage.src =
+        photo.url;
+
+
+      workerPhotoViewerImage.alt =
+        `Portfolio photo ${activeWorkerPublicPhotoIndex + 1
+        }`;
+
+
+      /*
+        Example:
+        2 / 3
+      */
+      if (workerPhotoViewerCounter) {
+
+        workerPhotoViewerCounter.textContent =
+          `${activeWorkerPublicPhotoIndex + 1
+          } / ${workerPublicPortfolioPhotos.length
+          }`;
+
+      }
+
+
+      /*
+        Don't show navigation arrows
+        if the user only has one photo.
+      */
+      const hasMultiplePhotos =
+        workerPublicPortfolioPhotos.length > 1;
+
+
+      if (workerPhotoViewerPrev) {
+
+        workerPhotoViewerPrev.hidden =
+          !hasMultiplePhotos;
+
+      }
+
+
+      if (workerPhotoViewerNext) {
+
+        workerPhotoViewerNext.hidden =
+          !hasMultiplePhotos;
+
+      }
+
+    }
+
+
+    function openWorkerPhotoViewer(
+      index
+    ) {
+
+      if (
+        !workerPhotoViewer ||
+        !workerPublicPortfolioPhotos.length
+      ) {
+        return;
+      }
+
+
+      const safeIndex =
+        Number(index);
+
+
+      if (
+        Number.isNaN(safeIndex) ||
+        !workerPublicPortfolioPhotos[
+        safeIndex
+        ]
+      ) {
+        return;
+      }
+
+
+      activeWorkerPublicPhotoIndex =
+        safeIndex;
+
+
+      updateWorkerPhotoViewer();
+
+
+      workerPhotoViewer.classList.add(
+        "open"
+      );
+
+
+      workerPhotoViewer.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+
+      /*
+        Stop dashboard behind the
+        photo from scrolling.
+      */
+      document.body.style.overflow =
+        "hidden";
+
+    }
+
+
+    function closeWorkerPhotoViewer() {
+
+      if (!workerPhotoViewer) {
+        return;
+      }
+
+
+      workerPhotoViewer.classList.remove(
+        "open"
+      );
+
+
+      workerPhotoViewer.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      document.body.style.overflow =
+        "";
+
+
+      /*
+        Clear image after close animation.
+      */
+      setTimeout(
+        () => {
+
+          if (
+            !workerPhotoViewer.classList.contains(
+              "open"
+            ) &&
+            workerPhotoViewerImage
+          ) {
+
+            workerPhotoViewerImage.src =
+              "";
+
+          }
+
+        },
+        180
+      );
+
+    }
+
+
+    function showPreviousWorkerPhoto() {
+
+      if (
+        workerPublicPortfolioPhotos.length <=
+        1
+      ) {
+        return;
+      }
+
+
+      activeWorkerPublicPhotoIndex--;
+
+
+      if (
+        activeWorkerPublicPhotoIndex < 0
+      ) {
+
+        activeWorkerPublicPhotoIndex =
+          workerPublicPortfolioPhotos.length - 1;
+
+      }
+
+
+      updateWorkerPhotoViewer();
+
+    }
+
+
+    function showNextWorkerPhoto() {
+
+      if (
+        workerPublicPortfolioPhotos.length <=
+        1
+      ) {
+        return;
+      }
+
+
+      activeWorkerPublicPhotoIndex++;
+
+
+      if (
+        activeWorkerPublicPhotoIndex >=
+        workerPublicPortfolioPhotos.length
+      ) {
+
+        activeWorkerPublicPhotoIndex =
+          0;
+
+      }
+
+
+      updateWorkerPhotoViewer();
+
+    }
+
+    workerPublicPortfolioGrid
+      ?.addEventListener(
+        "click",
+        event => {
+
+          const photo =
+            event.target.closest(
+              ".worker-public-photo-trigger"
+            );
+
+
+          if (!photo) {
+            return;
+          }
+
+
+          const index =
+            Number(
+              photo.dataset.index
+            );
+
+
+          openWorkerPhotoViewer(
+            index
+          );
+
+        }
+      );
+
+    /* CLOSE */
+    workerPhotoViewerClose
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          closeWorkerPhotoViewer();
+
+        }
+      );
+
+
+    /* PREVIOUS */
+    workerPhotoViewerPrev
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          showPreviousWorkerPhoto();
+
+        }
+      );
+
+
+    /* NEXT */
+    workerPhotoViewerNext
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          showNextWorkerPhoto();
+
+        }
+      );
+
+    workerPhotoViewer
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target ===
+            workerPhotoViewer
+          ) {
+
+            closeWorkerPhotoViewer();
+
+          }
+
+        }
+      );
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          !workerPhotoViewer
+            ?.classList
+            .contains(
+              "open"
+            )
+        ) {
+          return;
+        }
+
+
+        /*
+          ESC → close
+        */
+        if (
+          event.key === "Escape"
+        ) {
+
+          closeWorkerPhotoViewer();
+
+          return;
+        }
+
+
+        /*
+          Left arrow → previous
+        */
+        if (
+          event.key === "ArrowLeft"
+        ) {
+
+          showPreviousWorkerPhoto();
+
+          return;
+        }
+
+        if (
+          event.key === "ArrowRight"
+        ) {
+
+          showNextWorkerPhoto();
+
+        }
+
+      }
+    );
+
+    workerPublicPortfolioGrid
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key !== "Enter" &&
+            event.key !== " "
+          ) {
+            return;
+          }
+
+
+          const photo =
+            event.target.closest(
+              ".worker-public-photo-trigger"
+            );
+
+
+          if (!photo) {
+            return;
+          }
+
+
+          event.preventDefault();
+
+
+          openWorkerPhotoViewer(
+            Number(
+              photo.dataset.index
+            )
+          );
+
+        }
+      );
 
     function createWorkerPublicStars(
       rating
