@@ -936,11 +936,11 @@
                 <div class="stat-line">
 
                   <span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-dark)" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                    <polyline points="22 4 12 14.01 9 11.01" />
-                  </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-dark)" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                      <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
                   </span>
 
                   <span data-i18n="profileCompletedJobs">
@@ -959,12 +959,12 @@
 
                   <span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                  </svg>
+                      stroke-linejoin="round">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
                   </span>
 
                   <span data-i18n="profileCardViews">
@@ -1892,6 +1892,8 @@
           if (homeList) homeList.innerHTML = "";
           cleanupEmployerApplicantCountListeners(employerListingApplicantCountUnsubs);
           cleanupEmployerApplicantCountListeners(employerHomeApplicantCountUnsubs);
+          cleanupEmployerApplicantCountListeners(employerListingJobMatchUnsubs);
+          cleanupEmployerApplicantCountListeners(employerHomeJobMatchUnsubs);
 
           jobsCache.clear();
           let totalApplicants = 0;
@@ -4252,6 +4254,8 @@
     const jobsCache = new Map();
     const employerHomeApplicantCountUnsubs = new Map();
     const employerListingApplicantCountUnsubs = new Map();
+    const employerHomeJobMatchUnsubs = new Map();
+    const employerListingJobMatchUnsubs = new Map();
 
     let notificationJobs = [];
     let notificationApplications = [];
@@ -5935,6 +5939,782 @@
       }
     );
 
+    /* ══════════════════════════════════════
+   EMPLOYER — REAL JOB/APPLICANT MATCH
+══════════════════════════════════════ */
+
+    function normalizeEmployerMatchSkill(
+      value
+    ) {
+
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+
+    }
+
+
+    function getEmployerRequiredJobSkills(
+      job
+    ) {
+
+      const rawSkills =
+        Array.isArray(job?.skills)
+          ? job.skills
+          : [];
+
+
+      return [
+        ...new Set(
+
+          rawSkills
+            .flatMap(
+              skill =>
+
+                String(skill)
+                  .split(",")
+                  .map(
+                    part =>
+                      normalizeEmployerMatchSkill(
+                        part
+                      )
+                  )
+            )
+            .filter(Boolean)
+
+        )
+      ];
+
+    }
+
+
+    function normalizeApplicantSkillsForMatch(
+      skills = []
+    ) {
+
+      return [
+        ...new Set(
+
+          skills
+            .flatMap(
+              skill => {
+
+                if (
+                  typeof skill === "string"
+                ) {
+
+                  return skill
+                    .split(",")
+                    .map(
+                      part =>
+                        normalizeEmployerMatchSkill(
+                          part
+                        )
+                    );
+
+                }
+
+
+                if (
+                  skill &&
+                  typeof skill === "object"
+                ) {
+
+                  const value =
+                    skill.name ||
+                    skill.skillName ||
+                    skill.skill ||
+                    skill.title ||
+                    skill.label ||
+                    "";
+
+
+                  return String(value)
+                    .split(",")
+                    .map(
+                      part =>
+                        normalizeEmployerMatchSkill(
+                          part
+                        )
+                    );
+
+                }
+
+
+                return [];
+
+              }
+            )
+            .filter(Boolean)
+
+        )
+      ];
+
+    }
+
+
+    function calculateEmployerApplicantMatch(
+      job,
+      applicantSkills = []
+    ) {
+
+      const requiredSkills =
+        getEmployerRequiredJobSkills(
+          job
+        );
+
+
+      /*
+        Employer did not specify
+        any required skills.
+      */
+      if (!requiredSkills.length) {
+
+        return {
+          percentage: null,
+
+          matchedSkills: [],
+
+          missingSkills: [],
+
+          requiredSkills: []
+        };
+
+      }
+
+
+      const normalizedApplicantSkills =
+        normalizeApplicantSkillsForMatch(
+          applicantSkills
+        );
+
+
+      const applicantSkillSet =
+        new Set(
+          normalizedApplicantSkills
+        );
+
+
+      const matchedSkills =
+        requiredSkills.filter(
+          skill =>
+            applicantSkillSet.has(
+              skill
+            )
+        );
+
+
+      const missingSkills =
+        requiredSkills.filter(
+          skill =>
+            !applicantSkillSet.has(
+              skill
+            )
+        );
+
+
+      const percentage =
+        Math.round(
+          (
+            matchedSkills.length /
+            requiredSkills.length
+          ) * 100
+        );
+
+
+      return {
+        percentage,
+
+        matchedSkills,
+
+        missingSkills,
+
+        requiredSkills
+      };
+
+    }
+
+    function bindEmployerRealtimeJobMatch(
+      jobId,
+      job,
+      card,
+      listenerMap
+    ) {
+
+      if (
+        !jobId ||
+        !job ||
+        !card ||
+        !listenerMap
+      ) {
+        return;
+      }
+
+
+      /*
+        Remove an older listener for
+        this exact card/job first.
+      */
+      if (
+        listenerMap.has(
+          jobId
+        )
+      ) {
+
+        try {
+
+          listenerMap.get(
+            jobId
+          )();
+
+        } catch (error) {
+
+          console.warn(
+            "Failed to clean previous match listener:",
+            error
+          );
+
+        }
+
+
+        listenerMap.delete(
+          jobId
+        );
+
+      }
+
+
+      const matchRow =
+        card.querySelector(
+          ".match-row"
+        );
+
+
+      const matchFill =
+        card.querySelector(
+          ".match-fill"
+        );
+
+
+      const matchText =
+        matchRow?.querySelector(
+          "span"
+        );
+
+
+      if (
+        !matchRow ||
+        !matchFill ||
+        !matchText
+      ) {
+        return;
+      }
+
+
+      const requiredSkills =
+        getEmployerRequiredJobSkills(
+          job
+        );
+
+
+      /*
+        Job has no required skills.
+      */
+      if (!requiredSkills.length) {
+
+        matchFill.style.width =
+          "0%";
+
+
+        matchText.textContent =
+          "No match data";
+
+
+        matchRow.title =
+          "This job has no required skills.";
+
+
+        return;
+      }
+
+
+      /*
+        Current skill list for every
+        active applicant.
+      */
+      const applicantSkillsMap =
+        new Map();
+
+
+      /*
+        Skills copied into the
+        application are used as fallback.
+      */
+      const applicantFallbackSkills =
+        new Map();
+
+
+      /*
+        One realtime skills listener
+        per applicant.
+      */
+      const applicantSkillUnsubs =
+        new Map();
+
+
+      let applicationsUnsubscribe =
+        null;
+
+
+      function updateBestMatch() {
+
+        const results =
+          [];
+
+
+        applicantSkillsMap
+          .forEach(
+            (skills, applicantId) => {
+
+              const result =
+                calculateEmployerApplicantMatch(
+                  job,
+                  skills
+                );
+
+
+              if (
+                result.percentage !==
+                null
+              ) {
+
+                results.push({
+                  applicantId,
+                  ...result
+                });
+
+              }
+
+            }
+          );
+
+
+        /*
+          No active applicants.
+        */
+        if (!results.length) {
+
+          matchFill.style.width =
+            "0%";
+
+
+          matchText.textContent =
+            "No applicants";
+
+
+          matchRow.title =
+            "No active applicants yet.";
+
+
+          return;
+        }
+
+
+        /*
+          Highest matching applicant.
+        */
+        results.sort(
+          (first, second) =>
+            second.percentage -
+            first.percentage
+        );
+
+
+        const bestMatch =
+          results[0];
+
+
+        const percentage =
+          Math.max(
+            0,
+            Math.min(
+              100,
+              bestMatch.percentage
+            )
+          );
+
+
+        matchFill.style.width =
+          `${percentage}%`;
+
+
+        matchText.textContent =
+          `${percentage}% match`;
+
+
+        const matchedText =
+          bestMatch.matchedSkills.length
+            ? bestMatch.matchedSkills.join(
+              ", "
+            )
+            : "None";
+
+
+        const missingText =
+          bestMatch.missingSkills.length
+            ? bestMatch.missingSkills.join(
+              ", "
+            )
+            : "None";
+
+
+        matchRow.title =
+          `Best applicant match — Matched: ${matchedText} | Missing: ${missingText}`;
+
+      }
+
+
+      /*
+        Watch applications for this job.
+      */
+      applicationsUnsubscribe =
+        onSnapshot(
+
+          collection(
+            db,
+            "jobs",
+            jobId,
+            "applications"
+          ),
+
+          snapshot => {
+
+            const activeApplicantIds =
+              new Set();
+
+
+            snapshot.docs
+              .filter(
+                applicationDoc => {
+
+                  const status =
+                    String(
+                      applicationDoc
+                        .data()
+                        .status ||
+                      "pending"
+                    )
+                      .toLowerCase()
+                      .trim();
+
+
+                  return (
+                    status !==
+                    "rejected"
+                  );
+
+                }
+              )
+              .forEach(
+                applicationDoc => {
+
+                  const application =
+                    applicationDoc.data();
+
+
+                  const applicantId =
+                    application.applicantId ||
+                    applicationDoc.id;
+
+
+                  if (!applicantId) {
+                    return;
+                  }
+
+
+                  activeApplicantIds.add(
+                    applicantId
+                  );
+
+
+                  /*
+                    Save application skills
+                    as fallback.
+                  */
+                  const fallbackSkills =
+                    normalizeApplicantSkillsForMatch(
+                      Array.isArray(
+                        application.skills
+                      )
+                        ? application.skills
+                        : []
+                    );
+
+
+                  applicantFallbackSkills.set(
+                    applicantId,
+                    fallbackSkills
+                  );
+
+
+                  /*
+                    Start with fallback
+                    while realtime skills load.
+                  */
+                  if (
+                    !applicantSkillsMap.has(
+                      applicantId
+                    )
+                  ) {
+
+                    applicantSkillsMap.set(
+                      applicantId,
+                      fallbackSkills
+                    );
+
+                  }
+
+
+                  /*
+                    Already watching this
+                    applicant's skills.
+                  */
+                  if (
+                    applicantSkillUnsubs.has(
+                      applicantId
+                    )
+                  ) {
+                    return;
+                  }
+
+
+                  /*
+                    REALTIME:
+                    users/{uid}/skills
+                  */
+                  const unsubscribeSkills =
+                    onSnapshot(
+
+                      collection(
+                        db,
+                        "users",
+                        applicantId,
+                        "skills"
+                      ),
+
+                      skillsSnapshot => {
+
+                        const realtimeSkills =
+                          skillsSnapshot.docs
+                            .flatMap(
+                              skillDocument => {
+
+                                const data =
+                                  skillDocument.data();
+
+
+                                const value =
+                                  data.name ||
+                                  data.skillName ||
+                                  data.skill ||
+                                  data.title ||
+                                  data.label ||
+                                  "";
+
+
+                                return String(
+                                  value
+                                )
+                                  .split(",")
+                                  .map(
+                                    part =>
+                                      part.trim()
+                                  )
+                                  .filter(
+                                    Boolean
+                                  );
+
+                              }
+                            );
+
+
+                        applicantSkillsMap.set(
+
+                          applicantId,
+
+                          realtimeSkills.length
+                            ? realtimeSkills
+                            : (
+                              applicantFallbackSkills.get(
+                                applicantId
+                              ) || []
+                            )
+
+                        );
+
+
+                        updateBestMatch();
+
+                      },
+
+                      error => {
+
+                        console.error(
+                          "REALTIME APPLICANT SKILLS ERROR:",
+                          applicantId,
+                          error
+                        );
+
+
+                        applicantSkillsMap.set(
+                          applicantId,
+                          applicantFallbackSkills.get(
+                            applicantId
+                          ) || []
+                        );
+
+
+                        updateBestMatch();
+
+                      }
+
+                    );
+
+
+                  applicantSkillUnsubs.set(
+                    applicantId,
+                    unsubscribeSkills
+                  );
+
+                }
+              );
+
+
+            /*
+              Applicant was rejected,
+              deleted, or withdrawn:
+              stop listening to their skills.
+            */
+            applicantSkillUnsubs
+              .forEach(
+                (
+                  unsubscribe,
+                  applicantId
+                ) => {
+
+                  if (
+                    activeApplicantIds.has(
+                      applicantId
+                    )
+                  ) {
+                    return;
+                  }
+
+
+                  try {
+                    unsubscribe();
+                  } catch (error) {
+                    console.warn(
+                      "Applicant skill cleanup failed:",
+                      error
+                    );
+                  }
+
+
+                  applicantSkillUnsubs.delete(
+                    applicantId
+                  );
+
+
+                  applicantSkillsMap.delete(
+                    applicantId
+                  );
+
+
+                  applicantFallbackSkills.delete(
+                    applicantId
+                  );
+
+                }
+              );
+
+
+            updateBestMatch();
+
+          },
+
+          error => {
+
+            console.error(
+              "REALTIME EMPLOYER JOB MATCH ERROR:",
+              jobId,
+              error
+            );
+
+
+            matchFill.style.width =
+              "0%";
+
+
+            matchText.textContent =
+              "Match unavailable";
+
+          }
+
+        );
+
+
+      /*
+        One cleanup function removes
+        the application listener AND
+        every applicant skills listener.
+      */
+      const cleanup =
+        () => {
+
+          if (
+            applicationsUnsubscribe
+          ) {
+
+            applicationsUnsubscribe();
+
+          }
+
+
+          applicantSkillUnsubs
+            .forEach(
+              unsubscribe => {
+
+                try {
+                  unsubscribe();
+                } catch (error) {
+                  console.warn(
+                    "Applicant match listener cleanup failed:",
+                    error
+                  );
+                }
+
+              }
+            );
+
+
+          applicantSkillUnsubs.clear();
+
+          applicantSkillsMap.clear();
+
+          applicantFallbackSkills.clear();
+
+        };
+
+
+      listenerMap.set(
+        jobId,
+        cleanup
+      );
+
+    }
+
     function renderJobCard(jobId, job, source = "listing") {
       const card = document.createElement("div");
       card.className = "job-card dynamic-post";
@@ -6102,12 +6882,25 @@
     <div class="job-footer">
       ${urgentHTML}
 
-      <div class="match-row">
-        <div class="match-bar">
-          <div class="match-fill" style="width:95%;"></div>
-        </div>
-        <span>95% match</span>
-      </div>
+      <div
+  class="match-row"
+  title="Checking applicant matches..."
+>
+
+  <div class="match-bar">
+
+    <div
+      class="match-fill"
+      style="width:0%;"
+    ></div>
+
+  </div>
+
+  <span>
+    Checking match...
+  </span>
+
+</div>
 
       <div class="job-actions">
         <button class="btn-view" type="button">Preview</button>
@@ -6271,6 +7064,19 @@
 
         updateApplicantsRealtimeCount(liveTotal);
       });
+
+      const jobMatchListenerMap =
+        source === "home"
+          ? employerHomeJobMatchUnsubs
+          : employerListingJobMatchUnsubs;
+
+
+      bindEmployerRealtimeJobMatch(
+        jobId,
+        job,
+        card,
+        jobMatchListenerMap
+      );
 
       return card;
     }
@@ -7832,6 +8638,8 @@
         cleanupApplicantsListListeners();
         cleanupEmployerApplicantCountListeners(employerListingApplicantCountUnsubs);
         cleanupEmployerApplicantCountListeners(employerHomeApplicantCountUnsubs);
+        cleanupEmployerApplicantCountListeners(employerListingJobMatchUnsubs);
+        cleanupEmployerApplicantCountListeners(employerHomeJobMatchUnsubs);
 
         await signOut(auth);
         window.location.href = "Employer_LogInPage.html";

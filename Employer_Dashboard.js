@@ -1885,7 +1885,7 @@ const translations = {
     applicantMenuReject: "Isalikway an Aplikasyon",
     profileCardJobs: "Akon Mga Job Post",
     sidebarHome: "Panimalay",
-    sidebarJobs: "Mga Listahan hin Trabaho",
+    sidebarJobs: "Listahan hin Trabaho",
     sidebarMessages: "Mga Mensahe",
     sidebarProfile: "Profile",
     profileCardViews: "Mga Pagkita han Profile",
@@ -1970,7 +1970,7 @@ const translations = {
     profileCardJobs: "Aking Mga Job Post",
 
     sidebarHome: "Home",
-    sidebarJobs: "Mga Listahan ng Trabaho",
+    sidebarJobs: "Listahan ng Trabaho",
     sidebarMessages: "Mga Mensahe",
     sidebarProfile: "Profile",
 
