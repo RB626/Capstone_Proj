@@ -4504,6 +4504,7 @@
     let selectedApplicantsJobId = null;
     let applicantsListUnsubscribe = null;
     const applicantsPerJobUnsubs = new Map();
+    const applicantSkillMatchUnsubs = new Map();
 
     const jobsCache = new Map();
     const employerHomeApplicantCountUnsubs = new Map();
@@ -7620,6 +7621,33 @@
       map.clear();
     }
 
+    function cleanupApplicantSkillMatchListeners() {
+
+      applicantSkillMatchUnsubs
+        .forEach(
+          unsubscribe => {
+
+            try {
+
+              unsubscribe();
+
+            } catch (error) {
+
+              console.warn(
+                "Failed to unsubscribe applicant skill match listener:",
+                error
+              );
+
+            }
+
+          }
+        );
+
+
+      applicantSkillMatchUnsubs.clear();
+
+    }
+
     function cleanupApplicantsListListeners() {
       applicantsPerJobUnsubs.forEach((unsubscribe) => {
         try {
@@ -7680,6 +7708,105 @@
       <div class="applicants-empty-text">${message}</div>
     </div>
   `;
+    }
+
+    /* ══════════════════════════════════════
+   APPLICANT CARD — REAL MATCH %
+══════════════════════════════════════ */
+
+    function updateApplicantCardMatch(
+      applicant,
+      wrapper,
+      skills = []
+    ) {
+
+      const matchElement =
+        wrapper.querySelector(
+          ".applicant-modern-match"
+        );
+
+
+      if (!matchElement) {
+        return;
+      }
+
+      const job =
+        jobsCache.get(
+          applicant.jobId
+        );
+
+
+      if (!job) {
+
+        matchElement.textContent =
+          "Match unavailable";
+
+        return;
+      }
+
+
+      /*
+        Reuse your EXISTING real
+        matching calculator.
+      */
+      const result =
+        calculateEmployerApplicantMatch(
+          job,
+          skills
+        );
+
+
+      /*
+        Job has no required skills.
+      */
+      if (
+        result.percentage === null
+      ) {
+
+        matchElement.textContent =
+          "No match data";
+
+        matchElement.removeAttribute(
+          "title"
+        );
+
+        return;
+      }
+
+
+      const percentage =
+        Math.max(
+          0,
+          Math.min(
+            100,
+            result.percentage
+          )
+        );
+
+
+      matchElement.textContent =
+        `${percentage}% match`;
+
+
+      const matched =
+        result.matchedSkills.length
+          ? result.matchedSkills.join(
+            ", "
+          )
+          : "None";
+
+
+      const missing =
+        result.missingSkills.length
+          ? result.missingSkills.join(
+            ", "
+          )
+          : "None";
+
+
+      matchElement.title =
+        `Matched: ${matched} | Missing: ${missing}`;
+
     }
 
     async function loadApplicantSkills(applicant, wrapper) {
@@ -8010,20 +8137,191 @@
     `;
       }
 
+      updateApplicantCardMatch(
+        applicant,
+        wrapper,
+        skills
+      );
 
-      // Update match
-      if (matchElement) {
-        const matchPercentage =
-          skills.length
-            ? Math.min(
-              95,
-              70 +
-              skills.length * 5
-            )
-            : 70;
+      /*
+  ══════════════════════════════════════
+  REALTIME APPLICANT SKILLS
+  ══════════════════════════════════════
+*/
 
-        matchElement.textContent =
-          `${matchPercentage}% match`;
+      if (applicantId) {
+
+        const listenerKey =
+          `${applicant.jobId}__${applicantId}`;
+
+
+        /*
+          Remove older listener for
+          this same applicant card.
+        */
+        if (
+          applicantSkillMatchUnsubs.has(
+            listenerKey
+          )
+        ) {
+
+          try {
+
+            applicantSkillMatchUnsubs
+              .get(
+                listenerKey
+              )();
+
+          } catch (error) {
+
+            console.warn(
+              "Failed to clean old applicant match listener:",
+              error
+            );
+
+          }
+
+
+          applicantSkillMatchUnsubs.delete(
+            listenerKey
+          );
+
+        }
+
+
+        const skillsRef =
+          collection(
+            db,
+            "users",
+            applicantId,
+            "skills"
+          );
+
+
+        const unsubscribe =
+          onSnapshot(
+
+            skillsRef,
+
+            snapshot => {
+
+              /*
+                Get the Job Seeker's
+                CURRENT realtime skills.
+              */
+              const realtimeSkills = [
+                ...new Set(
+
+                  snapshot.docs
+                    .flatMap(
+                      skillDoc => {
+
+                        const data =
+                          skillDoc.data();
+
+
+                        const value =
+                          data.name ||
+                          data.skillName ||
+                          data.skill ||
+                          data.title ||
+                          data.label ||
+                          "";
+
+
+                        return String(
+                          value
+                        )
+                          .split(",")
+                          .map(
+                            skill =>
+                              skill.trim()
+                          )
+                          .filter(Boolean);
+
+                      }
+                    )
+
+                )
+              ];
+
+              const finalSkills =
+                realtimeSkills.length
+                  ? realtimeSkills
+                  : skills;
+
+              skillsContainer.innerHTML =
+                "";
+
+
+              if (finalSkills.length) {
+
+                finalSkills.forEach(
+                  skill => {
+
+                    const skillElement =
+                      document.createElement(
+                        "span"
+                      );
+
+
+                    skillElement.className =
+                      "applicant-modern-skill";
+
+
+                    skillElement.textContent =
+                      skill;
+
+
+                    skillsContainer.appendChild(
+                      skillElement
+                    );
+
+                  }
+                );
+
+              } else {
+
+                skillsContainer.innerHTML = `
+            <span class="applicant-modern-skill">
+              No skills listed
+            </span>
+          `;
+
+              }
+
+              updateApplicantCardMatch(
+                applicant,
+                wrapper,
+                finalSkills
+              );
+
+            },
+
+            error => {
+
+              console.error(
+                "REALTIME APPLICANT MATCH ERROR:",
+                applicantId,
+                error
+              );
+
+              updateApplicantCardMatch(
+                applicant,
+                wrapper,
+                skills
+              );
+
+            }
+
+          );
+
+
+        applicantSkillMatchUnsubs.set(
+          listenerKey,
+          unsubscribe
+        );
+
       }
     }
 
@@ -8060,12 +8358,7 @@
     `;
 
       const matchText =
-        skills.length
-          ? `${Math.min(
-            95,
-            70 + skills.length * 5
-          )}% match`
-          : "Loading...";
+        "Calculating match...";
       const badgeText = escapeHtml(applicant.badge || "Individual");
 
       const wrapper = document.createElement("div");
@@ -8712,6 +9005,8 @@
         if (selectedApplicantsJobId) {
           return;
         }
+
+        cleanupApplicantSkillMatchListeners();
 
         list.innerHTML = "";
 
