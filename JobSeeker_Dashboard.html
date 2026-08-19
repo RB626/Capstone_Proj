@@ -693,23 +693,34 @@
 
             <!-- Hero card -->
             <div class="prof-card prof-hero">
-              <label for="coverUploadInput" class="prof-cover-wrap" id="profileCoverTrigger">
+              <!-- COVER PHOTO -->
+              <div class="prof-cover-wrap" id="profileCoverTrigger" role="button" tabindex="0"
+                aria-label="View cover photo" title="View cover photo">
+
+                <!-- Clicking THIS image views it -->
                 <img id="profileHeroCover" class="prof-cover"
                   src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&h=220&fit=crop&crop=center"
                   alt="Cover" />
+
+
+                <!-- CHANGE COVER stays separate -->
                 <div class="prof-cover-overlay">
-                  <span class="prof-cover-overlay-inner">
+                  <label for="coverUploadInput" class="prof-cover-overlay-inner" id="changeCoverButton">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
                       stroke-linejoin="round">
                       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
                       </path>
                       <circle cx="12" cy="13" r="4"></circle>
                     </svg>
-                    <span data-i18n="profileChangeCover">Change Cover</span>
-                  </span>
+                    <span data-i18n="profileChangeCover">
+                      Change Cover
+                    </span>
+                  </label>
                 </div>
-              </label>
+              </div>
 
+
+              <!-- KEEP YOUR EXISTING FILE INPUT -->
               <input type="file" id="coverUploadInput" accept="image/*" hidden>
               <div class="prof-identity">
                 <label class="prof-pic-wrap prof-pic-upload" for="profilePhotoInput" id="profilePhotoTrigger">
@@ -917,6 +928,36 @@
         <polyline points="9 18 15 12 9 6"></polyline>
       </svg>
     </button>
+
+  </div>
+
+  <!-- ══════════════════════════════════════
+     COVER PHOTO VIEWER
+══════════════════════════════════════ -->
+  <div class="cover-photo-viewer" id="coverPhotoViewer" aria-hidden="true">
+
+    <!-- CLOSE -->
+    <button type="button" class="cover-photo-viewer-close" id="coverPhotoViewerClose" aria-label="Close cover photo">
+
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M18 6L6 18"></path>
+        <path d="M6 6l12 12"></path>
+      </svg>
+
+    </button>
+
+    <!-- TOP LABEL -->
+    <div class="cover-photo-viewer-title">
+      Cover Photo
+    </div>
+
+    <!-- FULL IMAGE -->
+    <div class="cover-photo-viewer-content">
+
+      <img id="coverPhotoViewerImage" class="cover-photo-viewer-image" src="" alt="Cover photo" />
+
+    </div>
 
   </div>
 
@@ -1164,6 +1205,10 @@
     const heroCover = document.getElementById("profileHeroCover");
     const coverUploadInput = document.getElementById("coverUploadInput");
     const profileCoverTrigger = document.getElementById("profileCoverTrigger");
+    const changeCoverButton = document.getElementById("changeCoverButton");
+    const coverPhotoViewer = document.getElementById("coverPhotoViewer");
+    const coverPhotoViewerImage = document.getElementById("coverPhotoViewerImage");
+    const coverPhotoViewerClose = document.getElementById("coverPhotoViewerClose");
     const profilePhotoInput = document.getElementById("profilePhotoInput");
     const profilePhotoTrigger = document.getElementById("profilePhotoTrigger");
     const profileMemberSince = document.getElementById("profileMemberSince");
@@ -4485,6 +4530,88 @@
       }
     }
 
+    function openCoverPhotoViewer() {
+
+      if (
+        !heroCover ||
+        !coverPhotoViewer ||
+        !coverPhotoViewerImage
+      ) {
+        return;
+      }
+
+
+      const coverURL =
+        heroCover.currentSrc ||
+        heroCover.src;
+
+
+      if (!coverURL) {
+        return;
+      }
+
+      coverPhotoViewerImage.src =
+        coverURL;
+
+
+      coverPhotoViewer.classList.add(
+        "open"
+      );
+
+
+      coverPhotoViewer.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+      document.body.style.overflow =
+        "hidden";
+
+    }
+
+
+    function closeCoverPhotoViewer() {
+
+      if (!coverPhotoViewer) {
+        return;
+      }
+
+
+      coverPhotoViewer.classList.remove(
+        "open"
+      );
+
+
+      coverPhotoViewer.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      document.body.style.overflow =
+        "";
+
+      setTimeout(
+        () => {
+
+          if (
+            !coverPhotoViewer
+              .classList
+              .contains("open") &&
+            coverPhotoViewerImage
+          ) {
+
+            coverPhotoViewerImage.src =
+              "";
+
+          }
+
+        },
+        180
+      );
+
+    }
+
     async function uploadCoverPhoto(file) {
       if (!currentUser) {
         alert("Please log in first.");
@@ -4612,6 +4739,120 @@
     if (deleteExperienceBtn) {
       deleteExperienceBtn.addEventListener("click", deleteExperience);
     }
+
+    profileCoverTrigger
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target.closest(
+              "#changeCoverButton"
+            )
+          ) {
+            return;
+          }
+
+
+          openCoverPhotoViewer();
+
+        }
+      );
+
+    profileCoverTrigger
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key !== "Enter" &&
+            event.key !== " "
+          ) {
+            return;
+          }
+
+          if (
+            event.target.closest(
+              "#changeCoverButton"
+            )
+          ) {
+            return;
+          }
+
+
+          event.preventDefault();
+
+
+          openCoverPhotoViewer();
+
+        }
+      );
+
+    changeCoverButton
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+        }
+      );
+
+    coverPhotoViewerClose
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          closeCoverPhotoViewer();
+
+        }
+      );
+
+    coverPhotoViewer
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target ===
+            coverPhotoViewer
+          ) {
+
+            closeCoverPhotoViewer();
+
+          }
+
+        }
+      );
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          !coverPhotoViewer
+            ?.classList
+            .contains(
+              "open"
+            )
+        ) {
+          return;
+        }
+
+
+        if (
+          event.key ===
+          "Escape"
+        ) {
+
+          closeCoverPhotoViewer();
+
+        }
+
+      }
+    );
 
     coverUploadInput?.addEventListener("change", async (e) => {
       const file = e.target.files[0];
