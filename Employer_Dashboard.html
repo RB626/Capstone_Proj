@@ -1009,8 +1009,8 @@
             <!-- HERO -->
             <div class="prof-card prof-hero">
 
-              <div class="prof-cover-wrap worker-public-cover">
-
+              <div class="prof-cover-wrap worker-public-cover" id="workerPublicCoverTrigger" role="button" tabindex="0"
+                aria-label="View cover photo" title="View cover photo">
                 <img id="workerPublicCover" class="prof-cover" src="" alt="Cover Photo" />
 
               </div>
@@ -1233,6 +1233,30 @@
         <polyline points="9 18 15 12 9 6"></polyline>
       </svg>
     </button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+     JOB SEEKER COVER PHOTO VIEWER
+══════════════════════════════════════ -->
+  <div class="worker-photo-viewer" id="workerCoverViewer" aria-hidden="true">
+
+    <!-- CLOSE -->
+    <button type="button" class="worker-photo-viewer-close" id="workerCoverViewerClose" aria-label="Close cover photo">
+
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M18 6L6 18"></path>
+        <path d="M6 6l12 12"></path>
+      </svg>
+
+    </button>
+
+    <!-- FULL COVER PHOTO -->
+    <div class="worker-photo-viewer-content">
+
+      <img class="worker-photo-viewer-image" id="workerCoverViewerImage" src="" alt="Job Seeker cover photo" />
+
+    </div>
 
   </div>
 
@@ -2036,7 +2060,231 @@
         "workerPublicPortfolioGrid"
       );
 
+    const workerPublicCover =
+      document.getElementById(
+        "workerPublicCover"
+      );
+
+
+    const workerPublicCoverTrigger =
+      document.getElementById(
+        "workerPublicCoverTrigger"
+      );
+
+
+    const workerCoverViewer =
+      document.getElementById(
+        "workerCoverViewer"
+      );
+
+
+    const workerCoverViewerImage =
+      document.getElementById(
+        "workerCoverViewerImage"
+      );
+
+
+    const workerCoverViewerClose =
+      document.getElementById(
+        "workerCoverViewerClose"
+      );
+
+    /* ══════════════════════════════════════
+ PUBLIC JOB SEEKER COVER PHOTO VIEWER
+══════════════════════════════════════ */
+
+    function openWorkerCoverViewer() {
+
+      if (
+        !workerPublicCover ||
+        !workerCoverViewer ||
+        !workerCoverViewerImage
+      ) {
+        return;
+      }
+
+
+      /*
+        Get the EXACT cover photo currently
+        displayed by the realtime profile.
+      */
+      const coverURL =
+        workerPublicCover.currentSrc ||
+        workerPublicCover.src;
+
+
+      if (!coverURL) {
+        return;
+      }
+
+
+      /*
+        Make sure the portfolio viewer
+        isn't open at the same time.
+      */
+      if (
+        workerPhotoViewer
+          ?.classList
+          .contains("open")
+      ) {
+
+        closeWorkerPhotoViewer();
+
+      }
+
+
+      workerCoverViewerImage.src =
+        coverURL;
+
+
+      workerCoverViewer.classList.add(
+        "open"
+      );
+
+
+      workerCoverViewer.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+
+      document.body.style.overflow =
+        "hidden";
+
+    }
+
+
+    function closeWorkerCoverViewer() {
+
+      if (!workerCoverViewer) {
+        return;
+      }
+
+
+      workerCoverViewer.classList.remove(
+        "open"
+      );
+
+
+      workerCoverViewer.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      document.body.style.overflow =
+        "";
+
+
+      setTimeout(
+        () => {
+
+          if (
+            !workerCoverViewer
+              .classList
+              .contains("open") &&
+            workerCoverViewerImage
+          ) {
+
+            workerCoverViewerImage.src =
+              "";
+
+          }
+
+        },
+        180
+      );
+
+    }
+
+    workerPublicCoverTrigger
+      ?.addEventListener(
+        "click",
+        () => {
+
+          openWorkerCoverViewer();
+
+        }
+      );
+
+    workerPublicCoverTrigger
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key !== "Enter" &&
+            event.key !== " "
+          ) {
+            return;
+          }
+
+
+          event.preventDefault();
+
+
+          openWorkerCoverViewer();
+
+        }
+      );
+
+    workerCoverViewerClose
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+
+          closeWorkerCoverViewer();
+
+        }
+      );
+
+    workerCoverViewer
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target ===
+            workerCoverViewer
+          ) {
+
+            closeWorkerCoverViewer();
+
+          }
+
+        }
+      );
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          !workerCoverViewer
+            ?.classList
+            .contains("open")
+        ) {
+          return;
+        }
+
+
+        if (
+          event.key === "Escape"
+        ) {
+
+          closeWorkerCoverViewer();
+
+        }
+
+      }
+    );
+
     function cleanupWorkerPublicProfile() {
+
+      closeWorkerCoverViewer();
 
       workerPublicProfileUnsubs
         .forEach(

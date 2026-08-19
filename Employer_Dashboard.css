@@ -9547,3 +9547,26 @@ body.dark-mode .worker-public-review-job {
   }
 
 }
+
+/* ══════════════════════════════════════
+   PUBLIC JOB SEEKER COVER PHOTO
+══════════════════════════════════════ */
+
+#workerPublicCoverTrigger {
+  cursor: pointer !important;
+}
+
+
+#workerPublicCoverTrigger #workerPublicCover {
+  cursor: pointer;
+}
+
+#workerPublicCoverTrigger #workerPublicCover {
+  transition:
+    filter 0.18s ease;
+}
+
+
+#workerPublicCoverTrigger:hover #workerPublicCover {
+  filter: brightness(0.94);
+}
