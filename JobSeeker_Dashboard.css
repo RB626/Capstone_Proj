@@ -7308,48 +7308,22 @@ body.dark-mode .notif-badge {
 
 }
 
-/* ══════════════════════════════════════
-   PROFILE PHOTO — VIEW / CHANGE
-══════════════════════════════════════ */
-
-/*
-  Main photo is now clickable
-  to VIEW instead of upload.
-*/
 #profilePhotoTrigger {
   cursor: pointer;
 }
 
-
-/*
-  Actual image also shows pointer.
-*/
 #profilePhotoTrigger #profileHeroAvatar {
   cursor: pointer;
 }
 
-
-/*
-  Camera stays an independent
-  upload control.
-*/
 #changeProfilePhotoButton {
   cursor: pointer;
 }
 
-
-/*
-  Keep camera above the clickable
-  profile picture.
-*/
 #changeProfilePhotoButton {
   z-index: 5;
 }
 
-
-/*
-  Small hover feedback on photo.
-*/
 #profilePhotoTrigger #profileHeroAvatar {
   transition:
     filter 0.18s ease;
@@ -7376,4 +7350,354 @@ body.dark-mode .notif-badge {
   object-fit: contain;
 
   border-radius: 4px;
+}
+
+@media (max-width: 600px) {
+
+  .prof-role-wrap {
+    display: grid !important;
+
+    grid-template-columns:
+      minmax(0, 1fr) 32px;
+
+    align-items: start;
+
+    gap: 8px;
+
+    width: 100%;
+    min-width: 0;
+  }
+
+  .prof-role-wrap .prof-role {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0;
+
+    margin: 0;
+
+    font-size: 13px;
+    line-height: 1.4;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .prof-role-wrap .prof-role-edit-btn {
+    position: static !important;
+
+    width: 32px;
+    height: 32px;
+
+    min-width: 32px;
+    max-width: 32px;
+
+    flex: none;
+
+    margin: 0;
+
+    align-self: start;
+    justify-self: end;
+  }
+
+
+  .prof-role-wrap .prof-role-edit-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .prof-hero {
+    padding-bottom: 92px;
+  }
+
+}
+
+@media (max-width: 420px) {
+
+  .prof-hero {
+    padding-bottom: 108px;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .experience-modal-overlay {
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding:
+      8px 8px calc(8px + env(safe-area-inset-bottom));
+
+    overflow: hidden;
+  }
+
+  .experience-modal {
+    width: 100%;
+    max-width: 100%;
+
+    max-height:
+      calc(100dvh - 16px);
+
+    display: flex;
+    flex-direction: column;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+  }
+
+  .experience-modal-header {
+    flex: 0 0 auto;
+
+    padding:
+      14px 14px 12px;
+  }
+
+  .experience-modal-body {
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    -webkit-overflow-scrolling:
+      touch;
+
+    overscroll-behavior:
+      contain;
+
+    padding:
+      14px 14px 10px;
+  }
+
+  .experience-form-grid {
+    grid-template-columns:
+      minmax(0, 1fr) !important;
+
+    gap: 12px;
+  }
+
+  .experience-field {
+    min-width: 0;
+
+    gap: 6px;
+  }
+
+  .experience-field.full {
+    grid-column: auto;
+  }
+
+  .experience-field label {
+    font-size: 0.78rem;
+  }
+
+  .experience-field input,
+  .experience-field textarea {
+    width: 100%;
+    min-width: 0;
+
+    padding:
+      10px 12px;
+
+    font-size: 16px;
+
+    border-radius: 12px;
+  }
+
+  .experience-field textarea {
+    min-height: 100px;
+    max-height: 180px;
+  }
+
+  .experience-modal-error {
+    margin-top: 8px;
+
+    min-height: 16px;
+
+    font-size: 0.75rem;
+  }
+
+  .experience-modal-footer {
+    flex: 0 0 auto;
+
+    padding:
+      10px 14px calc(12px + env(safe-area-inset-bottom));
+
+    background: #ffffff;
+
+    border-top:
+      1px solid #eef2f7;
+  }
+
+  .experience-modal-footer-right {
+    display: flex !important;
+
+    flex-direction: row !important;
+
+    align-items: center;
+
+    gap: 8px;
+
+    width: 100%;
+  }
+
+
+  .experience-modal-footer-split {
+    display: flex;
+
+    flex-direction: row !important;
+
+    align-items: center;
+
+    gap: 8px;
+
+    width: 100%;
+  }
+
+  .experience-modal-btn {
+    flex: 1 1 0;
+
+    width: auto !important;
+    min-width: 0;
+
+    min-height: 42px;
+
+    padding:
+      0 12px;
+
+    font-size: 0.82rem;
+
+    white-space: nowrap;
+  }
+
+  .experience-modal-close {
+    flex: 0 0 auto;
+
+    width: 36px;
+    height: 36px;
+  }
+
+
+  .experience-modal-header h3 {
+    font-size: 1rem;
+  }
+
+
+  .experience-modal-header p {
+    font-size: 0.78rem;
+
+    line-height: 1.35;
+  }
+
+}
+
+@media (max-width: 380px) {
+
+  .experience-modal-overlay {
+    padding: 6px;
+  }
+
+
+  .experience-modal {
+    max-height:
+      calc(100dvh - 12px);
+
+    border-radius: 14px;
+  }
+
+
+  .experience-modal-header {
+    padding:
+      12px 12px 10px;
+  }
+
+
+  .experience-modal-body {
+    padding:
+      12px 12px 8px;
+  }
+
+
+  .experience-modal-footer {
+    padding:
+      9px 12px calc(10px + env(safe-area-inset-bottom));
+  }
+
+
+  .experience-modal-btn {
+    min-height: 40px;
+
+    font-size: 0.78rem;
+  }
+
+
+  .experience-field textarea {
+    min-height: 90px;
+  }
+
+}
+
+body.dark-mode .experience-modal-footer {
+  background: #111827;
+
+  border-top-color: #1f2937;
+}
+
+@media (max-width: 600px) {
+
+  .chat-header-info {
+    flex: 0 1 auto;
+
+    min-width: 0;
+
+    max-width: 115px;
+  }
+
+  .chat-header-name {
+    display: block;
+
+    width: 100%;
+    max-width: 115px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    font-size: 0.92rem;
+  }
+
+
+  @media (max-width: 600px) {
+
+    .chat-header-status {
+      max-width: none;
+
+      overflow: visible;
+
+      text-overflow: clip;
+
+      white-space: nowrap;
+    }
+
+  }
+
+}
+
+@media (max-width: 380px) {
+
+  .chat-header-info,
+  .chat-header-name,
+  .chat-header-status {
+    max-width: 90px;
+  }
+
 }
