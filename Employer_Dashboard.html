@@ -1018,7 +1018,8 @@
 
               <div class="prof-identity">
 
-                <div class="prof-pic-wrap">
+                <div class="prof-pic-wrap" id="workerPublicAvatarTrigger" role="button" tabindex="0"
+                  aria-label="View profile photo" title="View profile photo">
 
                   <img id="workerPublicAvatar" class="prof-pic" src="" alt="Job Seeker" />
 
@@ -1972,11 +1973,6 @@
 
           filterHeaderSearch();
 
-
-          /*
-            Reapply Employer Job Listings
-            filters after realtime changes.
-          */
           if (
             typeof filterJobPostings ===
             "function"
@@ -1997,11 +1993,6 @@
 
     let activeReviewApplicant = null;
     let selectedApplicantRating = 0;
-
-    /* ══════════════════════════════════════
-   PUBLIC JOB SEEKER PROFILE
-══════════════════════════════════════ */
-
     let activePublicApplicant =
       null;
 
@@ -2019,79 +2010,20 @@
     let workerPublicPortfolioPhotos = [];
     let activeWorkerPublicPhotoIndex = 0;
 
-    const workerPhotoViewer =
-      document.getElementById(
-        "workerPhotoViewer"
-      );
-
-
-    const workerPhotoViewerImage =
-      document.getElementById(
-        "workerPhotoViewerImage"
-      );
-
-
-    const workerPhotoViewerClose =
-      document.getElementById(
-        "workerPhotoViewerClose"
-      );
-
-
-    const workerPhotoViewerPrev =
-      document.getElementById(
-        "workerPhotoViewerPrev"
-      );
-
-
-    const workerPhotoViewerNext =
-      document.getElementById(
-        "workerPhotoViewerNext"
-      );
-
-
-    const workerPhotoViewerCounter =
-      document.getElementById(
-        "workerPhotoViewerCounter"
-      );
-
-
-    const workerPublicPortfolioGrid =
-      document.getElementById(
-        "workerPublicPortfolioGrid"
-      );
-
-    const workerPublicCover =
-      document.getElementById(
-        "workerPublicCover"
-      );
-
-
-    const workerPublicCoverTrigger =
-      document.getElementById(
-        "workerPublicCoverTrigger"
-      );
-
-
-    const workerCoverViewer =
-      document.getElementById(
-        "workerCoverViewer"
-      );
-
-
-    const workerCoverViewerImage =
-      document.getElementById(
-        "workerCoverViewerImage"
-      );
-
-
-    const workerCoverViewerClose =
-      document.getElementById(
-        "workerCoverViewerClose"
-      );
-
-    /* ══════════════════════════════════════
- PUBLIC JOB SEEKER COVER PHOTO VIEWER
-══════════════════════════════════════ */
+    const workerPhotoViewer = document.getElementById("workerPhotoViewer");
+    const workerPhotoViewerImage = document.getElementById("workerPhotoViewerImage");
+    const workerPhotoViewerClose = document.getElementById("workerPhotoViewerClose");
+    const workerPhotoViewerPrev = document.getElementById("workerPhotoViewerPrev");
+    const workerPhotoViewerNext = document.getElementById("workerPhotoViewerNext");
+    const workerPhotoViewerCounter = document.getElementById("workerPhotoViewerCounter");
+    const workerPublicPortfolioGrid = document.getElementById("workerPublicPortfolioGrid");
+    const workerPublicCover = document.getElementById("workerPublicCover");
+    const workerPublicCoverTrigger = document.getElementById("workerPublicCoverTrigger");
+    const workerPublicAvatar = document.getElementById("workerPublicAvatar");
+    const workerPublicAvatarTrigger = document.getElementById("workerPublicAvatarTrigger");
+    const workerCoverViewer = document.getElementById("workerCoverViewer");
+    const workerCoverViewerImage = document.getElementById("workerCoverViewerImage");
+    const workerCoverViewerClose = document.getElementById("workerCoverViewerClose");
 
     function openWorkerCoverViewer() {
 
@@ -2103,11 +2035,6 @@
         return;
       }
 
-
-      /*
-        Get the EXACT cover photo currently
-        displayed by the realtime profile.
-      */
       const coverURL =
         workerPublicCover.currentSrc ||
         workerPublicCover.src;
@@ -2117,11 +2044,6 @@
         return;
       }
 
-
-      /*
-        Make sure the portfolio viewer
-        isn't open at the same time.
-      */
       if (
         workerPhotoViewer
           ?.classList
@@ -2160,21 +2082,17 @@
         return;
       }
 
-
       workerCoverViewer.classList.remove(
         "open"
       );
-
 
       workerCoverViewer.setAttribute(
         "aria-hidden",
         "true"
       );
 
-
       document.body.style.overflow =
         "";
-
 
       setTimeout(
         () => {
@@ -2194,6 +2112,59 @@
         },
         180
       );
+
+    }
+
+    function openWorkerAvatarViewer() {
+
+      if (
+        !workerPublicAvatar ||
+        !workerCoverViewer ||
+        !workerCoverViewerImage
+      ) {
+        return;
+      }
+
+      const photoURL =
+        workerPublicAvatar.currentSrc ||
+        workerPublicAvatar.src;
+
+
+      if (!photoURL) {
+        return;
+      }
+
+      if (
+        workerPhotoViewer
+          ?.classList
+          .contains("open")
+      ) {
+
+        closeWorkerPhotoViewer();
+
+      }
+
+      workerCoverViewerImage.src =
+        photoURL;
+
+
+      workerCoverViewerImage.alt =
+        "Job Seeker profile photo";
+
+
+      workerCoverViewer.classList.add(
+        "open"
+      );
+
+
+      workerCoverViewer.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+
+      document.body.style.overflow =
+        "hidden";
 
     }
 
@@ -2254,6 +2225,41 @@
             closeWorkerCoverViewer();
 
           }
+
+        }
+      );
+
+    /* ══════════════════════════════════════
+ CLICK APPLICANT PROFILE PHOTO
+══════════════════════════════════════ */
+
+    workerPublicAvatarTrigger
+      ?.addEventListener(
+        "click",
+        () => {
+
+          openWorkerAvatarViewer();
+
+        }
+      );
+
+    workerPublicAvatarTrigger
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key !== "Enter" &&
+            event.key !== " "
+          ) {
+            return;
+          }
+
+
+          event.preventDefault();
+
+
+          openWorkerAvatarViewer();
 
         }
       );

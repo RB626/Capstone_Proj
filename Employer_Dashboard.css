@@ -9570,3 +9570,23 @@ body.dark-mode .worker-public-review-job {
 #workerPublicCoverTrigger:hover #workerPublicCover {
   filter: brightness(0.94);
 }
+
+#workerPublicAvatarTrigger {
+  cursor: pointer;
+}
+
+#workerPublicAvatarTrigger #workerPublicAvatar {
+  cursor: pointer;
+
+  transition:
+    filter 0.18s ease,
+    transform 0.18s ease;
+}
+
+#workerPublicAvatarTrigger:hover #workerPublicAvatar {
+  filter: brightness(0.92);
+}
+
+#workerPublicAvatarTrigger .prof-verified {
+  pointer-events: none;
+}
