@@ -1797,6 +1797,8 @@ const translations = {
     workerBackApplicants: "Back to Applicants",
     workerProfileLabel: "Job Seeker Profile",
     workerOpenForWork: "Open for Work",
+    employerActivelyHiring: "Actively Hiring",
+    employerHiringSubtext: "Recruiting workers for open positions",
     workerJobSeeker: "Job Seeker",
     applicantMenuReject: "Reject Application",
     profileCardJobs: "My Job Post",
@@ -1874,14 +1876,12 @@ const translations = {
     ddSettings: "Mga Setting",
     ddHelp: "Bulig & Suporta",
     ddLogout: "Pag-log Out",
-    workerBackApplicants:
-      "Balik ha mga Aplikante",
-    workerProfileLabel:
-      "Profile han Nangita hin Trabaho",
-    workerOpenForWork:
-      "Abierto para Trabaho",
-    workerJobSeeker:
-      "Nangita hin Trabaho",
+    workerBackApplicants: "Balik ha mga Aplikante",
+    workerProfileLabel: "Profile han Nangita hin Trabaho",
+    workerOpenForWork: "Abierto para Trabaho",
+    employerActivelyHiring: "Aktibo nga Nagha-hire",
+    employerHiringSubtext: "Namimiling hin mga trabahador para ha mga bakante nga trabaho",
+    workerJobSeeker: "Nangita hin Trabaho",
     applicantMenuReject: "Isalikway an Aplikasyon",
     profileCardJobs: "Akon Mga Job Post",
     sidebarHome: "Panimalay",
@@ -1958,34 +1958,27 @@ const translations = {
     ddSettings: "Mga Setting",
     ddHelp: "Tulong at Suporta",
     ddLogout: "Mag-log Out",
-    workerBackApplicants:
-      "Bumalik sa mga Aplikante",
-    workerProfileLabel:
-      "Profile ng Job Seeker",
-    workerOpenForWork:
-      "Bukas para sa Trabaho",
-    workerJobSeeker:
-      "Job Seeker",
+    workerBackApplicants: "Bumalik sa mga Aplikante",
+    workerProfileLabel: "Profile ng Job Seeker",
+    workerOpenForWork: "Bukas para sa Trabaho",
+    employerActivelyHiring: "Aktibong Nagha-hire",
+    employerHiringSubtext: "Naghahanap ng mga manggagawa para sa mga bakanteng trabaho",
+    workerJobSeeker: "Job Seeker",
     applicantMenuReject: "Tanggihan ang Aplikasyon",
     profileCardJobs: "Aking Mga Job Post",
-
     sidebarHome: "Home",
     sidebarJobs: "Listahan ng Trabaho",
     sidebarMessages: "Mga Mensahe",
     sidebarProfile: "Profile",
-
     profileCardViews: "Mga Pagtingin sa Profile",
     profileCardApps: "Mga Aplikasyon",
     profileOpenForWork: "Bukas para sa Trabaho",
-
     homeDashboard: "Dashboard",
     homeManageJobs: "Pamahalaan ang iyong mga job post",
     homeMyJobs: "Aking mga Job Post",
     homeApplicants: "Mga Aplikante",
-
     applicantsEmptyTitle: "Wala pang mga aplikante",
     applicantsEmptyText: "Awtomatikong lalabas dito ang mga aplikante mula sa lahat ng iyong job post.",
-
     jobsMyPostings: "Aking mga Job Posting",
     jobsManageListings: "Pamahalaan ang iyong mga listahan ng trabaho at tingnan ang mga aplikasyon",
     jobsPostNew: "Mag-post ng Bagong Trabaho",
@@ -1996,12 +1989,10 @@ const translations = {
     jobsClosed: "Sarado",
     jobsCategory: "Kategorya ng Trabaho",
     jobsAllCategories: "Lahat ng Kategorya",
-
     msgSearch: "Maghanap ng mga pag-uusap...",
     msgSelectConvo: "Pumili ng Pag-uusap",
     msgStartMessaging: "Pumili ng pag-uusap upang magsimulang mag-message.",
     msgTypeMessage: "Mag-type ng mensahe...",
-
     profileStatus: "Katayuan ng Profile",
     profileActivelySeeking: "Aktibong naghahanap ng mga oportunidad",
     profileCompletion: "Pagkakumpleto ng Profile",
@@ -2019,12 +2010,10 @@ const translations = {
     profileMyPhotos: "Aking mga Larawan",
     profileAddPhoto: "Magdagdag ng Larawan",
     profileReviews: "Mga Review at Rating",
-
     mobHome: "Home",
     mobJobs: "Mga Listahan",
     mobMessages: "Mga Mensahe",
     mobProfile: "Profile",
-
     modalPostNewJob: "Mag-post ng Bagong Trabaho",
     modalCreateJobPost: "Gumawa ng job post na naaayon sa estilo ng iyong listings page.",
     modalJobTitle: "Titulo ng Trabaho",
