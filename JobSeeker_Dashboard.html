@@ -723,27 +723,46 @@
               <!-- KEEP YOUR EXISTING FILE INPUT -->
               <input type="file" id="coverUploadInput" accept="image/*" hidden>
               <div class="prof-identity">
-                <label class="prof-pic-wrap prof-pic-upload" for="profilePhotoInput" id="profilePhotoTrigger">
+                <!-- ══════════════════════════════════════
+     PROFILE PHOTO
+══════════════════════════════════════ -->
+                <div class="prof-pic-wrap prof-pic-upload" id="profilePhotoTrigger" role="button" tabindex="0"
+                  aria-label="View profile photo" title="View profile photo">
+
+                  <!-- CLICK PHOTO → VIEW FULL SIZE -->
                   <img id="profileHeroAvatar" class="prof-pic" src="https://i.pravatar.cc/96?img=33"
                     alt="Profile Photo" />
 
+
+                  <!-- VERIFIED BADGE -->
                   <span class="prof-verified">
+
                     <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"
                       stroke-linejoin="round">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
+
                   </span>
 
-                  <span class="prof-pic-edit-badge" title="Change profile photo">
+
+                  <!-- CAMERA → CHANGE PROFILE PHOTO -->
+                  <label for="profilePhotoInput" class="prof-pic-edit-badge" id="changeProfilePhotoButton"
+                    title="Change profile photo" aria-label="Change profile photo">
+
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
                       stroke-linejoin="round">
                       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
                       </path>
+
                       <circle cx="12" cy="13" r="4"></circle>
                     </svg>
-                  </span>
-                </label>
 
+                  </label>
+
+                </div>
+
+
+                <!-- KEEP EXISTING FILE INPUT -->
                 <input type="file" id="profilePhotoInput" accept="image/*" hidden>
                 <div class="prof-name-block">
                   <div id="profileHeroName" class="prof-name">Juan Dela Cruz</div>
@@ -954,8 +973,36 @@
 
     <!-- FULL IMAGE -->
     <div class="cover-photo-viewer-content">
-
       <img id="coverPhotoViewerImage" class="cover-photo-viewer-image" src="" alt="Cover photo" />
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+     PROFILE PHOTO VIEWER
+══════════════════════════════════════ -->
+  <div class="cover-photo-viewer" id="profilePhotoViewer" aria-hidden="true">
+
+    <!-- CLOSE -->
+    <button type="button" class="cover-photo-viewer-close" id="profilePhotoViewerClose"
+      aria-label="Close profile photo">
+
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M18 6L6 18"></path>
+        <path d="M6 6l12 12"></path>
+      </svg>
+    </button>
+
+    <!-- TITLE -->
+    <div class="cover-photo-viewer-title">
+      Profile Photo
+    </div>
+
+    <!-- FULL PHOTO -->
+    <div class="cover-photo-viewer-content">
+
+      <img id="profilePhotoViewerImage" class="cover-photo-viewer-image profile-photo-viewer-image" src=""
+        alt="Profile photo" />
 
     </div>
 
@@ -1211,6 +1258,10 @@
     const coverPhotoViewerClose = document.getElementById("coverPhotoViewerClose");
     const profilePhotoInput = document.getElementById("profilePhotoInput");
     const profilePhotoTrigger = document.getElementById("profilePhotoTrigger");
+    const changeProfilePhotoButton = document.getElementById("changeProfilePhotoButton");
+    const profilePhotoViewer = document.getElementById("profilePhotoViewer");
+    const profilePhotoViewerImage = document.getElementById("profilePhotoViewerImage");
+    const profilePhotoViewerClose = document.getElementById("profilePhotoViewerClose");
     const profileMemberSince = document.getElementById("profileMemberSince");
     const profileLocationTrigger = document.getElementById("profileLocationTrigger");
     const profileLocationText = document.getElementById("profileLocationText");
@@ -4612,6 +4663,125 @@
 
     }
 
+    /* ══════════════════════════════════════
+   PROFILE PHOTO VIEWER
+══════════════════════════════════════ */
+
+    function openProfilePhotoViewer() {
+
+      if (
+        !heroAvatar ||
+        !profilePhotoViewer ||
+        !profilePhotoViewerImage
+      ) {
+        return;
+      }
+
+
+      /*
+        Use the EXACT profile photo
+        currently displayed by realtime
+        Firebase data.
+      */
+      const profilePhotoURL =
+        heroAvatar.currentSrc ||
+        heroAvatar.src;
+
+
+      if (!profilePhotoURL) {
+        return;
+      }
+
+
+      /*
+        Don't allow Cover Photo viewer
+        and Profile Photo viewer to be
+        open at the same time.
+      */
+      if (
+        coverPhotoViewer
+          ?.classList
+          .contains("open")
+      ) {
+
+        closeCoverPhotoViewer();
+
+      }
+
+
+      profilePhotoViewerImage.src =
+        profilePhotoURL;
+
+
+      profilePhotoViewer.classList.add(
+        "open"
+      );
+
+
+      profilePhotoViewer.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+
+      /*
+        Lock page behind viewer.
+      */
+      document.body.style.overflow =
+        "hidden";
+
+    }
+
+
+    function closeProfilePhotoViewer() {
+
+      if (!profilePhotoViewer) {
+        return;
+      }
+
+
+      profilePhotoViewer.classList.remove(
+        "open"
+      );
+
+
+      profilePhotoViewer.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      document.body.style.overflow =
+        "";
+
+
+      /*
+        Clear image only after
+        closing animation.
+      */
+      setTimeout(
+        () => {
+
+          if (
+            !profilePhotoViewer
+              .classList
+              .contains(
+                "open"
+              ) &&
+            profilePhotoViewerImage
+          ) {
+
+            profilePhotoViewerImage.src =
+              "";
+
+          }
+
+        },
+        180
+      );
+
+    }
+
     async function uploadCoverPhoto(file) {
       if (!currentUser) {
         alert("Please log in first.");
@@ -4848,6 +5018,121 @@
         ) {
 
           closeCoverPhotoViewer();
+
+        }
+
+      }
+    );
+
+    profilePhotoTrigger
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target.closest(
+              "#changeProfilePhotoButton"
+            )
+          ) {
+            return;
+          }
+
+
+          openProfilePhotoViewer();
+
+        }
+      );
+
+    changeProfilePhotoButton
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+        }
+      );
+
+    profilePhotoTrigger
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key !== "Enter" &&
+            event.key !== " "
+          ) {
+            return;
+          }
+
+          if (
+            event.target.closest(
+              "#changeProfilePhotoButton"
+            )
+          ) {
+            return;
+          }
+
+
+          event.preventDefault();
+
+
+          openProfilePhotoViewer();
+
+        }
+      );
+
+    profilePhotoViewerClose
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+
+          closeProfilePhotoViewer();
+
+        }
+      );
+
+    profilePhotoViewer
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target ===
+            profilePhotoViewer
+          ) {
+
+            closeProfilePhotoViewer();
+
+          }
+
+        }
+      );
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          !profilePhotoViewer
+            ?.classList
+            .contains(
+              "open"
+            )
+        ) {
+          return;
+        }
+
+
+        if (
+          event.key ===
+          "Escape"
+        ) {
+
+          closeProfilePhotoViewer();
 
         }
 

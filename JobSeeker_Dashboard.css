@@ -7307,3 +7307,73 @@ body.dark-mode .notif-badge {
   }
 
 }
+
+/* ══════════════════════════════════════
+   PROFILE PHOTO — VIEW / CHANGE
+══════════════════════════════════════ */
+
+/*
+  Main photo is now clickable
+  to VIEW instead of upload.
+*/
+#profilePhotoTrigger {
+  cursor: pointer;
+}
+
+
+/*
+  Actual image also shows pointer.
+*/
+#profilePhotoTrigger #profileHeroAvatar {
+  cursor: pointer;
+}
+
+
+/*
+  Camera stays an independent
+  upload control.
+*/
+#changeProfilePhotoButton {
+  cursor: pointer;
+}
+
+
+/*
+  Keep camera above the clickable
+  profile picture.
+*/
+#changeProfilePhotoButton {
+  z-index: 5;
+}
+
+
+/*
+  Small hover feedback on photo.
+*/
+#profilePhotoTrigger #profileHeroAvatar {
+  transition:
+    filter 0.18s ease;
+}
+
+
+#profilePhotoTrigger:hover #profileHeroAvatar {
+  filter: brightness(0.94);
+}
+
+#profilePhotoTrigger:has(#changeProfilePhotoButton:hover) #profileHeroAvatar {
+  filter: none;
+}
+
+.profile-photo-viewer-image {
+  width: auto;
+  height: auto;
+
+  max-width: min(90vw,
+      900px);
+
+  max-height: 86vh;
+
+  object-fit: contain;
+
+  border-radius: 4px;
+}
