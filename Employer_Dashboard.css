@@ -9713,8 +9713,7 @@ body.dark-mode .worker-public-review-job {
     background: #ffffff;
   }
 
-  */
-  .job-preview-btn {
+  */ .job-preview-btn {
     flex: 1 1 0;
 
     width: auto !important;
@@ -9803,4 +9802,362 @@ body.dark-mode .worker-public-review-job {
 
 body.dark-mode .job-preview-footer {
   background: #111827;
+}
+
+@media (max-width: 600px) {
+
+  .chat-header-info {
+    flex: 0 1 auto;
+
+    min-width: 0;
+
+    max-width: 115px;
+  }
+
+  .chat-header-name {
+    display: block;
+
+    width: 100%;
+    max-width: 115px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    font-size: 0.92rem;
+  }
+
+
+  @media (max-width: 600px) {
+
+    .chat-header-status {
+      max-width: none;
+
+      overflow: visible;
+
+      text-overflow: clip;
+
+      white-space: nowrap;
+    }
+
+  }
+
+}
+
+@media (max-width: 380px) {
+
+  .chat-header-info,
+  .chat-header-name,
+  .chat-header-status {
+    max-width: 90px;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .prof-role-wrap {
+    display: grid !important;
+
+    grid-template-columns:
+      minmax(0, 1fr) 32px;
+
+    align-items: start;
+
+    gap: 8px;
+
+    width: 100%;
+    min-width: 0;
+  }
+
+  .prof-role-wrap .prof-role {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0;
+
+    margin: 0;
+
+    font-size: 13px;
+    line-height: 1.4;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .prof-role-wrap .prof-role-edit-btn {
+    position: static !important;
+
+    width: 32px;
+    height: 32px;
+
+    min-width: 32px;
+    max-width: 32px;
+
+    flex: none;
+
+    margin: 0;
+
+    align-self: start;
+    justify-self: end;
+  }
+
+
+  .prof-role-wrap .prof-role-edit-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .prof-hero {
+    padding-bottom: 92px;
+  }
+
+}
+
+@media (max-width: 420px) {
+
+  .prof-hero {
+    padding-bottom: 108px;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .job-post-modal-overlay {
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding:
+      8px 8px calc(8px + env(safe-area-inset-bottom));
+
+    overflow: hidden;
+  }
+
+  .job-post-modal {
+    width: 100%;
+    max-width: 100%;
+
+    max-height:
+      calc(100vh - 16px);
+
+    max-height:
+      calc(100dvh - 16px);
+
+    display: flex;
+    flex-direction: column;
+
+    border-radius: 16px !important;
+
+    overflow: hidden;
+  }
+
+  .job-post-modal-header {
+    flex: 0 0 auto;
+
+    padding:
+      14px 14px 12px !important;
+  }
+
+
+  .job-post-modal-header>div:first-child {
+    flex: 1;
+
+    min-width: 0;
+  }
+
+
+  .job-post-modal-header h3 {
+    font-size: 1rem;
+
+    line-height: 1.25;
+
+    margin: 0;
+  }
+
+
+  .job-post-modal-header p {
+    margin-top: 5px;
+
+    font-size: 0.78rem;
+
+    line-height: 1.35;
+
+    overflow-wrap: anywhere;
+  }
+
+
+  .job-post-modal-close {
+    flex: 0 0 auto;
+
+    width: 36px;
+    height: 36px;
+  }
+
+  .job-post-modal-body {
+
+    max-height: none !important;
+
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    -webkit-overflow-scrolling:
+      touch;
+
+    overscroll-behavior:
+      contain;
+
+    padding:
+      14px 14px 10px !important;
+  }
+
+  .job-post-form-grid {
+    grid-template-columns:
+      minmax(0, 1fr) !important;
+
+    gap: 12px !important;
+  }
+
+  .job-post-field.full {
+    grid-column: auto;
+  }
+
+
+  .job-post-field {
+    min-width: 0;
+  }
+
+
+  .job-post-field label {
+    margin-bottom: 6px;
+
+    font-size: 0.78rem;
+  }
+
+  .job-post-field input,
+  .job-post-field select,
+  .job-post-field textarea {
+    width: 100%;
+    min-width: 0;
+
+    padding:
+      10px 12px;
+
+    font-size: 16px;
+
+    border-radius: 12px;
+  }
+
+  .job-post-field textarea {
+    min-height: 90px;
+    max-height: 160px;
+  }
+
+  .job-post-modal-footer {
+
+    flex: 0 0 auto;
+
+    display: flex !important;
+
+    flex-direction: row !important;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding:
+      10px 14px calc(12px + env(safe-area-inset-bottom)) !important;
+
+    background: #ffffff;
+
+    border-top:
+      1px solid #eef2f7;
+  }
+
+  .job-post-modal-btn {
+    flex: 1 1 0;
+
+    width: auto !important;
+    min-width: 0;
+
+    min-height: 42px;
+
+    padding:
+      0 12px;
+
+    font-size: 0.82rem;
+
+    white-space: nowrap;
+  }
+
+}
+
+@media (max-width: 380px) {
+
+  .job-post-modal-overlay {
+    padding: 6px;
+  }
+
+
+  .job-post-modal {
+    max-height:
+      calc(100vh - 12px);
+
+    max-height:
+      calc(100dvh - 12px);
+
+    border-radius: 14px !important;
+  }
+
+
+  .job-post-modal-header {
+    padding:
+      12px 12px 10px !important;
+  }
+
+
+  .job-post-modal-body {
+    padding:
+      12px 12px 8px !important;
+  }
+
+
+  .job-post-form-grid {
+    gap: 10px !important;
+  }
+
+
+  .job-post-modal-footer {
+    padding:
+      9px 12px calc(10px + env(safe-area-inset-bottom)) !important;
+  }
+
+
+  .job-post-modal-btn {
+    min-height: 40px;
+
+    font-size: 0.78rem;
+  }
+
+  .job-post-field textarea {
+    min-height: 80px;
+  }
+
+}
+
+body.dark-mode .job-post-modal-footer {
+  background: #111827 !important;
+
+  border-top-color: #1f2937;
 }
