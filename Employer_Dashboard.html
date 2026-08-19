@@ -262,7 +262,7 @@
         </div>
         <button class="open-work-btn">
           <span class="open-dot"></span>
-          <span data-i18n="profileOpenForWork">Open for Work</span>
+          <span data-i18n="profileOpenForWork">Actively Hiring</span>
         </button>
       </div>
     </aside>
@@ -526,49 +526,6 @@
               </div>
             </div>
 
-            <!-- Statistics -->
-            <div class="prof-card">
-              <div class="prof-section-title" data-i18n="profileStats">Statistics</div>
-              <div class="stats-list">
-                <div class="stat-line">
-                  <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                    <polygon
-                      points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                  </svg>
-                  <span data-i18n="profileRating">Rating</span>
-                  <span class="sl-val">4.8/5.0</span>
-                </div>
-                <div class="stat-line">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-dark)" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                    <polyline points="22 4 12 14.01 9 11.01" />
-                  </svg>
-                  <span data-i18n="profileCompletedJobs">Completed Jobs</span>
-                  <span class="sl-val">42</span>
-                </div>
-                <div class="stat-line">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                  </svg>
-                  <span data-i18n="profileCardViews">Profile Views</span>
-                  <span class="sl-val">127</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Skills & Endorsements -->
-            <div class="prof-card">
-              <div class="prof-section-title" data-i18n="profileSkills">Skills</div>
-
-              <div class="skills-list" id="skillsList"></div>
-
-              <button class="add-skill-btn" id="addSkillBtn" data-i18n="profileAddSkill">Add Skill</button>
-            </div>
 
           </div><!-- /profile-left-col -->
 
@@ -699,22 +656,6 @@
               </div>
             </div>
 
-            <!-- Work Experience -->
-            <div class="prof-card">
-              <div class="prof-section-title prof-section-title-row">
-                <span data-i18n="profileWorkExperience">Work Experience</span>
-                <button type="button" class="prof-about-edit-btn" id="addExperienceBtn" aria-label="Add experience">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                  </svg>
-                </button>
-              </div>
-
-              <div class="exp-list" id="experienceList"></div>
-            </div>
-
             <!-- Portfolio -->
             <div class="prof-card">
               <div class="prof-section-title" data-i18n="profileMyPhotos">My Photos</div>
@@ -733,80 +674,6 @@
               <input type="file" id="portfolioUploadInput" accept="image/*" hidden />
             </div>
 
-            <!-- Reviews & Ratings -->
-            <div class="prof-card">
-              <div class="prof-section-title" data-i18n="profileReviews">Reviews &amp; Ratings</div>
-              <div class="reviews-list">
-                <div class="review-item">
-                  <img class="review-avatar" src="https://i.pravatar.cc/48?img=47" alt="Maria Reyes" />
-                  <div class="review-body">
-                    <div class="review-header">
-                      <span class="review-name">Maria Reyes</span>
-                      <span class="review-time">2 weeks ago</span>
-                    </div>
-                    <div class="review-stars">
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    </div>
-                    <div class="review-text">Excellent work! Juan completed the carpentry project on time and with
-                      great
-                      attention to detail. Highly recommended!</div>
-                  </div>
-                </div>
-                <div class="review-item">
-                  <img class="review-avatar" src="https://i.pravatar.cc/48?img=52" alt="ABC Construction" />
-                  <div class="review-body">
-                    <div class="review-header">
-                      <span class="review-name">ABC Construction</span>
-                      <span class="review-time">1 month ago</span>
-                    </div>
-                    <div class="review-stars">
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="#f59e0b" stroke="none">
-                        <polygon
-                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    </div>
-                    <div class="review-text">Professional and reliable. Great addition to our team for the
-                      residential
-                      project.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
           </div><!-- /profile-right-col -->
         </div>
