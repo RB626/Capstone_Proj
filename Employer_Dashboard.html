@@ -2567,8 +2567,23 @@
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        loadUserProfile(user);
-        window.location.href = "Employer_LogInPage.html";
+
+        /*
+          Stop realtime Job Seeker
+          profile listeners.
+        */
+        cleanupApplicantProfileListeners();
+
+
+        loadUserProfile(
+          user
+        );
+
+
+        window.location.href =
+          "Employer_LogInPage.html";
+
+
         return;
       }
 
@@ -5645,7 +5660,408 @@
 
     let notificationJobs = [];
     let notificationApplications = [];
+    const liveApplicantProfiles = new Map();
+    const liveApplicantProfileUnsubs = new Map();
     let currentNotificationEmployerId = null;
+
+    function getRealtimeApplicantId(
+      source = {}
+    ) {
+
+      return String(
+        source.applicantId ||
+        source.userId ||
+        source.uid ||
+        ""
+      ).trim();
+
+    }
+
+    function getRealtimeApplicantProfile(
+      source = {}
+    ) {
+
+      const applicantId =
+        getRealtimeApplicantId(
+          source
+        );
+
+
+      const liveProfile =
+        applicantId
+          ? liveApplicantProfiles.get(
+            applicantId
+          )
+          : null;
+
+      const name =
+
+        liveProfile?.fullName ||
+
+        liveProfile?.name ||
+
+        source.applicantName ||
+
+        "Applicant";
+
+
+      const photoURL =
+
+        liveProfile?.customPhotoURL ||
+
+        liveProfile?.photoURL ||
+
+        liveProfile?.googlePhotoURL ||
+
+        source.applicantPhotoURL ||
+
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          name
+        )}&background=ccfbf1&color=0f766e&size=128`;
+
+
+      return {
+
+        applicantId,
+        name,
+        photoURL,
+        profile:
+          liveProfile
+
+      };
+
+    }
+
+    /* ══════════════════════════════════════
+   REFRESH APPLICANT CARDS
+══════════════════════════════════════ */
+
+    function refreshApplicantCardsRealtime(
+      applicantId
+    ) {
+
+      applicantId =
+        String(
+          applicantId || ""
+        ).trim();
+
+
+      if (!applicantId) {
+        return;
+      }
+
+
+      /*
+        Find the application belonging
+        to this Job Seeker.
+      */
+      const application =
+        notificationApplications.find(
+          item =>
+            String(
+              item.applicantId || ""
+            ) === applicantId
+        );
+
+
+      if (!application) {
+        return;
+      }
+
+
+      const realtimeApplicant =
+        getRealtimeApplicantProfile(
+          application
+        );
+
+
+      document
+        .querySelectorAll(
+          ".applicant-modern-item"
+        )
+        .forEach(
+          card => {
+
+            if (
+              card.dataset.applicantId !==
+              applicantId
+            ) {
+              return;
+            }
+
+
+            const avatar =
+              card.querySelector(
+                ".applicant-modern-avatar"
+              );
+
+
+            const nameElement =
+              card.querySelector(
+                ".applicant-modern-name"
+              );
+
+
+            if (avatar) {
+
+              avatar.src =
+                realtimeApplicant.photoURL;
+
+
+              avatar.alt =
+                realtimeApplicant.name;
+
+            }
+
+
+            if (nameElement) {
+
+              nameElement.textContent =
+                realtimeApplicant.name;
+
+            }
+
+          }
+        );
+
+    }
+
+    /* ══════════════════════════════════════
+   WATCH ONE JOB SEEKER PROFILE
+══════════════════════════════════════ */
+
+    function ensureApplicantProfileListener(
+      applicantId
+    ) {
+
+      applicantId =
+        String(
+          applicantId || ""
+        ).trim();
+
+
+      if (!applicantId) {
+        return;
+      }
+
+
+      /*
+        Do not create two listeners
+        for the same Job Seeker.
+      */
+      if (
+        liveApplicantProfileUnsubs.has(
+          applicantId
+        )
+      ) {
+        return;
+      }
+
+
+      const applicantRef =
+        doc(
+          db,
+          "users",
+          applicantId
+        );
+
+
+      const unsubscribe =
+        onSnapshot(
+
+          applicantRef,
+
+          snapshot => {
+
+            if (
+              snapshot.exists()
+            ) {
+
+              liveApplicantProfiles.set(
+                applicantId,
+                {
+                  id:
+                    snapshot.id,
+
+                  ...snapshot.data()
+                }
+              );
+
+            } else {
+
+              liveApplicantProfiles.delete(
+                applicantId
+              );
+
+            }
+
+
+            /*
+              Update visible Applicant card.
+            */
+            refreshApplicantCardsRealtime(
+              applicantId
+            );
+
+
+            /*
+              Rebuild notifications.
+    
+              createApplicationNotificationItem()
+              will now use the realtime profile.
+            */
+            renderAllNotifications();
+
+          },
+
+
+          error => {
+
+            console.error(
+              "REALTIME APPLICANT PROFILE ERROR:",
+              applicantId,
+              error
+            );
+
+          }
+
+        );
+
+
+      liveApplicantProfileUnsubs.set(
+        applicantId,
+        unsubscribe
+      );
+
+    }
+
+    /* ══════════════════════════════════════
+   SYNC APPLICANT PROFILE LISTENERS
+══════════════════════════════════════ */
+
+    function syncApplicantProfileListeners() {
+
+      const neededApplicantIds =
+        new Set();
+
+
+      notificationApplications.forEach(
+        application => {
+
+          const applicantId =
+            getRealtimeApplicantId(
+              application
+            );
+
+
+          if (applicantId) {
+
+            neededApplicantIds.add(
+              applicantId
+            );
+
+          }
+
+        }
+      );
+
+
+      /*
+        Start missing listeners.
+      */
+      neededApplicantIds.forEach(
+        applicantId => {
+
+          ensureApplicantProfileListener(
+            applicantId
+          );
+
+        }
+      );
+
+
+      /*
+        Remove listeners for Job Seekers
+        no longer represented by an
+        application/notification.
+      */
+      for (
+        const [
+          applicantId,
+          unsubscribe
+        ]
+        of liveApplicantProfileUnsubs
+      ) {
+
+        if (
+          neededApplicantIds.has(
+            applicantId
+          )
+        ) {
+          continue;
+        }
+
+
+        try {
+
+          unsubscribe();
+
+        } catch (error) {
+
+          console.warn(
+            "APPLICANT PROFILE CLEANUP ERROR:",
+            error
+          );
+
+        }
+
+
+        liveApplicantProfileUnsubs.delete(
+          applicantId
+        );
+
+
+        liveApplicantProfiles.delete(
+          applicantId
+        );
+
+      }
+
+    }
+
+
+    /* ══════════════════════════════════════
+       COMPLETE APPLICANT PROFILE CLEANUP
+    ══════════════════════════════════════ */
+
+    function cleanupApplicantProfileListeners() {
+
+      liveApplicantProfileUnsubs
+        .forEach(
+          unsubscribe => {
+
+            try {
+
+              unsubscribe();
+
+            } catch (error) {
+
+              console.warn(
+                "APPLICANT PROFILE CLEANUP ERROR:",
+                error
+              );
+
+            }
+
+          }
+        );
+
+
+      liveApplicantProfileUnsubs.clear();
+
+      liveApplicantProfiles.clear();
+
+    }
 
     function getNotificationStorageKey() {
       if (!currentNotificationEmployerId) {
@@ -6067,13 +6483,18 @@
       item.dataset.notificationId = notificationId;
       item.dataset.unread = String(isUnread);
 
+      const realtimeApplicant =
+        getRealtimeApplicantProfile(
+          application
+        );
+
+
       const applicantName =
-        application.applicantName ||
-        'An applicant';
+        realtimeApplicant.name;
+
 
       const applicantPhoto =
-        application.applicantPhotoURL ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(applicantName)}&background=ccfbf1&color=0f766e`;
+        realtimeApplicant.photoURL;
 
       const jobTitle =
         application.title ||
@@ -9477,11 +9898,31 @@
       }
     }
 
-    function createApplicantCard(applicationId, applicant) {
-      const applicantName = escapeHtml(applicant.applicantName || "Applicant");
+    function createApplicantCard(
+      applicationId,
+      applicant
+    ) {
+
+      /*
+        Use the actual realtime
+        users/{applicantId} profile.
+      */
+      const realtimeApplicant =
+        getRealtimeApplicantProfile(
+          applicant
+        );
+
+
+      const applicantName =
+        escapeHtml(
+          realtimeApplicant.name
+        );
+
+
       const applicantPhoto =
-        applicant.applicantPhotoURL ||
-        "https://ui-avatars.com/api/?name=Applicant&background=ccfbf1&color=0f766e&size=128";
+        escapeHtml(
+          realtimeApplicant.photoURL
+        );
 
       const applicantEmail = escapeHtml(applicant.applicantEmail || "No email");
       const appliedJobTitle = escapeHtml(applicant.title || "Untitled Job");
@@ -9515,6 +9956,8 @@
 
       const wrapper = document.createElement("div");
       wrapper.className = "applicant-modern-item";
+      wrapper.dataset.applicantId =
+        realtimeApplicant.applicantId;
       wrapper.innerHTML = `
     <div class="applicant-card-wide">
       <div class="applicant-card-wide-left">
@@ -10102,9 +10545,11 @@
       );
 
       if (!employerJobs.length) {
+
         employerApplicantsForMessages.clear();
 
         notificationApplications = [];
+        cleanupApplicantProfileListeners();
         renderAllNotifications();
 
         renderEmployerMessageSidebar();
@@ -10218,6 +10663,7 @@
           notificationApplications =
             Array.from(applicationsMap.values());
 
+          syncApplicantProfileListeners();
           renderMergedApplicants();
           renderAllNotifications();
           renderEmployerMessageSidebar();
