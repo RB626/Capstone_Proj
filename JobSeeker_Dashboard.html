@@ -1588,15 +1588,18 @@
                 }
 
 
+                const realtimeEmployer =
+                  getRealtimeEmployerProfile(
+                    review
+                  );
+
+
                 const reviewerName =
-                  review.reviewerName ||
-                  "Employer";
+                  realtimeEmployer.name;
+
 
                 const reviewerPhoto =
-                  review.reviewerPhotoURL ||
-                  `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    reviewerName
-                  )}&background=0f766e&color=ffffff`;
+                  realtimeEmployer.photoURL;
 
 
                 const reviewItem =
@@ -1606,6 +1609,9 @@
 
                 reviewItem.className =
                   "review-item";
+
+                reviewItem.dataset.reviewerId =
+                  realtimeEmployer.employerId || "";
 
 
                 reviewItem.innerHTML = `
@@ -1699,6 +1705,125 @@
         `;
           }
         );
+    }
+
+    /* ══════════════════════════════════════
+   REALTIME EMPLOYER → PROFILE REVIEWS
+══════════════════════════════════════ */
+
+    function refreshProfileReviewEmployer(
+      employerId
+    ) {
+
+      employerId =
+        String(
+          employerId || ""
+        ).trim();
+
+
+      if (!employerId) {
+        return;
+      }
+
+
+      /*
+        Get the latest Employer document
+        already loaded by our realtime
+        Employer listener.
+      */
+      const employer =
+        liveEmployerProfiles.get(
+          employerId
+        );
+
+
+      if (!employer) {
+        return;
+      }
+
+
+      const currentName =
+
+        employer.name ||
+
+        employer.fullName ||
+
+        "Employer";
+
+
+      const currentPhoto =
+
+        employer.customPhotoURL ||
+
+        employer.photoURL ||
+
+        employer.googlePhotoURL ||
+
+        makeFallbackAvatar(
+          currentName
+        );
+
+
+      /*
+        One Employer may have written
+        more than one review, so update
+        every matching review card.
+      */
+      document
+        .querySelectorAll(
+          ".review-item"
+        )
+        .forEach(
+          reviewItem => {
+
+            if (
+              reviewItem.dataset.reviewerId !==
+              employerId
+            ) {
+              return;
+            }
+
+
+            const avatar =
+              reviewItem.querySelector(
+                ".review-avatar"
+              );
+
+
+            const name =
+              reviewItem.querySelector(
+                ".review-name"
+              );
+
+
+            if (avatar) {
+
+              avatar.src =
+                currentPhoto;
+
+
+              avatar.alt =
+                currentName;
+
+
+              protectAvatar(
+                avatar,
+                currentName
+              );
+
+            }
+
+
+            if (name) {
+
+              name.textContent =
+                currentName;
+
+            }
+
+          }
+        );
+
     }
 
     /* ══════════════════════════════════════
@@ -6461,6 +6586,10 @@
             refreshActiveJobEmployerPhoto();
 
             refreshConversationSidebarEmployer(
+              employerId
+            );
+
+            refreshProfileReviewEmployer(
               employerId
             );
 
