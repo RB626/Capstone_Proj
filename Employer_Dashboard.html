@@ -1665,10 +1665,6 @@
     const employerProfilePhotoViewerImage = document.getElementById("employerProfilePhotoViewerImage");
     const employerProfilePhotoViewerClose = document.getElementById("employerProfilePhotoViewerClose");
 
-    /* ══════════════════════════════════════
-   EMPLOYER PROFILE PHOTO VIEWER
-══════════════════════════════════════ */
-
     function openEmployerProfilePhotoViewer() {
 
       if (
@@ -1679,11 +1675,6 @@
         return;
       }
 
-
-      /*
-        Use the EXACT image currently
-        displayed in the profile.
-      */
       const photoURL =
         employerHeroAvatar.currentSrc ||
         employerHeroAvatar.src;
@@ -1736,10 +1727,6 @@
       document.body.style.overflow =
         "";
 
-
-      /*
-        Clear image after closing animation.
-      */
       setTimeout(
         () => {
 
@@ -1760,10 +1747,6 @@
       );
 
     }
-
-    /* ══════════════════════════════════════
-   UPLOAD EMPLOYER PROFILE PHOTO
-══════════════════════════════════════ */
 
     async function uploadEmployerProfilePhoto(
       file
@@ -1788,10 +1771,6 @@
         return;
       }
 
-
-      /*
-        Only images.
-      */
       if (
         !file.type.startsWith(
           "image/"
@@ -1809,11 +1788,6 @@
 
       }
 
-
-      /*
-        Maximum 5 MB,
-        same as Job Seeker.
-      */
       const maxSize =
         5 * 1024 * 1024;
 
@@ -1843,10 +1817,6 @@
             "uploading"
           );
 
-
-        /*
-          Safe unique filename.
-      */
         const safeOriginalName =
           file.name.replace(
             /[^a-zA-Z0-9._-]/g,
@@ -1858,9 +1828,6 @@
           `${Date.now()}_${safeOriginalName}`;
 
 
-        /*
-          EMPLOYER storage folder.
-        */
         const filePath =
           `employers/${user.uid}/profile/${safeFileName}`;
 
@@ -1872,27 +1839,17 @@
           );
 
 
-        /*
-          Upload image.
-        */
         await uploadBytes(
           storageRef,
           file
         );
 
 
-        /*
-          Get permanent Firebase URL.
-        */
         const downloadURL =
           await getDownloadURL(
             storageRef
           );
 
-
-        /*
-          Save URL to Employer document.
-        */
         const employerRef =
           doc(
             db,
@@ -1905,11 +1862,22 @@
           employerRef,
           {
 
+
             photoURL:
               downloadURL,
 
+
+            customPhotoURL:
+              downloadURL,
+
+
+            profilePhotoSource:
+              "custom",
+
+
             photoPath:
               filePath,
+
 
             updatedAt:
               serverTimestamp()
@@ -1918,9 +1886,6 @@
         );
 
 
-        /*
-          Keep our current data synchronized.
-        */
         currentEmployerData = {
 
           ...(
@@ -1928,8 +1893,18 @@
             {}
           ),
 
+
           photoURL:
             downloadURL,
+
+
+          customPhotoURL:
+            downloadURL,
+
+
+          profilePhotoSource:
+            "custom",
+
 
           photoPath:
             filePath
@@ -1937,14 +1912,6 @@
         };
 
 
-        /*
-          Immediately update:
-    
-          - top navbar
-          - avatar dropdown
-          - sidebar
-          - profile hero
-        */
         updateEmployerUI(
 
           currentEmployerData?.name ||
@@ -1956,10 +1923,6 @@
         );
 
 
-        /*
-          If viewer happened to be open,
-          update that too.
-        */
         if (
           employerProfilePhotoViewer
             ?.classList
@@ -2106,11 +2069,6 @@
       }
 
     }
-
-
-    /* ══════════════════════════════════════
-       COORDINATES → READABLE LOCATION
-    ══════════════════════════════════════ */
 
     async function reverseGeocodeEmployerLocation(
       latitude,
@@ -2406,9 +2364,18 @@
     function updateEmployerUI(displayName, photoURL = "") {
       const safeName = displayName || "Employer";
       const safePhoto =
+
         photoURL ||
+
+        currentEmployerData?.customPhotoURL ||
+
+        currentEmployerData?.photoURL ||
+
         auth.currentUser?.photoURL ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(safeName)}&background=2dd4bf&color=ffffff`;
+
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          safeName
+        )}&background=2dd4bf&color=ffffff`;
 
       // TOP NAV AVATAR
       const avatarWrap = document.getElementById("avatarWrap");
@@ -2660,19 +2627,279 @@
 
         }
 
-        if (!employerData.photoURL && user.photoURL) {
-          try {
-            await updateDoc(doc(db, "employers", user.uid), {
-              photoURL: user.photoURL,
-              updatedAt: serverTimestamp()
-            });
+        /* ══════════════════════════════════════
+   RESOLVE EMPLOYER PROFILE PHOTO
 
-            employerData.photoURL = user.photoURL;
-            currentEmployerData.photoURL = user.photoURL;
-          } catch (error) {
-            console.error("FAILED TO SAVE GOOGLE PHOTO:", error);
+   Priority:
+
+   1. Custom BlueSpace uploaded photo
+   2. Existing saved profile photo
+   3. Google/Gmail photo
+   4. Generated fallback
+══════════════════════════════════════ */
+
+        const googlePhotoURL =
+          user.photoURL || "";
+
+
+        /*
+          A photo is considered custom if:
+        
+          - we explicitly marked it custom
+          - customPhotoURL exists
+          - OR an old custom upload has photoPath
+        
+          photoPath is included so Employer
+          accounts that uploaded a photo BEFORE
+          this update are automatically migrated.
+        */
+        const hasCustomProfilePhoto =
+
+          employerData.profilePhotoSource ===
+          "custom"
+
+          ||
+
+          !!employerData.customPhotoURL
+
+          ||
+
+          !!employerData.photoPath;
+
+
+        let resolvedEmployerPhotoURL =
+          "";
+
+
+        /* ══════════════════════════════════════
+           CUSTOM PHOTO EXISTS
+        ══════════════════════════════════════ */
+
+        if (
+          hasCustomProfilePhoto
+        ) {
+
+          resolvedEmployerPhotoURL =
+
+            employerData.customPhotoURL ||
+
+            employerData.photoURL ||
+
+            "";
+
+
+          /*
+            Repair/migrate old Employer documents.
+        
+            Example old document:
+        
+            photoURL: Firebase Storage URL
+            photoPath: employers/uid/profile/...
+        
+            After this runs it becomes:
+        
+            photoURL: Firebase Storage URL
+            customPhotoURL: Firebase Storage URL
+            profilePhotoSource: "custom"
+          */
+          if (
+            resolvedEmployerPhotoURL &&
+            (
+              employerData.customPhotoURL !==
+              resolvedEmployerPhotoURL
+
+              ||
+
+              employerData.photoURL !==
+              resolvedEmployerPhotoURL
+
+              ||
+
+              employerData.profilePhotoSource !==
+              "custom"
+            )
+          ) {
+
+            try {
+
+              await updateDoc(
+                employerRef,
+                {
+
+                  photoURL:
+                    resolvedEmployerPhotoURL,
+
+                  customPhotoURL:
+                    resolvedEmployerPhotoURL,
+
+                  profilePhotoSource:
+                    "custom",
+
+                  updatedAt:
+                    serverTimestamp()
+
+                }
+              );
+
+
+              employerData.photoURL =
+                resolvedEmployerPhotoURL;
+
+
+              employerData.customPhotoURL =
+                resolvedEmployerPhotoURL;
+
+
+              employerData.profilePhotoSource =
+                "custom";
+
+
+              console.log(
+                "CUSTOM EMPLOYER PHOTO RESTORED:",
+                resolvedEmployerPhotoURL
+              );
+
+
+            } catch (error) {
+
+              console.error(
+                "FAILED TO RESTORE CUSTOM EMPLOYER PHOTO:",
+                error
+              );
+
+            }
+
           }
+
         }
+
+
+        /* ══════════════════════════════════════
+           NO CUSTOM PHOTO YET
+        ══════════════════════════════════════ */
+
+        else {
+
+          /*
+            First login behavior:
+        
+            Existing saved photo first,
+            then Google/Gmail.
+          */
+          resolvedEmployerPhotoURL =
+
+            employerData.photoURL ||
+
+            employerData.googlePhotoURL ||
+
+            googlePhotoURL ||
+
+            "";
+
+
+          const googlePhotoPatch = {};
+
+
+          /*
+            Save the Google photo only if
+            BlueSpace does not already have
+            an active profile photo.
+          */
+          if (
+            !employerData.photoURL &&
+            googlePhotoURL
+          ) {
+
+            googlePhotoPatch.photoURL =
+              googlePhotoURL;
+
+          }
+
+
+          /*
+            Keep Google's photo separately.
+        
+            We can remember it without allowing
+            it to replace a future custom photo.
+          */
+          if (
+            !employerData.googlePhotoURL &&
+            googlePhotoURL
+          ) {
+
+            googlePhotoPatch.googlePhotoURL =
+              googlePhotoURL;
+
+          }
+
+
+          /*
+            This Employer is still using
+            their initial Google photo.
+          */
+          if (
+            !employerData.profilePhotoSource
+          ) {
+
+            googlePhotoPatch.profilePhotoSource =
+              "google";
+
+          }
+
+
+          if (
+            Object.keys(
+              googlePhotoPatch
+            ).length
+          ) {
+
+            try {
+
+              await updateDoc(
+                employerRef,
+                {
+
+                  ...googlePhotoPatch,
+
+                  updatedAt:
+                    serverTimestamp()
+
+                }
+              );
+
+
+              Object.assign(
+                employerData,
+                googlePhotoPatch
+              );
+
+
+              console.log(
+                "INITIAL GOOGLE PHOTO SAVED:",
+                googlePhotoPatch
+              );
+
+
+            } catch (error) {
+
+              console.error(
+                "FAILED TO SAVE INITIAL GOOGLE PHOTO:",
+                error
+              );
+
+            }
+
+          }
+
+        }
+
+
+        /*
+          Keep local data synchronized.
+        */
+        currentEmployerData = {
+          ...employerData
+        };
 
         if (employerData.role !== "employer") {
           alert("Access denied.");
@@ -2685,8 +2912,13 @@
         localStorage.setItem("bcc_employer_name", employerData.name || "Employer");
 
         updateEmployerUI(
-          employerData.name || auth.currentUser?.displayName || "Employer",
-          employerData.photoURL || auth.currentUser?.photoURL || ""
+
+          employerData.name ||
+          auth.currentUser?.displayName ||
+          "Employer",
+
+          resolvedEmployerPhotoURL
+
         );
 
         listenToEmployerConversations(user.uid);
