@@ -539,25 +539,48 @@
 
             <!-- Hero card -->
             <div class="prof-card prof-hero">
-              <label for="coverUploadInput" class="prof-cover-wrap" id="profileCoverTrigger">
+              <!-- ══════════════════════════════════════
+     EMPLOYER COVER PHOTO
+══════════════════════════════════════ -->
+
+              <div class="prof-cover-wrap" id="profileCoverTrigger" role="button" tabindex="0"
+                aria-label="View cover photo" title="View cover photo">
+
+                <!-- CLICK COVER → VIEW FULL SIZE -->
                 <img id="profileHeroCover" class="prof-cover"
                   src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&h=220&fit=crop&crop=center"
                   alt="Cover" />
+
+
+                <!-- CHANGE COVER BUTTON -->
                 <div class="prof-cover-overlay">
-                  <span class="prof-cover-overlay-inner">
+
+                  <label for="coverUploadInput" class="prof-cover-overlay-inner" id="changeCoverButton"
+                    title="Change cover photo">
+
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
                       stroke-linejoin="round">
                       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
                       </path>
+
                       <circle cx="12" cy="13" r="4"></circle>
                     </svg>
-                    <span data-i18n="profileChangeCover">Change Cover</span>
-                  </span>
-                </div>
-              </label>
 
+                    <span data-i18n="profileChangeCover">
+                      Change Cover
+                    </span>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+
+              <!-- COVER FILE INPUT -->
               <input type="file" id="coverUploadInput" accept="image/*" hidden>
               <div class="prof-identity">
+
                 <!-- ══════════════════════════════════════
      EMPLOYER PROFILE PHOTO
 ══════════════════════════════════════ -->
@@ -1071,6 +1094,32 @@
 
     </div><!-- /main-content -->
   </div><!-- /app-shell -->
+
+  <!-- ══════════════════════════════════════
+     EMPLOYER COVER PHOTO VIEWER
+══════════════════════════════════════ -->
+
+  <div class="worker-photo-viewer" id="employerCoverPhotoViewer" aria-hidden="true">
+
+    <button type="button" class="worker-photo-viewer-close" id="employerCoverPhotoViewerClose"
+      aria-label="Close cover photo">
+
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M18 6L6 18"></path>
+        <path d="M6 6l12 12"></path>
+      </svg>
+
+    </button>
+
+
+    <div class="worker-photo-viewer-content">
+
+      <img class="worker-photo-viewer-image" id="employerCoverPhotoViewerImage" src="" alt="Employer cover photo" />
+
+    </div>
+
+  </div>
 
   <!-- ══════════════════════════════════════
      JOB SEEKER PUBLIC PHOTO VIEWER
@@ -1637,7 +1686,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, updateDoc, deleteDoc, query, where, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDnEkuV1HsfZWhhqVCFKPc5o-PjfoCUGTk",
@@ -1657,6 +1706,14 @@
     const profileLocationTrigger = document.getElementById("profileLocationTrigger");
     const profileLocationText = document.getElementById("profileLocationText");
     const profileMemberSince = document.getElementById("profileMemberSince");
+    const employerHeroCover = document.getElementById("profileHeroCover");
+    const employerCoverTrigger = document.getElementById("profileCoverTrigger");
+    const employerCoverUploadInput = document.getElementById("coverUploadInput");
+    const changeEmployerCoverButton = document.getElementById("changeCoverButton");
+    const employerCoverPhotoViewer = document.getElementById("employerCoverPhotoViewer");
+    const employerCoverPhotoViewerImage = document.getElementById("employerCoverPhotoViewerImage");
+    const employerCoverPhotoViewerClose = document.getElementById("employerCoverPhotoViewerClose");
+    let unsubscribeEmployerCoverPhoto = null;
     const employerHeroAvatar = document.getElementById("profileHeroAvatar");
     const profilePhotoTrigger = document.getElementById("profilePhotoTrigger");
     const profilePhotoInput = document.getElementById("profilePhotoInput");
@@ -1664,6 +1721,97 @@
     const employerProfilePhotoViewer = document.getElementById("employerProfilePhotoViewer");
     const employerProfilePhotoViewerImage = document.getElementById("employerProfilePhotoViewerImage");
     const employerProfilePhotoViewerClose = document.getElementById("employerProfilePhotoViewerClose");
+
+    /* ══════════════════════════════════════
+   EMPLOYER COVER PHOTO VIEWER
+══════════════════════════════════════ */
+
+    function openEmployerCoverPhotoViewer() {
+
+      if (
+        !employerHeroCover ||
+        !employerCoverPhotoViewer ||
+        !employerCoverPhotoViewerImage
+      ) {
+        return;
+      }
+
+
+      const coverURL =
+        employerHeroCover.currentSrc ||
+        employerHeroCover.src;
+
+
+      if (!coverURL) {
+        return;
+      }
+
+
+      employerCoverPhotoViewerImage.src =
+        coverURL;
+
+
+      employerCoverPhotoViewer.classList.add(
+        "open"
+      );
+
+
+      employerCoverPhotoViewer.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+
+      document.body.style.overflow =
+        "hidden";
+
+    }
+
+
+    function closeEmployerCoverPhotoViewer() {
+
+      if (
+        !employerCoverPhotoViewer
+      ) {
+        return;
+      }
+
+
+      employerCoverPhotoViewer.classList.remove(
+        "open"
+      );
+
+
+      employerCoverPhotoViewer.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      document.body.style.overflow =
+        "";
+
+
+      setTimeout(
+        () => {
+
+          if (
+            !employerCoverPhotoViewer
+              .classList
+              .contains("open") &&
+            employerCoverPhotoViewerImage
+          ) {
+
+            employerCoverPhotoViewerImage.src =
+              "";
+
+          }
+
+        },
+        180
+      );
+
+    }
 
     function openEmployerProfilePhotoViewer() {
 
@@ -1833,6 +1981,435 @@
           "FAILED TO SYNC EMPLOYER PHOTO TO JOBS:",
           error
         );
+
+      }
+
+    }
+
+    /* ══════════════════════════════════════
+   REALTIME EMPLOYER COVER PHOTO
+══════════════════════════════════════ */
+
+    function listenToEmployerCoverPhoto(
+      employerId
+    ) {
+
+      if (
+        unsubscribeEmployerCoverPhoto
+      ) {
+
+        unsubscribeEmployerCoverPhoto();
+
+        unsubscribeEmployerCoverPhoto =
+          null;
+
+      }
+
+
+      if (!employerId) {
+        return;
+      }
+
+
+      const employerRef =
+        doc(
+          db,
+          "employers",
+          employerId
+        );
+
+
+      unsubscribeEmployerCoverPhoto =
+        onSnapshot(
+
+          employerRef,
+
+          snapshot => {
+
+            if (
+              !snapshot.exists()
+            ) {
+              return;
+            }
+
+
+            const data =
+              snapshot.data();
+
+
+            const coverURL =
+
+              data.coverPhotoURL ||
+
+              "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&h=220&fit=crop&crop=center";
+
+
+            /*
+              Keep local Employer data
+              synchronized.
+            */
+            currentEmployerData = {
+
+              ...(
+                currentEmployerData ||
+                {}
+              ),
+
+              coverPhotoURL:
+                data.coverPhotoURL ||
+                "",
+
+              coverPhotoPath:
+                data.coverPhotoPath ||
+                ""
+
+            };
+
+
+            /*
+              Main Employer profile.
+            */
+            if (
+              employerHeroCover
+            ) {
+
+              employerHeroCover.src =
+                coverURL;
+
+            }
+
+
+            /*
+              If viewer is already open,
+              update it without closing.
+            */
+            if (
+              employerCoverPhotoViewer
+                ?.classList
+                .contains("open") &&
+              employerCoverPhotoViewerImage
+            ) {
+
+              employerCoverPhotoViewerImage.src =
+                coverURL;
+
+            }
+
+          },
+
+
+          error => {
+
+            console.error(
+              "REALTIME EMPLOYER COVER ERROR:",
+              error
+            );
+
+          }
+
+        );
+
+    }
+
+    /* ══════════════════════════════════════
+   UPLOAD EMPLOYER COVER PHOTO
+══════════════════════════════════════ */
+
+    async function uploadEmployerCoverPhoto(
+      file
+    ) {
+
+      const user =
+        auth.currentUser;
+
+
+      if (!user) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      if (!file) {
+        return;
+      }
+
+
+      /*
+        Images only.
+      */
+      if (
+        !file.type.startsWith(
+          "image/"
+        )
+      ) {
+
+        alert(
+          "Only image files are allowed."
+        );
+
+        employerCoverUploadInput.value =
+          "";
+
+        return;
+
+      }
+
+
+      /*
+        Same limit as Job Seeker cover:
+        6 MB.
+      */
+      const maxSize =
+        6 * 1024 * 1024;
+
+
+      if (
+        file.size >
+        maxSize
+      ) {
+
+        alert(
+          "Cover image must be 6MB or below."
+        );
+
+        employerCoverUploadInput.value =
+          "";
+
+        return;
+
+      }
+
+
+      try {
+
+        employerCoverTrigger
+          ?.classList
+          .add(
+            "uploading"
+          );
+
+
+        /*
+          Read the old cover path first.
+        */
+        const employerRef =
+          doc(
+            db,
+            "employers",
+            user.uid
+          );
+
+
+        const employerSnap =
+          await getDoc(
+            employerRef
+          );
+
+
+        const existingData =
+          employerSnap.exists()
+            ? employerSnap.data()
+            : {};
+
+
+        const oldCoverPath =
+          existingData.coverPhotoPath ||
+          "";
+
+
+        /*
+          Safe filename.
+        */
+        const safeOriginalName =
+          file.name.replace(
+            /[^a-zA-Z0-9._-]/g,
+            "_"
+          );
+
+
+        const safeFileName =
+          `${Date.now()}_${safeOriginalName}`;
+
+
+        /*
+          Employer Storage path.
+        */
+        const filePath =
+          `employers/${user.uid}/cover/${safeFileName}`;
+
+
+        const storageRef =
+          ref(
+            storage,
+            filePath
+          );
+
+
+        /*
+          Upload new cover first.
+        */
+        await uploadBytes(
+          storageRef,
+          file
+        );
+
+
+        const downloadURL =
+          await getDownloadURL(
+            storageRef
+          );
+
+
+        /*
+          Save new cover to Firestore.
+        */
+        await updateDoc(
+          employerRef,
+          {
+
+            coverPhotoURL:
+              downloadURL,
+
+            coverPhotoPath:
+              filePath,
+
+            updatedAt:
+              serverTimestamp()
+
+          }
+        );
+
+
+        /*
+          Keep local Employer data synced.
+        */
+        currentEmployerData = {
+
+          ...(
+            currentEmployerData ||
+            {}
+          ),
+
+          coverPhotoURL:
+            downloadURL,
+
+          coverPhotoPath:
+            filePath
+
+        };
+
+
+        /*
+          Update immediately.
+    
+          The realtime listener below will
+          also receive the same change.
+        */
+        if (
+          employerHeroCover
+        ) {
+
+          employerHeroCover.src =
+            downloadURL;
+
+        }
+
+
+        /*
+          If full-size viewer is open,
+          change that image too.
+        */
+        if (
+          employerCoverPhotoViewer
+            ?.classList
+            .contains("open") &&
+          employerCoverPhotoViewerImage
+        ) {
+
+          employerCoverPhotoViewerImage.src =
+            downloadURL;
+
+        }
+
+
+        /*
+          ONLY AFTER the new cover is safely
+          saved do we remove the old Storage
+          file.
+    
+          This is safer than deleting the old
+          cover before Firestore succeeds.
+        */
+        if (
+          oldCoverPath &&
+          oldCoverPath !==
+          filePath
+        ) {
+
+          try {
+
+            await deleteObject(
+              ref(
+                storage,
+                oldCoverPath
+              )
+            );
+
+          } catch (
+          deleteError
+          ) {
+
+            console.warn(
+              "OLD EMPLOYER COVER COULD NOT BE DELETED:",
+              deleteError
+            );
+
+          }
+
+        }
+
+
+        console.log(
+          "EMPLOYER COVER PHOTO UPDATED:",
+          downloadURL
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "EMPLOYER COVER PHOTO UPLOAD FAILED:",
+          error
+        );
+
+
+        alert(
+          "Failed to upload cover photo."
+        );
+
+
+      } finally {
+
+        employerCoverTrigger
+          ?.classList
+          .remove(
+            "uploading"
+          );
+
+
+        if (
+          employerCoverUploadInput
+        ) {
+
+          employerCoverUploadInput.value =
+            "";
+
+        }
 
       }
 
@@ -3031,7 +3608,18 @@
 
         );
 
-        listenToEmployerConversations(user.uid);
+
+        /*
+          REALTIME EMPLOYER COVER
+        */
+        listenToEmployerCoverPhoto(
+          user.uid
+        );
+
+
+        listenToEmployerConversations(
+          user.uid
+        );
 
         const jobsQuery = query(
           collection(db, "jobs"),
@@ -11486,6 +12074,164 @@
       }
     }
 
+    /* ══════════════════════════════════════
+   EMPLOYER COVER PHOTO EVENTS
+══════════════════════════════════════ */
+
+
+    /*
+      Click cover itself → View.
+    */
+    employerCoverTrigger
+      ?.addEventListener(
+        "click",
+        event => {
+
+          /*
+            Clicking Change Cover must NOT
+            open the viewer.
+          */
+          if (
+            event.target.closest(
+              "#changeCoverButton"
+            )
+          ) {
+            return;
+          }
+
+
+          openEmployerCoverPhotoViewer();
+
+        }
+      );
+
+
+    /*
+      Prevent Change Cover click from
+      bubbling to the cover viewer.
+    */
+    changeEmployerCoverButton
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+        }
+      );
+
+
+    /*
+      Keyboard support.
+    */
+    employerCoverTrigger
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key !== "Enter" &&
+            event.key !== " "
+          ) {
+            return;
+          }
+
+
+          if (
+            event.target.closest(
+              "#changeCoverButton"
+            )
+          ) {
+            return;
+          }
+
+
+          event.preventDefault();
+
+          openEmployerCoverPhotoViewer();
+
+        }
+      );
+
+
+    /*
+      User selected a new cover.
+    */
+    employerCoverUploadInput
+      ?.addEventListener(
+        "change",
+        async event => {
+
+          const file =
+            event.target.files?.[0];
+
+
+          await uploadEmployerCoverPhoto(
+            file
+          );
+
+        }
+      );
+
+
+    /*
+      X button.
+    */
+    employerCoverPhotoViewerClose
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          closeEmployerCoverPhotoViewer();
+
+        }
+      );
+
+
+    /*
+      Click dark backdrop to close.
+    */
+    employerCoverPhotoViewer
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target ===
+            employerCoverPhotoViewer
+          ) {
+
+            closeEmployerCoverPhotoViewer();
+
+          }
+
+        }
+      );
+
+
+    /*
+      ESC closes Employer cover viewer.
+    */
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Escape" &&
+          employerCoverPhotoViewer
+            ?.classList
+            .contains("open")
+        ) {
+
+          closeEmployerCoverPhotoViewer();
+
+        }
+
+      }
+    );
+
     profilePhotoTrigger
       ?.addEventListener(
         "click",
@@ -11664,6 +12410,17 @@
           unsubscribeActiveParticipant();
           unsubscribeActiveParticipant =
             null;
+        }
+
+        if (
+          unsubscribeEmployerCoverPhoto
+        ) {
+
+          unsubscribeEmployerCoverPhoto();
+
+          unsubscribeEmployerCoverPhoto =
+            null;
+
         }
 
         cleanupApplicantsListListeners();
