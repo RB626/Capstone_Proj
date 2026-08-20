@@ -558,27 +558,47 @@
 
               <input type="file" id="coverUploadInput" accept="image/*" hidden>
               <div class="prof-identity">
-                <label class="prof-pic-wrap prof-pic-upload" for="profilePhotoInput" id="profilePhotoTrigger">
+                <!-- ══════════════════════════════════════
+     EMPLOYER PROFILE PHOTO
+══════════════════════════════════════ -->
+
+                <div class="prof-pic-wrap prof-pic-upload" id="profilePhotoTrigger" role="button" tabindex="0"
+                  aria-label="View profile photo" title="View profile photo">
+
+                  <!-- CLICK PHOTO → VIEW FULL SIZE -->
                   <img id="profileHeroAvatar" class="prof-pic" src="https://i.pravatar.cc/96?img=33"
                     alt="Profile Photo" />
 
+
+                  <!-- VERIFIED BADGE -->
                   <span class="prof-verified">
+
                     <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"
                       stroke-linejoin="round">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
+
                   </span>
 
-                  <span class="prof-pic-edit-badge" title="Change profile photo">
+
+                  <!-- CAMERA → CHANGE PROFILE PHOTO -->
+                  <label for="profilePhotoInput" class="prof-pic-edit-badge" id="changeProfilePhotoButton"
+                    title="Change profile photo" aria-label="Change profile photo">
+
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
                       stroke-linejoin="round">
                       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
                       </path>
+
                       <circle cx="12" cy="13" r="4"></circle>
                     </svg>
-                  </span>
-                </label>
 
+                  </label>
+
+                </div>
+
+
+                <!-- KEEP FILE INPUT -->
                 <input type="file" id="profilePhotoInput" accept="image/*" hidden>
                 <div class="prof-name-block">
                   <div id="profileHeroName" class="prof-name">Juan Dela Cruz</div>
@@ -1130,6 +1150,34 @@
 
   </div>
 
+  <!-- ══════════════════════════════════════
+     EMPLOYER PROFILE PHOTO VIEWER
+══════════════════════════════════════ -->
+
+  <div class="worker-photo-viewer" id="employerProfilePhotoViewer" aria-hidden="true">
+
+    <!-- CLOSE -->
+    <button type="button" class="worker-photo-viewer-close" id="employerProfilePhotoViewerClose"
+      aria-label="Close profile photo">
+
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M18 6L6 18"></path>
+        <path d="M6 6l12 12"></path>
+      </svg>
+
+    </button>
+
+
+    <!-- FULL PHOTO -->
+    <div class="worker-photo-viewer-content">
+
+      <img class="worker-photo-viewer-image" id="employerProfilePhotoViewerImage" src="" alt="Employer profile photo" />
+
+    </div>
+
+  </div>
+
   <!-- Mobile bottom nav -->
   <nav class="mobile-nav">
     <div class="mobile-nav-inner">
@@ -1589,6 +1637,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, updateDoc, deleteDoc, query, where, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDnEkuV1HsfZWhhqVCFKPc5o-PjfoCUGTk",
@@ -1603,10 +1652,365 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const storage = getStorage(app);
 
     const profileLocationTrigger = document.getElementById("profileLocationTrigger");
     const profileLocationText = document.getElementById("profileLocationText");
     const profileMemberSince = document.getElementById("profileMemberSince");
+    const employerHeroAvatar = document.getElementById("profileHeroAvatar");
+    const profilePhotoTrigger = document.getElementById("profilePhotoTrigger");
+    const profilePhotoInput = document.getElementById("profilePhotoInput");
+    const changeProfilePhotoButton = document.getElementById("changeProfilePhotoButton");
+    const employerProfilePhotoViewer = document.getElementById("employerProfilePhotoViewer");
+    const employerProfilePhotoViewerImage = document.getElementById("employerProfilePhotoViewerImage");
+    const employerProfilePhotoViewerClose = document.getElementById("employerProfilePhotoViewerClose");
+
+    /* ══════════════════════════════════════
+   EMPLOYER PROFILE PHOTO VIEWER
+══════════════════════════════════════ */
+
+    function openEmployerProfilePhotoViewer() {
+
+      if (
+        !employerHeroAvatar ||
+        !employerProfilePhotoViewer ||
+        !employerProfilePhotoViewerImage
+      ) {
+        return;
+      }
+
+
+      /*
+        Use the EXACT image currently
+        displayed in the profile.
+      */
+      const photoURL =
+        employerHeroAvatar.currentSrc ||
+        employerHeroAvatar.src;
+
+
+      if (!photoURL) {
+        return;
+      }
+
+
+      employerProfilePhotoViewerImage.src =
+        photoURL;
+
+
+      employerProfilePhotoViewer.classList.add(
+        "open"
+      );
+
+
+      employerProfilePhotoViewer.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+
+      document.body.style.overflow =
+        "hidden";
+
+    }
+
+
+    function closeEmployerProfilePhotoViewer() {
+
+      if (!employerProfilePhotoViewer) {
+        return;
+      }
+
+
+      employerProfilePhotoViewer.classList.remove(
+        "open"
+      );
+
+
+      employerProfilePhotoViewer.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      document.body.style.overflow =
+        "";
+
+
+      /*
+        Clear image after closing animation.
+      */
+      setTimeout(
+        () => {
+
+          if (
+            !employerProfilePhotoViewer
+              .classList
+              .contains("open") &&
+            employerProfilePhotoViewerImage
+          ) {
+
+            employerProfilePhotoViewerImage.src =
+              "";
+
+          }
+
+        },
+        180
+      );
+
+    }
+
+    /* ══════════════════════════════════════
+   UPLOAD EMPLOYER PROFILE PHOTO
+══════════════════════════════════════ */
+
+    async function uploadEmployerProfilePhoto(
+      file
+    ) {
+
+      const user =
+        auth.currentUser;
+
+
+      if (!user) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      if (!file) {
+        return;
+      }
+
+
+      /*
+        Only images.
+      */
+      if (
+        !file.type.startsWith(
+          "image/"
+        )
+      ) {
+
+        alert(
+          "Only image files are allowed."
+        );
+
+        profilePhotoInput.value =
+          "";
+
+        return;
+
+      }
+
+
+      /*
+        Maximum 5 MB,
+        same as Job Seeker.
+      */
+      const maxSize =
+        5 * 1024 * 1024;
+
+
+      if (
+        file.size >
+        maxSize
+      ) {
+
+        alert(
+          "Profile image must be 5MB or below."
+        );
+
+        profilePhotoInput.value =
+          "";
+
+        return;
+
+      }
+
+
+      try {
+
+        profilePhotoTrigger
+          ?.classList
+          .add(
+            "uploading"
+          );
+
+
+        /*
+          Safe unique filename.
+      */
+        const safeOriginalName =
+          file.name.replace(
+            /[^a-zA-Z0-9._-]/g,
+            "_"
+          );
+
+
+        const safeFileName =
+          `${Date.now()}_${safeOriginalName}`;
+
+
+        /*
+          EMPLOYER storage folder.
+        */
+        const filePath =
+          `employers/${user.uid}/profile/${safeFileName}`;
+
+
+        const storageRef =
+          ref(
+            storage,
+            filePath
+          );
+
+
+        /*
+          Upload image.
+        */
+        await uploadBytes(
+          storageRef,
+          file
+        );
+
+
+        /*
+          Get permanent Firebase URL.
+        */
+        const downloadURL =
+          await getDownloadURL(
+            storageRef
+          );
+
+
+        /*
+          Save URL to Employer document.
+        */
+        const employerRef =
+          doc(
+            db,
+            "employers",
+            user.uid
+          );
+
+
+        await updateDoc(
+          employerRef,
+          {
+
+            photoURL:
+              downloadURL,
+
+            photoPath:
+              filePath,
+
+            updatedAt:
+              serverTimestamp()
+
+          }
+        );
+
+
+        /*
+          Keep our current data synchronized.
+        */
+        currentEmployerData = {
+
+          ...(
+            currentEmployerData ||
+            {}
+          ),
+
+          photoURL:
+            downloadURL,
+
+          photoPath:
+            filePath
+
+        };
+
+
+        /*
+          Immediately update:
+    
+          - top navbar
+          - avatar dropdown
+          - sidebar
+          - profile hero
+        */
+        updateEmployerUI(
+
+          currentEmployerData?.name ||
+          user.displayName ||
+          "Employer",
+
+          downloadURL
+
+        );
+
+
+        /*
+          If viewer happened to be open,
+          update that too.
+        */
+        if (
+          employerProfilePhotoViewer
+            ?.classList
+            .contains("open") &&
+          employerProfilePhotoViewerImage
+        ) {
+
+          employerProfilePhotoViewerImage.src =
+            downloadURL;
+
+        }
+
+
+        console.log(
+          "EMPLOYER PROFILE PHOTO UPDATED:",
+          downloadURL
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "EMPLOYER PROFILE PHOTO UPLOAD FAILED:",
+          error
+        );
+
+
+        alert(
+          "Failed to upload profile photo."
+        );
+
+
+      } finally {
+
+        profilePhotoTrigger
+          ?.classList
+          .remove(
+            "uploading"
+          );
+
+
+        if (profilePhotoInput) {
+
+          profilePhotoInput.value =
+            "";
+
+        }
+
+      }
+
+    }
 
     function formatEmployerMemberSince(
       dateValue
@@ -9549,6 +9953,127 @@
         alert("Failed to update job status: " + (error.message || error));
       }
     }
+
+    profilePhotoTrigger
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target.closest(
+              "#changeProfilePhotoButton"
+            )
+          ) {
+            return;
+          }
+
+
+          openEmployerProfilePhotoViewer();
+
+        }
+      );
+
+    changeProfilePhotoButton
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+        }
+      );
+
+    profilePhotoTrigger
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key !== "Enter" &&
+            event.key !== " "
+          ) {
+            return;
+          }
+
+
+          if (
+            event.target.closest(
+              "#changeProfilePhotoButton"
+            )
+          ) {
+            return;
+          }
+
+
+          event.preventDefault();
+
+          openEmployerProfilePhotoViewer();
+
+        }
+      );
+
+    profilePhotoInput
+      ?.addEventListener(
+        "change",
+        async event => {
+
+          const file =
+            event.target.files?.[0];
+
+
+          await uploadEmployerProfilePhoto(
+            file
+          );
+
+        }
+      );
+
+    employerProfilePhotoViewerClose
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          closeEmployerProfilePhotoViewer();
+
+        }
+      );
+
+    employerProfilePhotoViewer
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target ===
+            employerProfilePhotoViewer
+          ) {
+
+            closeEmployerProfilePhotoViewer();
+
+          }
+
+        }
+      );
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Escape" &&
+          employerProfilePhotoViewer
+            ?.classList
+            .contains("open")
+        ) {
+
+          closeEmployerProfilePhotoViewer();
+
+        }
+
+      }
+    );
 
     document.querySelector(".search-bar input")
       ?.addEventListener("input", filterHeaderSearch);
