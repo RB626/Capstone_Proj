@@ -1604,6 +1604,401 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    const profileLocationTrigger = document.getElementById("profileLocationTrigger");
+    const profileLocationText = document.getElementById("profileLocationText");
+    const profileMemberSince = document.getElementById("profileMemberSince");
+
+    function formatEmployerMemberSince(
+      dateValue
+    ) {
+
+      if (!dateValue) {
+        return "Member since --";
+      }
+
+      let date = null;
+
+      if (
+        typeof dateValue?.toDate ===
+        "function"
+      ) {
+
+        date =
+          dateValue.toDate();
+
+      }
+
+      else if (
+        dateValue instanceof Date
+      ) {
+
+        date =
+          dateValue;
+
+      }
+
+      else {
+
+        date =
+          new Date(
+            dateValue
+          );
+
+      }
+
+      if (
+        !date ||
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+
+        return "Member since --";
+
+      }
+
+      return `Member since ${date.toLocaleDateString(
+        "en-US",
+        {
+          year:
+            "numeric",
+
+          month:
+            "long"
+        }
+      )}`;
+
+    }
+
+    function setEmployerLocationLoadingState(
+      isLoading
+    ) {
+
+      if (
+        !profileLocationTrigger ||
+        !profileLocationText
+      ) {
+        return;
+      }
+
+
+      profileLocationTrigger.style.pointerEvents =
+        isLoading
+          ? "none"
+          : "";
+
+
+      profileLocationTrigger.style.opacity =
+        isLoading
+          ? "0.72"
+          : "";
+
+
+      if (isLoading) {
+
+        profileLocationText.textContent =
+          "Detecting your location...";
+
+      }
+
+    }
+
+
+    /* ══════════════════════════════════════
+       COORDINATES → READABLE LOCATION
+    ══════════════════════════════════════ */
+
+    async function reverseGeocodeEmployerLocation(
+      latitude,
+      longitude
+    ) {
+
+      const url =
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
+
+
+      const response =
+        await fetch(
+          url,
+          {
+            headers: {
+              Accept:
+                "application/json"
+            }
+          }
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Failed to reverse geocode location."
+        );
+
+      }
+
+
+      const data =
+        await response.json();
+
+
+      const address =
+        data.address || {};
+
+      const city =
+        address.city ||
+        address.town ||
+        address.municipality ||
+        address.village ||
+        "";
+
+
+      const state =
+        address.state ||
+        address.province ||
+        address.region ||
+        "";
+
+
+      const suburb =
+        address.suburb ||
+        address.neighbourhood ||
+        address.quarter ||
+        "";
+
+
+      let readableLocation =
+        [
+          suburb,
+          city,
+          state
+        ]
+          .filter(Boolean)
+          .join(", ");
+
+      if (!readableLocation) {
+
+        readableLocation =
+          data.display_name ||
+          "Current location detected";
+
+      }
+
+
+      return readableLocation;
+
+    }
+
+    async function updateEmployerCurrentLocation() {
+
+      const user =
+        auth.currentUser;
+
+
+      if (!user) {
+
+        alert(
+          "You must be logged in first."
+        );
+
+        return;
+
+      }
+
+      const previousLocationText =
+        profileLocationText
+          ?.textContent
+          ?.trim() ||
+        "Set current location";
+
+
+      if (!navigator.geolocation) {
+
+        alert(
+          "Geolocation is not supported on this device."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        setEmployerLocationLoadingState(
+          true
+        );
+
+        const position =
+          await new Promise(
+            (
+              resolve,
+              reject
+            ) => {
+
+              navigator.geolocation
+                .getCurrentPosition(
+
+                  resolve,
+
+                  reject,
+
+                  {
+                    enableHighAccuracy:
+                      true,
+
+                    timeout:
+                      15000,
+
+                    maximumAge:
+                      0
+                  }
+
+                );
+
+            }
+          );
+
+
+        const latitude =
+          position.coords.latitude;
+
+
+        const longitude =
+          position.coords.longitude;
+
+        const readableLocation =
+          await reverseGeocodeEmployerLocation(
+            latitude,
+            longitude
+          );
+
+        const employerRef =
+          doc(
+            db,
+            "employers",
+            user.uid
+          );
+
+        await updateDoc(
+          employerRef,
+          {
+
+            locationText:
+              readableLocation,
+
+
+            location: {
+
+              latitude:
+                latitude,
+
+              longitude:
+                longitude
+
+            },
+
+
+            updatedAt:
+              serverTimestamp()
+
+          }
+        );
+
+        currentEmployerData = {
+
+          ...(
+            currentEmployerData ||
+            {}
+          ),
+
+          locationText:
+            readableLocation,
+
+          location: {
+            latitude,
+            longitude
+          }
+
+        };
+
+        if (profileLocationText) {
+
+          profileLocationText
+            .removeAttribute(
+              "data-i18n"
+            );
+
+
+          profileLocationText.textContent =
+            readableLocation;
+
+        }
+
+
+        console.log(
+          "EMPLOYER LOCATION UPDATED:",
+          {
+            readableLocation,
+            latitude,
+            longitude
+          }
+        );
+
+      } catch (error) {
+
+        console.error(
+          "EMPLOYER LOCATION UPDATE FAILED:",
+          error
+        );
+
+        if (profileLocationText) {
+
+          profileLocationText.textContent =
+            previousLocationText;
+
+        }
+
+        if (error.code === 1) {
+
+          alert(
+            "Location access was denied. Please allow location permission and try again."
+          );
+
+        } else if (
+          error.code === 2
+        ) {
+
+          alert(
+            "Unable to detect your location right now."
+          );
+
+        } else if (
+          error.code === 3
+        ) {
+
+          alert(
+            "Location request timed out. Please try again."
+          );
+
+        } else {
+
+          alert(
+            "Failed to update your location."
+          );
+
+        }
+
+      } finally {
+
+        setEmployerLocationLoadingState(
+          false
+        );
+
+      }
+
+    }
+
     function updateEmployerUI(displayName, photoURL = "") {
       const safeName = displayName || "Employer";
       const safePhoto =
@@ -1724,6 +2119,142 @@
 
         const employerData = employerSnap.data();
         currentEmployerData = employerData;
+
+        const authCreationTime =
+          user.metadata?.creationTime
+            ? new Date(
+              user.metadata.creationTime
+            ).toISOString()
+            : null;
+
+        const employerMemberSinceSource =
+          employerData.createdAt ||
+          employerData.authCreatedAt ||
+          authCreationTime ||
+          null;
+
+        if (profileMemberSince) {
+
+          profileMemberSince.textContent =
+            formatEmployerMemberSince(
+              employerMemberSinceSource
+            );
+
+        }
+
+        const employerCreationPatch = {};
+
+
+        if (
+          !employerData.authCreatedAt &&
+          authCreationTime
+        ) {
+
+          employerCreationPatch.authCreatedAt =
+            authCreationTime;
+
+        }
+
+
+        if (
+          !employerData.createdAt &&
+          authCreationTime
+        ) {
+
+          employerCreationPatch.createdAt =
+            authCreationTime;
+
+        }
+
+
+        if (
+          Object.keys(
+            employerCreationPatch
+          ).length
+        ) {
+
+          try {
+
+            await updateDoc(
+              employerRef,
+              {
+                ...employerCreationPatch,
+
+                updatedAt:
+                  serverTimestamp()
+              }
+            );
+
+            Object.assign(
+              employerData,
+              employerCreationPatch
+            );
+
+
+            currentEmployerData =
+              employerData;
+
+
+            console.log(
+              "EMPLOYER CREATION DATE SAVED:",
+              employerCreationPatch
+            );
+
+          } catch (error) {
+
+            /*
+              Do not break the entire dashboard
+              just because the creation-date
+              migration failed.
+            */
+            console.error(
+              "FAILED TO SAVE EMPLOYER CREATION DATE:",
+              error
+            );
+
+          }
+
+        }
+
+        if (profileLocationText) {
+
+          const savedLocation =
+            String(
+              employerData.locationText ||
+              ""
+            ).trim();
+
+
+          if (
+            savedLocation &&
+            savedLocation !==
+            "Set current location"
+          ) {
+
+            profileLocationText
+              .removeAttribute(
+                "data-i18n"
+              );
+
+
+            profileLocationText.textContent =
+              savedLocation;
+
+          } else {
+
+            profileLocationText
+              .setAttribute(
+                "data-i18n",
+                "profileSetLocation"
+              );
+
+
+            profileLocationText.textContent =
+              "Set current location";
+
+          }
+
+        }
 
         if (!employerData.photoURL && user.photoURL) {
           try {
@@ -9021,6 +9552,31 @@
 
     document.querySelector(".search-bar input")
       ?.addEventListener("input", filterHeaderSearch);
+
+    profileLocationTrigger
+      ?.addEventListener(
+        "click",
+        updateEmployerCurrentLocation
+      );
+
+    profileLocationTrigger
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+
+            event.preventDefault();
+
+            updateEmployerCurrentLocation();
+
+          }
+
+        }
+      );
 
     window.firebaseLogout = async function () {
       try {
