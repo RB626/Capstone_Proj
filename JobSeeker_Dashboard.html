@@ -1343,6 +1343,8 @@
     let savedJobIds = new Set();
     let savedJobsData = [];
     let allHomeJobs = [];
+    const liveEmployerProfiles = new Map();
+    const liveEmployerProfileUnsubs = new Map();
     let showSavedJobsOnly = false;
     const homeApplicantCountUnsubs = new Map();
     const savedApplicantCountUnsubs = new Map();
@@ -1512,6 +1514,7 @@
           snapshot => {
             reviewsList.innerHTML = "";
 
+
             jobSeekerReviewNotifications =
               snapshot.docs.map(reviewDocument => ({
                 id: reviewDocument.id,
@@ -1541,6 +1544,7 @@
               }
             );
 
+            syncEmployerProfileListeners();
             renderJobSeekerNotifications();
 
             if (snapshot.empty) {
@@ -2394,15 +2398,18 @@
       const isUnread =
         !readIds.has(notificationId);
 
+      const realtimeEmployer =
+        getRealtimeEmployerProfile(
+          review
+        );
+
+
       const reviewerName =
-        review.reviewerName ||
-        "An employer";
+        realtimeEmployer.name;
+
 
       const reviewerPhoto =
-        review.reviewerPhotoURL ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(
-          reviewerName
-        )}&background=fef3c7&color=d97706`;
+        realtimeEmployer.photoURL;
 
       const jobTitle =
         review.jobTitle ||
@@ -2553,13 +2560,18 @@
         application.title ||
         "Untitled job";
 
+      const realtimeEmployer =
+        getRealtimeEmployerProfile(
+          application
+        );
+
+
       const employerName =
-        application.employerName ||
-        "Employer";
+        realtimeEmployer.name;
+
 
       const employerPhoto =
-        application.employerPhotoURL ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(employerName)}&background=ccfbf1&color=0f766e`;
+        realtimeEmployer.photoURL;
 
       const status =
         application.status ||
@@ -3052,6 +3064,7 @@
                 });
 
             renderJobSeekerNotifications();
+            syncEmployerProfileListeners();
           },
 
           error => {
@@ -3358,6 +3371,7 @@
         savedJobIds = new Set();
         savedJobsData = [];
         allHomeJobs = [];
+        cleanupEmployerProfileListeners();
         currentJobSeekerSkills = [];
         cleanupApplicantCountListeners(homeApplicantCountUnsubs);
         cleanupApplicantCountListeners(savedApplicantCountUnsubs);
@@ -5543,12 +5557,18 @@
             clickedButton.classList.remove("saved");
           }
         } else {
+          const realtimeEmployer =
+            getRealtimeEmployerProfile(
+              job
+            );
+
           await setDoc(savedJobRef, {
             jobId,
             title: job.title || "",
             employerName: job.employerName || "",
             employerPhotoURL: job.employerPhotoURL || "",
             badge: job.badge || "",
+            employerId: job.employerId || "",
             location: job.location || "",
             duration: job.duration || "",
             pay: job.pay || "",
@@ -5574,6 +5594,432 @@
         console.error("Failed to toggle saved job:", error);
         alert(error.message || "Failed to save job. Please try again.");
       }
+    }
+
+    /* ══════════════════════════════════════
+   REALTIME EMPLOYER PROFILE HELPERS
+══════════════════════════════════════ */
+
+
+    /*
+      Figure out which Employer belongs
+      to a job/application/review.
+    */
+    function getEmployerIdFromSource(
+      source = {}
+    ) {
+
+      /*
+        Normal job/application.
+      */
+      const directEmployerId =
+        source.employerId ||
+        source.reviewerId ||
+        "";
+
+
+      if (directEmployerId) {
+
+        return String(
+          directEmployerId
+        ).trim();
+
+      }
+
+
+      /*
+        Old Saved Job or old application
+        may not contain employerId.
+    
+        Try finding its original job.
+      */
+      const jobId =
+        String(
+          source.jobId ||
+          source.id ||
+          ""
+        ).trim();
+
+
+      if (jobId) {
+
+        const originalJob =
+
+          allHomeJobs.find(
+            job => job.id === jobId
+          )
+
+          ||
+
+          savedJobsData.find(
+            job => job.id === jobId
+          );
+
+
+        if (
+          originalJob?.employerId
+        ) {
+
+          return String(
+            originalJob.employerId
+          ).trim();
+
+        }
+
+      }
+
+
+      return "";
+
+    }
+
+
+    /*
+      This is now the SINGLE source used
+      for displaying Employer identity.
+    
+      Priority:
+    
+      1. Realtime custom Employer photo
+      2. Realtime Employer photoURL
+      3. Old copied job/application photo
+      4. Generated fallback
+    */
+    function getRealtimeEmployerProfile(
+      source = {}
+    ) {
+
+      const employerId =
+        getEmployerIdFromSource(
+          source
+        );
+
+
+      const liveProfile =
+        employerId
+          ? liveEmployerProfiles.get(
+            employerId
+          )
+          : null;
+
+
+      const name =
+
+        liveProfile?.name ||
+
+        liveProfile?.fullName ||
+
+        source.employerName ||
+
+        source.reviewerName ||
+
+        "Employer";
+
+
+      const photoURL =
+
+        liveProfile?.customPhotoURL ||
+
+        liveProfile?.photoURL ||
+
+        source.employerPhotoURL ||
+
+        source.reviewerPhotoURL ||
+
+        makeFallbackAvatar(
+          name
+        );
+
+
+      const badge =
+
+        liveProfile?.badge ||
+
+        source.badge ||
+
+        "Individual";
+
+
+      return {
+
+        employerId,
+        name,
+        photoURL,
+        badge
+
+      };
+
+    }
+
+
+    /* ══════════════════════════════════════
+       UPDATE OPEN JOB DETAILS MODAL
+    ══════════════════════════════════════ */
+
+    function refreshActiveJobEmployerPhoto() {
+
+      if (
+        !activeJobDetailsData
+      ) {
+        return;
+      }
+
+
+      const employer =
+        getRealtimeEmployerProfile(
+          activeJobDetailsData
+        );
+
+
+      const nameElement =
+        document.getElementById(
+          "jobDetailsEmployerName"
+        );
+
+
+      const photoElement =
+        document.getElementById(
+          "jobDetailsEmployerPhoto"
+        );
+
+
+      const badgeElement =
+        document.getElementById(
+          "jobDetailsEmployerBadge"
+        );
+
+
+      if (nameElement) {
+
+        nameElement.textContent =
+          employer.name;
+
+      }
+
+
+      if (badgeElement) {
+
+        badgeElement.textContent =
+          employer.badge;
+
+      }
+
+
+      if (photoElement) {
+
+        photoElement.src =
+          employer.photoURL;
+
+
+        protectAvatar(
+          photoElement,
+          employer.name
+        );
+
+      }
+
+    }
+
+
+    function ensureEmployerProfileListener(
+      employerId
+    ) {
+
+      employerId =
+        String(
+          employerId || ""
+        ).trim();
+
+
+      if (!employerId) {
+        return;
+      }
+
+
+      /*
+        Already listening to this Employer.
+      */
+      if (
+        liveEmployerProfileUnsubs.has(
+          employerId
+        )
+      ) {
+        return;
+      }
+
+
+      const employerRef =
+        doc(
+          db,
+          "employers",
+          employerId
+        );
+
+
+      const unsubscribe =
+        onSnapshot(
+
+          employerRef,
+
+          snapshot => {
+
+            if (
+              snapshot.exists()
+            ) {
+
+              liveEmployerProfiles.set(
+                employerId,
+                {
+
+                  id:
+                    snapshot.id,
+
+                  ...snapshot.data()
+
+                }
+              );
+
+            } else {
+
+              liveEmployerProfiles.delete(
+                employerId
+              );
+
+            }
+
+            renderHomeJobs();
+
+            renderSavedJobsPage();
+
+            renderJobSeekerNotifications();
+
+            refreshActiveJobEmployerPhoto();
+
+          },
+
+
+          error => {
+
+            console.error(
+              "REALTIME EMPLOYER PROFILE ERROR:",
+              employerId,
+              error
+            );
+
+          }
+
+        );
+
+
+      liveEmployerProfileUnsubs.set(
+        employerId,
+        unsubscribe
+      );
+
+    }
+
+    function syncEmployerProfileListeners() {
+
+      const employerIds =
+        new Set();
+
+
+      const sources = [
+
+        ...allHomeJobs,
+
+        ...savedJobsData,
+
+        ...jobSeekerApplicationNotifications,
+
+        ...jobSeekerReviewNotifications
+
+      ];
+
+
+      sources.forEach(
+        source => {
+
+          const employerId =
+            getEmployerIdFromSource(
+              source
+            );
+
+
+          if (employerId) {
+
+            employerIds.add(
+              employerId
+            );
+
+          }
+
+        }
+      );
+
+      employerIds.forEach(
+        employerId => {
+
+          ensureEmployerProfileListener(
+            employerId
+          );
+
+        }
+      );
+
+
+      for (
+        const [
+          employerId,
+          unsubscribe
+        ]
+        of liveEmployerProfileUnsubs
+      ) {
+
+        if (
+          !employerIds.has(
+            employerId
+          )
+        ) {
+
+          unsubscribe();
+
+
+          liveEmployerProfileUnsubs.delete(
+            employerId
+          );
+
+
+          liveEmployerProfiles.delete(
+            employerId
+          );
+
+        }
+
+      }
+
+    }
+
+
+    /* ══════════════════════════════════════
+       CLEANUP ON LOGOUT
+    ══════════════════════════════════════ */
+
+    function cleanupEmployerProfileListeners() {
+
+      liveEmployerProfileUnsubs.forEach(
+        unsubscribe => {
+
+          unsubscribe();
+
+        }
+      );
+
+
+      liveEmployerProfileUnsubs.clear();
+
+      liveEmployerProfiles.clear();
+
     }
 
     function makeFallbackAvatar(name = "User") {
@@ -5618,16 +6064,18 @@
          EMPLOYER
       ══════════════════════════════════════ */
 
+      const realtimeEmployer =
+        getRealtimeEmployerProfile(
+          job
+        );
+
+
       const employerName =
-        job.employerName ||
-        "Employer";
+        realtimeEmployer.name;
 
 
       const employerPhoto =
-        job.employerPhotoURL ||
-        makeFallbackAvatar(
-          employerName
-        );
+        realtimeEmployer.photoURL;
 
 
       const employerNameEl =
@@ -5659,8 +6107,7 @@
 
 
       employerBadgeEl.textContent =
-        job.badge ||
-        "Individual";
+        realtimeEmployer.badge;
 
 
       postTimeEl.textContent =
@@ -6055,12 +6502,22 @@
         (snapshot) => {
           savedJobIds = new Set(snapshot.docs.map(docSnap => docSnap.id));
 
-          savedJobsData = snapshot.docs.map(docSnap => ({
-            id: docSnap.id,
-            ...docSnap.data()
-          }));
+          savedJobsData =
+            snapshot.docs.map(
+              docSnap => ({
+                id:
+                  docSnap.id,
+
+                ...docSnap.data()
+              })
+            );
+
+
+          syncEmployerProfileListeners();
+
 
           renderHomeJobs();
+
           renderSavedJobsPage();
         },
         (error) => {
@@ -6472,11 +6929,28 @@
       const match =
         getJobMatchDisplay(job);
 
-      const employerName = escapeHtml(job.employerName || "Employer");
-      const employerBadge = escapeHtml(job.badge || "Individual");
+      const realtimeEmployer =
+        getRealtimeEmployerProfile(
+          job
+        );
+
+
+      const employerName =
+        escapeHtml(
+          realtimeEmployer.name
+        );
+
+
+      const employerBadge =
+        escapeHtml(
+          realtimeEmployer.badge
+        );
+
+
       const employerPhoto =
-        job.employerPhotoURL ||
-        "https://ui-avatars.com/api/?name=Employer&background=ccfbf1&color=0f766e&size=128";
+        escapeHtml(
+          realtimeEmployer.photoURL
+        );
 
       const postTime = formatPostTime(job.createdAt);
       const title = escapeHtml(job.title || "Untitled Job");
@@ -6769,11 +7243,28 @@
       const match =
         getJobMatchDisplay(job);
 
-      const employerName = escapeHtml(job.employerName || "Employer");
-      const employerBadge = escapeHtml(job.badge || "Individual");
+      const realtimeEmployer =
+        getRealtimeEmployerProfile(
+          job
+        );
+
+
+      const employerName =
+        escapeHtml(
+          realtimeEmployer.name
+        );
+
+
+      const employerBadge =
+        escapeHtml(
+          realtimeEmployer.badge
+        );
+
+
       const employerPhoto =
-        job.employerPhotoURL ||
-        "https://ui-avatars.com/api/?name=Employer&background=ccfbf1&color=0f766e&size=128";
+        escapeHtml(
+          realtimeEmployer.photoURL
+        );
 
       const postTime = formatPostTime(job.createdAt);
       const title = escapeHtml(job.title || "Untitled Job");
@@ -7003,23 +7494,33 @@
         limit(20)
       );
 
-      unsubscribeHomeJobs = onSnapshot(jobsQuery, (snapshot) => {
-        allHomeJobs = snapshot.docs.map((docSnap) => ({
-          id: docSnap.id,
-          ...docSnap.data()
-        }));
+      unsubscribeHomeJobs =
+        onSnapshot(
+          jobsQuery,
+          (snapshot) => {
 
-        renderHomeJobs();
-      }, (error) => {
-        console.error("Failed to load home jobs:", error);
+            allHomeJobs =
+              snapshot.docs.map(
+                (docSnap) => ({
+                  id: docSnap.id,
+                  ...docSnap.data()
+                })
+              );
 
-        homeJobsList.innerHTML = `
+            syncEmployerProfileListeners();
+
+
+            renderHomeJobs();
+          }, (error) => {
+            console.error("Failed to load home jobs:", error);
+
+            homeJobsList.innerHTML = `
       <div class="job-card">
         <div class="job-title">Failed to load jobs</div>
         <div class="job-desc">Check Firestore query, indexes, or rules.</div>
       </div>
     `;
-      });
+          });
     }
 
     function listenToMyApplicationsCount(uid) {
