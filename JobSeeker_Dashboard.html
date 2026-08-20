@@ -3644,19 +3644,264 @@
         user.displayName ||
         "BlueCollar Worker";
 
-      const resolvedPhoto =
-        existingData.photoURL ||
-        user.photoURL ||
-        defaultPhoto;
+      /* ══════════════════════════════════════
+   RESOLVE JOB SEEKER PROFILE PHOTO
+
+   Priority:
+
+   1. Custom BlueSpace upload
+   2. Existing saved profile photo
+   3. Google/Gmail photo
+   4. Default avatar
+══════════════════════════════════════ */
+
+      const googlePhotoURL =
+        user.photoURL || "";
+
+
+      /*
+        Detect whether the Job Seeker has
+        manually uploaded a profile picture.
+      
+        photoPath is included so OLD uploads
+        made before this update are recognized
+        automatically as custom photos.
+      */
+      const hasCustomProfilePhoto =
+
+        existingData.profilePhotoSource ===
+        "custom"
+
+        ||
+
+        !!existingData.customPhotoURL
+
+        ||
+
+        !!existingData.photoPath;
+
+
+      /*
+        Final profile photo BlueSpace should use.
+      */
+      let resolvedPhoto =
+        "";
+
+
+      /* ══════════════════════════════════════
+         CUSTOM PHOTO ALREADY EXISTS
+      ══════════════════════════════════════ */
+
+      if (
+        hasCustomProfilePhoto
+      ) {
+
+        resolvedPhoto =
+
+          existingData.customPhotoURL ||
+
+          existingData.photoURL ||
+
+          defaultPhoto;
+
+
+        /*
+          Migrate an old custom upload.
+      
+          Example old Firestore document:
+      
+          photoURL: Firebase Storage URL
+          photoPath: users/uid/profile/...
+      
+          After this migration:
+      
+          photoURL: same custom image
+          customPhotoURL: same custom image
+          profilePhotoSource: "custom"
+        */
+        if (
+          resolvedPhoto &&
+          (
+            existingData.customPhotoURL !==
+            resolvedPhoto
+
+            ||
+
+            existingData.photoURL !==
+            resolvedPhoto
+
+            ||
+
+            existingData.profilePhotoSource !==
+            "custom"
+          )
+        ) {
+
+          try {
+
+            await setDoc(
+              userRef,
+              {
+
+                photoURL:
+                  resolvedPhoto,
+
+                customPhotoURL:
+                  resolvedPhoto,
+
+                profilePhotoSource:
+                  "custom",
+
+                updatedAt:
+                  serverTimestamp()
+
+              },
+
+              {
+                merge: true
+              }
+            );
+
+
+            existingData.photoURL =
+              resolvedPhoto;
+
+
+            existingData.customPhotoURL =
+              resolvedPhoto;
+
+
+            existingData.profilePhotoSource =
+              "custom";
+
+
+            console.log(
+              "CUSTOM JOB SEEKER PHOTO RESTORED:",
+              resolvedPhoto
+            );
+
+
+          } catch (error) {
+
+            console.error(
+              "FAILED TO RESTORE CUSTOM JOB SEEKER PHOTO:",
+              error
+            );
+
+          }
+
+        }
+
+      }
+
+
+      /* ══════════════════════════════════════
+         NO CUSTOM PHOTO YET
+      ══════════════════════════════════════ */
+
+      else {
+
+        /*
+          First login behavior.
+      
+          If there is no custom BlueSpace
+          picture yet, use Google's picture.
+        */
+        resolvedPhoto =
+
+          existingData.photoURL ||
+
+          existingData.googlePhotoURL ||
+
+          googlePhotoURL ||
+
+          defaultPhoto;
+
+
+        /*
+          Keep the Google picture separately.
+      
+          Later, even if Google changes it,
+          this field will NEVER override a
+          custom BlueSpace upload.
+        */
+        if (
+          googlePhotoURL
+        ) {
+
+          if (
+            !existingData.googlePhotoURL
+          ) {
+
+            existingData.googlePhotoURL =
+              googlePhotoURL;
+
+          }
+
+        }
+
+      }
+
+
+      /* ══════════════════════════════════════
+         NORMAL PROFILE DATA
+      ══════════════════════════════════════ */
 
       const baseProfilePayload = {
-        photoURL: resolvedPhoto,
-        email: existingData.email || user.email || null,
-        phoneNumber: existingData.phoneNumber || user.phoneNumber || null,
-        authCreatedAt: existingData.authCreatedAt || authCreationTime,
-        lastSignInAt: authLastSignInTime,
-        updatedAt: serverTimestamp()
+
+        /*
+          Current active BlueSpace photo.
+        */
+        photoURL:
+          resolvedPhoto,
+
+
+        email:
+          existingData.email ||
+          user.email ||
+          null,
+
+
+        phoneNumber:
+          existingData.phoneNumber ||
+          user.phoneNumber ||
+          null,
+
+
+        authCreatedAt:
+          existingData.authCreatedAt ||
+          authCreationTime,
+
+
+        lastSignInAt:
+          authLastSignInTime,
+
+
+        updatedAt:
+          serverTimestamp()
+
       };
+
+
+      /*
+        Save Google information only while
+        the user has NOT manually chosen
+        a BlueSpace picture.
+      */
+      if (
+        !hasCustomProfilePhoto &&
+        googlePhotoURL
+      ) {
+
+        baseProfilePayload.googlePhotoURL =
+          existingData.googlePhotoURL ||
+          googlePhotoURL;
+
+
+        baseProfilePayload.profilePhotoSource =
+          "google";
+
+      }
 
       if (safeExistingFullName) {
         baseProfilePayload.fullName = safeExistingFullName;
@@ -3727,8 +3972,15 @@
             defaultCoverPhoto;
 
           const photo =
+
+            data.customPhotoURL ||
+
             data.photoURL ||
+
+            data.googlePhotoURL ||
+
             user.photoURL ||
+
             defaultPhoto;
 
           const headline =
@@ -3802,8 +4054,34 @@
             firstTimePayload.fullName = name;
           }
 
-          if (!data.photoURL) {
-            firstTimePayload.photoURL = photo;
+          if (
+            !data.photoURL
+          ) {
+
+            firstTimePayload.photoURL =
+              photo;
+
+          }
+
+          if (
+            !data.profilePhotoSource &&
+            !data.customPhotoURL &&
+            !data.photoPath
+          ) {
+
+            if (
+              user.photoURL
+            ) {
+
+              firstTimePayload.googlePhotoURL =
+                user.photoURL;
+
+
+              firstTimePayload.profilePhotoSource =
+                "google";
+
+            }
+
           }
 
           if (!data.coverPhotoURL) {
@@ -5083,11 +5361,51 @@
         const userSnap = await getDoc(userRef);
         const existingData = userSnap.exists() ? userSnap.data() : {};
 
-        await setDoc(userRef, {
-          photoURL: downloadURL,
-          photoPath: filePath,
-          updatedAt: serverTimestamp()
-        }, { merge: true });
+        await setDoc(
+          userRef,
+          {
+
+            /*
+              Main photo used throughout
+              BlueSpace.
+            */
+            photoURL:
+              downloadURL,
+
+
+            /*
+              Permanent manually uploaded
+              BlueSpace profile photo.
+            */
+            customPhotoURL:
+              downloadURL,
+
+
+            /*
+              This tells us the user has
+              manually replaced their Google
+              profile photo.
+            */
+            profilePhotoSource:
+              "custom",
+
+
+            /*
+              Firebase Storage location.
+            */
+            photoPath:
+              filePath,
+
+
+            updatedAt:
+              serverTimestamp()
+
+          },
+
+          {
+            merge: true
+          }
+        );
 
       } catch (error) {
         console.error("Profile photo upload failed:", error);
@@ -6880,8 +7198,15 @@
               "",
 
             applicantPhotoURL:
+
+              userData.customPhotoURL ||
+
               userData.photoURL ||
+
+              userData.googlePhotoURL ||
+
               auth.currentUser.photoURL ||
+
               "",
 
             phoneNumber:
@@ -6947,8 +7272,15 @@
             "",
 
           applicantPhotoURL:
+
+            userData.customPhotoURL ||
+
             userData.photoURL ||
+
+            userData.googlePhotoURL ||
+
             auth.currentUser.photoURL ||
+
             "",
 
           phoneNumber:
