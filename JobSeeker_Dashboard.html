@@ -1350,6 +1350,7 @@
     const savedApplicantCountUnsubs = new Map();
 
     let unsubscribeJobSeekerConversations = null;
+    let latestJobSeekerConversations = [];
     let unsubscribeProfileReviews = null;
 
     function createReviewStars(rating) {
@@ -1700,6 +1701,182 @@
         );
     }
 
+    /* ══════════════════════════════════════
+   REFRESH MESSAGE SIDEBAR EMPLOYER
+══════════════════════════════════════ */
+
+    function refreshConversationSidebarEmployer(
+      employerId
+    ) {
+
+      employerId =
+        String(
+          employerId || ""
+        ).trim();
+
+
+      if (!employerId) {
+        return;
+      }
+
+
+      const employerData =
+        liveEmployerProfiles.get(
+          employerId
+        );
+
+
+      if (!employerData) {
+        return;
+      }
+
+
+      const employerName =
+
+        employerData.name ||
+
+        employerData.fullName ||
+
+        "Employer";
+
+
+      const employerPhoto =
+
+        employerData.customPhotoURL ||
+
+        employerData.photoURL ||
+
+        makeFallbackAvatar(
+          employerName
+        );
+
+
+      /*
+        Find every conversation belonging
+        to this Employer.
+      */
+      document
+        .querySelectorAll(
+          ".conv-item"
+        )
+        .forEach(
+          item => {
+
+            if (
+              item.dataset.employerId !==
+              employerId
+            ) {
+              return;
+            }
+
+
+            /*
+              Update fallback information used
+              when the conversation is opened.
+            */
+            item.dataset.name =
+              employerName;
+
+            item.dataset.avatar =
+              employerPhoto;
+
+
+            /*
+              Update visible sidebar photo.
+            */
+            const avatar =
+              item.querySelector(
+                ".conv-avatar"
+              );
+
+
+            if (avatar) {
+
+              avatar.src =
+                employerPhoto;
+
+              avatar.alt =
+                employerName;
+
+              protectAvatar(
+                avatar,
+                employerName
+              );
+
+            }
+
+
+            /*
+              Update visible Employer name too.
+            */
+            const nameElement =
+              item.querySelector(
+                ".conv-name"
+              );
+
+
+            if (nameElement) {
+
+              nameElement.textContent =
+                employerName;
+
+            }
+
+
+            /*
+              If this is the currently opened
+              conversation, keep the header
+              synchronized too.
+    
+              Your openConv listener already
+              handles this, but this provides
+              an extra realtime safeguard.
+            */
+            if (
+              item.classList.contains(
+                "active"
+              )
+            ) {
+
+              const chatName =
+                document.getElementById(
+                  "chat-name"
+                );
+
+
+              const chatAvatar =
+                document.getElementById(
+                  "chat-avatar"
+                );
+
+
+              if (chatName) {
+
+                chatName.textContent =
+                  employerName;
+
+              }
+
+
+              if (chatAvatar) {
+
+                chatAvatar.src =
+                  employerPhoto;
+
+                protectAvatar(
+                  chatAvatar,
+                  employerName
+                );
+
+              }
+
+            }
+
+          }
+        );
+
+    }
+
     function listenToJobSeekerConversations(userId) {
       const convItemsContainer =
         document.getElementById("conv-items");
@@ -1765,19 +1942,34 @@
               );
             });
 
+
+          latestJobSeekerConversations =
+            conversations;
+
+          syncEmployerProfileListeners();
+
           convItemsContainer.innerHTML = "";
 
           conversations.forEach(conversation => {
             const conversationId =
               conversation.id;
 
+            const realtimeEmployer =
+              getRealtimeEmployerProfile(
+                conversation
+              );
+
+
             const employerName =
-              conversation.employerName ||
-              "Employer";
+              realtimeEmployer.name;
+
 
             const employerAvatar =
-              conversation.employerPhotoURL ||
-              `https://ui-avatars.com/api/?name=${encodeURIComponent(employerName)}&background=fbbf24&color=ffffff`;
+              realtimeEmployer.photoURL;
+
+
+            const employerId =
+              realtimeEmployer.employerId;
 
             const lastMessage =
               conversation.lastMessage ||
@@ -1794,14 +1986,11 @@
               document.createElement("div");
 
             item.className = "conv-item";
-            item.dataset.convid =
-              conversationId;
-            item.dataset.name =
-              employerName;
-            item.dataset.avatar =
-              employerAvatar;
-            item.dataset.status =
-              "Active recently";
+            item.dataset.convid = conversationId;
+            item.dataset.name = employerName;
+            item.dataset.avatar = employerAvatar;
+            item.dataset.status = "Active recently";
+            item.dataset.employerId = employerId;
             item.dataset.online = "false";
 
             item.innerHTML = `
@@ -2047,7 +2236,15 @@
           if (participantSnap.exists()) {
             const participantData = participantSnap.data();
             const name = participantData.name || "Employer";
-            const avatar = participantData.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=fbbf24&color=ffffff`;
+            const avatar =
+
+              participantData.customPhotoURL ||
+
+              participantData.photoURL ||
+
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                name
+              )}&background=fbbf24&color=ffffff`;
             document.getElementById('chat-name').textContent = name;
             document.getElementById('chat-status').textContent = "Active recently";
             document.getElementById('chat-avatar').src = avatar;
@@ -3371,6 +3568,7 @@
         savedJobIds = new Set();
         savedJobsData = [];
         allHomeJobs = [];
+        latestJobSeekerConversations = [];
         cleanupEmployerProfileListeners();
         currentJobSeekerSkills = [];
         cleanupApplicantCountListeners(homeApplicantCountUnsubs);
@@ -5626,6 +5824,55 @@
 
       }
 
+      /*
+  CONVERSATION SUPPORT
+
+  Conversations contain both user IDs
+  inside participantIds.
+
+  Since this is the Job Seeker dashboard,
+  the OTHER participant is the Employer.
+*/
+      if (
+        Array.isArray(
+          source.participantIds
+        )
+      ) {
+
+        const myUserId =
+
+          currentUser?.uid ||
+
+          auth.currentUser?.uid ||
+
+          "";
+
+
+        const conversationEmployerId =
+          source.participantIds.find(
+            participantId => {
+
+              return (
+                participantId &&
+                participantId !== myUserId
+              );
+
+            }
+          );
+
+
+        if (
+          conversationEmployerId
+        ) {
+
+          return String(
+            conversationEmployerId
+          ).trim();
+
+        }
+
+      }
+
 
       /*
         Old Saved Job or old application
@@ -5895,6 +6142,10 @@
 
             refreshActiveJobEmployerPhoto();
 
+            refreshConversationSidebarEmployer(
+              employerId
+            );
+
           },
 
 
@@ -5932,7 +6183,9 @@
 
         ...jobSeekerApplicationNotifications,
 
-        ...jobSeekerReviewNotifications
+        ...jobSeekerReviewNotifications,
+
+        ...latestJobSeekerConversations
 
       ];
 
