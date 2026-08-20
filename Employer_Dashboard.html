@@ -1272,7 +1272,7 @@
       <div class="profile-edit-header">
         <div>
           <h3 id="profileEditTitle">Edit profile headline</h3>
-          <p>Update your work title and availability.</p>
+          <p>Let workers know who you are and what roles you are hiring for.</p>
         </div>
         <button type="button" class="profile-edit-close" id="closeProfileEditBtn" aria-label="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
@@ -1286,7 +1286,7 @@
       <div class="profile-edit-body">
         <label class="profile-edit-label" for="profileHeadlineInput">Profile headline</label>
         <textarea id="profileHeadlineInput" class="profile-edit-textarea" rows="3" maxlength="120"
-          placeholder="Example: Carpenter | Painter | Available in Catbalogan Central"></textarea>
+          placeholder="Hiring Skilled Workers for Local Job Opportunities"></textarea>
         <div class="profile-edit-helper">
           Keep it short, clear, and professional.
         </div>
@@ -1706,6 +1706,14 @@
     const profileLocationTrigger = document.getElementById("profileLocationTrigger");
     const profileLocationText = document.getElementById("profileLocationText");
     const profileMemberSince = document.getElementById("profileMemberSince");
+    const employerProfileHeadline = document.getElementById("profileHeroRole");
+    const editProfileHeadlineBtn = document.getElementById("editProfileHeadlineBtn");
+    const profileEditOverlay = document.getElementById("profileEditOverlay");
+    const profileHeadlineInput = document.getElementById("profileHeadlineInput");
+    const closeProfileEditBtn = document.getElementById("closeProfileEditBtn");
+    const cancelProfileEditBtn = document.getElementById("cancelProfileEditBtn");
+    const saveProfileEditBtn = document.getElementById("saveProfileEditBtn");
+    const DEFAULT_EMPLOYER_HEADLINE = "Hiring Skilled Workers for Local Job Opportunities";
     const employerHeroCover = document.getElementById("profileHeroCover");
     const employerCoverTrigger = document.getElementById("profileCoverTrigger");
     const employerCoverUploadInput = document.getElementById("coverUploadInput");
@@ -1987,6 +1995,298 @@
     }
 
     /* ══════════════════════════════════════
+   EMPLOYER PROFILE HEADLINE EDITOR
+══════════════════════════════════════ */
+
+    function openEmployerHeadlineEditor() {
+
+      if (
+        !profileEditOverlay ||
+        !profileHeadlineInput
+      ) {
+        return;
+      }
+
+
+      /*
+        Use the actual saved headline first.
+    
+        The displayed text is only
+        a fallback.
+      */
+      const currentHeadline =
+        String(
+          currentEmployerData?.profileHeadline ||
+          employerProfileHeadline?.textContent ||
+          ""
+        ).trim();
+
+
+      profileHeadlineInput.value =
+        currentHeadline ===
+          DEFAULT_EMPLOYER_HEADLINE
+          ? ""
+          : currentHeadline;
+
+
+      profileEditOverlay.classList.add(
+        "open"
+      );
+
+
+      /*
+        In case your existing modal CSS
+        uses active instead of open,
+        supporting both is harmless.
+      */
+      profileEditOverlay.classList.add(
+        "active"
+      );
+
+
+      profileEditOverlay.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+
+      document.body.style.overflow =
+        "hidden";
+
+
+      setTimeout(
+        () => {
+
+          profileHeadlineInput.focus();
+
+          profileHeadlineInput.setSelectionRange(
+            profileHeadlineInput.value.length,
+            profileHeadlineInput.value.length
+          );
+
+        },
+        50
+      );
+
+    }
+
+
+    function closeEmployerHeadlineEditor() {
+
+      if (!profileEditOverlay) {
+        return;
+      }
+
+
+      profileEditOverlay.classList.remove(
+        "open"
+      );
+
+      profileEditOverlay.classList.remove(
+        "active"
+      );
+
+
+      profileEditOverlay.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      document.body.style.overflow =
+        "";
+
+    }
+
+
+    /* ══════════════════════════════════════
+       SAVE EMPLOYER PROFILE HEADLINE
+    ══════════════════════════════════════ */
+
+    async function saveEmployerProfileHeadline() {
+
+      const user =
+        auth.currentUser;
+
+
+      if (!user) {
+
+        alert(
+          "You must be logged in first."
+        );
+
+        return;
+
+      }
+
+
+      if (!profileHeadlineInput) {
+        return;
+      }
+
+
+      const headline =
+        String(
+          profileHeadlineInput.value ||
+          ""
+        ).trim();
+
+
+      /*
+        Do not save an empty headline.
+      */
+      if (!headline) {
+
+        alert(
+          "Please enter a profile headline."
+        );
+
+        profileHeadlineInput.focus();
+
+        return;
+
+      }
+
+
+      if (
+        headline.length > 120
+      ) {
+
+        alert(
+          "Profile headline must be 120 characters or less."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        /*
+          Prevent duplicate clicks.
+      */
+        if (saveProfileEditBtn) {
+
+          saveProfileEditBtn.disabled =
+            true;
+
+          saveProfileEditBtn.textContent =
+            "Saving...";
+
+        }
+
+
+        const employerRef =
+          doc(
+            db,
+            "employers",
+            user.uid
+          );
+
+
+        /*
+          Firestore becomes the source
+          of truth.
+        */
+        await updateDoc(
+          employerRef,
+          {
+
+            profileHeadline:
+              headline,
+
+            profileHeadlineUpdatedAt:
+              serverTimestamp(),
+
+            updatedAt:
+              serverTimestamp()
+
+          }
+        );
+
+
+        /*
+          Keep local data synchronized
+          immediately.
+    
+          The realtime listener will also
+          receive this same update.
+        */
+        currentEmployerData = {
+
+          ...(
+            currentEmployerData ||
+            {}
+          ),
+
+          profileHeadline:
+            headline
+
+        };
+
+
+        /*
+          Optimistic UI update.
+        */
+        if (
+          employerProfileHeadline
+        ) {
+
+          /*
+            Dynamic user data must NOT be
+            controlled by i18n.
+          */
+          employerProfileHeadline.removeAttribute(
+            "data-i18n"
+          );
+
+
+          employerProfileHeadline.textContent =
+            headline;
+
+        }
+
+
+        closeEmployerHeadlineEditor();
+
+
+        console.log(
+          "EMPLOYER HEADLINE UPDATED:",
+          headline
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "FAILED TO UPDATE EMPLOYER HEADLINE:",
+          error
+        );
+
+
+        alert(
+          "Failed to update profile headline."
+        );
+
+
+      } finally {
+
+        if (saveProfileEditBtn) {
+
+          saveProfileEditBtn.disabled =
+            false;
+
+          saveProfileEditBtn.textContent =
+            "Save changes";
+
+        }
+
+      }
+
+    }
+
+    /* ══════════════════════════════════════
    REALTIME EMPLOYER COVER PHOTO
 ══════════════════════════════════════ */
 
@@ -2044,10 +2344,18 @@
               "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&h=220&fit=crop&crop=center";
 
 
-            /*
-              Keep local Employer data
-              synchronized.
-            */
+            const realtimeHeadline =
+              String(
+                data.profileHeadline ||
+                ""
+              ).trim();
+
+
+            const displayedHeadline =
+              realtimeHeadline ||
+              DEFAULT_EMPLOYER_HEADLINE;
+
+
             currentEmployerData = {
 
               ...(
@@ -2055,15 +2363,27 @@
                 {}
               ),
 
-              coverPhotoURL:
-                data.coverPhotoURL ||
-                "",
-
-              coverPhotoPath:
-                data.coverPhotoPath ||
-                ""
+              ...data
 
             };
+
+            /*
+  Update the visible headline whenever
+  employers/{uid} changes.
+*/
+            if (
+              employerProfileHeadline
+            ) {
+
+              employerProfileHeadline.removeAttribute(
+                "data-i18n"
+              );
+
+
+              employerProfileHeadline.textContent =
+                displayedHeadline;
+
+            }
 
 
             /*
@@ -12347,6 +12667,136 @@
         ) {
 
           closeEmployerProfilePhotoViewer();
+
+        }
+
+      }
+    );
+
+    /* ══════════════════════════════════════
+   EMPLOYER HEADLINE EVENTS
+══════════════════════════════════════ */
+
+
+    /*
+      Pencil button.
+    */
+    editProfileHeadlineBtn
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.preventDefault();
+
+          event.stopPropagation();
+
+          openEmployerHeadlineEditor();
+
+        }
+      );
+
+
+    /*
+      X button.
+    */
+    closeProfileEditBtn
+      ?.addEventListener(
+        "click",
+        closeEmployerHeadlineEditor
+      );
+
+
+    /*
+      Cancel.
+    */
+    cancelProfileEditBtn
+      ?.addEventListener(
+        "click",
+        closeEmployerHeadlineEditor
+      );
+
+
+    /*
+      Save.
+    */
+    saveProfileEditBtn
+      ?.addEventListener(
+        "click",
+        saveEmployerProfileHeadline
+      );
+
+
+    /*
+      Ctrl + Enter inside textarea
+      also saves.
+    */
+    profileHeadlineInput
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key === "Enter" &&
+            (
+              event.ctrlKey ||
+              event.metaKey
+            )
+          ) {
+
+            event.preventDefault();
+
+            saveEmployerProfileHeadline();
+
+          }
+
+        }
+      );
+
+
+    /*
+      Clicking outside the modal closes it.
+    */
+    profileEditOverlay
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target ===
+            profileEditOverlay
+          ) {
+
+            closeEmployerHeadlineEditor();
+
+          }
+
+        }
+      );
+
+
+    /*
+      ESC closes the headline editor.
+    */
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Escape" &&
+          (
+            profileEditOverlay
+              ?.classList
+              .contains("open")
+
+            ||
+
+            profileEditOverlay
+              ?.classList
+              .contains("active")
+          )
+        ) {
+
+          closeEmployerHeadlineEditor();
 
         }
 
