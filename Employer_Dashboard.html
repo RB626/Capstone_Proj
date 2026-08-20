@@ -1319,7 +1319,7 @@
       <div class="profile-edit-body">
         <label class="profile-edit-label" for="profileAboutInput">About</label>
         <textarea id="profileAboutInput" class="profile-edit-textarea" rows="6" maxlength="500"
-          placeholder="Tell clients about your experience, skills, and availability."></textarea>
+          placeholder="Tell workers about your business, hiring needs, and the opportunities you offer."></textarea>
         <div class="profile-edit-helper">
           Describe your business and hiring needs clearly and professionally.
         </div>
@@ -1714,6 +1714,14 @@
     const cancelProfileEditBtn = document.getElementById("cancelProfileEditBtn");
     const saveProfileEditBtn = document.getElementById("saveProfileEditBtn");
     const DEFAULT_EMPLOYER_HEADLINE = "Hiring Skilled Workers for Local Job Opportunities";
+    const employerProfileAbout = document.getElementById("profileAboutText");
+    const editAboutBtn = document.getElementById("editAboutBtn");
+    const aboutEditOverlay = document.getElementById("aboutEditOverlay");
+    const profileAboutInput = document.getElementById("profileAboutInput");
+    const closeAboutEditBtn = document.getElementById("closeAboutEditBtn");
+    const cancelAboutEditBtn = document.getElementById("cancelAboutEditBtn");
+    const saveAboutEditBtn = document.getElementById("saveAboutEditBtn");
+    const DEFAULT_EMPLOYER_ABOUT = "Local employer looking to connect with skilled, reliable, and hardworking workers. We offer job opportunities based on our current hiring needs and value professionalism, dependability, and quality work.";
     const employerHeroCover = document.getElementById("profileHeroCover");
     const employerCoverTrigger = document.getElementById("profileCoverTrigger");
     const employerCoverUploadInput = document.getElementById("coverUploadInput");
@@ -2287,6 +2295,312 @@
     }
 
     /* ══════════════════════════════════════
+   EMPLOYER ABOUT EDITOR
+══════════════════════════════════════ */
+
+    function openEmployerAboutEditor() {
+
+      if (
+        !aboutEditOverlay ||
+        !profileAboutInput
+      ) {
+        return;
+      }
+
+
+      /*
+        Use Firestore data first.
+    
+        If none exists yet, use whatever
+        is currently displayed.
+      */
+      const currentAbout =
+        String(
+          currentEmployerData?.profileAbout ||
+          employerProfileAbout?.textContent ||
+          ""
+        )
+          .replace(
+            /\s+/g,
+            " "
+          )
+          .trim();
+
+
+      profileAboutInput.value =
+        currentAbout;
+
+
+      aboutEditOverlay.classList.add(
+        "open"
+      );
+
+
+      aboutEditOverlay.classList.add(
+        "active"
+      );
+
+
+      aboutEditOverlay.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+
+      document.body.style.overflow =
+        "hidden";
+
+
+      setTimeout(
+        () => {
+
+          profileAboutInput.focus();
+
+
+          profileAboutInput.setSelectionRange(
+            profileAboutInput.value.length,
+            profileAboutInput.value.length
+          );
+
+        },
+        50
+      );
+
+    }
+
+
+    /* ══════════════════════════════════════
+       CLOSE ABOUT EDITOR
+    ══════════════════════════════════════ */
+
+    function closeEmployerAboutEditor() {
+
+      if (!aboutEditOverlay) {
+        return;
+      }
+
+
+      aboutEditOverlay.classList.remove(
+        "open"
+      );
+
+
+      aboutEditOverlay.classList.remove(
+        "active"
+      );
+
+
+      aboutEditOverlay.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      document.body.style.overflow =
+        "";
+
+    }
+
+
+    /* ══════════════════════════════════════
+       SAVE EMPLOYER ABOUT
+    ══════════════════════════════════════ */
+
+    async function saveEmployerProfileAbout() {
+
+      const user =
+        auth.currentUser;
+
+
+      if (!user) {
+
+        alert(
+          "You must be logged in first."
+        );
+
+        return;
+
+      }
+
+
+      if (!profileAboutInput) {
+        return;
+      }
+
+
+      const aboutText =
+        String(
+          profileAboutInput.value ||
+          ""
+        ).trim();
+
+
+      /*
+        Do not save an empty About section.
+      */
+      if (!aboutText) {
+
+        alert(
+          "Please enter information about your business or hiring needs."
+        );
+
+
+        profileAboutInput.focus();
+
+        return;
+
+      }
+
+
+      /*
+        Your textarea already has maxlength=500,
+        but keep this validation here too.
+      */
+      if (
+        aboutText.length > 500
+      ) {
+
+        alert(
+          "About must be 500 characters or less."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        /*
+          Prevent double-click saves.
+        */
+        if (
+          saveAboutEditBtn
+        ) {
+
+          saveAboutEditBtn.disabled =
+            true;
+
+
+          saveAboutEditBtn.textContent =
+            "Saving...";
+
+        }
+
+
+        const employerRef =
+          doc(
+            db,
+            "employers",
+            user.uid
+          );
+
+
+        /*
+          Save permanently to Firestore.
+        */
+        await updateDoc(
+          employerRef,
+          {
+
+            profileAbout:
+              aboutText,
+
+
+            profileAboutUpdatedAt:
+              serverTimestamp(),
+
+
+            updatedAt:
+              serverTimestamp()
+
+          }
+        );
+
+
+        /*
+          Immediate local synchronization.
+        */
+        currentEmployerData = {
+
+          ...(
+            currentEmployerData ||
+            {}
+          ),
+
+          profileAbout:
+            aboutText
+
+        };
+
+
+        /*
+          Immediate UI update.
+    
+          Firestore onSnapshot() will also
+          confirm the same value.
+        */
+        if (
+          employerProfileAbout
+        ) {
+
+          /*
+            About is user-created content.
+            Translation must not replace it.
+          */
+          employerProfileAbout.removeAttribute(
+            "data-i18n"
+          );
+
+
+          employerProfileAbout.textContent =
+            aboutText;
+
+        }
+
+
+        closeEmployerAboutEditor();
+
+
+        console.log(
+          "EMPLOYER ABOUT UPDATED:",
+          aboutText
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "FAILED TO UPDATE EMPLOYER ABOUT:",
+          error
+        );
+
+
+        alert(
+          "Failed to update your About section."
+        );
+
+
+      } finally {
+
+        if (
+          saveAboutEditBtn
+        ) {
+
+          saveAboutEditBtn.disabled =
+            false;
+
+
+          saveAboutEditBtn.textContent =
+            "Save changes";
+
+        }
+
+      }
+
+    }
+
+    /* ══════════════════════════════════════
    REALTIME EMPLOYER COVER PHOTO
 ══════════════════════════════════════ */
 
@@ -2355,6 +2669,17 @@
               realtimeHeadline ||
               DEFAULT_EMPLOYER_HEADLINE;
 
+            const realtimeAbout =
+              String(
+                data.profileAbout ||
+                ""
+              ).trim();
+
+
+            const displayedAbout =
+              realtimeAbout ||
+              DEFAULT_EMPLOYER_ABOUT;
+
 
             currentEmployerData = {
 
@@ -2382,6 +2707,24 @@
 
               employerProfileHeadline.textContent =
                 displayedHeadline;
+
+            }
+
+            if (
+              employerProfileAbout
+            ) {
+
+              /*
+                Never allow i18n to replace
+                user-created profile content.
+              */
+              employerProfileAbout.removeAttribute(
+                "data-i18n"
+              );
+
+
+              employerProfileAbout.textContent =
+                displayedAbout;
 
             }
 
@@ -12797,6 +13140,136 @@
         ) {
 
           closeEmployerHeadlineEditor();
+
+        }
+
+      }
+    );
+
+    /* ══════════════════════════════════════
+   EMPLOYER ABOUT EVENTS
+══════════════════════════════════════ */
+
+
+    /*
+      Pencil icon.
+    */
+    editAboutBtn
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.preventDefault();
+
+          event.stopPropagation();
+
+          openEmployerAboutEditor();
+
+        }
+      );
+
+
+    /*
+      X button.
+    */
+    closeAboutEditBtn
+      ?.addEventListener(
+        "click",
+        closeEmployerAboutEditor
+      );
+
+
+    /*
+      Cancel button.
+    */
+    cancelAboutEditBtn
+      ?.addEventListener(
+        "click",
+        closeEmployerAboutEditor
+      );
+
+
+    /*
+      Save Changes.
+    */
+    saveAboutEditBtn
+      ?.addEventListener(
+        "click",
+        saveEmployerProfileAbout
+      );
+
+
+    /*
+      Ctrl + Enter / Cmd + Enter saves.
+    */
+    profileAboutInput
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key === "Enter" &&
+            (
+              event.ctrlKey ||
+              event.metaKey
+            )
+          ) {
+
+            event.preventDefault();
+
+            saveEmployerProfileAbout();
+
+          }
+
+        }
+      );
+
+
+    /*
+      Clicking the dark backdrop
+      closes the modal.
+    */
+    aboutEditOverlay
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target ===
+            aboutEditOverlay
+          ) {
+
+            closeEmployerAboutEditor();
+
+          }
+
+        }
+      );
+
+
+    /*
+      Escape closes the About modal.
+    */
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Escape" &&
+          (
+            aboutEditOverlay
+              ?.classList
+              .contains("open")
+
+            ||
+
+            aboutEditOverlay
+              ?.classList
+              .contains("active")
+          )
+        ) {
+
+          closeEmployerAboutEditor();
 
         }
 
