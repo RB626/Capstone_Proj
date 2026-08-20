@@ -3155,6 +3155,9 @@
     };
 
     let workerPublicPortfolioPhotos = [];
+    let workerPublicReviewDocuments = [];
+    const workerPublicReviewerProfiles = new Map();
+    const workerPublicReviewerUnsubs = new Map();
     let activeWorkerPublicPhotoIndex = 0;
 
     const workerPhotoViewer = document.getElementById("workerPhotoViewer");
@@ -3457,6 +3460,7 @@
 
 
       workerPublicProfileUnsubs = [];
+      cleanupWorkerPublicReviewerListeners();
     }
 
 
@@ -4457,6 +4461,301 @@
 
     }
 
+    /* ══════════════════════════════════════
+   GET CURRENT REVIEWER PROFILE
+══════════════════════════════════════ */
+
+    function getWorkerPublicReviewerProfile(
+      review = {}
+    ) {
+
+      const reviewerId =
+        String(
+          review.reviewerId || ""
+        ).trim();
+
+
+      const liveEmployer =
+        reviewerId
+          ? workerPublicReviewerProfiles.get(
+            reviewerId
+          )
+          : null;
+
+
+      const name =
+
+        liveEmployer?.name ||
+
+        liveEmployer?.fullName ||
+
+        review.reviewerName ||
+
+        "Employer";
+
+
+      /*
+        IMPORTANT:
+    
+        Current Employer profile wins.
+    
+        The photo saved inside the review
+        is now ONLY a fallback.
+      */
+      const photoURL =
+
+        liveEmployer?.customPhotoURL ||
+
+        liveEmployer?.photoURL ||
+
+        liveEmployer?.googlePhotoURL ||
+
+        review.reviewerPhotoURL ||
+
+        makeFallbackAvatar(
+          name
+        );
+
+
+      return {
+        reviewerId,
+        name,
+        photoURL
+      };
+
+    }
+
+
+    /* ══════════════════════════════════════
+       WATCH ONE REVIEWER / EMPLOYER
+    ══════════════════════════════════════ */
+
+    function ensureWorkerPublicReviewerListener(
+      reviewerId
+    ) {
+
+      reviewerId =
+        String(
+          reviewerId || ""
+        ).trim();
+
+
+      if (!reviewerId) {
+        return;
+      }
+
+
+      /*
+        Do not create duplicate listeners.
+      */
+      if (
+        workerPublicReviewerUnsubs.has(
+          reviewerId
+        )
+      ) {
+        return;
+      }
+
+
+      const employerRef =
+        doc(
+          db,
+          "employers",
+          reviewerId
+        );
+
+
+      const unsubscribe =
+        onSnapshot(
+
+          employerRef,
+
+          snapshot => {
+
+            if (
+              snapshot.exists()
+            ) {
+
+              workerPublicReviewerProfiles.set(
+                reviewerId,
+                {
+                  id:
+                    snapshot.id,
+
+                  ...snapshot.data()
+                }
+              );
+
+            } else {
+
+              workerPublicReviewerProfiles.delete(
+                reviewerId
+              );
+
+            }
+
+
+            /*
+              Employer changed profile picture,
+              name, etc.
+    
+              Re-render Reviews & Ratings
+              immediately.
+            */
+            renderWorkerPublicReviews(
+              workerPublicReviewDocuments
+            );
+
+          },
+
+
+          error => {
+
+            console.error(
+              "PUBLIC REVIEWER PROFILE ERROR:",
+              reviewerId,
+              error
+            );
+
+          }
+
+        );
+
+
+      workerPublicReviewerUnsubs.set(
+        reviewerId,
+        unsubscribe
+      );
+
+    }
+
+
+    /* ══════════════════════════════════════
+       SYNC ALL REVIEWER LISTENERS
+    ══════════════════════════════════════ */
+
+    function syncWorkerPublicReviewerListeners(
+      documents = []
+    ) {
+
+      const neededReviewerIds =
+        new Set();
+
+
+      documents.forEach(
+        documentSnapshot => {
+
+          const review =
+            documentSnapshot.data();
+
+
+          const reviewerId =
+            String(
+              review.reviewerId || ""
+            ).trim();
+
+
+          if (reviewerId) {
+
+            neededReviewerIds.add(
+              reviewerId
+            );
+
+
+            ensureWorkerPublicReviewerListener(
+              reviewerId
+            );
+
+          }
+
+        }
+      );
+
+
+      /*
+        Remove Employer listeners belonging
+        to reviews that no longer exist.
+      */
+      for (
+        const [
+          reviewerId,
+          unsubscribe
+        ]
+        of workerPublicReviewerUnsubs
+      ) {
+
+        if (
+          neededReviewerIds.has(
+            reviewerId
+          )
+        ) {
+          continue;
+        }
+
+
+        try {
+
+          unsubscribe();
+
+        } catch (error) {
+
+          console.warn(
+            "PUBLIC REVIEWER CLEANUP ERROR:",
+            error
+          );
+
+        }
+
+
+        workerPublicReviewerUnsubs.delete(
+          reviewerId
+        );
+
+
+        workerPublicReviewerProfiles.delete(
+          reviewerId
+        );
+
+      }
+
+    }
+
+
+    /* ══════════════════════════════════════
+       CLEANUP REVIEWER LISTENERS
+    ══════════════════════════════════════ */
+
+    function cleanupWorkerPublicReviewerListeners() {
+
+      workerPublicReviewerUnsubs.forEach(
+        unsubscribe => {
+
+          try {
+
+            unsubscribe();
+
+          } catch (error) {
+
+            console.warn(
+              "PUBLIC REVIEWER CLEANUP ERROR:",
+              error
+            );
+
+          }
+
+        }
+      );
+
+
+      workerPublicReviewerUnsubs.clear();
+
+      workerPublicReviewerProfiles.clear();
+
+      workerPublicReviewDocuments =
+        [];
+
+    }
+
     function renderWorkerPublicReviews(
       documents
     ) {
@@ -4530,17 +4829,18 @@
 
               }
 
+              const realtimeReviewer =
+                getWorkerPublicReviewerProfile(
+                  review
+                );
+
 
               const reviewerName =
-                review.reviewerName ||
-                "Employer";
+                realtimeReviewer.name;
 
 
               const reviewerPhoto =
-                review.reviewerPhotoURL ||
-                makeFallbackAvatar(
-                  reviewerName
-                );
+                realtimeReviewer.photoURL;
 
 
               /*
@@ -4709,19 +5009,24 @@
           behavior: "smooth"
         });
 
+        /* ══════════════════════════════════════
+   INITIAL REALTIME APPLICANT IDENTITY
+══════════════════════════════════════ */
 
-        /*
-          Show the information from the
-          application immediately while
-          Firestore loads the full profile.
-        */
+        const realtimeApplicant =
+          getRealtimeApplicantProfile(
+            applicant
+          );
+
+
         const initialName =
+          realtimeApplicant.name ||
           applicant.applicantName ||
           "Job Seeker";
 
 
         const initialPhoto =
-          applicant.applicantPhotoURL ||
+          realtimeApplicant.photoURL ||
           makeFallbackAvatar(
             initialName
           );
@@ -4785,11 +5090,19 @@
                 applicant.applicantName ||
                 "Job Seeker";
 
-
               const photo =
+
+                data.customPhotoURL ||
+
                 data.photoURL ||
+
+                data.googlePhotoURL ||
+
                 applicant.applicantPhotoURL ||
-                makeFallbackAvatar(name);
+
+                makeFallbackAvatar(
+                  name
+                );
 
 
               const cover =
@@ -4896,12 +5209,23 @@
               }
 
 
-              if (avatarElement) {
+              if (
+                avatarElement
+              ) {
+
                 avatarElement.src =
                   photo;
 
+
                 avatarElement.alt =
                   name;
+
+
+                protectAvatar(
+                  avatarElement,
+                  name
+                );
+
               }
 
 
@@ -5105,12 +5429,22 @@
 
         const unsubscribeReviews =
           onSnapshot(
+
             reviewsQuery,
 
             snapshot => {
 
+              workerPublicReviewDocuments =
+                snapshot.docs;
+
+
+              syncWorkerPublicReviewerListeners(
+                workerPublicReviewDocuments
+              );
+
+
               renderWorkerPublicReviews(
-                snapshot.docs
+                workerPublicReviewDocuments
               );
 
             },
@@ -5126,18 +5460,14 @@
               document.getElementById(
                 "workerPublicReviewsList"
               ).innerHTML = `
-            <div class="reviews-empty-state">
-              Unable to load reviews.
-            </div>
-          `;
+        <div class="reviews-empty-state">
+          Unable to load reviews.
+        </div>
+      `;
 
             }
+
           );
-
-
-        workerPublicProfileUnsubs.push(
-          unsubscribeReviews
-        );
 
       };
 
