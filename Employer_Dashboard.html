@@ -6068,18 +6068,27 @@
             /*
               Update visible Applicant card.
             */
+            /*
+  Applicants page.
+*/
             refreshApplicantCardsRealtime(
               applicantId
             );
 
 
             /*
-              Rebuild notifications.
-    
-              createApplicationNotificationItem()
-              will now use the realtime profile.
+              Notifications.
             */
             renderAllNotifications();
+
+
+            /*
+              Messages sidebar + active
+              conversation header.
+            */
+            refreshEmployerMessageApplicant(
+              applicantId
+            );
 
           },
 
@@ -7136,12 +7145,24 @@
           Keep the conversation document values visible
           even when the applicant user document is absent.
         */
+        const realtimeApplicant =
+          getRealtimeApplicantProfile(
+            {
+              ...conversation,
+
+              applicantId:
+                applicantId
+            }
+          );
+
+
         const conversationName =
-          conversation.applicantName ||
+          realtimeApplicant.name ||
           fallbackName;
 
+
         const conversationAvatar =
-          conversation.applicantPhotoURL ||
+          realtimeApplicant.photoURL ||
           fallbackAvatar;
 
         if (chatName) {
@@ -7226,8 +7247,15 @@
                 conversationName;
 
               const liveAvatar =
+
+                applicant.customPhotoURL ||
+
                 applicant.photoURL ||
+
+                applicant.googlePhotoURL ||
+
                 applicant.profilePhotoURL ||
+
                 conversationAvatar;
 
               if (chatName) {
@@ -7373,6 +7401,206 @@
       );
     }
 
+    /* ══════════════════════════════════════
+   REALTIME APPLICANT → EMPLOYER MESSAGES
+══════════════════════════════════════ */
+
+    function refreshEmployerMessageApplicant(
+      applicantId
+    ) {
+
+      applicantId =
+        String(
+          applicantId || ""
+        ).trim();
+
+
+      if (!applicantId) {
+        return;
+      }
+
+
+      const liveProfile =
+        liveApplicantProfiles.get(
+          applicantId
+        );
+
+
+      if (!liveProfile) {
+        return;
+      }
+
+
+      const liveName =
+
+        liveProfile.fullName ||
+
+        liveProfile.name ||
+
+        liveProfile.displayName ||
+
+        "Applicant";
+
+
+      /*
+        Same permanent-photo priority
+        used everywhere else.
+      */
+      const livePhoto =
+
+        liveProfile.customPhotoURL ||
+
+        liveProfile.photoURL ||
+
+        liveProfile.googlePhotoURL ||
+
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          liveName
+        )}&background=ccfbf1&color=0f766e&size=128`;
+
+
+      /*
+        Update every Messages sidebar row
+        belonging to this Job Seeker.
+      */
+      document
+        .querySelectorAll(
+          "#conv-items .conv-item"
+        )
+        .forEach(
+          item => {
+
+            if (
+              String(
+                item.dataset.applicantId ||
+                ""
+              ) !== applicantId
+            ) {
+              return;
+            }
+
+
+            /*
+              Update data attributes too.
+    
+              openConv() uses these as
+              its immediate fallback.
+            */
+            item.dataset.name =
+              liveName;
+
+            item.dataset.avatar =
+              livePhoto;
+
+
+            const avatar =
+              item.querySelector(
+                ".conv-avatar"
+              );
+
+
+            const name =
+              item.querySelector(
+                ".conv-name"
+              );
+
+
+            if (avatar) {
+
+              avatar.src =
+                livePhoto;
+
+              avatar.alt =
+                liveName;
+
+            }
+
+
+            if (name) {
+
+              name.textContent =
+                liveName;
+
+            }
+
+
+            /*
+              If this is the currently active
+              conversation, update the chat
+              header immediately too.
+            */
+            if (
+              item.classList.contains(
+                "active"
+              )
+            ) {
+
+              const chatAvatar =
+                document.getElementById(
+                  "chat-avatar"
+                );
+
+
+              const chatName =
+                document.getElementById(
+                  "chat-name"
+                );
+
+
+              const chatStatus =
+                document.getElementById(
+                  "chat-status"
+                );
+
+
+              const onlineIndicator =
+                document.querySelector(
+                  ".chat-header-online"
+                );
+
+
+              if (chatAvatar) {
+
+                chatAvatar.src =
+                  livePhoto;
+
+              }
+
+
+              if (chatName) {
+
+                chatName.textContent =
+                  liveName;
+
+              }
+
+
+              if (chatStatus) {
+
+                chatStatus.textContent =
+                  liveProfile.online
+                    ? "Active now"
+                    : "Active recently";
+
+              }
+
+
+              if (onlineIndicator) {
+
+                onlineIndicator.style.display =
+                  liveProfile.online
+                    ? "block"
+                    : "none";
+
+              }
+
+            }
+
+          }
+        );
+
+    }
+
     function renderEmployerMessageSidebar() {
       const container =
         document.getElementById("conv-items");
@@ -7494,13 +7722,19 @@
       const conversationId =
         conversation.id;
 
+
+      const realtimeApplicant =
+        getRealtimeApplicantProfile(
+          conversation
+        );
+
+
       const applicantName =
-        conversation.applicantName ||
-        "Applicant";
+        realtimeApplicant.name;
+
 
       const applicantAvatar =
-        conversation.applicantPhotoURL ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(applicantName)}&background=ccfbf1&color=0f766e`;
+        realtimeApplicant.photoURL;
 
       const lastMessage =
         conversation.lastMessage ||
@@ -7578,13 +7812,18 @@
     function createUnmessagedApplicantItem(
       applicant
     ) {
+      const realtimeApplicant =
+        getRealtimeApplicantProfile(
+          applicant
+        );
+
+
       const applicantName =
-        applicant.applicantName ||
-        "Applicant";
+        realtimeApplicant.name;
+
 
       const applicantAvatar =
-        applicant.applicantPhotoURL ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(applicantName)}&background=ccfbf1&color=0f766e`;
+        realtimeApplicant.photoURL;
 
       const appliedJob =
         applicant.title ||
