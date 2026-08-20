@@ -3138,6 +3138,7 @@
     });
 
     let activeReviewApplicant = null;
+    let unsubscribeReviewApplicantProfile = null;
     let selectedApplicantRating = 0;
     let activePublicApplicant =
       null;
@@ -5307,6 +5308,16 @@
 
         selectedApplicantRating = 0;
 
+        if (
+          unsubscribeReviewApplicantProfile
+        ) {
+
+          unsubscribeReviewApplicantProfile();
+
+          unsubscribeReviewApplicantProfile =
+            null;
+        }
+
         const overlay =
           document.getElementById(
             "applicantReviewOverlay"
@@ -5337,27 +5348,165 @@
             "reviewModalError"
           );
 
+        /* ══════════════════════════════════════
+   INITIAL APPLICANT INFORMATION
+══════════════════════════════════════ */
+
+        const fallbackApplicantName =
+          applicant.applicantName ||
+          "Applicant";
+
+
+        const fallbackApplicantPhoto =
+          applicant.applicantPhotoURL ||
+
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            fallbackApplicantName
+          )}&background=ccfbf1&color=0f766e`;
+
+
+        /*
+          Show something immediately while
+          Firestore loads the current profile.
+        */
         if (name) {
+
           name.textContent =
-            applicant.applicantName ||
-            "Applicant";
+            fallbackApplicantName;
+
         }
 
+
         if (job) {
+
           job.textContent =
             `Applied for: ${applicant.title ||
             "Job"
             }`;
+
         }
 
+
         if (avatar) {
+
           avatar.src =
-            applicant.applicantPhotoURL ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(
-              applicant.applicantName ||
-              "Applicant"
-            )}&background=ccfbf1&color=0f766e`;
+            fallbackApplicantPhoto;
+
+          avatar.alt =
+            fallbackApplicantName;
+
         }
+
+
+        /* ══════════════════════════════════════
+           REALTIME JOB SEEKER PROFILE
+        ══════════════════════════════════════ */
+
+        const applicantProfileRef =
+          doc(
+            db,
+            "users",
+            applicant.applicantId
+          );
+
+
+        unsubscribeReviewApplicantProfile =
+          onSnapshot(
+
+            applicantProfileRef,
+
+            profileSnapshot => {
+
+              if (
+                !profileSnapshot.exists()
+              ) {
+                return;
+              }
+
+
+              const profileData =
+                profileSnapshot.data();
+
+
+              /*
+                Current Job Seeker name.
+              */
+              const currentName =
+
+                profileData.fullName ||
+
+                profileData.name ||
+
+                fallbackApplicantName;
+
+
+              /*
+                IMPORTANT:
+        
+                Same permanent-photo priority
+                used by the Job Seeker profile.
+        
+                Custom upload always wins.
+              */
+              const currentPhoto =
+
+                profileData.customPhotoURL ||
+
+                profileData.photoURL ||
+
+                profileData.googlePhotoURL ||
+
+                fallbackApplicantPhoto;
+
+
+              if (name) {
+
+                name.textContent =
+                  currentName;
+
+              }
+
+
+              if (avatar) {
+
+                avatar.src =
+                  currentPhoto;
+
+                avatar.alt =
+                  currentName;
+
+              }
+
+
+              /*
+                Keep the object used elsewhere
+                in this modal synchronized too.
+              */
+              activeReviewApplicant = {
+
+                ...activeReviewApplicant,
+
+                applicantName:
+                  currentName,
+
+                applicantPhotoURL:
+                  currentPhoto
+
+              };
+
+            },
+
+
+            listenerError => {
+
+              console.error(
+                "REVIEW APPLICANT PROFILE LISTENER ERROR:",
+                listenerError
+              );
+
+            }
+
+          );
 
         if (comment) {
           comment.value = "";
@@ -5446,8 +5595,28 @@
           )
           ?.classList.remove("open");
 
-        activeReviewApplicant = null;
-        selectedApplicantRating = 0;
+        /*
+  Stop realtime applicant listener.
+*/
+        if (
+          unsubscribeReviewApplicantProfile
+        ) {
+
+          unsubscribeReviewApplicantProfile();
+
+          unsubscribeReviewApplicantProfile =
+            null;
+
+        }
+
+
+        activeReviewApplicant =
+          null;
+
+
+        selectedApplicantRating =
+          0;
+
 
         document.body.style.overflow =
           "";
