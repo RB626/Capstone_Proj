@@ -1748,6 +1748,96 @@
 
     }
 
+    /* ══════════════════════════════════════
+   SYNC EMPLOYER PHOTO TO ALL JOB POSTS
+══════════════════════════════════════ */
+
+    async function syncEmployerPhotoAcrossJobs(
+      employerId,
+      photoURL
+    ) {
+
+      if (
+        !employerId ||
+        !photoURL
+      ) {
+        return;
+      }
+
+
+      try {
+
+        const employerJobsQuery =
+          query(
+            collection(
+              db,
+              "jobs"
+            ),
+
+            where(
+              "employerId",
+              "==",
+              employerId
+            )
+          );
+
+
+        const jobsSnapshot =
+          await getDocs(
+            employerJobsQuery
+          );
+
+
+        if (
+          jobsSnapshot.empty
+        ) {
+
+          console.log(
+            "NO EXISTING JOBS NEED PHOTO SYNC"
+          );
+
+          return;
+
+        }
+
+        await Promise.all(
+
+          jobsSnapshot.docs.map(
+            jobSnapshot => {
+
+              return updateDoc(
+                jobSnapshot.ref,
+                {
+
+                  employerPhotoURL:
+                    photoURL
+
+                }
+              );
+
+            }
+          )
+
+        );
+
+
+        console.log(
+          "EMPLOYER PHOTO SYNCED TO JOBS:",
+          jobsSnapshot.size
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "FAILED TO SYNC EMPLOYER PHOTO TO JOBS:",
+          error
+        );
+
+      }
+
+    }
+
     async function uploadEmployerProfilePhoto(
       file
     ) {
@@ -1910,6 +2000,11 @@
             filePath
 
         };
+
+        await syncEmployerPhotoAcrossJobs(
+          user.uid,
+          downloadURL
+        );
 
 
         updateEmployerUI(
@@ -5857,10 +5952,18 @@
         'You';
 
       const employerPhoto =
-        job.employerPhotoURL ||
+
+        currentEmployerData?.customPhotoURL ||
+
         currentEmployerData?.photoURL ||
+
+        job.employerPhotoURL ||
+
         auth.currentUser?.photoURL ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(employerName)}&background=ccfbf1&color=0f766e`;
+
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          employerName
+        )}&background=ccfbf1&color=0f766e`;
 
       const safeTitle = escapeHtml(
         job.title || 'Untitled job'
@@ -8034,7 +8137,20 @@
 
       const employerName = escapeHtml(job.employerName || "Employer");
       const employerBadge = escapeHtml(job.badge || "Company");
-      const employerPhoto = job.employerPhotoURL || "https://i.pravatar.cc/80?img=32";
+      const employerPhoto =
+
+        currentEmployerData?.customPhotoURL ||
+
+        currentEmployerData?.photoURL ||
+
+        job.employerPhotoURL ||
+
+        auth.currentUser?.photoURL ||
+
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          job.employerName ||
+          "Employer"
+        )}&background=ccfbf1&color=0f766e`;
       const title = escapeHtml(job.title || "Untitled Job");
       const location = escapeHtml(job.location || "Not specified");
       const duration = escapeHtml(job.duration || "Not specified");
