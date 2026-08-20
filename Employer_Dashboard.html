@@ -1767,6 +1767,8 @@
     const profileLocationTrigger = document.getElementById("profileLocationTrigger");
     const profileLocationText = document.getElementById("profileLocationText");
     const profileMemberSince = document.getElementById("profileMemberSince");
+    const employerProfileCompletionPct = document.getElementById("profileCompletionPct");
+    const employerProfileCompletionFill = document.getElementById("profileCompletionFill");
     const employerProfileHeadline = document.getElementById("profileHeroRole");
     const editProfileHeadlineBtn = document.getElementById("editProfileHeadlineBtn");
     const profileEditOverlay = document.getElementById("profileEditOverlay");
@@ -3314,6 +3316,253 @@
     }
 
     /* ══════════════════════════════════════
+   EMPLOYER PROFILE COMPLETION
+══════════════════════════════════════ */
+
+    function refreshEmployerProfileCompletion(
+      employerData = null
+    ) {
+
+      /*
+        Use supplied realtime data first.
+    
+        Otherwise use our latest cached
+        Employer document.
+      */
+      const data =
+        employerData ||
+        currentEmployerData ||
+        {};
+
+
+      /* ────────────────────────────────────
+         1. EMPLOYER NAME
+      ───────────────────────────────────── */
+
+      const hasName =
+        !!String(
+          data.fullName ||
+          data.name ||
+          ""
+        ).trim();
+
+
+      /* ────────────────────────────────────
+         2. CUSTOM PROFILE HEADLINE
+    
+         We check Firestore itself, NOT the
+         static fallback text displayed in
+         the HTML.
+      ───────────────────────────────────── */
+
+      const hasHeadline =
+        !!String(
+          data.profileHeadline ||
+          ""
+        ).trim();
+
+
+      /* ────────────────────────────────────
+         3. ABOUT
+      ───────────────────────────────────── */
+
+      const hasAbout =
+        !!String(
+          data.profileAbout ||
+          ""
+        ).trim();
+
+
+      /* ────────────────────────────────────
+         4. CURRENT LOCATION
+      ───────────────────────────────────── */
+
+      const locationText =
+        String(
+          data.locationText ||
+          ""
+        ).trim();
+
+
+      const hasLocation =
+        !!locationText &&
+        locationText !==
+        "Set current location";
+
+
+      /* ────────────────────────────────────
+         5. PROFILE PHOTO
+    
+         Same idea as the Job Seeker:
+    
+         - custom BlueSpace photo
+         - saved profile photo
+         - Google profile photo
+    
+         Any real profile photo counts.
+      ───────────────────────────────────── */
+
+      const hasProfilePhoto =
+        !!(
+          data.customPhotoURL ||
+          data.photoURL ||
+          data.googlePhotoURL
+        );
+
+
+      /* ────────────────────────────────────
+         6. COVER PHOTO
+    
+         Only an actually uploaded Employer
+         cover counts.
+    
+         The static Unsplash fallback DOES
+         NOT count as completion.
+      ───────────────────────────────────── */
+
+      const hasCoverPhoto =
+        !!String(
+          data.coverPhotoURL ||
+          ""
+        ).trim();
+
+
+      /* ────────────────────────────────────
+         7. MY PHOTOS
+      ───────────────────────────────────── */
+
+      const hasPortfolioPhoto =
+        Array.isArray(
+          data.portfolioPhotos
+        ) &&
+        data.portfolioPhotos.some(
+          photo =>
+            photo &&
+            photo.url
+        );
+
+
+      /* ══════════════════════════════════════
+         BUILD COMPLETION CHECKLIST
+      ═══════════════════════════════════════ */
+
+      const checks = [
+
+        hasName,
+
+        hasHeadline,
+
+        hasAbout,
+
+        hasLocation,
+
+        hasProfilePhoto,
+
+        hasCoverPhoto,
+
+        hasPortfolioPhoto
+
+      ];
+
+
+      const completedCount =
+        checks.filter(
+          Boolean
+        ).length;
+
+
+      const totalCount =
+        checks.length;
+
+
+      const percentage =
+        Math.round(
+          (
+            completedCount /
+            totalCount
+          ) * 100
+        );
+
+
+      /* ══════════════════════════════════════
+         UPDATE UI
+      ═══════════════════════════════════════ */
+
+      if (
+        employerProfileCompletionPct
+      ) {
+
+        employerProfileCompletionPct.textContent =
+          `${percentage}%`;
+
+      }
+
+
+      if (
+        employerProfileCompletionFill
+      ) {
+
+        employerProfileCompletionFill.style.width =
+          `${percentage}%`;
+
+
+        /*
+          Accessibility.
+        */
+        employerProfileCompletionFill.setAttribute(
+          "aria-valuenow",
+          String(
+            percentage
+          )
+        );
+
+      }
+
+
+      /*
+        Helpful while testing.
+    
+        You can remove this console.log
+        later if you want.
+      */
+      console.log(
+        "EMPLOYER PROFILE COMPLETION:",
+        {
+          percentage,
+          completedCount,
+          totalCount,
+
+          checks: {
+            name:
+              hasName,
+
+            headline:
+              hasHeadline,
+
+            about:
+              hasAbout,
+
+            location:
+              hasLocation,
+
+            profilePhoto:
+              hasProfilePhoto,
+
+            coverPhoto:
+              hasCoverPhoto,
+
+            portfolioPhoto:
+              hasPortfolioPhoto
+          }
+        }
+      );
+
+
+      return percentage;
+
+    }
+
+    /* ══════════════════════════════════════
    REALTIME EMPLOYER COVER PHOTO
 ══════════════════════════════════════ */
 
@@ -3404,6 +3653,10 @@
               ...data
 
             };
+
+            refreshEmployerProfileCompletion(
+              data
+            );
 
             if (
               employerProfileHeadline
@@ -4814,6 +5067,10 @@
 
         const employerData = employerSnap.data();
         currentEmployerData = employerData;
+
+        refreshEmployerProfileCompletion(
+          employerData
+        );
 
         const authCreationTime =
           user.metadata?.creationTime
