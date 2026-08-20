@@ -10161,3 +10161,89 @@ body.dark-mode .job-post-modal-footer {
 
   border-top-color: #1f2937;
 }
+
+/* ══════════════════════════════════════
+   EMPLOYER PORTFOLIO REMOVE BUTTON
+══════════════════════════════════════ */
+
+.employer-portfolio-item {
+  position: relative;
+}
+
+
+/* X BUTTON */
+.employer-portfolio-remove {
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(17, 24, 39, 0.82);
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  z-index: 5;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transform: scale(0.9);
+
+  transition:
+    opacity 0.18s ease,
+    visibility 0.18s ease,
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+
+.employer-portfolio-remove svg {
+  width: 20px;
+  height: 20px;
+}
+
+
+/* SHOW X WHEN PHOTO IS HOVERED */
+.employer-portfolio-item:hover .employer-portfolio-remove,
+.employer-portfolio-item:focus-within .employer-portfolio-remove {
+
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+
+  transform: scale(1);
+}
+
+
+.employer-portfolio-remove:hover {
+  background: rgba(239, 68, 68, 0.95);
+}
+
+
+/*
+  Phones don't really have hover,
+  so keep the X visible on touch devices.
+*/
+@media (hover: none) {
+
+  .employer-portfolio-remove {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: scale(1);
+  }
+
+}

@@ -1096,6 +1096,67 @@
   </div><!-- /app-shell -->
 
   <!-- ══════════════════════════════════════
+     EMPLOYER PORTFOLIO PHOTO VIEWER
+══════════════════════════════════════ -->
+
+  <div class="worker-photo-viewer" id="employerPortfolioViewer" aria-hidden="true">
+
+    <!-- CLOSE -->
+    <button type="button" class="worker-photo-viewer-close" id="employerPortfolioViewerClose" aria-label="Close photo">
+
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M18 6L6 18"></path>
+        <path d="M6 6l12 12"></path>
+      </svg>
+
+    </button>
+
+
+    <!-- COUNTER -->
+    <div class="worker-photo-viewer-counter" id="employerPortfolioViewerCounter">
+      1 / 1
+    </div>
+
+
+    <!-- PREVIOUS -->
+    <button type="button" class="
+      worker-photo-viewer-nav
+      worker-photo-viewer-prev
+    " id="employerPortfolioViewerPrev" aria-label="Previous photo">
+
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+
+    </button>
+
+
+    <!-- PHOTO -->
+    <div class="worker-photo-viewer-content">
+
+      <img class="worker-photo-viewer-image" id="employerPortfolioViewerImage" src="" alt="Employer portfolio photo" />
+
+    </div>
+
+
+    <!-- NEXT -->
+    <button type="button" class="
+      worker-photo-viewer-nav
+      worker-photo-viewer-next
+    " id="employerPortfolioViewerNext" aria-label="Next photo">
+
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+
+    </button>
+
+  </div>
+
+  <!-- ══════════════════════════════════════
      EMPLOYER COVER PHOTO VIEWER
 ══════════════════════════════════════ -->
 
@@ -1685,7 +1746,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, updateDoc, deleteDoc, query, where, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, getDocs, setDoc, addDoc, updateDoc, deleteDoc, query, where, onSnapshot, orderBy, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
     const firebaseConfig = {
@@ -1721,6 +1782,17 @@
     const closeAboutEditBtn = document.getElementById("closeAboutEditBtn");
     const cancelAboutEditBtn = document.getElementById("cancelAboutEditBtn");
     const saveAboutEditBtn = document.getElementById("saveAboutEditBtn");
+    const employerPortfolioGrid = document.getElementById("portfolioGrid");
+    const employerPortfolioUploadInput = document.getElementById("portfolioUploadInput");
+    const employerPortfolioAddBtn = document.getElementById("portfolioAddBtn");
+    const employerPortfolioViewer = document.getElementById("employerPortfolioViewer");
+    const employerPortfolioViewerImage = document.getElementById("employerPortfolioViewerImage");
+    const employerPortfolioViewerClose = document.getElementById("employerPortfolioViewerClose");
+    const employerPortfolioViewerPrev = document.getElementById("employerPortfolioViewerPrev");
+    const employerPortfolioViewerNext = document.getElementById("employerPortfolioViewerNext");
+    const employerPortfolioViewerCounter = document.getElementById("employerPortfolioViewerCounter");
+    let employerPortfolioPhotos = [];
+    let activeEmployerPortfolioPhotoIndex = 0;
     const DEFAULT_EMPLOYER_ABOUT = "Local employer looking to connect with skilled, reliable, and hardworking workers. We offer job opportunities based on our current hiring needs and value professionalism, dependability, and quality work.";
     const employerHeroCover = document.getElementById("profileHeroCover");
     const employerCoverTrigger = document.getElementById("profileCoverTrigger");
@@ -1737,6 +1809,647 @@
     const employerProfilePhotoViewer = document.getElementById("employerProfilePhotoViewer");
     const employerProfilePhotoViewerImage = document.getElementById("employerProfilePhotoViewerImage");
     const employerProfilePhotoViewerClose = document.getElementById("employerProfilePhotoViewerClose");
+
+    /* ══════════════════════════════════════
+   RENDER EMPLOYER PORTFOLIO
+══════════════════════════════════════ */
+
+    function renderEmployerPortfolio(
+      photos = []
+    ) {
+
+      if (
+        !employerPortfolioGrid
+      ) {
+        return;
+      }
+
+
+      /*
+        Only keep valid photos.
+      */
+      employerPortfolioPhotos =
+        Array.isArray(photos)
+          ? photos.filter(
+            photo =>
+              photo &&
+              photo.url
+          )
+          : [];
+
+
+      /*
+        Build existing photos first.
+      */
+      const photosHTML =
+        employerPortfolioPhotos
+          .map(
+            (photo, index) => `
+
+          <div class="portfolio-item employer-portfolio-item">
+
+  <!-- PHOTO -->
+  <img
+    class="
+      port-img
+      employer-portfolio-photo
+    "
+    src="${escapeHtml(
+              photo.url
+            )}"
+    alt="Portfolio photo ${index + 1}"
+    data-index="${index}"
+    role="button"
+    tabindex="0"
+  />
+
+
+  <!-- REMOVE PHOTO -->
+  <button
+    type="button"
+    class="employer-portfolio-remove"
+    data-index="${index}"
+    aria-label="Remove photo"
+    title="Remove photo"
+  >
+
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.4"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M18 6L6 18"></path>
+      <path d="M6 6l12 12"></path>
+    </svg>
+
+  </button>
+
+</div>
+
+        `
+          )
+          .join("");
+
+
+      /*
+        IMPORTANT:
+    
+        Always keep Add Photo as the
+        final tile, just like your
+        Job Seeker layout.
+      */
+      employerPortfolioGrid.innerHTML = `
+
+    ${photosHTML}
+
+    <label
+      for="portfolioUploadInput"
+      class="port-add"
+      id="portfolioAddBtn"
+    >
+
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line
+          x1="12"
+          y1="5"
+          x2="12"
+          y2="19"
+        ></line>
+
+        <line
+          x1="5"
+          y1="12"
+          x2="19"
+          y2="12"
+        ></line>
+      </svg>
+
+      <span data-i18n="profileAddPhoto">
+        ${employerPortfolioPhotos.length
+          ? "Add More"
+          : "Add Photo"
+        }
+      </span>
+
+    </label>
+
+  `;
+
+    }
+
+    /* ══════════════════════════════════════
+   UPLOAD EMPLOYER PORTFOLIO PHOTO
+══════════════════════════════════════ */
+
+    async function uploadEmployerPortfolioPhoto(
+      file
+    ) {
+
+      const user =
+        auth.currentUser;
+
+
+      if (!user) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      if (!file) {
+        return;
+      }
+
+
+      /*
+        Images only.
+      */
+      if (
+        !file.type.startsWith(
+          "image/"
+        )
+      ) {
+
+        alert(
+          "Only image files are allowed."
+        );
+
+
+        if (
+          employerPortfolioUploadInput
+        ) {
+
+          employerPortfolioUploadInput.value =
+            "";
+
+        }
+
+
+        return;
+
+      }
+
+
+      /*
+        6MB maximum.
+      */
+      const maxSize =
+        6 * 1024 * 1024;
+
+
+      if (
+        file.size >
+        maxSize
+      ) {
+
+        alert(
+          "Photo must be 6MB or below."
+        );
+
+
+        if (
+          employerPortfolioUploadInput
+        ) {
+
+          employerPortfolioUploadInput.value =
+            "";
+
+        }
+
+
+        return;
+
+      }
+
+
+      try {
+
+        /*
+          Safe filename.
+        */
+        const safeOriginalName =
+          file.name.replace(
+            /[^a-zA-Z0-9._-]/g,
+            "_"
+          );
+
+
+        const safeFileName =
+          `${Date.now()}_${safeOriginalName}`;
+
+
+        /*
+          Keep Employer files inside
+          the Employer's own Storage folder.
+        */
+        const filePath =
+          `employers/${user.uid}/portfolio/${safeFileName}`;
+
+
+        const photoStorageRef =
+          ref(
+            storage,
+            filePath
+          );
+
+
+        /*
+          Upload image.
+        */
+        await uploadBytes(
+          photoStorageRef,
+          file
+        );
+
+
+        /*
+          Obtain public Firebase URL.
+        */
+        const downloadURL =
+          await getDownloadURL(
+            photoStorageRef
+          );
+
+
+        /*
+          Photo record stored inside
+          employers/{uid}.
+        */
+        const photoRecord = {
+
+          url:
+            downloadURL,
+
+          path:
+            filePath,
+
+          uploadedAt:
+            Date.now()
+
+        };
+
+
+        const employerRef =
+          doc(
+            db,
+            "employers",
+            user.uid
+          );
+
+
+        /*
+          Add without destroying
+          existing photos.
+        */
+        await updateDoc(
+          employerRef,
+          {
+
+            portfolioPhotos:
+              arrayUnion(
+                photoRecord
+              ),
+
+            updatedAt:
+              serverTimestamp()
+
+          }
+        );
+
+
+        console.log(
+          "EMPLOYER PORTFOLIO PHOTO ADDED:",
+          photoRecord
+        );
+
+
+        /*
+          No manual render necessary.
+    
+          Your Employer onSnapshot()
+          will receive portfolioPhotos
+          and render everything.
+        */
+
+
+      } catch (error) {
+
+        console.error(
+          "EMPLOYER PORTFOLIO UPLOAD FAILED:",
+          error
+        );
+
+
+        alert(
+          "Failed to upload photo."
+        );
+
+
+      } finally {
+
+        if (
+          employerPortfolioUploadInput
+        ) {
+
+          /*
+            Important:
+    
+            This allows the user to choose
+            the same file again later.
+          */
+          employerPortfolioUploadInput.value =
+            "";
+
+        }
+
+      }
+
+    }
+
+    /* ══════════════════════════════════════
+   REMOVE EMPLOYER PORTFOLIO PHOTO
+══════════════════════════════════════ */
+
+    async function removeEmployerPortfolioPhoto(
+      index
+    ) {
+
+      const user =
+        auth.currentUser;
+
+
+      if (!user) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      const safeIndex =
+        Number(
+          index
+        );
+
+
+      if (
+        Number.isNaN(
+          safeIndex
+        ) ||
+        !employerPortfolioPhotos[
+        safeIndex
+        ]
+      ) {
+
+        return;
+
+      }
+
+
+      /*
+        Photo selected for removal.
+      */
+      const photo =
+        employerPortfolioPhotos[
+        safeIndex
+        ];
+
+
+      /*
+        Prevent accidental deletion.
+      */
+      const confirmed =
+        window.confirm(
+          "Remove this photo?"
+        );
+
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      try {
+
+        const employerRef =
+          doc(
+            db,
+            "employers",
+            user.uid
+          );
+
+
+        /*
+          Read the latest Firestore data first.
+    
+          This prevents us from accidentally
+          deleting a photo that another tab
+          just uploaded.
+        */
+        const employerSnapshot =
+          await getDoc(
+            employerRef
+          );
+
+
+        if (
+          !employerSnapshot.exists()
+        ) {
+
+          throw new Error(
+            "Employer profile was not found."
+          );
+
+        }
+
+
+        const employerData =
+          employerSnapshot.data();
+
+
+        const latestPhotos =
+          Array.isArray(
+            employerData.portfolioPhotos
+          )
+            ? employerData.portfolioPhotos
+            : [];
+
+
+        /*
+          Remove only THIS exact photo.
+    
+          Prefer Storage path because
+          every uploaded Employer photo
+          has a unique path.
+        */
+        const remainingPhotos =
+          latestPhotos.filter(
+            existingPhoto => {
+
+              if (
+                photo.path &&
+                existingPhoto?.path
+              ) {
+
+                return (
+                  existingPhoto.path !==
+                  photo.path
+                );
+
+              }
+
+
+              return (
+                existingPhoto?.url !==
+                photo.url
+              );
+
+            }
+          );
+
+
+        /* ══════════════════════════════════════
+           FIRST: REMOVE FROM FIRESTORE
+        ═══════════════════════════════════════ */
+
+        await updateDoc(
+          employerRef,
+          {
+
+            portfolioPhotos:
+              remainingPhotos,
+
+            updatedAt:
+              serverTimestamp()
+
+          }
+        );
+
+
+        /*
+          Update local state immediately.
+    
+          The realtime onSnapshot()
+          will also confirm this change.
+        */
+        currentEmployerData = {
+
+          ...(
+            currentEmployerData ||
+            {}
+          ),
+
+          portfolioPhotos:
+            remainingPhotos
+
+        };
+
+
+        renderEmployerPortfolio(
+          remainingPhotos
+        );
+
+
+        /* ══════════════════════════════════════
+           SECOND: DELETE STORAGE FILE
+        ═══════════════════════════════════════ */
+
+        if (
+          photo.path
+        ) {
+
+          try {
+
+            await deleteObject(
+              ref(
+                storage,
+                photo.path
+              )
+            );
+
+
+            console.log(
+              "PORTFOLIO STORAGE FILE DELETED:",
+              photo.path
+            );
+
+
+          } catch (
+          storageDeleteError
+          ) {
+
+            /*
+              Important:
+    
+              Don't restore the Firestore
+              photo if Storage cleanup fails.
+    
+              The user's profile is already
+              correctly updated.
+            */
+            console.warn(
+              "PORTFOLIO PHOTO REMOVED FROM PROFILE, BUT STORAGE CLEANUP FAILED:",
+              storageDeleteError
+            );
+
+          }
+
+        }
+
+
+        /*
+          If fullscreen viewer happens to be
+          open, close it after deletion.
+        */
+        if (
+          employerPortfolioViewer
+            ?.classList
+            .contains("open")
+        ) {
+
+          closeEmployerPortfolioViewer();
+
+        }
+
+
+        console.log(
+          "EMPLOYER PORTFOLIO PHOTO REMOVED:",
+          photo
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "FAILED TO REMOVE EMPLOYER PORTFOLIO PHOTO:",
+          error
+        );
+
+
+        alert(
+          "Failed to remove photo."
+        );
+
+      }
+
+    }
 
     /* ══════════════════════════════════════
    EMPLOYER COVER PHOTO VIEWER
@@ -2692,10 +3405,6 @@
 
             };
 
-            /*
-  Update the visible headline whenever
-  employers/{uid} changes.
-*/
             if (
               employerProfileHeadline
             ) {
@@ -2714,10 +3423,6 @@
               employerProfileAbout
             ) {
 
-              /*
-                Never allow i18n to replace
-                user-created profile content.
-              */
               employerProfileAbout.removeAttribute(
                 "data-i18n"
               );
@@ -2728,10 +3433,11 @@
 
             }
 
+            renderEmployerPortfolio(
+              data.portfolioPhotos ||
+              []
+            );
 
-            /*
-              Main Employer profile.
-            */
             if (
               employerHeroCover
             ) {
@@ -3307,6 +4013,274 @@
         }
 
       }
+
+    }
+
+    /* ══════════════════════════════════════
+   EMPLOYER PORTFOLIO VIEWER
+══════════════════════════════════════ */
+
+    function updateEmployerPortfolioViewer() {
+
+      if (
+        !employerPortfolioPhotos.length ||
+        !employerPortfolioViewerImage
+      ) {
+        return;
+      }
+
+
+      /*
+        Loop last → first.
+      */
+      if (
+        activeEmployerPortfolioPhotoIndex < 0
+      ) {
+
+        activeEmployerPortfolioPhotoIndex =
+          employerPortfolioPhotos.length - 1;
+
+      }
+
+
+      /*
+        Loop first → last.
+      */
+      if (
+        activeEmployerPortfolioPhotoIndex >=
+        employerPortfolioPhotos.length
+      ) {
+
+        activeEmployerPortfolioPhotoIndex =
+          0;
+
+      }
+
+
+      const photo =
+        employerPortfolioPhotos[
+        activeEmployerPortfolioPhotoIndex
+        ];
+
+
+      if (!photo?.url) {
+        return;
+      }
+
+
+      employerPortfolioViewerImage.src =
+        photo.url;
+
+
+      employerPortfolioViewerImage.alt =
+        `Portfolio photo ${activeEmployerPortfolioPhotoIndex +
+        1
+        }`;
+
+
+      /*
+        Example:
+        2 / 4
+      */
+      if (
+        employerPortfolioViewerCounter
+      ) {
+
+        employerPortfolioViewerCounter.textContent =
+          `${activeEmployerPortfolioPhotoIndex +
+          1
+          } / ${employerPortfolioPhotos.length
+          }`;
+
+      }
+
+
+      /*
+        Only show arrows when there
+        are multiple photos.
+      */
+      const hasMultiplePhotos =
+        employerPortfolioPhotos.length > 1;
+
+
+      if (
+        employerPortfolioViewerPrev
+      ) {
+
+        employerPortfolioViewerPrev.hidden =
+          !hasMultiplePhotos;
+
+      }
+
+
+      if (
+        employerPortfolioViewerNext
+      ) {
+
+        employerPortfolioViewerNext.hidden =
+          !hasMultiplePhotos;
+
+      }
+
+    }
+
+
+    function openEmployerPortfolioViewer(
+      index
+    ) {
+
+      if (
+        !employerPortfolioViewer ||
+        !employerPortfolioPhotos.length
+      ) {
+        return;
+      }
+
+
+      const safeIndex =
+        Number(
+          index
+        );
+
+
+      if (
+        Number.isNaN(
+          safeIndex
+        ) ||
+        !employerPortfolioPhotos[
+        safeIndex
+        ]
+      ) {
+
+        return;
+
+      }
+
+
+      activeEmployerPortfolioPhotoIndex =
+        safeIndex;
+
+
+      updateEmployerPortfolioViewer();
+
+
+      employerPortfolioViewer.classList.add(
+        "open"
+      );
+
+
+      employerPortfolioViewer.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+
+      document.body.style.overflow =
+        "hidden";
+
+    }
+
+
+    function closeEmployerPortfolioViewer() {
+
+      if (
+        !employerPortfolioViewer
+      ) {
+        return;
+      }
+
+
+      employerPortfolioViewer.classList.remove(
+        "open"
+      );
+
+
+      employerPortfolioViewer.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      document.body.style.overflow =
+        "";
+
+
+      setTimeout(
+        () => {
+
+          if (
+            !employerPortfolioViewer
+              .classList
+              .contains("open") &&
+            employerPortfolioViewerImage
+          ) {
+
+            employerPortfolioViewerImage.src =
+              "";
+
+          }
+
+        },
+        180
+      );
+
+    }
+
+
+    function showPreviousEmployerPortfolioPhoto() {
+
+      if (
+        employerPortfolioPhotos.length <=
+        1
+      ) {
+        return;
+      }
+
+
+      activeEmployerPortfolioPhotoIndex--;
+
+
+      if (
+        activeEmployerPortfolioPhotoIndex <
+        0
+      ) {
+
+        activeEmployerPortfolioPhotoIndex =
+          employerPortfolioPhotos.length - 1;
+
+      }
+
+
+      updateEmployerPortfolioViewer();
+
+    }
+
+
+    function showNextEmployerPortfolioPhoto() {
+
+      if (
+        employerPortfolioPhotos.length <=
+        1
+      ) {
+        return;
+      }
+
+
+      activeEmployerPortfolioPhotoIndex++;
+
+
+      if (
+        activeEmployerPortfolioPhotoIndex >=
+        employerPortfolioPhotos.length
+      ) {
+
+        activeEmployerPortfolioPhotoIndex =
+          0;
+
+      }
+
+
+      updateEmployerPortfolioViewer();
 
     }
 
@@ -12738,9 +13712,274 @@
     }
 
     /* ══════════════════════════════════════
-   EMPLOYER COVER PHOTO EVENTS
+   EMPLOYER PORTFOLIO EVENTS
 ══════════════════════════════════════ */
 
+
+    /*
+      File selected.
+    */
+    employerPortfolioUploadInput
+      ?.addEventListener(
+        "change",
+        async event => {
+
+          const file =
+            event.target.files?.[0];
+
+
+          await uploadEmployerPortfolioPhoto(
+            file
+          );
+
+        }
+      );
+
+    /*
+REMOVE PHOTO X BUTTON
+*/
+    employerPortfolioGrid
+      ?.addEventListener(
+        "click",
+        async event => {
+
+          const removeButton =
+            event.target.closest(
+              ".employer-portfolio-remove"
+            );
+
+
+          /*
+            Normal photo click?
+            Let the existing viewer
+            handler deal with it.
+          */
+          if (!removeButton) {
+            return;
+          }
+
+
+          /*
+            VERY IMPORTANT:
+    
+            Don't allow clicking X
+            to also open the fullscreen
+            photo viewer.
+          */
+          event.preventDefault();
+
+          event.stopPropagation();
+
+
+          const index =
+            Number(
+              removeButton.dataset.index
+            );
+
+
+          await removeEmployerPortfolioPhoto(
+            index
+          );
+
+        }
+      );
+
+
+    /*
+      Click an existing photo.
+    */
+    employerPortfolioGrid
+      ?.addEventListener(
+        "click",
+        event => {
+
+          const photo =
+            event.target.closest(
+              ".employer-portfolio-photo"
+            );
+
+
+          if (!photo) {
+            return;
+          }
+
+
+          const index =
+            Number(
+              photo.dataset.index
+            );
+
+
+          openEmployerPortfolioViewer(
+            index
+          );
+
+        }
+      );
+
+
+    /*
+      Keyboard accessibility:
+      Enter / Space opens photo.
+    */
+    employerPortfolioGrid
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key !== "Enter" &&
+            event.key !== " "
+          ) {
+            return;
+          }
+
+
+          const photo =
+            event.target.closest(
+              ".employer-portfolio-photo"
+            );
+
+
+          if (!photo) {
+            return;
+          }
+
+
+          event.preventDefault();
+
+
+          openEmployerPortfolioViewer(
+            Number(
+              photo.dataset.index
+            )
+          );
+
+        }
+      );
+
+
+    /*
+      X.
+    */
+    employerPortfolioViewerClose
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          closeEmployerPortfolioViewer();
+
+        }
+      );
+
+
+    /*
+      Previous arrow.
+    */
+    employerPortfolioViewerPrev
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          showPreviousEmployerPortfolioPhoto();
+
+        }
+      );
+
+
+    /*
+      Next arrow.
+    */
+    employerPortfolioViewerNext
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          showNextEmployerPortfolioPhoto();
+
+        }
+      );
+
+
+    /*
+      Click backdrop.
+    */
+    employerPortfolioViewer
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target ===
+            employerPortfolioViewer
+          ) {
+
+            closeEmployerPortfolioViewer();
+
+          }
+
+        }
+      );
+
+
+    /*
+      Keyboard controls.
+    */
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          !employerPortfolioViewer
+            ?.classList
+            .contains("open")
+        ) {
+          return;
+        }
+
+
+        if (
+          event.key === "Escape"
+        ) {
+
+          closeEmployerPortfolioViewer();
+
+          return;
+
+        }
+
+
+        if (
+          event.key === "ArrowLeft"
+        ) {
+
+          showPreviousEmployerPortfolioPhoto();
+
+          return;
+
+        }
+
+
+        if (
+          event.key === "ArrowRight"
+        ) {
+
+          showNextEmployerPortfolioPhoto();
+
+        }
+
+      }
+    );
+
+    /* ══════════════════════════════════════
+   EMPLOYER COVER PHOTO EVENTS
+══════════════════════════════════════ */
 
     /*
       Click cover itself → View.
