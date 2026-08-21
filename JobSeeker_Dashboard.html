@@ -555,14 +555,16 @@
                   </svg>
                   Back
                 </button>
-                <button class="chat-action-btn">
+                <button class="chat-action-btn" id="chatAudioCallBtn" type="button" title="Start voice call"
+                  aria-label="Start voice call">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round">
                     <path
                       d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                   </svg>
                 </button>
-                <button class="chat-action-btn">
+                <button class="chat-action-btn" id="chatVideoCallBtn" type="button" title="Start video call"
+                  aria-label="Start video call">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round">
                     <polygon points="23 7 16 12 23 17 23 7" />
@@ -1215,11 +1217,94 @@
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════
+     BLUESPACE AUDIO / VIDEO CALL
+══════════════════════════════════════ -->
+
+  <div class="blue-call-overlay" id="blueCallOverlay" aria-hidden="true">
+
+    <div class="blue-call-stage">
+
+      <!-- REMOTE VIDEO -->
+      <video id="blueCallRemoteVideo" class="blue-call-remote-video" autoplay playsinline></video>
+
+
+      <!-- AUDIO CALL REMOTE AUDIO -->
+      <audio id="blueCallRemoteAudio" autoplay></audio>
+
+
+      <!-- LOCAL CAMERA PREVIEW -->
+      <video id="blueCallLocalVideo" class="blue-call-local-video" autoplay playsinline muted></video>
+
+
+      <!-- AVATAR / CALLING STATE -->
+      <div class="blue-call-person" id="blueCallPerson">
+
+        <img id="blueCallAvatar" class="blue-call-avatar" src="" alt="">
+
+        <h2 id="blueCallName">
+          User
+        </h2>
+
+        <p id="blueCallStatus">
+          Calling...
+        </p>
+
+      </div>
+
+
+      <!-- INCOMING CALL BUTTONS -->
+      <div class="blue-call-incoming-actions" id="blueCallIncomingActions" hidden>
+
+        <button type="button" class="blue-call-btn blue-call-decline" id="blueCallDeclineBtn">
+          <span>✕</span>
+          <small>Decline</small>
+        </button>
+
+
+        <button type="button" class="blue-call-btn blue-call-accept" id="blueCallAcceptBtn">
+          <span>☎</span>
+          <small>Accept</small>
+        </button>
+
+      </div>
+
+
+      <!-- ACTIVE CALL CONTROLS -->
+      <div class="blue-call-controls" id="blueCallControls" hidden>
+
+        <!-- MUTE -->
+        <button type="button" class="blue-call-control" id="blueCallMuteBtn" title="Mute microphone">
+          <span>🎙</span>
+          <small>Mute</small>
+        </button>
+
+
+        <!-- CAMERA -->
+        <button type="button" class="blue-call-control" id="blueCallCameraBtn" title="Turn camera off">
+          <span>📹</span>
+          <small>Camera</small>
+        </button>
+
+
+        <!-- END -->
+        <button type="button" class="blue-call-control blue-call-end" id="blueCallEndBtn" title="End call">
+          <span>☎</span>
+          <small>End</small>
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, getDoc, getDocs, onSnapshot, setDoc, serverTimestamp, collection, addDoc, collectionGroup, updateDoc, deleteDoc, query, orderBy, increment, where, limit, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    import { initBlueSpaceCalling } from "./BlueSpaceCalls.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDnEkuV1HsfZWhhqVCFKPc5o-PjfoCUGTk",
@@ -1234,6 +1319,14 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
     const storage = getStorage(app);
+
+    initBlueSpaceCalling({
+      auth,
+      db,
+
+      accountCollection:
+        "users"
+    });
 
     const defaultHeadline = "Carpenter | Painter | Available in Catbalogan Central";
     const defaultPhoto = "https://ui-avatars.com/api/?name=BlueCollar+Worker&background=ccfbf1&color=0f766e&size=256";

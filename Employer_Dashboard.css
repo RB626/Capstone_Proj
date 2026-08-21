@@ -10260,3 +10260,288 @@ body.dark-mode .job-post-modal-footer {
   }
 
 }
+
+/* ══════════════════════════════════════
+   BLUESPACE CALLING
+══════════════════════════════════════ */
+
+.blue-call-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(3, 8, 18, 0.96);
+
+  z-index: 999999;
+}
+
+.blue-call-overlay.open {
+  display: flex;
+}
+
+
+.blue-call-stage {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* REMOTE VIDEO */
+
+.blue-call-remote-video {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: none;
+
+  background: #050b14;
+}
+
+.blue-call-overlay.video-mode .blue-call-remote-video {
+  display: block;
+}
+
+
+/* LOCAL VIDEO */
+
+.blue-call-local-video {
+  position: absolute;
+
+  right: 28px;
+  top: 28px;
+
+  width: 220px;
+  height: 150px;
+
+  object-fit: cover;
+
+  border-radius: 18px;
+
+  background: #111827;
+
+  box-shadow:
+    0 8px 35px rgba(0, 0, 0, 0.45);
+
+  z-index: 5;
+
+  display: none;
+}
+
+.blue-call-overlay.video-mode .blue-call-local-video {
+  display: block;
+}
+
+
+/* USER */
+
+.blue-call-person {
+  position: relative;
+  z-index: 4;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  color: #ffffff;
+
+  pointer-events: none;
+}
+
+.blue-call-avatar {
+  width: 138px;
+  height: 138px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 4px solid rgba(255, 255, 255, 0.15);
+
+  box-shadow:
+    0 15px 45px rgba(0, 0, 0, 0.35);
+
+  margin-bottom: 20px;
+}
+
+.blue-call-person h2 {
+  margin: 0 0 7px;
+
+  color: #ffffff;
+
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.blue-call-person p {
+  margin: 0;
+
+  color: #cbd5e1;
+
+  font-size: 15px;
+}
+
+
+/* WHEN REMOTE VIDEO CONNECTS */
+
+.blue-call-overlay.remote-video-ready .blue-call-person {
+  opacity: 0;
+}
+
+
+/* CONTROLS */
+
+.blue-call-controls,
+.blue-call-incoming-actions {
+  position: absolute;
+
+  left: 50%;
+  bottom: 42px;
+
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 20px;
+
+  z-index: 10;
+}
+
+.blue-call-controls[hidden],
+.blue-call-incoming-actions[hidden] {
+  display: none;
+}
+
+
+.blue-call-control,
+.blue-call-btn {
+  width: 74px;
+  min-height: 74px;
+
+  border: none;
+  border-radius: 50%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+
+  cursor: pointer;
+
+  background: rgba(255, 255, 255, 0.15);
+
+  color: #ffffff;
+
+  backdrop-filter: blur(12px);
+
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+.blue-call-control:hover,
+.blue-call-btn:hover {
+  transform: translateY(-3px);
+}
+
+
+.blue-call-control span,
+.blue-call-btn span {
+  font-size: 22px;
+}
+
+.blue-call-control small,
+.blue-call-btn small {
+  font-size: 11px;
+  color: inherit;
+}
+
+
+.blue-call-end,
+.blue-call-decline {
+  background: #ef4444;
+}
+
+.blue-call-accept {
+  background: #22c55e;
+}
+
+
+.blue-call-control.active {
+  background: #ffffff;
+  color: #111827;
+}
+
+
+/* AUDIO CALL */
+
+.blue-call-overlay.audio-mode .blue-call-stage {
+  background:
+    radial-gradient(circle at center,
+      #17304a 0%,
+      #09111e 55%,
+      #030712 100%);
+}
+
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+  .blue-call-local-video {
+    width: 112px;
+    height: 155px;
+
+    top: 18px;
+    right: 16px;
+
+    border-radius: 15px;
+  }
+
+
+  .blue-call-avatar {
+    width: 112px;
+    height: 112px;
+  }
+
+
+  .blue-call-person h2 {
+    font-size: 23px;
+  }
+
+
+  .blue-call-controls,
+  .blue-call-incoming-actions {
+    bottom: 28px;
+    gap: 16px;
+  }
+
+
+  .blue-call-control,
+  .blue-call-btn {
+    width: 66px;
+    min-height: 66px;
+  }
+
+}
