@@ -454,14 +454,8 @@ export function initBlueSpaceCalling({
       incoming;
 
 
-    if (
-      cameraControl
-    ) {
-
-      cameraControl.hidden =
-        type !== "video";
-
-    }
+    cameraBtn.hidden =
+      type !== "video";
 
 
     document.body.style.overflow =
@@ -543,9 +537,9 @@ export function initBlueSpaceCalling({
             video:
               type === "video"
                 ? {
-                  facingMode:
-                    "user"
-                }
+                    facingMode:
+                      "user"
+                  }
                 : false
           }
         );
@@ -1011,9 +1005,9 @@ export function initBlueSpaceCalling({
 
           if (
             data.status ===
-            "ended" ||
+              "ended" ||
             data.status ===
-            "missed"
+              "missed"
           ) {
 
             setCallStatus(
@@ -1346,7 +1340,7 @@ export function initBlueSpaceCalling({
               );
 
             } catch (
-            error
+              error
             ) {
 
               console.warn(
@@ -1371,7 +1365,7 @@ export function initBlueSpaceCalling({
 
       if (
         error?.name ===
-        "NotAllowedError"
+          "NotAllowedError"
       ) {
 
         alert(
@@ -1454,7 +1448,7 @@ export function initBlueSpaceCalling({
             serverTimestamp()
         }
       ).catch(
-        () => { }
+        () => {}
       );
 
 
@@ -1650,14 +1644,8 @@ export function initBlueSpaceCalling({
         false;
 
 
-      if (
-        cameraControl
-      ) {
-
-        cameraControl.hidden =
-          type !== "video";
-
-      }
+      cameraBtn.hidden =
+        type !== "video";
 
 
       setCallStatus(
@@ -1769,7 +1757,7 @@ export function initBlueSpaceCalling({
 
       if (
         error?.name ===
-        "NotAllowedError"
+          "NotAllowedError"
       ) {
 
         alert(
@@ -1955,18 +1943,12 @@ export function initBlueSpaceCalling({
 
 
     const label =
-      muteBtn
-        ?.closest(
-          ".blue-call-control-group"
-        )
-        ?.querySelector(
-          ".blue-call-control-label"
-        );
+      muteBtn.querySelector(
+        "small"
+      );
 
 
-    if (
-      label
-    ) {
+    if (label) {
 
       label.textContent =
         microphoneMuted
@@ -1987,7 +1969,7 @@ export function initBlueSpaceCalling({
     if (
       !localStream ||
       activeCallType !==
-      "video"
+        "video"
     ) {
       return;
     }
@@ -2016,13 +1998,9 @@ export function initBlueSpaceCalling({
 
 
     const label =
-      cameraBtn
-        ?.closest(
-          ".blue-call-control-group"
-        )
-        ?.querySelector(
-          ".blue-call-control-label"
-        );
+      cameraBtn.querySelector(
+        "small"
+      );
 
 
     if (label) {
@@ -2179,13 +2157,10 @@ export function initBlueSpaceCalling({
 
 
     const muteLabel =
-      muteBtn
-        ?.closest(
-          ".blue-call-control-group"
-        )
-        ?.querySelector(
-          ".blue-call-control-label"
-        );
+      muteBtn.querySelector(
+        "small"
+      );
+
 
     if (muteLabel) {
 
@@ -2196,13 +2171,9 @@ export function initBlueSpaceCalling({
 
 
     const cameraLabel =
-      cameraBtn
-        ?.closest(
-          ".blue-call-control-group"
-        )
-        ?.querySelector(
-          ".blue-call-control-label"
-        );
+      cameraBtn.querySelector(
+        "small"
+      );
 
 
     if (cameraLabel) {
@@ -2287,8 +2258,8 @@ export function initBlueSpaceCalling({
                 if (
                   data.createdAtMs &&
                   Date.now() -
-                  data.createdAtMs >
-                  90000
+                    data.createdAtMs >
+                    90000
                 ) {
 
                   updateDoc(
@@ -2301,7 +2272,7 @@ export function initBlueSpaceCalling({
                         serverTimestamp()
                     }
                   ).catch(
-                    () => { }
+                    () => {}
                   );
 
 
@@ -2312,9 +2283,9 @@ export function initBlueSpaceCalling({
 
                 if (
                   pendingIncomingRef?.id ===
-                  change.doc.id ||
+                    change.doc.id ||
                   activeCallRef?.id ===
-                  change.doc.id
+                    change.doc.id
                 ) {
 
                   return;

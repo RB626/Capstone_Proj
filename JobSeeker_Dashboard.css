@@ -7849,189 +7849,140 @@ body.dark-mode .experience-modal-footer {
 
 /* CONTROLS */
 
-/* ══════════════════════════════════════
-   ACTIVE CALL CONTROL DOCK
-══════════════════════════════════════ */
-
-.blue-call-controls {
+.blue-call-controls,
+.blue-call-incoming-actions {
   position: absolute;
 
   left: 50%;
-  bottom: 30px;
+  bottom: 42px;
 
   transform: translateX(-50%);
 
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
 
-  gap: 26px;
+  gap: 20px;
 
-  padding: 14px 22px 12px;
-
-  border-radius: 24px;
-
-  background: rgba(18, 22, 30, 0.78);
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  box-shadow:
-    0 14px 40px rgba(0, 0, 0, 0.35);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-
-  z-index: 20;
+  z-index: 10;
 }
 
-
-.blue-call-controls[hidden] {
+.blue-call-controls[hidden],
+.blue-call-incoming-actions[hidden] {
   display: none;
 }
 
 
-/* EACH CONTROL */
+.blue-call-control,
+.blue-call-btn {
+  width: 74px;
+  min-height: 74px;
 
-.blue-call-control-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  gap: 7px;
-
-  min-width: 58px;
-}
-
-
-/* ROUND ICON BUTTON */
-
-.blue-call-control {
-  width: 54px;
-  height: 54px;
-
-  padding: 0;
-
-  border: 0;
+  border: none;
   border-radius: 50%;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  background: rgba(255, 255, 255, 0.14);
-
-  color: #ffffff;
+  gap: 4px;
 
   cursor: pointer;
 
+  background: rgba(255, 255, 255, 0.15);
+
+  color: #ffffff;
+
+  backdrop-filter: blur(12px);
+
   transition:
-    background 0.16s ease,
-    transform 0.16s ease,
-    color 0.16s ease;
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+.blue-call-control:hover,
+.blue-call-btn:hover {
+  transform: translateY(-3px);
 }
 
 
-.blue-call-control:hover {
-  background: rgba(255, 255, 255, 0.22);
-
-  transform: translateY(-1px);
+.blue-call-control span,
+.blue-call-btn span {
+  font-size: 22px;
 }
 
-
-.blue-call-control:active {
-  transform: scale(0.96);
-}
-
-
-/* SVG */
-
-.blue-call-control-icon {
-  width: 22px;
-  height: 22px;
-
-  display: block;
-}
-
-
-/* SMALL TEXT BELOW */
-
-.blue-call-control-label {
-  color: rgba(255, 255, 255, 0.82);
-
+.blue-call-control small,
+.blue-call-btn small {
   font-size: 11px;
-  font-weight: 500;
-
-  line-height: 1;
-
-  user-select: none;
+  color: inherit;
 }
 
 
-/* MUTED / CAMERA-OFF STATE */
+.blue-call-end,
+.blue-call-decline {
+  background: #ef4444;
+}
+
+.blue-call-accept {
+  background: #22c55e;
+}
+
 
 .blue-call-control.active {
   background: #ffffff;
-
   color: #111827;
 }
 
 
-.blue-call-control.active:hover {
-  background: #f3f4f6;
+/* AUDIO CALL */
+
+.blue-call-overlay.audio-mode .blue-call-stage {
+  background:
+    radial-gradient(circle at center,
+      #17304a 0%,
+      #09111e 55%,
+      #030712 100%);
 }
 
 
-/* END CALL */
-
-.blue-call-end {
-  background: #ef4444;
-
-  color: #ffffff;
-}
-
-
-.blue-call-end:hover {
-  background: #dc2626;
-}
-
-
-/*
-  This makes the handset shape
-  read more like "hang up".
-*/
-.blue-call-end-icon {
-  transform: rotate(12deg);
-}
+/* MOBILE */
 
 @media (max-width: 768px) {
 
-  .blue-call-controls {
-    bottom: max(22px,
-        env(safe-area-inset-bottom));
+  .blue-call-local-video {
+    width: 112px;
+    height: 155px;
 
-    gap: 22px;
+    top: 18px;
+    right: 16px;
 
-    padding:
-      13px 20px 12px;
-
-    border-radius: 22px;
+    border-radius: 15px;
   }
 
 
-  .blue-call-control {
-    width: 52px;
-    height: 52px;
+  .blue-call-avatar {
+    width: 112px;
+    height: 112px;
   }
 
 
-  .blue-call-control-icon {
-    width: 21px;
-    height: 21px;
+  .blue-call-person h2 {
+    font-size: 23px;
   }
 
 
-  .blue-call-control-label {
-    font-size: 10.5px;
+  .blue-call-controls,
+  .blue-call-incoming-actions {
+    bottom: 28px;
+    gap: 16px;
+  }
+
+
+  .blue-call-control,
+  .blue-call-btn {
+    width: 66px;
+    min-height: 66px;
   }
 
 }
