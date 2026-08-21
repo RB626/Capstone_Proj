@@ -9884,9 +9884,17 @@
           ".chat-header-online"
         );
 
-      if (chatName) {
+      if (
+        chatName
+      ) {
+
+        chatName.dataset.dynamicName =
+          "true";
+
+
         chatName.textContent =
           fallbackName;
+
       }
 
       if (chatStatus) {
@@ -9977,9 +9985,17 @@
           realtimeApplicant.photoURL ||
           fallbackAvatar;
 
-        if (chatName) {
+        if (
+          chatName
+        ) {
+
+          chatName.dataset.dynamicName =
+            "true";
+
+
           chatName.textContent =
             conversationName;
+
         }
 
         if (chatAvatar) {
@@ -10070,9 +10086,17 @@
 
                 conversationAvatar;
 
-              if (chatName) {
+              if (
+                chatName
+              ) {
+
+                chatName.dataset.dynamicName =
+                  "true";
+
+
                 chatName.textContent =
                   liveName;
+
               }
 
               if (chatAvatar) {
@@ -10379,7 +10403,13 @@
               }
 
 
-              if (chatName) {
+              if (
+                chatName
+              ) {
+
+                chatName.dataset.dynamicName =
+                  "true";
+
 
                 chatName.textContent =
                   liveName;
@@ -10785,9 +10815,46 @@
           "chat-messages"
         );
 
-      if (chatName) {
+      if (
+        chatName
+      ) {
+
+        /*
+          There is no real person's name now,
+          so translation is allowed again.
+        */
+        delete chatName.dataset.dynamicName;
+
+
+        chatName.setAttribute(
+          "data-i18n",
+          "msgSelectConvo"
+        );
+
+
+        /*
+          Use the currently selected language.
+        */
+        const currentLanguage =
+          localStorage.getItem(
+            "preferredLanguage"
+          ) || "en";
+
         chatName.textContent =
           "Select a Conversation";
+
+
+        if (
+          typeof applyTranslations ===
+          "function"
+        ) {
+
+          applyTranslations(
+            currentLanguage
+          );
+
+        }
+
       }
 
       if (chatStatus) {
@@ -13623,8 +13690,18 @@
       const onlineDot = document.querySelector(".chat-header-online");
       const chatMessages = document.getElementById("chat-messages");
 
-      if (chatName) {
-        chatName.textContent = applicant.applicantName || "Applicant";
+      if (
+        chatName
+      ) {
+
+        chatName.dataset.dynamicName =
+          "true";
+
+
+        chatName.textContent =
+          applicant.applicantName ||
+          "Applicant";
+
       }
 
       if (chatStatus) {
@@ -13698,7 +13775,19 @@
         const onlineDot = document.querySelector(".chat-header-online");
         const chatMessages = document.getElementById("chat-messages");
 
-        if (chatName) chatName.textContent = applicant.applicantName || "Applicant";
+        if (
+          chatName
+        ) {
+
+          chatName.dataset.dynamicName =
+            "true";
+
+
+          chatName.textContent =
+            applicant.applicantName ||
+            "Applicant";
+
+        }
         if (chatStatus) chatStatus.textContent = "Conversation opened";
         if (chatAvatar) {
           chatAvatar.src =

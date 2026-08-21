@@ -2041,21 +2041,62 @@ function applyTranslations(lang) {
 
   document.documentElement.lang = lang === 'tl' ? 'fil' : lang;
 
-  document.querySelectorAll('[data-i18n]').forEach(element => {
-    const key = element.getAttribute('data-i18n');
-    const translation = translations[lang]?.[key];
+  document.querySelectorAll(
+    '[data-i18n]'
+  ).forEach(
+    element => {
 
-    if (translation === undefined) return;
+      /*
+        IMPORTANT:
+        Never translate a REAL person's
+        name currently displayed in chat.
+      */
+      if (
+        element.id === "chat-name" &&
+        element.dataset.dynamicName === "true"
+      ) {
 
-    if (
-      element.tagName === 'INPUT' ||
-      element.tagName === 'TEXTAREA'
-    ) {
-      element.placeholder = translation;
-    } else {
-      element.textContent = translation;
+        return;
+
+      }
+
+
+      const key =
+        element.getAttribute(
+          "data-i18n"
+        );
+
+
+      const translation =
+        translations[lang]?.[key];
+
+
+      if (
+        translation === undefined
+      ) {
+
+        return;
+
+      }
+
+
+      if (
+        element.tagName === "INPUT" ||
+        element.tagName === "TEXTAREA"
+      ) {
+
+        element.placeholder =
+          translation;
+
+      } else {
+
+        element.textContent =
+          translation;
+
+      }
+
     }
-  });
+  );
 }
 
 function initLanguage() {
