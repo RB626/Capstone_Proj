@@ -10232,18 +10232,31 @@ body.dark-mode .job-post-modal-footer {
   background: rgba(239, 68, 68, 0.95);
 }
 
-
-/*
-  Phones don't really have hover,
-  so keep the X visible on touch devices.
-*/
-@media (hover: none) {
+@media (hover: none),
+(pointer: coarse) {
 
   .employer-portfolio-remove {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transform: scale(0.9);
+  }
+
+  .employer-portfolio-item.mobile-remove-visible .employer-portfolio-remove {
+
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+
     transform: scale(1);
+  }
+
+  .employer-portfolio-photo {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+
+    user-select: none;
   }
 
 }
