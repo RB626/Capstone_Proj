@@ -1975,7 +1975,15 @@
                 );
 
 
-              if (chatName) {
+              if (
+                chatName
+              ) {
+
+
+
+                chatName.dataset.dynamicName =
+                  "true";
+
 
                 chatName.textContent =
                   employerName;
@@ -2264,9 +2272,50 @@
           "chat-messages"
         );
 
-      if (chatName) {
+      if (
+        chatName
+      ) {
+
+        /*
+          No real Employer is selected anymore.
+      
+          Allow i18n to control this element
+          again.
+        */
+        delete chatName.dataset.dynamicName;
+
+
+        /*
+          Make sure the original translation
+          key is still present.
+        */
+        chatName.setAttribute(
+          "data-i18n",
+          "msgSelectConvo"
+        );
+
+
         chatName.textContent =
           "Select a Conversation";
+
+
+        const currentLanguage =
+          localStorage.getItem(
+            "preferredLanguage"
+          ) || "en";
+
+
+        if (
+          typeof window.applyTranslations ===
+          "function"
+        ) {
+
+          window.applyTranslations(
+            currentLanguage
+          );
+
+        }
+
       }
 
       if (chatStatus) {
@@ -2328,7 +2377,25 @@
 
       const fallbackName = el.dataset.name || "Conversation";
       const fallbackAvatar = el.dataset.avatar || "https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af";
-      document.getElementById('chat-name').textContent = fallbackName;
+      const chatName =
+        document.getElementById(
+          "chat-name"
+        );
+
+
+      if (
+        chatName
+      ) {
+
+
+        chatName.dataset.dynamicName =
+          "true";
+
+
+        chatName.textContent =
+          fallbackName;
+
+      }
       document.getElementById('chat-status').textContent = "Loading...";
       document.getElementById('chat-avatar').src = fallbackAvatar;
       document.querySelector('.chat-header-online').style.display = 'none';
@@ -2370,7 +2437,25 @@
               `https://ui-avatars.com/api/?name=${encodeURIComponent(
                 name
               )}&background=fbbf24&color=ffffff`;
-            document.getElementById('chat-name').textContent = name;
+            const liveChatName =
+              document.getElementById(
+                "chat-name"
+              );
+
+
+            if (
+              liveChatName
+            ) {
+
+
+              liveChatName.dataset.dynamicName =
+                "true";
+
+
+              liveChatName.textContent =
+                name;
+
+            }
             document.getElementById('chat-status').textContent = "Active recently";
             document.getElementById('chat-avatar').src = avatar;
           } else {

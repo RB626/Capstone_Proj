@@ -1257,7 +1257,24 @@ async function openConv(el, convId) {
 
   const fallbackName = el.dataset.name || "Conversation";
   const fallbackAvatar = el.dataset.avatar || "https://ui-avatars.com/api/?name=?&background=e5e7eb&color=9ca3af";
-  document.getElementById('chat-name').textContent = fallbackName;
+  const chatName =
+    document.getElementById(
+      "chat-name"
+    );
+
+
+  if (
+    chatName
+  ) {
+
+    chatName.dataset.dynamicName =
+      "true";
+
+
+    chatName.textContent =
+      fallbackName;
+
+  }
   document.getElementById('chat-status').textContent = "Loading...";
   document.getElementById('chat-avatar').src = fallbackAvatar;
   document.querySelector('.chat-header-online').style.display = 'none';
@@ -1291,7 +1308,24 @@ async function openConv(el, convId) {
         const participantData = participantSnap.data();
         const name = participantData.name || "Employer";
         const avatar = participantData.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=fbbf24&color=ffffff`;
-        document.getElementById('chat-name').textContent = name;
+        const liveChatName =
+          document.getElementById(
+            "chat-name"
+          );
+
+
+        if (
+          liveChatName
+        ) {
+
+          liveChatName.dataset.dynamicName =
+            "true";
+
+
+          liveChatName.textContent =
+            name;
+
+        }
         document.getElementById('chat-status').textContent = "Active recently";
         document.getElementById('chat-avatar').src = avatar;
       } else {
@@ -1575,27 +1609,84 @@ const translations = {
 };
 
 function applyTranslations(lang) {
+
   if (!translations[lang]) {
-    lang = 'en';
+    lang = "en";
   }
 
-  document.documentElement.lang = lang === 'tl' ? 'fil' : lang;
 
-  document.querySelectorAll('[data-i18n]').forEach(element => {
-    const key = element.getAttribute('data-i18n');
-    const translation = translations[lang]?.[key];
+  document.documentElement.lang =
+    lang === "tl"
+      ? "fil"
+      : lang;
 
-    if (translation === undefined) return;
 
-    if (
-      element.tagName === 'INPUT' ||
-      element.tagName === 'TEXTAREA'
-    ) {
-      element.placeholder = translation;
-    } else {
-      element.textContent = translation;
-    }
-  });
+  document
+    .querySelectorAll(
+      "[data-i18n]"
+    )
+    .forEach(
+      element => {
+
+        /*
+          IMPORTANT:
+
+          #chat-name normally contains the
+          translatable text:
+
+          "Select a Conversation"
+
+          But once an actual Employer name
+          is placed there, translation must
+          leave it alone.
+        */
+        if (
+          element.id === "chat-name" &&
+          element.dataset.dynamicName === "true"
+        ) {
+
+          return;
+
+        }
+
+
+        const key =
+          element.getAttribute(
+            "data-i18n"
+          );
+
+
+        const translation =
+          translations[lang]?.[key];
+
+
+        if (
+          translation === undefined
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          element.tagName === "INPUT" ||
+          element.tagName === "TEXTAREA"
+        ) {
+
+          element.placeholder =
+            translation;
+
+        } else {
+
+          element.textContent =
+            translation;
+
+        }
+
+      }
+    );
+
 }
 
 (function initLanguage() {
