@@ -213,6 +213,25 @@ export function initBlueSpaceCalling({
   let pendingRemoteCandidates =
     [];
 
+  /* ══════════════════════════════════════
+ CALL RINGING AUDIO
+══════════════════════════════════════ */
+
+  let callAudioContext =
+    null;
+
+
+  let callToneInterval =
+    null;
+
+
+  const activeCallToneNodes =
+    new Set();
+
+
+  let currentCallToneMode =
+    null;
+
 
   let ringTimeout =
     null;
@@ -382,6 +401,510 @@ export function initBlueSpaceCalling({
 
   }
 
+  /* ══════════════════════════════════════
+   BLUESPACE CALL SOUNDS
+══════════════════════════════════════ */
+
+
+  /* ──────────────────────────────────────
+     GET / CREATE AUDIO CONTEXT
+  ────────────────────────────────────── */
+
+  function getCallAudioContext() {
+
+    if (
+      !callAudioContext
+    ) {
+
+      const AudioContextClass =
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+
+      if (
+        !AudioContextClass
+      ) {
+
+        console.warn(
+          "Web Audio is not supported."
+        );
+
+        return null;
+
+      }
+
+
+      callAudioContext =
+        new AudioContextClass();
+
+    }
+
+
+    return callAudioContext;
+
+  }
+
+
+  /* ──────────────────────────────────────
+     UNLOCK BROWSER AUDIO
+  ────────────────────────────────────── */
+
+  async function unlockCallAudio() {
+
+    const context =
+      getCallAudioContext();
+
+
+    if (!context) {
+      return;
+    }
+
+
+    if (
+      context.state ===
+      "suspended"
+    ) {
+
+      try {
+
+        await context.resume();
+
+      } catch (error) {
+
+        console.warn(
+          "CALL AUDIO COULD NOT RESUME:",
+          error
+        );
+
+      }
+
+    }
+
+  }
+
+
+  /* ──────────────────────────────────────
+     PLAY ONE TONE
+  ────────────────────────────────────── */
+
+  function playCallTone({
+    frequency,
+    delay = 0,
+    duration = 0.3,
+    volume = 0.045
+  }) {
+
+    const context =
+      getCallAudioContext();
+
+
+    if (
+      !context ||
+      context.state !== "running"
+    ) {
+
+      return;
+
+    }
+
+
+    const oscillator =
+      context.createOscillator();
+
+
+    const gainNode =
+      context.createGain();
+
+
+    oscillator.type =
+      "sine";
+
+
+    oscillator.frequency.value =
+      frequency;
+
+
+    oscillator.connect(
+      gainNode
+    );
+
+
+    gainNode.connect(
+      context.destination
+    );
+
+
+    const startTime =
+      context.currentTime +
+      delay;
+
+
+    const endTime =
+      startTime +
+      duration;
+
+
+    /*
+      Smooth fade in.
+    */
+    gainNode.gain.setValueAtTime(
+      0.0001,
+      startTime
+    );
+
+
+    gainNode.gain.exponentialRampToValueAtTime(
+      volume,
+      startTime + 0.025
+    );
+
+
+    /*
+      Keep volume steady.
+    */
+    gainNode.gain.setValueAtTime(
+      volume,
+      Math.max(
+        startTime + 0.03,
+        endTime - 0.05
+      )
+    );
+
+
+    /*
+      Smooth fade out.
+    */
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.0001,
+      endTime
+    );
+
+
+    oscillator.start(
+      startTime
+    );
+
+
+    oscillator.stop(
+      endTime + 0.02
+    );
+
+
+    activeCallToneNodes.add(
+      oscillator
+    );
+
+
+    oscillator.addEventListener(
+      "ended",
+      () => {
+
+        activeCallToneNodes.delete(
+          oscillator
+        );
+
+
+        try {
+
+          oscillator.disconnect();
+
+          gainNode.disconnect();
+
+        } catch {
+          // Already disconnected.
+        }
+
+      },
+      {
+        once: true
+      }
+    );
+
+  }
+
+
+  /* ══════════════════════════════════════
+     OUTGOING RINGBACK
+     What the CALLER hears
+  ══════════════════════════════════════ */
+
+  function playOutgoingRingPulse() {
+
+    /*
+      First ring.
+    */
+    playCallTone({
+      frequency: 440,
+      delay: 0,
+      duration: 0.65,
+      volume: 0.032
+    });
+
+
+    playCallTone({
+      frequency: 480,
+      delay: 0,
+      duration: 0.65,
+      volume: 0.025
+    });
+
+
+    /*
+      Second ring.
+    */
+    playCallTone({
+      frequency: 440,
+      delay: 0.82,
+      duration: 0.65,
+      volume: 0.032
+    });
+
+
+    playCallTone({
+      frequency: 480,
+      delay: 0.82,
+      duration: 0.65,
+      volume: 0.025
+    });
+
+  }
+
+
+  async function startOutgoingRingback() {
+
+    stopCallSounds();
+
+
+    currentCallToneMode =
+      "outgoing";
+
+
+    await unlockCallAudio();
+
+
+    /*
+      Another event may have stopped
+      the call while audio was resuming.
+    */
+    if (
+      currentCallToneMode !==
+      "outgoing"
+    ) {
+
+      return;
+
+    }
+
+
+    /*
+      Play immediately.
+    */
+    playOutgoingRingPulse();
+
+
+    /*
+      Repeat until answered,
+      declined, missed, or ended.
+    */
+    callToneInterval =
+      setInterval(
+        () => {
+
+          if (
+            currentCallToneMode !==
+            "outgoing"
+          ) {
+
+            return;
+
+          }
+
+
+          playOutgoingRingPulse();
+
+        },
+        3600
+      );
+
+  }
+
+
+  /* ══════════════════════════════════════
+     INCOMING RINGTONE
+     What the RECEIVER hears
+  ══════════════════════════════════════ */
+
+  function playIncomingRingPulse() {
+
+    playCallTone({
+      frequency: 659,
+      delay: 0,
+      duration: 0.24,
+      volume: 0.055
+    });
+
+
+    playCallTone({
+      frequency: 784,
+      delay: 0.30,
+      duration: 0.24,
+      volume: 0.050
+    });
+
+
+    playCallTone({
+      frequency: 659,
+      delay: 0.60,
+      duration: 0.24,
+      volume: 0.055
+    });
+
+
+    playCallTone({
+      frequency: 880,
+      delay: 0.90,
+      duration: 0.34,
+      volume: 0.050
+    });
+
+  }
+
+
+  async function startIncomingRingtone() {
+
+    stopCallSounds();
+
+
+    currentCallToneMode =
+      "incoming";
+
+
+    await unlockCallAudio();
+
+
+    if (
+      currentCallToneMode !==
+      "incoming"
+    ) {
+
+      return;
+
+    }
+
+
+    /*
+      Ring immediately.
+    */
+    playIncomingRingPulse();
+
+
+    /*
+      Repeat.
+    */
+    callToneInterval =
+      setInterval(
+        () => {
+
+          if (
+            currentCallToneMode !==
+            "incoming"
+          ) {
+
+            return;
+
+          }
+
+
+          playIncomingRingPulse();
+
+        },
+        2450
+      );
+
+  }
+
+
+  /* ══════════════════════════════════════
+     STOP ALL CALL SOUNDS
+  ══════════════════════════════════════ */
+
+  function stopCallSounds() {
+
+    currentCallToneMode =
+      null;
+
+
+    if (
+      callToneInterval
+    ) {
+
+      clearInterval(
+        callToneInterval
+      );
+
+
+      callToneInterval =
+        null;
+
+    }
+
+
+    /*
+      Stop tones that have already
+      been scheduled.
+    */
+    activeCallToneNodes.forEach(
+      oscillator => {
+
+        try {
+
+          oscillator.stop();
+
+        } catch {
+          // Already stopped.
+        }
+
+      }
+    );
+
+
+    activeCallToneNodes.clear();
+
+  }
+
+
+  /* ══════════════════════════════════════
+     PRIME AUDIO AFTER USER INTERACTION
+  
+     Browsers usually don't allow a site
+     to suddenly play sound until the user
+     has interacted with the page once.
+  ══════════════════════════════════════ */
+
+  function primeCallAudio() {
+
+    unlockCallAudio();
+
+  }
+
+
+  document.addEventListener(
+    "pointerdown",
+    primeCallAudio,
+    {
+      once: true
+    }
+  );
+
+
+  document.addEventListener(
+    "keydown",
+    primeCallAudio,
+    {
+      once: true
+    }
+  );
+
 
   /* ══════════════════════════════════════
      UI
@@ -537,9 +1060,9 @@ export function initBlueSpaceCalling({
             video:
               type === "video"
                 ? {
-                    facingMode:
-                      "user"
-                  }
+                  facingMode:
+                    "user"
+                }
                 : false
           }
         );
@@ -943,6 +1466,12 @@ export function initBlueSpaceCalling({
             );
 
 
+            /*
+              Stop caller ringback.
+            */
+            stopCallSounds();
+
+
             setCallStatus(
               "Connected"
             );
@@ -990,6 +1519,9 @@ export function initBlueSpaceCalling({
             "declined"
           ) {
 
+            stopCallSounds();
+
+
             setCallStatus(
               "Call declined"
             );
@@ -1005,10 +1537,16 @@ export function initBlueSpaceCalling({
 
           if (
             data.status ===
-              "ended" ||
+            "ended" ||
             data.status ===
-              "missed"
+            "missed"
           ) {
+
+            /*
+              Stop either ringtone or ringback.
+            */
+            stopCallSounds();
+
 
             setCallStatus(
               data.status ===
@@ -1296,6 +1834,13 @@ export function initBlueSpaceCalling({
       );
 
 
+      /*
+        NEW:
+        Caller hears ringback.
+      */
+      startOutgoingRingback();
+
+
       listenToActiveCall(
         callRef,
         "caller"
@@ -1340,7 +1885,7 @@ export function initBlueSpaceCalling({
               );
 
             } catch (
-              error
+            error
             ) {
 
               console.warn(
@@ -1365,7 +1910,7 @@ export function initBlueSpaceCalling({
 
       if (
         error?.name ===
-          "NotAllowedError"
+        "NotAllowedError"
       ) {
 
         alert(
@@ -1448,7 +1993,7 @@ export function initBlueSpaceCalling({
             serverTimestamp()
         }
       ).catch(
-        () => {}
+        () => { }
       );
 
 
@@ -1492,6 +2037,8 @@ export function initBlueSpaceCalling({
           true
       }
     );
+
+    startIncomingRingtone();
 
 
     /*
@@ -1555,6 +2102,14 @@ export function initBlueSpaceCalling({
     ) {
       return;
     }
+
+
+    /*
+      NEW:
+      Stop incoming ringtone as soon
+      as Accept is pressed.
+    */
+    stopCallSounds();
 
 
     const user =
@@ -1757,7 +2312,7 @@ export function initBlueSpaceCalling({
 
       if (
         error?.name ===
-          "NotAllowedError"
+        "NotAllowedError"
       ) {
 
         alert(
@@ -1809,6 +2364,12 @@ export function initBlueSpaceCalling({
   ═══════════════════════════════════════ */
 
   async function declineIncomingCall() {
+
+    /*
+      Stop incoming ringtone.
+    */
+    stopCallSounds();
+
 
     if (
       !pendingIncomingRef
@@ -1969,7 +2530,7 @@ export function initBlueSpaceCalling({
     if (
       !localStream ||
       activeCallType !==
-        "video"
+      "video"
     ) {
       return;
     }
@@ -2021,6 +2582,13 @@ export function initBlueSpaceCalling({
 
   function cleanupPendingIncoming() {
 
+    /*
+      Safety:
+      Never leave ringtone running.
+    */
+    stopCallSounds();
+
+
     unsubscribePendingIncoming?.();
 
     unsubscribePendingIncoming =
@@ -2057,6 +2625,12 @@ export function initBlueSpaceCalling({
     ) {
       return;
     }
+
+
+    /*
+      Stop every ringtone / ringback.
+    */
+    stopCallSounds();
 
 
     cleaningUp =
@@ -2258,8 +2832,8 @@ export function initBlueSpaceCalling({
                 if (
                   data.createdAtMs &&
                   Date.now() -
-                    data.createdAtMs >
-                    90000
+                  data.createdAtMs >
+                  90000
                 ) {
 
                   updateDoc(
@@ -2272,7 +2846,7 @@ export function initBlueSpaceCalling({
                         serverTimestamp()
                     }
                   ).catch(
-                    () => {}
+                    () => { }
                   );
 
 
@@ -2283,9 +2857,9 @@ export function initBlueSpaceCalling({
 
                 if (
                   pendingIncomingRef?.id ===
-                    change.doc.id ||
+                  change.doc.id ||
                   activeCallRef?.id ===
-                    change.doc.id
+                  change.doc.id
                 ) {
 
                   return;
@@ -2422,10 +2996,22 @@ export function initBlueSpaceCalling({
     "beforeunload",
     () => {
 
+      /*
+        Stop ringtone.
+      */
+      stopCallSounds();
+
+
+      /*
+        Stop mic/camera.
+      */
       stopLocalMedia();
 
+
       try {
+
         peerConnection?.close();
+
       } catch {
         // Ignore.
       }
