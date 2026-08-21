@@ -1799,27 +1799,77 @@
 
 
       <!-- ACTIVE CALL CONTROLS -->
+      <!-- ACTIVE CALL CONTROLS -->
       <div class="blue-call-controls" id="blueCallControls" hidden>
 
-        <!-- MUTE -->
-        <button type="button" class="blue-call-control" id="blueCallMuteBtn" title="Mute microphone">
-          <span>🎙</span>
-          <small>Mute</small>
-        </button>
+        <!-- MICROPHONE -->
+        <div class="blue-call-control-group">
+
+          <button type="button" class="blue-call-control" id="blueCallMuteBtn" title="Mute microphone"
+            aria-label="Mute microphone">
+
+            <svg class="blue-call-control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="22"></line>
+            </svg>
+
+          </button>
+
+          <span class="blue-call-control-label">
+            Mute
+          </span>
+
+        </div>
 
 
         <!-- CAMERA -->
-        <button type="button" class="blue-call-control" id="blueCallCameraBtn" title="Turn camera off">
-          <span>📹</span>
-          <small>Camera</small>
-        </button>
+        <div class="blue-call-control-group" id="blueCallCameraControl">
+
+          <button type="button" class="blue-call-control" id="blueCallCameraBtn" title="Turn camera off"
+            aria-label="Turn camera off">
+
+            <svg class="blue-call-control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="6" width="13" height="12" rx="2"></rect>
+
+              <path d="m16 10 5-3v10l-5-3Z"></path>
+            </svg>
+
+          </button>
+
+          <span class="blue-call-control-label">
+            Camera
+          </span>
+
+        </div>
 
 
-        <!-- END -->
-        <button type="button" class="blue-call-control blue-call-end" id="blueCallEndBtn" title="End call">
-          <span>☎</span>
-          <small>End</small>
-        </button>
+        <!-- END CALL -->
+        <div class="blue-call-control-group">
+
+          <button type="button" class="
+        blue-call-control
+        blue-call-end
+      " id="blueCallEndBtn" title="End call" aria-label="End call">
+
+            <svg class="blue-call-control-icon blue-call-end-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4.5 15.5c4.6-3.4 10.4-3.4 15 0"></path>
+
+              <path d="M4.5 15.5 3 18"></path>
+
+              <path d="m19.5 15.5 1.5 2.5"></path>
+            </svg>
+
+          </button>
+
+          <span class="blue-call-control-label">
+            End
+          </span>
+
+        </div>
 
       </div>
 
@@ -1856,6 +1906,8 @@
       accountCollection:
         "users"
     });
+
+    const cameraControl = document.getElementById("blueCallCameraControl");
 
     const profileLocationTrigger = document.getElementById("profileLocationTrigger");
     const profileLocationText = document.getElementById("profileLocationText");
