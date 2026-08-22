@@ -1014,10 +1014,30 @@
                   </button>
 
 
-                  <button type="button" class="prof-btn-contact" id="workerPublicContactBtn">
+                  <button type="button" class="prof-btn-contact" id="workerPublicContactBtn" title="Voice call"
+                    aria-label="Voice call">
+
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2
+         19.79 19.79 0 0 1-8.63-3.07
+         19.5 19.5 0 0 1-6-6
+         19.79 19.79 0 0 1-3.07-8.67
+         A2 2 0 0 1 3.6 2h3
+         a2 2 0 0 1 2 1.72
+         12.84 12.84 0 0 0 .7 2.81
+         2 2 0 0 1-.45 2.11
+         L8.09 9.91a16 16 0 0 0 6 6
+         l1.27-1.27a2 2 0 0 1 2.11-.45
+         12.84 12.84 0 0 0 2.81.7
+         A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+
+
                     <span data-i18n="profileContact">
                       Contact
                     </span>
+
                   </button>
 
                 </div>
@@ -1884,7 +1904,7 @@
       db,
 
       accountCollection:
-        "users"
+        "employers"
     });
 
     const profileLocationTrigger = document.getElementById("profileLocationTrigger");
@@ -8097,31 +8117,236 @@
         }
       );
 
+    /* ══════════════════════════════════════
+   PUBLIC JOB SEEKER PROFILE
+   CONTACT → BLUESPACE VOICE CALL
+══════════════════════════════════════ */
+
     document
       .getElementById(
         "workerPublicContactBtn"
       )
       ?.addEventListener(
         "click",
-        () => {
+        async () => {
 
-          const phone =
-            activePublicApplicant
-              ?.phoneNumber;
+          const contactBtn =
+            document.getElementById(
+              "workerPublicContactBtn"
+            );
 
 
-          if (!phone) {
+          /* ══════════════════════════════════
+             MAKE SURE AN APPLICANT IS OPEN
+          ══════════════════════════════════ */
+
+          if (
+            !activePublicApplicant ||
+            !activePublicApplicant.applicantId
+          ) {
 
             alert(
-              "This Job Seeker has not provided a phone number."
+              "This Job Seeker could not be contacted."
             );
 
             return;
+
           }
 
 
-          window.location.href =
-            `tel:${phone}`;
+          if (
+            !auth.currentUser
+          ) {
+
+            alert(
+              "Please log in first."
+            );
+
+            return;
+
+          }
+
+
+          const applicant =
+            activePublicApplicant;
+
+
+          const employerId =
+            auth.currentUser.uid;
+
+
+          const applicantId =
+            applicant.applicantId;
+
+
+          /*
+            This is the SAME conversation ID
+            format already used by Messages.
+          */
+          const expectedConversationId =
+            `conv_${[
+              employerId,
+              applicantId
+            ].sort().join("_")}`;
+
+
+          try {
+
+            /* ══════════════════════════════════
+               PREVENT DOUBLE TAPS
+            ══════════════════════════════════ */
+
+            if (
+              contactBtn
+            ) {
+
+              contactBtn.disabled =
+                true;
+
+
+              contactBtn.setAttribute(
+                "aria-busy",
+                "true"
+              );
+
+            }
+
+
+            /*
+              Use your EXISTING messaging
+              function.
+    
+              It will:
+              - create the conversation if needed
+              - open an existing conversation
+              - set activeConversationId
+              - load messages
+              - load applicant name/photo
+            */
+            await window
+              .openApplicantConversation(
+                applicant
+              );
+
+
+            /* ══════════════════════════════════
+               CONFIRM CORRECT CONVERSATION
+            ══════════════════════════════════ */
+
+            if (
+              window.activeConversationId !==
+              expectedConversationId
+            ) {
+
+              console.error(
+                "CONTACT CALL CONVERSATION MISMATCH:",
+                {
+                  expectedConversationId,
+                  activeConversationId:
+                    window.activeConversationId
+                }
+              );
+
+
+              alert(
+                "The conversation could not be prepared for the call."
+              );
+
+              return;
+
+            }
+
+
+            /*
+              Allow the Messages UI to finish
+              updating before starting WebRTC.
+            */
+            await new Promise(
+              resolve => {
+
+                requestAnimationFrame(
+                  () => {
+
+                    requestAnimationFrame(
+                      resolve
+                    );
+
+                  }
+                );
+
+              }
+            );
+
+
+            /* ══════════════════════════════════
+               USE THE EXACT SAME CALL BUTTON
+               AS THE MESSAGES PAGE
+            ══════════════════════════════════ */
+
+            const audioCallBtn =
+              document.getElementById(
+                "chatAudioCallBtn"
+              );
+
+
+            if (
+              !audioCallBtn
+            ) {
+
+              console.error(
+                "BlueSpace audio call button was not found."
+              );
+
+
+              alert(
+                "Voice calling is currently unavailable."
+              );
+
+              return;
+
+            }
+
+
+            /*
+              This triggers BlueSpaceCalls.js.
+    
+              No phone number.
+              No duplicated WebRTC code.
+              Same call system as Messages.
+            */
+            audioCallBtn.click();
+
+
+          } catch (error) {
+
+            console.error(
+              "PUBLIC PROFILE CONTACT CALL ERROR:",
+              error
+            );
+
+
+            alert(
+              "The voice call could not be started."
+            );
+
+
+          } finally {
+
+            if (
+              contactBtn
+            ) {
+
+              contactBtn.disabled =
+                false;
+
+
+              contactBtn.removeAttribute(
+                "aria-busy"
+              );
+
+            }
+
+          }
 
         }
       );
