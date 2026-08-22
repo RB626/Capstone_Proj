@@ -3832,35 +3832,251 @@
     function openAppliedJobFromNotification(
       application
     ) {
-      showPage("home");
+
+      /* ══════════════════════════════════════
+         GET THE REAL JOB ID
+      ═══════════════════════════════════════ */
 
       const jobId =
-        application.jobId ||
-        application.id;
+        String(
+          application.jobId ||
+          application.id ||
+          ""
+        ).trim();
 
-      requestAnimationFrame(() => {
-        const relatedCard =
-          document.querySelector(
-            `.job-card[data-job-id="${CSS.escape(jobId)}"]`
-          );
 
-        if (relatedCard) {
-          relatedCard.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-          });
+      if (
+        !jobId
+      ) {
 
-          relatedCard.classList.add(
-            "notification-job-highlight"
-          );
+        console.warn(
+          "Notification does not contain a job ID:",
+          application
+        );
 
-          setTimeout(() => {
-            relatedCard.classList.remove(
-              "notification-job-highlight"
-            );
-          }, 2500);
+        return;
+
+      }
+
+
+      /* ══════════════════════════════════════
+         CHECK WHETHER JOB IS SAVED
+      ═══════════════════════════════════════ */
+
+      const isSavedJob =
+
+        savedJobIds.has(
+          jobId
+        )
+
+        ||
+
+        savedJobsData.some(
+          job =>
+            String(
+              job.id ||
+              job.jobId ||
+              ""
+            ) === jobId
+        );
+
+
+      /* ══════════════════════════════════════
+         FIND THE JOB DATA
+    
+         We keep this as a fallback in case
+         the visible card has not rendered yet.
+      ═══════════════════════════════════════ */
+
+      const jobData =
+
+        allHomeJobs.find(
+          job =>
+            String(
+              job.id ||
+              ""
+            ) === jobId
+        )
+
+        ||
+
+        savedJobsData.find(
+          job =>
+            String(
+              job.id ||
+              job.jobId ||
+              ""
+            ) === jobId
+        )
+
+        ||
+
+        null;
+
+
+      /* ══════════════════════════════════════
+         NAVIGATE TO THE CORRECT PAGE
+      ═══════════════════════════════════════ */
+
+      if (
+        isSavedJob
+      ) {
+
+        /*
+          Saved jobs live on Jobs page.
+        */
+        showPage(
+          "jobs"
+        );
+
+
+        /*
+          Make sure saved cards are rendered
+          before trying to find one.
+        */
+        if (
+          typeof renderSavedJobsPage ===
+          "function"
+        ) {
+
+          renderSavedJobsPage();
+
         }
-      });
+
+      } else {
+
+        /*
+          Unsaved available jobs live
+          on Home.
+        */
+        showPage(
+          "home"
+        );
+
+
+        if (
+          typeof renderHomeJobs ===
+          "function"
+        ) {
+
+          renderHomeJobs();
+
+        }
+
+      }
+
+
+      /* ══════════════════════════════════════
+         WAIT FOR THE PAGE TO BECOME VISIBLE
+      ═══════════════════════════════════════ */
+
+      requestAnimationFrame(
+        () => {
+
+          requestAnimationFrame(
+            () => {
+
+              /*
+                Search INSIDE the correct
+                container first.
+              */
+              const container =
+
+                isSavedJob
+
+                  ? document.getElementById(
+                    "job-items-list"
+                  )
+
+                  : document.getElementById(
+                    "homeJobsList"
+                  );
+
+
+              const relatedCard =
+                container
+                  ?.querySelector(
+                    `.job-card[data-job-id="${CSS.escape(jobId)}"]`
+                  );
+
+
+              /* ══════════════════════════════════════
+                 CARD FOUND
+              ═══════════════════════════════════════ */
+
+              if (
+                relatedCard
+              ) {
+
+                relatedCard.scrollIntoView(
+                  {
+                    behavior:
+                      "smooth",
+
+                    block:
+                      "center"
+                  }
+                );
+
+
+                relatedCard.classList.add(
+                  "notification-job-highlight"
+                );
+
+
+                setTimeout(
+                  () => {
+
+                    relatedCard.classList.remove(
+                      "notification-job-highlight"
+                    );
+
+                  },
+                  2500
+                );
+
+
+                return;
+
+              }
+
+
+              /* ══════════════════════════════════════
+                 FALLBACK
+    
+                 If Firestore/UI rendering is a little
+                 slower, don't let the click appear
+                 broken. Open the job details instead.
+              ═══════════════════════════════════════ */
+
+              if (
+                jobData &&
+                typeof openJobDetailsModal ===
+                "function"
+              ) {
+
+                openJobDetailsModal(
+                  jobId,
+                  jobData
+                );
+
+
+                return;
+
+              }
+
+
+              console.warn(
+                "Notification job could not be displayed:",
+                jobId
+              );
+
+            }
+          );
+
+        }
+      );
+
     }
 
 
