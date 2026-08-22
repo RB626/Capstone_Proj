@@ -10925,3 +10925,71 @@ body.dark-mode .review-modal-footer {
   border-top-color: #1f2937;
 
 }
+
+/* ══════════════════════════════════════
+   APPLICANT NAME PROFILE LINK
+══════════════════════════════════════ */
+
+.applicant-name-profile-link {
+
+  /*
+    Remove normal <button> styling.
+  */
+  appearance: none;
+  -webkit-appearance: none;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: inherit;
+
+  font: inherit;
+  font-weight: inherit;
+
+  line-height: inherit;
+
+  text-align: left;
+
+  cursor: pointer;
+
+}
+
+
+/*
+  Facebook-style behavior:
+  name stays normal until hover.
+*/
+.applicant-name-profile-link:hover {
+
+  text-decoration: underline;
+
+}
+
+
+/*
+  Keyboard accessibility without
+  an ugly default browser button box.
+*/
+.applicant-name-profile-link:focus-visible {
+
+  outline: 2px solid #14b8a6;
+
+  outline-offset: 3px;
+
+  border-radius: 3px;
+
+}
+
+
+/*
+  Mobile tap feedback.
+*/
+.applicant-name-profile-link:active {
+
+  opacity: 0.72;
+
+}

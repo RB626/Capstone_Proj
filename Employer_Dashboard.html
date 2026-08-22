@@ -13602,7 +13602,14 @@
           <div class="applicant-card-wide-info">
             <div class="applicant-card-wide-topline">
               <div class="applicant-card-wide-name-row">
-                <div class="applicant-modern-name">${applicantName}</div>
+                <button
+                type="button"
+                class="applicant-modern-name applicant-name-profile-link"
+                aria-label="View applicant profile"
+                title="View profile"
+                >
+                ${applicantName}
+                </button>
 
                 <span class="verified-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -13726,6 +13733,11 @@
           ".applicant-profile-btn"
         );
 
+      const applicantNameLink =
+        wrapper.querySelector(
+          ".applicant-name-profile-link"
+        );
+
 
       /* APPLICANT 3-DOT MENU */
 
@@ -13837,6 +13849,37 @@
         messageBtn.addEventListener("click", () => {
           window.openApplicantConversation(applicant);
         });
+      }
+
+      /* ══════════════════════════════════════
+   APPLICANT NAME → PUBLIC PROFILE
+══════════════════════════════════════ */
+
+      if (
+        applicantNameLink
+      ) {
+
+        applicantNameLink.addEventListener(
+          "click",
+          event => {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            /*
+              Reuse the SAME profile that
+              View Profile already opens.
+            */
+            window
+              .openApplicantPublicProfile(
+                applicant
+              );
+
+          }
+        );
+
       }
 
       if (profileBtn) {
