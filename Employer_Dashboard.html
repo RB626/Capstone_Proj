@@ -13597,7 +13597,15 @@
     <div class="applicant-card-wide">
       <div class="applicant-card-wide-left">
         <div class="applicant-card-wide-header">
-          <img class="applicant-modern-avatar" src="${applicantPhoto}" alt="${applicantName}">
+          <img
+          class="applicant-modern-avatar applicant-avatar-profile-link"
+          src="${applicantPhoto}"
+          alt="${applicantName}"
+          role="button"
+          tabindex="0"
+          title="View profile"
+          aria-label="View ${applicantName}'s profile"
+          >
 
           <div class="applicant-card-wide-info">
             <div class="applicant-card-wide-topline">
@@ -13718,44 +13726,14 @@
     </div>
   `;
 
-      const messageBtn =
-        wrapper.querySelector(
-          ".applicant-message-btn"
-        );
-
-      const reviewBtn =
-        wrapper.querySelector(
-          ".applicant-review-btn"
-        );
-
-      const profileBtn =
-        wrapper.querySelector(
-          ".applicant-profile-btn"
-        );
-
-      const applicantNameLink =
-        wrapper.querySelector(
-          ".applicant-name-profile-link"
-        );
-
-
-      /* APPLICANT 3-DOT MENU */
-
-      const moreButton =
-        wrapper.querySelector(
-          ".applicant-more-btn"
-        );
-
-      const moreMenu =
-        wrapper.querySelector(
-          ".applicant-more-menu"
-        );
-
-      const rejectButton =
-        wrapper.querySelector(
-          ".applicant-reject-btn"
-        );
-
+      const messageBtn = wrapper.querySelector(".applicant-message-btn");
+      const reviewBtn = wrapper.querySelector(".applicant-review-btn");
+      const profileBtn = wrapper.querySelector(".applicant-profile-btn");
+      const applicantNameLink = wrapper.querySelector(".applicant-name-profile-link");
+      const applicantAvatarLink = wrapper.querySelector(".applicant-avatar-profile-link");
+      const moreButton = wrapper.querySelector(".applicant-more-btn");
+      const moreMenu = wrapper.querySelector(".applicant-more-menu");
+      const rejectButton = wrapper.querySelector(".applicant-reject-btn");
 
       if (moreButton && moreMenu) {
 
@@ -13872,6 +13850,71 @@
               Reuse the SAME profile that
               View Profile already opens.
             */
+            window
+              .openApplicantPublicProfile(
+                applicant
+              );
+
+          }
+        );
+
+      }
+
+      /* ══════════════════════════════════════
+   APPLICANT PHOTO → PUBLIC PROFILE
+══════════════════════════════════════ */
+
+      if (
+        applicantAvatarLink
+      ) {
+
+        /*
+          Mouse / mobile tap.
+        */
+        applicantAvatarLink.addEventListener(
+          "click",
+          event => {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            window
+              .openApplicantPublicProfile(
+                applicant
+              );
+
+          }
+        );
+
+
+        /*
+          Keyboard accessibility.
+      
+          Since the image has tabindex="0",
+          Enter or Space should behave like
+          clicking a Facebook profile photo.
+        */
+        applicantAvatarLink.addEventListener(
+          "keydown",
+          event => {
+
+            if (
+              event.key !== "Enter" &&
+              event.key !== " "
+            ) {
+
+              return;
+
+            }
+
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
             window
               .openApplicantPublicProfile(
                 applicant

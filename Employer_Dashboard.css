@@ -10993,3 +10993,42 @@ body.dark-mode .review-modal-footer {
   opacity: 0.72;
 
 }
+
+/* ══════════════════════════════════════
+   APPLICANT PROFILE PHOTO LINK
+══════════════════════════════════════ */
+
+.applicant-avatar-profile-link {
+  cursor: pointer;
+
+  transition:
+    filter 0.16s ease,
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+
+/*
+  Subtle Facebook-style hover.
+*/
+.applicant-avatar-profile-link:hover {
+  filter: brightness(0.92);
+}
+
+
+/*
+  Small tap feedback.
+*/
+.applicant-avatar-profile-link:active {
+  transform: scale(0.97);
+}
+
+
+/*
+  Keyboard accessibility.
+*/
+.applicant-avatar-profile-link:focus-visible {
+  outline: 3px solid rgba(20, 184, 166, 0.35);
+
+  outline-offset: 3px;
+}
