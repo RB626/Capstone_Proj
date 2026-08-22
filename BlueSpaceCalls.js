@@ -39,94 +39,23 @@ export function initBlueSpaceCalling({
   accountCollection
 }) {
 
-  const audioCallBtn =
-    document.getElementById(
-      "chatAudioCallBtn"
-    );
-
-  const videoCallBtn =
-    document.getElementById(
-      "chatVideoCallBtn"
-    );
-
-
-  const overlay =
-    document.getElementById(
-      "blueCallOverlay"
-    );
-
-  const remoteVideo =
-    document.getElementById(
-      "blueCallRemoteVideo"
-    );
-
-  const remoteAudio =
-    document.getElementById(
-      "blueCallRemoteAudio"
-    );
-
-  const localVideo =
-    document.getElementById(
-      "blueCallLocalVideo"
-    );
-
-  const person =
-    document.getElementById(
-      "blueCallPerson"
-    );
-
-  const avatar =
-    document.getElementById(
-      "blueCallAvatar"
-    );
-
-  const nameElement =
-    document.getElementById(
-      "blueCallName"
-    );
-
-  const statusElement =
-    document.getElementById(
-      "blueCallStatus"
-    );
-
-
-  const incomingActions =
-    document.getElementById(
-      "blueCallIncomingActions"
-    );
-
-  const controls =
-    document.getElementById(
-      "blueCallControls"
-    );
-
-
-  const acceptBtn =
-    document.getElementById(
-      "blueCallAcceptBtn"
-    );
-
-  const declineBtn =
-    document.getElementById(
-      "blueCallDeclineBtn"
-    );
-
-  const endBtn =
-    document.getElementById(
-      "blueCallEndBtn"
-    );
-
-  const muteBtn =
-    document.getElementById(
-      "blueCallMuteBtn"
-    );
-
-  const cameraBtn =
-    document.getElementById(
-      "blueCallCameraBtn"
-    );
-
+  const audioCallBtn = document.getElementById("chatAudioCallBtn");
+  const videoCallBtn = document.getElementById("chatVideoCallBtn");
+  const overlay = document.getElementById("blueCallOverlay");
+  const remoteVideo = document.getElementById("blueCallRemoteVideo");
+  const remoteAudio = document.getElementById("blueCallRemoteAudio");
+  const localVideo = document.getElementById("blueCallLocalVideo");
+  const person = document.getElementById("blueCallPerson");
+  const avatar = document.getElementById("blueCallAvatar");
+  const nameElement = document.getElementById("blueCallName");
+  const statusElement = document.getElementById("blueCallStatus");
+  const incomingActions = document.getElementById("blueCallIncomingActions");
+  const controls = document.getElementById("blueCallControls");
+  const acceptBtn = document.getElementById("blueCallAcceptBtn");
+  const declineBtn = document.getElementById("blueCallDeclineBtn");
+  const endBtn = document.getElementById("blueCallEndBtn");
+  const muteBtn = document.getElementById("blueCallMuteBtn");
+  const cameraBtn = document.getElementById("blueCallCameraBtn");
 
   if (
     !overlay ||
