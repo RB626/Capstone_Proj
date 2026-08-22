@@ -10545,3 +10545,383 @@ body.dark-mode .job-post-modal-footer {
   }
 
 }
+
+/* ══════════════════════════════════════
+   RATE & REVIEW MODAL
+   MOBILE VIEW FIX
+══════════════════════════════════════ */
+
+/*
+  Allow the overlay itself to scroll
+  if a very small screen requires it.
+*/
+.review-modal-overlay {
+  overflow-y: auto;
+
+  overscroll-behavior: contain;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+
+/* ══════════════════════════════════════
+   MOBILE
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  /*
+    Do not vertically center a tall modal
+    on mobile.
+
+    Centering is what causes the top/bottom
+    to disappear on short screens.
+  */
+  .review-modal-overlay {
+
+    align-items: flex-start;
+
+    padding-top:
+      max(12px,
+        env(safe-area-inset-top));
+
+    padding-right: 12px;
+
+    padding-bottom:
+      max(12px,
+        env(safe-area-inset-bottom));
+
+    padding-left: 12px;
+
+  }
+
+
+  /*
+    Keep the ENTIRE modal inside
+    the phone viewport.
+  */
+  .review-modal {
+
+    width: 100%;
+
+    max-width: 540px;
+
+
+    /*
+      dvh responds correctly to the
+      mobile browser address bar.
+    */
+    max-height:
+      calc(100dvh - 24px);
+
+
+    /*
+      Fallback for older browsers.
+    */
+    max-height:
+      calc(100vh - 24px);
+
+
+    /*
+      Modern browsers use this.
+    */
+    max-height:
+      calc(100dvh - 24px);
+
+
+    margin:
+      auto 0;
+
+
+    display: flex;
+
+    flex-direction: column;
+
+
+    overflow: hidden;
+
+
+    border-radius: 16px;
+
+  }
+
+
+  /* ══════════════════════════════════════
+     HEADER
+  ═══════════════════════════════════════ */
+
+  .review-modal-header {
+
+    flex:
+      0 0 auto;
+
+
+    padding:
+      18px 18px 15px;
+
+
+    gap: 12px;
+
+  }
+
+
+  .review-modal-header h3 {
+
+    font-size: 20px;
+
+  }
+
+
+  .review-modal-header p {
+
+    margin-top: 3px;
+
+    font-size: 13px;
+
+    line-height: 1.45;
+
+  }
+
+
+  .review-modal-close {
+
+    width: 38px;
+
+    height: 38px;
+
+    flex-shrink: 0;
+
+  }
+
+
+  /* ══════════════════════════════════════
+     SCROLLABLE BODY
+  ═══════════════════════════════════════ */
+
+  .review-modal-body {
+
+    flex:
+      1 1 auto;
+
+
+    min-height: 0;
+
+
+    overflow-y: auto;
+
+    overscroll-behavior: contain;
+
+    -webkit-overflow-scrolling: touch;
+
+
+    padding:
+      16px 18px;
+
+  }
+
+
+  /* ══════════════════════════════════════
+     APPLICANT PREVIEW
+  ═══════════════════════════════════════ */
+
+  .review-worker-preview {
+
+    margin-bottom: 18px;
+
+    padding: 12px;
+
+  }
+
+
+  .review-worker-preview img {
+
+    width: 48px;
+
+    height: 48px;
+
+  }
+
+
+  .review-worker-name {
+
+    font-size: 15px;
+
+  }
+
+
+  .review-worker-job {
+
+    font-size: 12px;
+
+  }
+
+
+  /* ══════════════════════════════════════
+     RATING
+  ═══════════════════════════════════════ */
+
+  .review-field {
+
+    margin-top: 16px;
+
+  }
+
+
+  .review-star-picker {
+
+    gap: 3px;
+
+  }
+
+
+  .review-star-picker button {
+
+    font-size: 34px;
+
+  }
+
+
+  /* ══════════════════════════════════════
+     TEXTAREA
+  ═══════════════════════════════════════ */
+
+  #reviewCommentInput {
+
+    min-height: 120px;
+
+    max-height: 180px;
+
+    resize: vertical;
+
+    padding: 12px;
+
+    font-size: 15px;
+
+  }
+
+
+  /*
+    Keep helper and counter from
+    colliding on narrow screens.
+  */
+  .review-character-row {
+
+    gap: 10px;
+
+    line-height: 1.4;
+
+  }
+
+
+  #reviewCharacterCount {
+
+    flex-shrink: 0;
+
+  }
+
+
+  /* ══════════════════════════════════════
+     FOOTER
+
+     This stays visible while the middle
+     of the modal scrolls.
+  ═══════════════════════════════════════ */
+
+  .review-modal-footer {
+
+    flex:
+      0 0 auto;
+
+
+    display: flex;
+
+    gap: 10px;
+
+
+    padding:
+      12px 18px max(16px,
+        env(safe-area-inset-bottom));
+
+
+    border-top:
+      1px solid #e5e7eb;
+
+
+    background: #ffffff;
+
+  }
+
+
+  .review-modal-btn {
+
+    flex: 1;
+
+    min-width: 0;
+
+    height: 46px;
+
+  }
+
+}
+
+
+/* ══════════════════════════════════════
+   VERY SMALL PHONES
+══════════════════════════════════════ */
+
+@media (max-width: 380px) {
+
+  .review-modal-overlay {
+
+    padding-left: 8px;
+
+    padding-right: 8px;
+
+  }
+
+
+  .review-modal-header {
+
+    padding:
+      16px 14px 13px;
+
+  }
+
+
+  .review-modal-body {
+
+    padding:
+      14px;
+
+  }
+
+
+  .review-modal-footer {
+
+    padding-left: 14px;
+
+    padding-right: 14px;
+
+  }
+
+
+  .review-star-picker button {
+
+    font-size: 31px;
+
+  }
+
+}
+
+
+/* ══════════════════════════════════════
+   DARK MODE FOOTER
+══════════════════════════════════════ */
+
+body.dark-mode .review-modal-footer {
+
+  background: #111827;
+
+  border-top-color: #1f2937;
+
+}
