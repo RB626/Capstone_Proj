@@ -1044,7 +1044,7 @@ function toggleTheme(event) {
 /* ══════════════════════════════════════
    PAGE NAVIGATION
 ══════════════════════════════════════ */
-const pages = ['home', 'jobs', 'messages', 'profile'];
+const pages = ['home', 'jobs', 'messages', 'profile', 'employer-profile'];
 
 function showPage(page) {
   // Update page panels

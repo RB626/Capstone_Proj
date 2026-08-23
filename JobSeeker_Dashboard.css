@@ -7986,3 +7986,171 @@ body.dark-mode .experience-modal-footer {
   }
 
 }
+
+/* ══════════════════════════════════════
+   EMPLOYER NAME → PROFILE LINK
+══════════════════════════════════════ */
+
+.employer-name-profile-link {
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: inherit;
+
+  font: inherit;
+  font-weight: inherit;
+
+  line-height: inherit;
+
+  text-align: left;
+
+  cursor: pointer;
+
+}
+
+
+.employer-name-profile-link:hover {
+
+  text-decoration: underline;
+
+}
+
+
+.employer-name-profile-link:active {
+
+  opacity: 0.72;
+
+}
+
+
+.employer-name-profile-link:focus-visible {
+
+  outline:
+    2px solid #14b8a6;
+
+  outline-offset:
+    3px;
+
+  border-radius:
+    3px;
+
+}
+
+/* ══════════════════════════════════════
+   PUBLIC EMPLOYER PROFILE
+══════════════════════════════════════ */
+
+.employer-public-profile-header {
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 18px;
+
+}
+
+
+.employer-public-back-btn {
+
+  border: 0;
+
+  background: transparent;
+
+  padding: 8px 4px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #475569;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+}
+
+
+.employer-public-back-btn svg {
+
+  width: 19px;
+  height: 19px;
+
+}
+
+
+.employer-public-back-btn:hover {
+
+  color: #0f766e;
+
+}
+
+
+.employer-public-profile-label {
+
+  color: #64748b;
+
+  font-size: 13px;
+  font-weight: 600;
+
+}
+
+
+.employer-public-cover-wrap {
+
+  cursor: default;
+
+}
+
+
+.employer-public-portfolio-grid .reviews-empty-state {
+
+  grid-column:
+    1 / -1;
+
+}
+
+
+/*
+  These are public photos,
+  so don't show an upload/add state.
+*/
+.employer-public-photo {
+
+  cursor: default;
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+  .employer-public-profile-header {
+
+    margin-bottom: 12px;
+
+  }
+
+
+  .employer-public-profile-label {
+
+    font-size: 12px;
+
+  }
+
+}
