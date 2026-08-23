@@ -8193,3 +8193,184 @@ body.dark-mode .experience-modal-footer {
   }
 
 }
+
+/* ══════════════════════════════════════
+   PUBLIC EMPLOYER COVER PHOTO
+   CLICKABLE
+══════════════════════════════════════ */
+
+#employerPublicCoverTrigger {
+  cursor: pointer;
+}
+
+
+#employerPublicCoverTrigger #employerPublicCover {
+  cursor: pointer;
+
+  transition:
+    filter 0.18s ease;
+}
+
+
+/*
+  Subtle Facebook-style feedback.
+*/
+#employerPublicCoverTrigger:hover #employerPublicCover {
+  filter: brightness(0.94);
+}
+
+
+#employerPublicCoverTrigger:active #employerPublicCover {
+  filter: brightness(0.88);
+}
+
+
+#employerPublicCoverTrigger:focus-visible {
+  outline: 3px solid rgba(20, 184, 166, 0.45);
+
+  outline-offset: 3px;
+}
+
+/* ══════════════════════════════════════
+   PUBLIC EMPLOYER PROFILE PHOTO
+   CLICKABLE
+══════════════════════════════════════ */
+
+#employerPublicAvatarTrigger {
+  cursor: pointer;
+}
+
+
+#employerPublicAvatar {
+  cursor: pointer;
+
+  transition:
+    filter 0.16s ease,
+    transform 0.16s ease;
+}
+
+
+/*
+  Facebook-style subtle hover.
+*/
+#employerPublicAvatarTrigger:hover #employerPublicAvatar {
+  filter: brightness(0.92);
+}
+
+
+/*
+  Mobile tap feedback.
+*/
+#employerPublicAvatarTrigger:active #employerPublicAvatar {
+  transform: scale(0.97);
+}
+
+
+/*
+  Keyboard accessibility.
+*/
+#employerPublicAvatarTrigger:focus-visible {
+  outline:
+    3px solid rgba(20, 184, 166, 0.4);
+
+  outline-offset: 3px;
+
+  border-radius: 50%;
+}
+
+/* ══════════════════════════════════════
+   PUBLIC EMPLOYER MY PHOTOS
+   CLICKABLE
+══════════════════════════════════════ */
+
+#employerPublicPortfolioGrid .employer-public-photo {
+
+  cursor: pointer;
+
+  transition:
+    filter 0.18s ease,
+    transform 0.18s ease;
+
+}
+
+
+/*
+  Subtle desktop hover.
+*/
+#employerPublicPortfolioGrid .employer-public-photo:hover {
+
+  filter:
+    brightness(0.92);
+
+}
+
+
+/*
+  Mobile tap feedback.
+*/
+#employerPublicPortfolioGrid .employer-public-photo:active {
+
+  transform:
+    scale(0.985);
+
+}
+
+
+/*
+  Keyboard accessibility.
+*/
+#employerPublicPortfolioGrid .employer-public-photo:focus-visible {
+
+  outline:
+    3px solid rgba(20,
+      184,
+      166,
+      0.45);
+
+  outline-offset:
+    3px;
+
+}
+
+/* ══════════════════════════════════════
+   JOB POST EMPLOYER PHOTO
+   PROFILE LINK
+══════════════════════════════════════ */
+
+.employer-avatar-profile-link {
+  cursor: pointer;
+
+  transition:
+    filter 0.16s ease,
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+
+/*
+  Facebook-style subtle hover.
+*/
+.employer-avatar-profile-link:hover {
+  filter: brightness(0.9);
+}
+
+
+/*
+  Mobile tap feedback.
+*/
+.employer-avatar-profile-link:active {
+  transform: scale(0.96);
+}
+
+
+/*
+  Keyboard accessibility.
+*/
+.employer-avatar-profile-link:focus-visible {
+  outline:
+    3px solid rgba(20, 184, 166, 0.4);
+
+  outline-offset: 3px;
+
+  border-radius: 50%;
+}

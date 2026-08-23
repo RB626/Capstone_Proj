@@ -1003,7 +1003,8 @@
             <div class="prof-card prof-hero">
 
               <!-- COVER -->
-              <div class="prof-cover-wrap employer-public-cover-wrap">
+              <div class="prof-cover-wrap employer-public-cover-wrap" id="employerPublicCoverTrigger" role="button"
+                tabindex="0" title="View cover photo" aria-label="View employer cover photo">
 
                 <img id="employerPublicCover" class="prof-cover" src="" alt="Employer cover photo">
 
@@ -1013,7 +1014,8 @@
               <!-- IDENTITY -->
               <div class="prof-identity">
 
-                <div class="prof-pic-wrap">
+                <div class="prof-pic-wrap employer-public-avatar-wrap" id="employerPublicAvatarTrigger" role="button"
+                  tabindex="0" title="View profile photo" aria-label="View employer profile photo">
 
                   <img id="employerPublicAvatar" class="prof-pic" src="" alt="Employer">
 
@@ -1730,6 +1732,9 @@
     let editingExperienceId = null;
     let editingSkillId = null;
     let portfolioPhotos = [];
+    let activePortfolioViewerPhotos = [];
+    let activePortfolioViewerSource = null;
+    let publicEmployerPortfolioPhotos = [];
     let unsubscribeSkillsList = null;
     let unsubscribeApplicationsCount = null;
     let unsubscribeApplicationNotifications = null;
@@ -5205,108 +5210,197 @@
    FULL-SCREEN PORTFOLIO VIEWER
 ══════════════════════════════════════ */
 
+    /* ══════════════════════════════════════
+   UPDATE FULL-SCREEN PORTFOLIO VIEWER
+══════════════════════════════════════ */
+
     function updatePortfolioViewer() {
 
       if (
-        !portfolioPhotos.length ||
+        !activePortfolioViewerPhotos.length ||
         !portfolioViewerImage
       ) {
+
         return;
+
       }
 
+
+      /*
+        Wrap around when navigating.
+      */
       if (
         activePortfolioPhotoIndex < 0
       ) {
 
         activePortfolioPhotoIndex =
-          portfolioPhotos.length - 1;
+          activePortfolioViewerPhotos.length - 1;
 
       }
 
 
       if (
         activePortfolioPhotoIndex >=
-        portfolioPhotos.length
+        activePortfolioViewerPhotos.length
       ) {
 
-        activePortfolioPhotoIndex = 0;
+        activePortfolioPhotoIndex =
+          0;
 
       }
 
 
       const photo =
-        portfolioPhotos[
+        activePortfolioViewerPhotos[
         activePortfolioPhotoIndex
         ];
 
 
-      if (!photo?.url) {
+      if (
+        !photo?.url
+      ) {
+
         return;
-      }
-
-
-      portfolioViewerImage.src =
-        photo.url;
-
-
-      portfolioViewerImage.alt =
-        `Portfolio photo ${activePortfolioPhotoIndex + 1
-        }`;
-
-
-      if (portfolioViewerCounter) {
-
-        portfolioViewerCounter.textContent =
-          `${activePortfolioPhotoIndex + 1
-          } / ${portfolioPhotos.length}`;
 
       }
 
 
       /*
-        Hide arrows when there is
-        only one photo.
+        Always use the current URL from
+        the active realtime photo array.
       */
-      const hasMultiplePhotos =
-        portfolioPhotos.length > 1;
+      portfolioViewerImage.src =
+        photo.url;
 
 
-      if (portfolioViewerPrev) {
-        portfolioViewerPrev.hidden =
-          !hasMultiplePhotos;
+      portfolioViewerImage.alt =
+        `Photo ${activePortfolioPhotoIndex + 1
+        }`;
+
+
+      /*
+        Counter:
+        1 / 3
+      */
+      if (
+        portfolioViewerCounter
+      ) {
+
+        portfolioViewerCounter.textContent =
+          `${activePortfolioPhotoIndex + 1
+          } / ${activePortfolioViewerPhotos.length
+          }`;
+
       }
 
 
-      if (portfolioViewerNext) {
+      /*
+        Only show navigation arrows when
+        there is more than one photo.
+      */
+      const hasMultiplePhotos =
+        activePortfolioViewerPhotos.length > 1;
+
+
+      if (
+        portfolioViewerPrev
+      ) {
+
+        portfolioViewerPrev.hidden =
+          !hasMultiplePhotos;
+
+      }
+
+
+      if (
+        portfolioViewerNext
+      ) {
+
         portfolioViewerNext.hidden =
           !hasMultiplePhotos;
+
       }
 
     }
 
 
+    /* ══════════════════════════════════════
+   OPEN PORTFOLIO VIEWER
+
+   photos:
+   which collection should be viewed
+
+   source:
+   tells us whose photos are open
+══════════════════════════════════════ */
+
     function openPortfolioViewer(
-      index
+      index,
+      photos = portfolioPhotos,
+      source = "job-seeker"
     ) {
 
       if (
-        !portfolioViewer ||
-        !portfolioPhotos.length
+        !portfolioViewer
       ) {
+
         return;
+
+      }
+
+
+      const safePhotos =
+        Array.isArray(
+          photos
+        )
+          ? photos.filter(
+            photo =>
+              photo &&
+              String(
+                photo.url ||
+                ""
+              ).trim()
+          )
+          : [];
+
+
+      if (
+        !safePhotos.length
+      ) {
+
+        return;
+
       }
 
 
       const safeIndex =
-        Number(index);
+        Number(
+          index
+        );
 
 
       if (
-        Number.isNaN(safeIndex) ||
-        !portfolioPhotos[safeIndex]
+        Number.isNaN(
+          safeIndex
+        ) ||
+        !safePhotos[safeIndex]
       ) {
+
         return;
+
       }
+
+
+      /*
+        Tell the viewer exactly which
+        collection it should navigate.
+      */
+      activePortfolioViewerPhotos =
+        safePhotos;
+
+
+      activePortfolioViewerSource =
+        source;
 
 
       activePortfolioPhotoIndex =
@@ -5328,8 +5422,8 @@
 
 
       /*
-        Prevent dashboard scrolling
-        behind the viewer.
+        Prevent the dashboard behind the
+        viewer from scrolling.
       */
       document.body.style.overflow =
         "hidden";
@@ -5387,9 +5481,11 @@
     function showPreviousPortfolioPhoto() {
 
       if (
-        portfolioPhotos.length <= 1
+        activePortfolioViewerPhotos.length <= 1
       ) {
+
         return;
+
       }
 
 
@@ -5401,7 +5497,7 @@
       ) {
 
         activePortfolioPhotoIndex =
-          portfolioPhotos.length - 1;
+          activePortfolioViewerPhotos.length - 1;
 
       }
 
@@ -5414,9 +5510,11 @@
     function showNextPortfolioPhoto() {
 
       if (
-        portfolioPhotos.length <= 1
+        activePortfolioViewerPhotos.length <= 1
       ) {
+
         return;
+
       }
 
 
@@ -5425,10 +5523,11 @@
 
       if (
         activePortfolioPhotoIndex >=
-        portfolioPhotos.length
+        activePortfolioViewerPhotos.length
       ) {
 
-        activePortfolioPhotoIndex = 0;
+        activePortfolioPhotoIndex =
+          0;
 
       }
 
@@ -5902,25 +6001,63 @@
       }
     }
 
-    function openCoverPhotoViewer() {
+    /* ══════════════════════════════════════
+   OPEN ANY COVER PHOTO
+══════════════════════════════════════ */
+
+    function openCoverPhotoViewerFromImage(
+      imageElement
+    ) {
 
       if (
-        !heroCover ||
+        !imageElement ||
         !coverPhotoViewer ||
         !coverPhotoViewerImage
       ) {
+
         return;
+
       }
 
 
+      /*
+        Use the exact image currently shown.
+    
+        This means realtime Firebase updates
+        are automatically respected.
+      */
       const coverURL =
-        heroCover.currentSrc ||
-        heroCover.src;
+
+        imageElement.currentSrc ||
+
+        imageElement.src;
 
 
-      if (!coverURL) {
+      if (
+        !coverURL
+      ) {
+
         return;
+
       }
+
+
+      /*
+        Don't allow the profile-photo
+        viewer and cover viewer to overlap.
+      */
+      if (
+        profilePhotoViewer
+          ?.classList
+          .contains(
+            "open"
+          )
+      ) {
+
+        closeProfilePhotoViewer();
+
+      }
+
 
       coverPhotoViewerImage.src =
         coverURL;
@@ -5936,8 +6073,46 @@
         "false"
       );
 
+
+      /*
+        Lock the page behind the viewer.
+      */
       document.body.style.overflow =
         "hidden";
+
+    }
+
+
+    /* ══════════════════════════════════════
+       OWN JOB SEEKER COVER
+    
+       Keep your existing profile behavior.
+    ══════════════════════════════════════ */
+
+    function openCoverPhotoViewer() {
+
+      openCoverPhotoViewerFromImage(
+        heroCover
+      );
+
+    }
+
+
+    /* ══════════════════════════════════════
+       PUBLIC EMPLOYER COVER
+    ══════════════════════════════════════ */
+
+    function openEmployerPublicCoverViewer() {
+
+      const employerCover =
+        document.getElementById(
+          "employerPublicCover"
+        );
+
+
+      openCoverPhotoViewerFromImage(
+        employerCover
+      );
 
     }
 
@@ -5988,41 +6163,60 @@
    PROFILE PHOTO VIEWER
 ══════════════════════════════════════ */
 
-    function openProfilePhotoViewer() {
+    /* ══════════════════════════════════════
+   OPEN ANY PROFILE PHOTO
+══════════════════════════════════════ */
+
+    function openProfilePhotoViewerFromImage(
+      imageElement
+    ) {
 
       if (
-        !heroAvatar ||
+        !imageElement ||
         !profilePhotoViewer ||
         !profilePhotoViewerImage
       ) {
+
         return;
+
       }
 
 
       /*
-        Use the EXACT profile photo
-        currently displayed by realtime
-        Firebase data.
+        Use the exact image currently being
+        shown on screen.
+    
+        Because the public Employer avatar
+        updates in realtime, this also means
+        the viewer always opens the latest
+        profile photo.
       */
       const profilePhotoURL =
-        heroAvatar.currentSrc ||
-        heroAvatar.src;
+
+        imageElement.currentSrc ||
+
+        imageElement.src;
 
 
-      if (!profilePhotoURL) {
+      if (
+        !profilePhotoURL
+      ) {
+
         return;
+
       }
 
 
       /*
-        Don't allow Cover Photo viewer
-        and Profile Photo viewer to be
-        open at the same time.
+        Never allow Cover Photo viewer and
+        Profile Photo viewer to overlap.
       */
       if (
         coverPhotoViewer
           ?.classList
-          .contains("open")
+          .contains(
+            "open"
+          )
       ) {
 
         closeCoverPhotoViewer();
@@ -6046,10 +6240,44 @@
 
 
       /*
-        Lock page behind viewer.
+        Lock page behind the viewer.
       */
       document.body.style.overflow =
         "hidden";
+
+    }
+
+
+    /* ══════════════════════════════════════
+       OWN JOB SEEKER PROFILE PHOTO
+    
+       Keep existing behavior.
+    ══════════════════════════════════════ */
+
+    function openProfilePhotoViewer() {
+
+      openProfilePhotoViewerFromImage(
+        heroAvatar
+      );
+
+    }
+
+
+    /* ══════════════════════════════════════
+       PUBLIC EMPLOYER PROFILE PHOTO
+    ══════════════════════════════════════ */
+
+    function openEmployerPublicProfilePhotoViewer() {
+
+      const employerAvatar =
+        document.getElementById(
+          "employerPublicAvatar"
+        );
+
+
+      openProfilePhotoViewerFromImage(
+        employerAvatar
+      );
 
     }
 
@@ -6271,6 +6499,59 @@
       deleteExperienceBtn.addEventListener("click", deleteExperience);
     }
 
+    /* ══════════════════════════════════════
+   PUBLIC EMPLOYER COVER → VIEW FULL SIZE
+══════════════════════════════════════ */
+
+    const employerPublicCoverTrigger =
+      document.getElementById(
+        "employerPublicCoverTrigger"
+      );
+
+
+    /*
+      Mouse click / mobile tap.
+    */
+    employerPublicCoverTrigger
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.preventDefault();
+
+          event.stopPropagation();
+
+
+          openEmployerPublicCoverViewer();
+
+        }
+      );
+
+    employerPublicCoverTrigger
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key !== "Enter" &&
+            event.key !== " "
+          ) {
+
+            return;
+
+          }
+
+
+          event.preventDefault();
+
+          event.stopPropagation();
+
+
+          openEmployerPublicCoverViewer();
+
+        }
+      );
+
     profileCoverTrigger
       ?.addEventListener(
         "click",
@@ -6384,6 +6665,64 @@
 
       }
     );
+
+    /* ══════════════════════════════════════
+   PUBLIC EMPLOYER PROFILE PHOTO
+   → FULL-SCREEN VIEWER
+══════════════════════════════════════ */
+
+    const employerPublicAvatarTrigger =
+      document.getElementById(
+        "employerPublicAvatarTrigger"
+      );
+
+
+    /*
+      Desktop click / mobile tap.
+    */
+    employerPublicAvatarTrigger
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.preventDefault();
+
+          event.stopPropagation();
+
+
+          openEmployerPublicProfilePhotoViewer();
+
+        }
+      );
+
+
+    /*
+      Keyboard accessibility.
+    */
+    employerPublicAvatarTrigger
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key !== "Enter" &&
+            event.key !== " "
+          ) {
+
+            return;
+
+          }
+
+
+          event.preventDefault();
+
+          event.stopPropagation();
+
+
+          openEmployerPublicProfilePhotoViewer();
+
+        }
+      );
 
     profilePhotoTrigger
       ?.addEventListener(
@@ -6514,6 +6853,108 @@
       const file = e.target.files[0];
       await uploadPortfolioPhoto(file);
     });
+
+    /* ══════════════════════════════════════
+   PUBLIC EMPLOYER MY PHOTOS
+   CLICK → FULL SCREEN
+══════════════════════════════════════ */
+
+    const employerPublicPortfolioGrid =
+      document.getElementById(
+        "employerPublicPortfolioGrid"
+      );
+
+
+    employerPublicPortfolioGrid
+      ?.addEventListener(
+        "click",
+        event => {
+
+          const photo =
+            event.target.closest(
+              ".employer-public-photo"
+            );
+
+
+          if (
+            !photo
+          ) {
+
+            return;
+
+          }
+
+
+          event.preventDefault();
+
+          event.stopPropagation();
+
+
+          const index =
+            Number(
+              photo.dataset.index
+            );
+
+
+          openPortfolioViewer(
+            index,
+            publicEmployerPortfolioPhotos,
+            "employer-public"
+          );
+
+        }
+      );
+
+    /* ══════════════════════════════════════
+ PUBLIC EMPLOYER MY PHOTOS
+ KEYBOARD ACCESS
+══════════════════════════════════════ */
+
+    employerPublicPortfolioGrid
+      ?.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key !== "Enter" &&
+            event.key !== " "
+          ) {
+
+            return;
+
+          }
+
+
+          const photo =
+            event.target.closest(
+              ".employer-public-photo"
+            );
+
+
+          if (
+            !photo
+          ) {
+
+            return;
+
+          }
+
+
+          event.preventDefault();
+
+          event.stopPropagation();
+
+
+          openPortfolioViewer(
+            Number(
+              photo.dataset.index
+            ),
+            publicEmployerPortfolioPhotos,
+            "employer-public"
+          );
+
+        }
+      );
 
     portfolioGrid?.addEventListener(
       "click",
@@ -7384,6 +7825,10 @@
        PORTFOLIO
     ────────────────────────────────────── */
 
+    /* ══════════════════════════════════════
+   PUBLIC EMPLOYER MY PHOTOS
+══════════════════════════════════════ */
+
     function renderPublicEmployerPortfolio(
       photos = []
     ) {
@@ -7418,6 +7863,18 @@
           : [];
 
 
+      /*
+        Keep the latest Employer portfolio
+        available for click/navigation.
+    
+        renderActiveEmployerPublicProfile()
+        calls this with the realtime
+        employers/{uid} document.
+      */
+      publicEmployerPortfolioPhotos =
+        validPhotos;
+
+
       if (
         !validPhotos.length
       ) {
@@ -7428,6 +7885,27 @@
       </div>
     `;
 
+
+        /*
+          If Employer removed every photo
+          while their viewer is open,
+          close the viewer.
+        */
+        if (
+          activePortfolioViewerSource ===
+          "employer-public" &&
+          portfolioViewer
+            ?.classList
+            .contains(
+              "open"
+            )
+        ) {
+
+          closePortfolioViewer();
+
+        }
+
+
         return;
 
       }
@@ -7437,6 +7915,7 @@
         validPhotos
           .map(
             (photo, index) => `
+
           <div class="portfolio-item">
 
             <img
@@ -7444,13 +7923,64 @@
               src="${escapeHtml(
               photo.url
             )}"
-              alt="Employer photo ${index + 1}"
+              alt="Employer photo ${index + 1
+              }"
+              data-index="${index}"
+              role="button"
+              tabindex="0"
+              title="View photo"
+              aria-label="View employer photo ${index + 1
+              }"
             >
 
           </div>
+
         `
           )
           .join("");
+
+
+      /*
+        REALTIME VIEWER UPDATE
+    
+        If the Job Seeker currently has one
+        of this Employer's photos open and
+        the Employer changes My Photos,
+        refresh the open viewer too.
+      */
+      if (
+        activePortfolioViewerSource ===
+        "employer-public" &&
+        portfolioViewer
+          ?.classList
+          .contains(
+            "open"
+          )
+      ) {
+
+        activePortfolioViewerPhotos =
+          validPhotos;
+
+
+        /*
+          If the currently viewed photo index
+          no longer exists because a photo
+          was removed, move to the last photo.
+        */
+        if (
+          activePortfolioPhotoIndex >=
+          validPhotos.length
+        ) {
+
+          activePortfolioPhotoIndex =
+            validPhotos.length - 1;
+
+        }
+
+
+        updatePortfolioViewer();
+
+      }
 
     }
 
@@ -9503,7 +10033,15 @@
 
       card.innerHTML = `
     <div class="job-card-header">
-      <img class="employer-avatar" src="${employerPhoto}" alt="${employerName}">
+      <img
+      class="employer-avatar employer-avatar-profile-link"
+      src="${employerPhoto}"
+      alt="${employerName}"
+      title="View employer profile"
+      aria-label="View ${employerName}'s profile"
+      role="button"
+      tabindex="0"
+      >
       <div class="employer-info">
         <div class="employer-name-row">
           <button
@@ -9622,11 +10160,79 @@
     </div>
   `;
 
+      const employerAvatarLink =
+        card.querySelector(
+          ".employer-avatar-profile-link"
+        );
 
       const employerNameLink =
         card.querySelector(
           ".employer-name-profile-link"
         );
+
+      /* ══════════════════════════════════════
+ EMPLOYER PHOTO → PUBLIC PROFILE
+ HOME
+══════════════════════════════════════ */
+
+      if (
+        employerAvatarLink
+      ) {
+
+        /*
+          Mouse click / mobile tap.
+        */
+        employerAvatarLink.addEventListener(
+          "click",
+          event => {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            window
+              .openEmployerPublicProfile(
+                job,
+                "home"
+              );
+
+          }
+        );
+
+
+        /*
+          Keyboard accessibility.
+        */
+        employerAvatarLink.addEventListener(
+          "keydown",
+          event => {
+
+            if (
+              event.key !== "Enter" &&
+              event.key !== " "
+            ) {
+
+              return;
+
+            }
+
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            window
+              .openEmployerPublicProfile(
+                job,
+                "home"
+              );
+
+          }
+        );
+
+      }
 
 
       if (
@@ -9855,7 +10461,15 @@
 
       card.innerHTML = `
     <div class="job-card-header">
-      <img class="employer-avatar" src="${employerPhoto}" alt="${employerName}">
+      <img
+      class="employer-avatar employer-avatar-profile-link"
+      src="${employerPhoto}"
+      alt="${employerName}"
+      title="View employer profile"
+      aria-label="View ${employerName}'s profile"
+      role="button"
+      tabindex="0"
+      >
       <div class="employer-info">
         <div class="employer-name-row">
           <button
@@ -9981,12 +10595,73 @@
     </div>
   `;
 
+      const employerAvatarLink =
+        card.querySelector(
+          ".employer-avatar-profile-link"
+        );
 
       const employerNameLink =
         card.querySelector(
           ".employer-name-profile-link"
         );
 
+      /* ══════════════════════════════════════
+         EMPLOYER PHOTO → PUBLIC PROFILE
+         SAVED JOBS
+      ══════════════════════════════════════ */
+
+      if (
+        employerAvatarLink
+      ) {
+
+        employerAvatarLink.addEventListener(
+          "click",
+          event => {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            window
+              .openEmployerPublicProfile(
+                job,
+                "jobs"
+              );
+
+          }
+        );
+
+
+        employerAvatarLink.addEventListener(
+          "keydown",
+          event => {
+
+            if (
+              event.key !== "Enter" &&
+              event.key !== " "
+            ) {
+
+              return;
+
+            }
+
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            window
+              .openEmployerPublicProfile(
+                job,
+                "jobs"
+              );
+
+          }
+        );
+
+      }
 
       if (
         employerNameLink
