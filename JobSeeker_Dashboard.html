@@ -8030,116 +8030,82 @@
          CREATE ONLY WHEN NEEDED
       ═══════════════════════════════════════ */
 
-      const existingConversation =
-        await getDoc(
-          conversationRef
-        );
+      /* ══════════════════════════════════════
+   CREATE OR REFRESH CONVERSATION
+
+   IMPORTANT:
+
+   Do NOT getDoc() the conversation first.
+
+   setDoc + merge works for BOTH:
+
+   - brand-new conversation
+   - existing conversation
+══════════════════════════════════════ */
+
+      await setDoc(
+        conversationRef,
+        {
+
+          /*
+            Both accounts must be here so the
+            realtime Messages query can see it.
+          */
+          participantIds: [
+            employerId,
+            jobSeekerId
+          ],
 
 
-      if (
-        !existingConversation.exists()
-      ) {
-
-        await setDoc(
-          conversationRef,
-          {
-
-            participantIds: [
-              employerId,
-              jobSeekerId
-            ],
+          /* EMPLOYER */
+          employerId:
+            employerId,
 
 
-            employerId:
-              employerId,
+          employerName:
+            employerName,
 
 
-            employerName:
-              employerName,
+          employerPhotoURL:
+            employerPhoto,
 
 
-            employerPhotoURL:
-              employerPhoto,
+          /* JOB SEEKER */
+          applicantId:
+            jobSeekerId,
 
 
-            applicantId:
-              jobSeekerId,
+          applicantName:
+            jobSeekerName,
 
 
-            applicantName:
-              jobSeekerName,
+          applicantPhotoURL:
+            jobSeekerPhoto,
 
 
-            applicantPhotoURL:
-              jobSeekerPhoto,
+          /*
+            Move/create the conversation in
+            realtime.
+      
+            Do NOT set lastMessage here because
+            an existing conversation may already
+            contain real messages.
+          */
+          updatedAt:
+            serverTimestamp()
 
-
-            lastMessage:
-              "Conversation started",
-
-
-            createdAt:
-              serverTimestamp(),
-
-
-            updatedAt:
-              serverTimestamp()
-
-          }
-        );
-
-      } else {
-
-        /*
-          Conversation already exists.
-    
-          Refresh identity fields only.
-    
-          IMPORTANT:
-          Don't reset createdAt or
-          lastMessage every time Profile
-          → Message is clicked.
-        */
-        await setDoc(
-          conversationRef,
-          {
-
-            participantIds: [
-              employerId,
-              jobSeekerId
-            ],
-
-
-            employerId:
-              employerId,
-
-
-            employerName:
-              employerName,
-
-
-            employerPhotoURL:
-              employerPhoto,
-
-
-            applicantId:
-              jobSeekerId,
-
-
-            applicantName:
-              jobSeekerName,
-
-
-            applicantPhotoURL:
-              jobSeekerPhoto
-
-          },
-          {
-            merge: true
-          }
-        );
-
-      }
+        },
+        {
+          /*
+            If the document exists:
+            preserve everything else.
+      
+            If it doesn't exist:
+            Firestore creates it.
+          */
+          merge: true
+        }
+      );
 
 
       /*
