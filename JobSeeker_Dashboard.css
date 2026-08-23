@@ -8154,3 +8154,42 @@ body.dark-mode .experience-modal-footer {
   }
 
 }
+
+/* ══════════════════════════════════════
+   PUBLIC EMPLOYER ACTIONS
+   MOBILE
+══════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  #page-employer-profile .prof-meta-bar {
+
+    flex-wrap: wrap;
+
+  }
+
+
+  #page-employer-profile .prof-actions {
+
+    width: 100%;
+
+    margin-left: 0;
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 10px;
+
+  }
+
+
+  #page-employer-profile .prof-actions button {
+
+    flex: 1;
+
+    min-width: 0;
+
+  }
+
+}

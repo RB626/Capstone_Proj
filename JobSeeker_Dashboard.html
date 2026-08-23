@@ -1084,6 +1084,56 @@
 
                 </div>
 
+                <!-- ══════════════════════════════════════
+     PUBLIC EMPLOYER ACTIONS
+══════════════════════════════════════ -->
+
+                <div class="prof-actions">
+
+                  <!-- MESSAGE -->
+                  <button type="button" class="prof-btn-msg" id="employerPublicMessageBtn" title="Message employer"
+                    aria-label="Message employer">
+
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+
+                    <span>
+                      Message
+                    </span>
+
+                  </button>
+
+
+                  <!-- CONTACT / VOICE CALL -->
+                  <button type="button" class="prof-btn-contact" id="employerPublicContactBtn"
+                    title="Voice call employer" aria-label="Voice call employer">
+
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2
+           19.79 19.79 0 0 1-8.63-3.07
+           19.5 19.5 0 0 1-6-6
+           19.79 19.79 0 0 1-3.07-8.67
+           A2 2 0 0 1 3.6 2h3
+           a2 2 0 0 1 2 1.72
+           12.84 12.84 0 0 0 .7 2.81
+           2 2 0 0 1-.45 2.11
+           L8.09 9.91a16 16 0 0 0 6 6
+           l1.27-1.27a2 2 0 0 1 2.11-.45
+           12.84 12.84 0 0 0 2.81.7
+           A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+
+                    <span>
+                      Contact
+                    </span>
+
+                  </button>
+
+                </div>
+
               </div>
 
             </div>
@@ -7218,9 +7268,18 @@
 
       const location =
         String(
-          data.location ||
+
           data.locationText ||
+
+          (
+            typeof data.location ===
+              "string"
+              ? data.location
+              : ""
+          ) ||
+
           ""
+
         ).trim();
 
 
@@ -7490,12 +7549,46 @@
         DEFAULT_PUBLIC_EMPLOYER_ABOUT;
 
 
+      /* ══════════════════════════════════════
+   REALTIME EMPLOYER LOCATION
+
+   locationText = readable location
+   location     = latitude/longitude object
+
+   Never display the coordinates object
+   directly because that becomes:
+   [object Object]
+══════════════════════════════════════ */
+
       const location =
         String(
-          liveData.location ||
+
+          /*
+            First priority:
+            current realtime readable location
+            from employers/{uid}.
+          */
           liveData.locationText ||
-          source.location ||
+
+
+          source.locationText ||
+
+          (
+            typeof liveData.location ===
+              "string"
+              ? liveData.location
+              : ""
+          ) ||
+
+          (
+            typeof source.location ===
+              "string"
+              ? source.location
+              : ""
+          ) ||
+
           ""
+
         ).trim() ||
 
         "Location not provided";
@@ -7737,6 +7830,444 @@
         });
 
       };
+
+    /* ══════════════════════════════════════
+ PUBLIC EMPLOYER
+ PREPARE MESSAGES CONVERSATION
+══════════════════════════════════════ */
+
+    async function preparePublicEmployerConversation() {
+
+      /* ══════════════════════════════════════
+         VALIDATE USERS
+      ═══════════════════════════════════════ */
+
+      if (
+        !auth.currentUser
+      ) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return null;
+
+      }
+
+
+      const jobSeekerId =
+        auth.currentUser.uid;
+
+
+      const employerId =
+        String(
+          activePublicEmployerId ||
+          ""
+        ).trim();
+
+
+      if (
+        !employerId
+      ) {
+
+        alert(
+          "Employer information is unavailable."
+        );
+
+        return null;
+
+      }
+
+
+      if (
+        employerId ===
+        jobSeekerId
+      ) {
+
+        return null;
+
+      }
+
+
+      /* ══════════════════════════════════════
+         DETERMINISTIC CONVERSATION ID
+    
+         Same two accounts will ALWAYS
+         reuse the same conversation.
+      ═══════════════════════════════════════ */
+
+      const conversationId =
+        `conv_${[
+          employerId,
+          jobSeekerId
+        ].sort().join("_")}`;
+
+
+      const conversationRef =
+        doc(
+          db,
+          "conversations",
+          conversationId
+        );
+
+
+      /* ══════════════════════════════════════
+         GET REALTIME EMPLOYER
+      ═══════════════════════════════════════ */
+
+      let employerData =
+        liveEmployerProfiles.get(
+          employerId
+        ) ||
+        {};
+
+
+      /*
+        Extra fallback in case the realtime
+        snapshot hasn't arrived yet.
+      */
+      if (
+        !Object.keys(
+          employerData
+        ).length
+      ) {
+
+        try {
+
+          const employerSnapshot =
+            await getDoc(
+              doc(
+                db,
+                "employers",
+                employerId
+              )
+            );
+
+
+          if (
+            employerSnapshot.exists()
+          ) {
+
+            employerData =
+              employerSnapshot.data();
+
+          }
+
+        } catch (error) {
+
+          console.warn(
+            "Could not load Employer before conversation:",
+            error
+          );
+
+        }
+
+      }
+
+
+      const employerName =
+
+        employerData.name ||
+
+        employerData.fullName ||
+
+        activePublicEmployerSource
+          ?.employerName ||
+
+        "Employer";
+
+
+      const employerPhoto =
+
+        employerData.customPhotoURL ||
+
+        employerData.photoURL ||
+
+        employerData.googlePhotoURL ||
+
+        activePublicEmployerSource
+          ?.employerPhotoURL ||
+
+        makeFallbackAvatar(
+          employerName
+        );
+
+
+      /* ══════════════════════════════════════
+         GET JOB SEEKER IDENTITY
+      ═══════════════════════════════════════ */
+
+      const jobSeekerName =
+
+        latestUserProfileData
+          ?.fullName ||
+
+        latestUserProfileData
+          ?.name ||
+
+        auth.currentUser.displayName ||
+
+        "Job Seeker";
+
+
+      const jobSeekerPhoto =
+
+        latestUserProfileData
+          ?.customPhotoURL ||
+
+        latestUserProfileData
+          ?.photoURL ||
+
+        latestUserProfileData
+          ?.googlePhotoURL ||
+
+        auth.currentUser.photoURL ||
+
+        "";
+
+
+      /* ══════════════════════════════════════
+         CREATE ONLY WHEN NEEDED
+      ═══════════════════════════════════════ */
+
+      const existingConversation =
+        await getDoc(
+          conversationRef
+        );
+
+
+      if (
+        !existingConversation.exists()
+      ) {
+
+        await setDoc(
+          conversationRef,
+          {
+
+            participantIds: [
+              employerId,
+              jobSeekerId
+            ],
+
+
+            employerId:
+              employerId,
+
+
+            employerName:
+              employerName,
+
+
+            employerPhotoURL:
+              employerPhoto,
+
+
+            applicantId:
+              jobSeekerId,
+
+
+            applicantName:
+              jobSeekerName,
+
+
+            applicantPhotoURL:
+              jobSeekerPhoto,
+
+
+            lastMessage:
+              "Conversation started",
+
+
+            createdAt:
+              serverTimestamp(),
+
+
+            updatedAt:
+              serverTimestamp()
+
+          }
+        );
+
+      } else {
+
+        /*
+          Conversation already exists.
+    
+          Refresh identity fields only.
+    
+          IMPORTANT:
+          Don't reset createdAt or
+          lastMessage every time Profile
+          → Message is clicked.
+        */
+        await setDoc(
+          conversationRef,
+          {
+
+            participantIds: [
+              employerId,
+              jobSeekerId
+            ],
+
+
+            employerId:
+              employerId,
+
+
+            employerName:
+              employerName,
+
+
+            employerPhotoURL:
+              employerPhoto,
+
+
+            applicantId:
+              jobSeekerId,
+
+
+            applicantName:
+              jobSeekerName,
+
+
+            applicantPhotoURL:
+              jobSeekerPhoto
+
+          },
+          {
+            merge: true
+          }
+        );
+
+      }
+
+
+      /*
+        Store it immediately.
+    
+        Your existing Messages restoration
+        code already reads this value.
+      */
+      localStorage.setItem(
+        "activeJobSeekerConversationId",
+        conversationId
+      );
+
+
+      return conversationId;
+
+    }
+
+    /* ══════════════════════════════════════
+   OPEN PREPARED EMPLOYER CONVERSATION
+══════════════════════════════════════ */
+
+    async function openPreparedEmployerConversation() {
+
+      const conversationId =
+        await preparePublicEmployerConversation();
+
+
+      if (
+        !conversationId
+      ) {
+
+        return null;
+
+      }
+
+
+      /*
+        Go to existing Messages page.
+      */
+      showPage(
+        "messages"
+      );
+
+
+      /*
+        Your realtime conversations listener
+        will create the sidebar item after
+        Firestore receives the conversation.
+    
+        Wait briefly for that item.
+      */
+      let conversationItem =
+        null;
+
+
+      for (
+        let attempt = 0;
+        attempt < 20;
+        attempt++
+      ) {
+
+        conversationItem =
+          document.querySelector(
+            `.conv-item[data-convid="${CSS.escape(
+              conversationId
+            )}"]`
+          );
+
+
+        if (
+          conversationItem
+        ) {
+
+          break;
+
+        }
+
+
+        await new Promise(
+          resolve =>
+            setTimeout(
+              resolve,
+              100
+            )
+        );
+
+      }
+
+
+      if (
+        !conversationItem
+      ) {
+
+        console.error(
+          "Conversation sidebar item was not rendered:",
+          conversationId
+        );
+
+
+        alert(
+          "The conversation was created, but Messages could not open it yet. Please try again."
+        );
+
+        return null;
+
+      }
+
+
+      /*
+        Use your EXISTING openConv logic.
+    
+        That function already:
+        - activates the sidebar row
+        - stores activeConversationId
+        - loads messages
+        - listens to Employer profile
+        - updates name/photo in realtime
+      */
+      await window.openConv(
+        conversationItem,
+        conversationId
+      );
+
+
+      return conversationId;
+
+    }
 
 
     /* ──────────────────────────────────────
@@ -9704,13 +10235,236 @@
     document.querySelector(".search-bar input")?.addEventListener("input", filterHeaderSearch);
     document.querySelector(".job-search-input")?.addEventListener("input", filterJobItems);
     document.querySelector(".job-type-dropdown")?.addEventListener("change", filterJobItems);
-    document.getElementById("employerPublicBackBtn")?.addEventListener("click",() => {showPage(activePublicEmployerReturnPage);
-          activePublicEmployerId =
-            null;
+    document.getElementById("employerPublicBackBtn")?.addEventListener("click", () => {
+      showPage(activePublicEmployerReturnPage);
+      activePublicEmployerId =
+        null;
 
 
-          activePublicEmployerSource =
-            null;
+      activePublicEmployerSource =
+        null;
+
+    }
+    );
+
+    document.getElementById("employerPublicMessageBtn")?.addEventListener("click", async () => {
+      const button = document.getElementById("employerPublicMessageBtn");
+
+      try {
+
+        if (
+          button
+        ) {
+
+          button.disabled =
+            true;
+
+
+          button.setAttribute(
+            "aria-busy",
+            "true"
+          );
+
+        }
+
+
+        await openPreparedEmployerConversation();
+
+
+      } catch (error) {
+
+        console.error(
+          "PUBLIC EMPLOYER MESSAGE ERROR:",
+          error
+        );
+
+
+        alert(
+          "The conversation could not be opened."
+        );
+
+
+      } finally {
+
+        if (
+          button
+        ) {
+
+          button.disabled =
+            false;
+
+
+          button.removeAttribute(
+            "aria-busy"
+          );
+
+        }
+
+      }
+
+    }
+    );
+
+    /* ══════════════════════════════════════
+ PUBLIC EMPLOYER → VOICE CALL
+══════════════════════════════════════ */
+
+    document
+      .getElementById(
+        "employerPublicContactBtn"
+      )
+      ?.addEventListener(
+        "click",
+        async () => {
+
+          const button =
+            document.getElementById(
+              "employerPublicContactBtn"
+            );
+
+
+          try {
+
+            if (
+              button
+            ) {
+
+              button.disabled =
+                true;
+
+
+              button.setAttribute(
+                "aria-busy",
+                "true"
+              );
+
+            }
+
+
+            /*
+              First make sure the correct
+              Employer conversation is active.
+            */
+            const conversationId =
+              await openPreparedEmployerConversation();
+
+
+            if (
+              !conversationId
+            ) {
+
+              return;
+
+            }
+
+
+            /*
+              Extra safety:
+              BlueSpaceCalls.js reads this.
+            */
+            if (
+              window.activeConversationId !==
+              conversationId
+            ) {
+
+              console.error(
+                "Employer call conversation mismatch:",
+                {
+                  expected:
+                    conversationId,
+
+                  active:
+                    window.activeConversationId
+                }
+              );
+
+
+              alert(
+                "The correct conversation could not be prepared for the call."
+              );
+
+              return;
+
+            }
+
+
+            /*
+              Let the Messages UI finish
+              updating before WebRTC starts.
+            */
+            await new Promise(
+              resolve => {
+
+                requestAnimationFrame(
+                  () => {
+
+                    requestAnimationFrame(
+                      resolve
+                    );
+
+                  }
+                );
+
+              }
+            );
+
+
+            /*
+              Use the SAME working BlueSpace
+              voice call button from Messages.
+            */
+            const audioCallButton =
+              document.getElementById(
+                "chatAudioCallBtn"
+              );
+
+
+            if (
+              !audioCallButton
+            ) {
+
+              alert(
+                "Voice calling is currently unavailable."
+              );
+
+              return;
+
+            }
+
+
+            audioCallButton.click();
+
+
+          } catch (error) {
+
+            console.error(
+              "PUBLIC EMPLOYER CONTACT ERROR:",
+              error
+            );
+
+
+            alert(
+              "The voice call could not be started."
+            );
+
+
+          } finally {
+
+            if (
+              button
+            ) {
+
+              button.disabled =
+                false;
+
+
+              button.removeAttribute(
+                "aria-busy"
+              );
+
+            }
+
+          }
 
         }
       );
