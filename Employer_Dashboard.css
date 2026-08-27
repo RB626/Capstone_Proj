@@ -11293,3 +11293,290 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 }
+
+/* ══════════════════════════════════════
+   EMPLOYER DASHBOARD
+   FINAL MOBILE HEADER DESIGN
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  /* ══════════════════════════════════════
+     DASHBOARD PAGE SPACING
+  ═══════════════════════════════════════ */
+
+  #page-home {
+
+    padding:
+      18px 13px 92px !important;
+
+  }
+
+
+  /* ══════════════════════════════════════
+     DASHBOARD HEADER
+
+     Dashboard
+     Manage your job posts
+
+     [ My Job Post ] [ Applicants (3) ]
+  ═══════════════════════════════════════ */
+
+  .employer-home-header {
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    align-items: stretch !important;
+
+    width: 100%;
+
+    gap: 0 !important;
+
+    margin-bottom:
+      32px;
+
+  }
+
+
+  /*
+    Keep title area separate from buttons.
+  */
+  .employer-home-header>div:first-child {
+
+    width: 100%;
+
+    margin: 0;
+
+  }
+
+
+  /* TITLE */
+
+  .employer-home-title {
+
+    margin: 0 !important;
+
+    font-size:
+      1.65rem !important;
+
+    line-height:
+      1.15;
+
+    font-weight:
+      700;
+
+  }
+
+
+  /* SUBTITLE */
+
+  .employer-home-subtitle {
+
+    margin:
+      10px 0 0 !important;
+
+    font-size:
+      1rem !important;
+
+    line-height:
+      1.4;
+
+  }
+
+
+  /* ══════════════════════════════════════
+     TWO BUTTONS
+
+     IMPORTANT:
+     ALWAYS remain side-by-side,
+     including phones below 480px.
+  ═══════════════════════════════════════ */
+
+  .employer-home-header .header-actions {
+
+    width:
+      100% !important;
+
+    margin:
+      38px 0 0 !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      minmax(0, 1fr) minmax(0, 1fr) !important;
+
+    gap:
+      12px !important;
+
+    align-items:
+      stretch;
+
+  }
+
+
+  /* BOTH BUTTONS */
+
+  .employer-home-header .myjobs-btn,
+
+  .employer-home-header .applicants-btn {
+
+    width:
+      100% !important;
+
+    min-width:
+      0 !important;
+
+    min-height:
+      55px !important;
+
+    height:
+      55px;
+
+    margin:
+      0 !important;
+
+    padding:
+      0 12px !important;
+
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      center;
+
+    border:
+      0 !important;
+
+    border-radius:
+      15px !important;
+
+    background:
+      linear-gradient(135deg,
+        #2dd4bf,
+        #14b8a6) !important;
+
+    color:
+      #ffffff !important;
+
+    font-size:
+      0.95rem !important;
+
+    font-weight:
+      700 !important;
+
+    line-height:
+      1.1;
+
+    text-align:
+      center;
+
+    white-space:
+      nowrap;
+
+    box-shadow:
+      0 8px 20px rgba(20,
+        184,
+        166,
+        0.18) !important;
+
+  }
+
+
+  /*
+    Phones sometimes keep :hover after
+    tapping.
+
+    Prevent My Job Post from turning
+    white because one of your older
+    mobile hover rules does exactly that.
+  */
+
+  .employer-home-header .myjobs-btn:hover,
+
+  .employer-home-header .applicants-btn:hover {
+
+    background:
+      linear-gradient(135deg,
+        #2dd4bf,
+        #14b8a6) !important;
+
+    color:
+      #ffffff !important;
+
+    transform:
+      none !important;
+
+    box-shadow:
+      0 8px 20px rgba(20,
+        184,
+        166,
+        0.18) !important;
+
+  }
+
+
+  /* TAP FEEDBACK */
+
+  .employer-home-header .myjobs-btn:active,
+
+  .employer-home-header .applicants-btn:active {
+
+    transform:
+      scale(0.98) !important;
+
+    background:
+      #14b8a6 !important;
+
+  }
+
+}
+
+/* ══════════════════════════════════════
+   VERY SMALL PHONES
+══════════════════════════════════════ */
+
+@media (max-width: 380px) {
+
+  .employer-home-header .header-actions {
+
+    /*
+      STILL two columns.
+      Never stack them.
+    */
+    grid-template-columns:
+      minmax(0, 1fr) minmax(0, 1fr) !important;
+
+    gap:
+      8px !important;
+
+  }
+
+
+  .employer-home-header .myjobs-btn,
+
+  .employer-home-header .applicants-btn {
+
+    min-height:
+      50px !important;
+
+    height:
+      50px;
+
+    padding:
+      0 8px !important;
+
+    font-size:
+      0.84rem !important;
+
+    border-radius:
+      13px !important;
+
+  }
+
+}
