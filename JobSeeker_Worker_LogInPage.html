@@ -1317,6 +1317,8 @@
     let recaptchaVerifier = null;
     let recaptchaWidgetId = null;
     let lastOtpPhone = null;
+    let resendCooldown = 0;
+    let resendTimer = null;
 
     function setButtonLoading(button, isLoading, loadingText, normalText) {
       if (!button) return;
@@ -1500,24 +1502,349 @@
       return `${normalized}@bluecollarconnect.local`;
     }
 
-    async function setupRecaptcha() {
-      recaptchaContainer.style.display = "flex";
+    /* ══════════════════════════════════════
+   OTP HELPERS
+══════════════════════════════════════ */
 
-      if (!recaptchaVerifier) {
-        recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-          size: "normal",
-          callback: () => {
-            console.log("reCAPTCHA solved");
-          },
-          "expired-callback": () => {
-            console.log("reCAPTCHA expired");
-          }
-        });
+    function clearOtpInputs() {
 
-        recaptchaWidgetId = await recaptchaVerifier.render();
+      for (
+        let i = 0;
+        i < 6;
+        i++
+      ) {
+
+        const box =
+          document.getElementById(
+            "otp" + i
+          );
+
+
+        if (!box) {
+          continue;
+        }
+
+
+        box.value =
+          "";
+
+
+        box.classList.remove(
+          "filled",
+          "error"
+        );
+
       }
 
+    }
+
+
+    function setOtpError(
+      message = ""
+    ) {
+
+      const errorElement =
+        document.getElementById(
+          "otp-error"
+        );
+
+
+      if (
+        errorElement
+      ) {
+
+        errorElement.textContent =
+          message;
+
+      }
+
+    }
+
+
+    /* ══════════════════════════════════════
+       RESEND COOLDOWN
+    ══════════════════════════════════════ */
+
+    function startResendCooldown(
+      seconds = 30
+    ) {
+
+      resendCooldown =
+        seconds;
+
+
+      const resendLink =
+        document.querySelector(
+          ".resend-link"
+        );
+
+
+      if (
+        !resendLink
+      ) {
+
+        return;
+
+      }
+
+
+      /*
+        Remember the translated/current
+        label instead of forcing English.
+      */
+      if (
+        !resendLink.dataset.baseLabel
+      ) {
+
+        resendLink.dataset.baseLabel =
+          resendLink.textContent.trim() ||
+          "Resend";
+
+      }
+
+
+      const baseLabel =
+        resendLink.dataset.baseLabel;
+
+
+      if (
+        resendTimer
+      ) {
+
+        clearInterval(
+          resendTimer
+        );
+
+      }
+
+
+      resendLink.style.pointerEvents =
+        "none";
+
+
+      resendLink.style.opacity =
+        "0.55";
+
+
+      resendLink.textContent =
+        `${baseLabel} (${resendCooldown}s)`;
+
+
+      resendTimer =
+        setInterval(
+          () => {
+
+            resendCooldown--;
+
+
+            if (
+              resendCooldown <= 0
+            ) {
+
+              clearInterval(
+                resendTimer
+              );
+
+
+              resendTimer =
+                null;
+
+
+              resendCooldown =
+                0;
+
+
+              resendLink.style.pointerEvents =
+                "auto";
+
+
+              resendLink.style.opacity =
+                "1";
+
+
+              resendLink.textContent =
+                baseLabel;
+
+
+              return;
+
+            }
+
+
+            resendLink.textContent =
+              `${baseLabel} (${resendCooldown}s)`;
+
+          },
+          1000
+        );
+
+    }
+
+    /* ══════════════════════════════════════
+   RECAPTCHA SETUP
+══════════════════════════════════════ */
+
+    async function setupRecaptcha() {
+
+      /*
+        Don't create duplicate verifiers.
+      */
+      if (
+        recaptchaVerifier
+      ) {
+
+        return recaptchaVerifier;
+
+      }
+
+
+      const container =
+        document.getElementById(
+          "recaptcha-container"
+        );
+
+
+      if (
+        !container
+      ) {
+
+        throw new Error(
+          "reCAPTCHA container not found."
+        );
+
+      }
+
+
+      container.style.display =
+        "flex";
+
+
+      recaptchaVerifier =
+        new RecaptchaVerifier(
+          auth,
+          "recaptcha-container",
+          {
+
+            size:
+              "normal",
+
+
+            callback:
+              () => {
+
+                console.log(
+                  "reCAPTCHA solved"
+                );
+
+
+                setOtpError(
+                  ""
+                );
+
+              },
+
+
+            "expired-callback":
+              async () => {
+
+                console.log(
+                  "reCAPTCHA expired"
+                );
+
+
+                setOtpError(
+                  "reCAPTCHA expired. Please complete it again."
+                );
+
+
+                /*
+                  Destroy the expired
+                  challenge completely.
+                */
+                await resetRecaptcha();
+
+
+                /*
+                  Prepare a fresh challenge.
+                */
+                await setupRecaptcha();
+
+              }
+
+          }
+        );
+
+
+      recaptchaWidgetId =
+        await recaptchaVerifier.render();
+
+
+      console.log(
+        "reCAPTCHA rendered:",
+        recaptchaWidgetId
+      );
+
+
       return recaptchaVerifier;
+
+    }
+
+    /* ══════════════════════════════════════
+   COMPLETELY RESET RECAPTCHA
+══════════════════════════════════════ */
+
+    async function resetRecaptcha() {
+
+      if (
+        recaptchaVerifier
+      ) {
+
+        try {
+
+          recaptchaVerifier.clear();
+
+        } catch (error) {
+
+          console.log(
+            "reCAPTCHA clear skipped:",
+            error
+          );
+
+        }
+
+      }
+
+
+      /*
+        Firebase verifier object is now
+        considered dead.
+      */
+      recaptchaVerifier =
+        null;
+
+
+      recaptchaWidgetId =
+        null;
+
+
+      /*
+        Clear Google's old widget HTML.
+      */
+      const container =
+        document.getElementById(
+          "recaptcha-container"
+        );
+
+
+      if (
+        container
+      ) {
+
+        container.innerHTML =
+          "";
+
+      }
+
     }
 
     window.goToOtp = async function () {
@@ -1548,17 +1875,14 @@
 
         confirmationResult = await signInWithPhoneNumber(auth, phone, recaptchaVerifier);
         lastOtpPhone = phone;
+        startResendCooldown(
+          30
+        );
 
         document.getElementById("otp-phone-display").textContent = phone;
         document.getElementById("otp-error").textContent = "";
 
-        for (let i = 0; i < 6; i++) {
-          const box = document.getElementById("otp" + i);
-          if (box) {
-            box.value = "";
-            box.classList.remove("error", "filled");
-          }
-        }
+        clearOtpInputs();
 
         goStep(2);
         document.getElementById("otp0")?.focus();
@@ -1688,17 +2012,215 @@
       }
     };
 
-    window.resendOtp = async function (event) {
-      event.preventDefault();
+    /* ══════════════════════════════════════
+   RESEND SMS OTP
+══════════════════════════════════════ */
 
-      if (!lastOtpPhone) {
-        alert("Enter your phone number first.");
-        goStep(1);
-        return;
-      }
+    window.resendOtp =
+      async function (
+        event
+      ) {
 
-      await window.goToOtp();
-    };
+        event.preventDefault();
+
+
+        /* ══════════════════════════════════
+           PHONE MUST ALREADY BE KNOWN
+        ══════════════════════════════════ */
+
+        if (
+          !lastOtpPhone
+        ) {
+
+          setOtpError(
+            "Phone number not found. Go back and enter it again."
+          );
+
+
+          goStep(
+            1
+          );
+
+
+          return;
+
+        }
+
+
+        /* ══════════════════════════════════
+           DON'T ALLOW SMS SPAM
+        ══════════════════════════════════ */
+
+        if (
+          resendCooldown > 0
+        ) {
+
+          return;
+
+        }
+
+
+        try {
+
+          setOtpError(
+            "Preparing a new verification code..."
+          );
+
+
+          /*
+            Remove any digits from the
+            previous OTP.
+          */
+          clearOtpInputs();
+
+
+          /* ══════════════════════════════════
+             DESTROY OLD RECAPTCHA
+          ══════════════════════════════════ */
+
+          await resetRecaptcha();
+
+
+          /* ══════════════════════════════════
+             CREATE FRESH RECAPTCHA
+          ══════════════════════════════════ */
+
+          await setupRecaptcha();
+
+
+          setOtpError(
+            "Complete the reCAPTCHA to resend your code."
+          );
+
+
+          /* ══════════════════════════════════
+             SEND NEW SMS
+    
+             Important:
+             We use lastOtpPhone directly.
+    
+             We do NOT call goToOtp() again.
+          ══════════════════════════════════ */
+
+          confirmationResult =
+            await signInWithPhoneNumber(
+              auth,
+              lastOtpPhone,
+              recaptchaVerifier
+            );
+
+
+          /*
+            confirmationResult is now the
+            NEW OTP verification session.
+    
+            The old OTP can no longer be
+            treated as the current session.
+          */
+          setOtpError(
+            "A new verification code has been sent."
+          );
+
+
+          /*
+            Another SMS cannot be requested
+            immediately.
+          */
+          startResendCooldown(
+            30
+          );
+
+
+          /*
+            Put the cursor back into the
+            first OTP box.
+          */
+          setTimeout(
+            () => {
+
+              document
+                .getElementById(
+                  "otp0"
+                )
+                ?.focus();
+
+            },
+            120
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "RESEND OTP ERROR:",
+            error
+          );
+
+
+          if (
+            error.code ===
+            "auth/too-many-requests"
+          ) {
+
+            setOtpError(
+              "Too many SMS requests. Please wait before trying again."
+            );
+
+
+            /*
+              Give Firebase and the user
+              some breathing room.
+            */
+            startResendCooldown(
+              60
+            );
+
+
+          } else if (
+            error.code ===
+            "auth/captcha-check-failed"
+          ) {
+
+            setOtpError(
+              "reCAPTCHA failed. Please try again."
+            );
+
+
+          } else if (
+            error.code ===
+            "auth/quota-exceeded"
+          ) {
+
+            setOtpError(
+              "SMS verification is temporarily unavailable. Please try again later."
+            );
+
+
+          } else {
+
+            setOtpError(
+              error.message ||
+              "The verification code could not be resent."
+            );
+
+          }
+
+
+          /*
+            Make sure a failed reCAPTCHA
+            doesn't poison the next retry.
+          */
+          try {
+
+            await resetRecaptcha();
+
+          } catch {
+            // Nothing else required.
+          }
+
+        }
+
+      };
 
     window.togglePw = function (id) {
       const input = document.getElementById(id);
