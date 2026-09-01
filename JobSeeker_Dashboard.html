@@ -278,15 +278,45 @@
     <div class="main-content">
 
       <!-- ════ HOME PAGE ════ -->
+
       <div class="page-panel active" id="page-home">
 
-        <div class="section-heading" data-i18n="homeJobsNearYou">Available Jobs Near You</div>
-        <div class="jobs-list" id="homeJobsList">
-          <div class="job-card">
-            <div class="job-title">Loading jobs...</div>
-            <div class="job-desc">Please wait while we fetch available jobs near you.</div>
-          </div>
+        <div class="section-heading" data-i18n="homeJobsNearYou">
+          Available Jobs Near You
         </div>
+
+
+        <div class="jobs-list" id="homeJobsList">
+
+          <div class="job-card">
+
+            <div class="job-title">
+              Loading jobs...
+            </div>
+
+
+            <div class="job-desc">
+              Please wait while we fetch available jobs near you.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ══════════════════════════════════════
+       FACEBOOK-STYLE INFINITE JOB SCROLL
+  ═══════════════════════════════════════ -->
+
+        <div class="home-jobs-infinite-sentinel" id="homeJobsInfiniteSentinel" aria-live="polite">
+
+          <div class="home-jobs-infinite-status" id="homeJobsInfiniteStatus">
+            Loading jobs...
+          </div>
+
+        </div>
+
+
       </div>
       <!-- /page-home -->
 
@@ -1613,7 +1643,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, getDocs, onSnapshot, setDoc, serverTimestamp, collection, addDoc, collectionGroup, updateDoc, deleteDoc, query, orderBy, increment, where, limit, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, getDocs, onSnapshot, setDoc, serverTimestamp, collection, addDoc, collectionGroup, updateDoc, deleteDoc, query, orderBy, increment, where, limit, startAfter, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
     import { initBlueSpaceCalling } from "./BlueSpaceCalls.js";
 
@@ -1750,6 +1780,12 @@
     let savedJobIds = new Set();
     let savedJobsData = [];
     let allHomeJobs = [];
+    const HOME_JOBS_PAGE_SIZE = 20;
+    let homeJobsLastDocument = null;
+    let homeJobsHasMore = true;
+    let homeJobsLoading = false;
+    let homeJobsLoadError = false;
+    let homeJobsInfiniteObserver = null;
     const liveEmployerProfiles = new Map();
     let activePublicEmployerId = null;
     let activePublicEmployerSource = null;
@@ -10361,28 +10397,153 @@
       return card;
     }
 
+    /* ══════════════════════════════════════
+   RENDER HOME JOB FEED
+══════════════════════════════════════ */
+
     function renderHomeJobs() {
-      if (!homeJobsList) return;
 
-      cleanupApplicantCountListeners(homeApplicantCountUnsubs);
-      homeJobsList.innerHTML = "";
+      if (
+        !homeJobsList
+      ) {
 
-      const visibleJobs = allHomeJobs.filter(job => !savedJobIds.has(job.id));
-
-      if (!visibleJobs.length) {
-        homeJobsList.innerHTML = `
-      <div class="job-card">
-        <div class="job-title">No available jobs yet</div>
-        <div class="job-desc">Saved jobs are hidden from the home page and moved to Saved Jobs.</div>
-      </div>
-    `;
         return;
+
       }
 
-      visibleJobs.forEach(job => {
-        const card = createHomeJobCard(job.id, job);
-        homeJobsList.appendChild(card);
-      });
+
+      /*
+        Every render creates fresh job cards,
+        so clean their old applicant-count
+        realtime listeners first.
+      */
+      cleanupApplicantCountListeners(
+        homeApplicantCountUnsubs
+      );
+
+
+      homeJobsList.innerHTML =
+        "";
+
+
+      /*
+        Saved jobs are moved to Saved Jobs
+        and hidden from the Home feed.
+      */
+      const visibleJobs =
+        allHomeJobs.filter(
+          job =>
+            !savedJobIds.has(
+              job.id
+            )
+        );
+
+
+      /* ══════════════════════════════════════
+         NOTHING CURRENTLY VISIBLE
+      ═══════════════════════════════════════ */
+
+      if (
+        !visibleJobs.length
+      ) {
+
+        /*
+          There MAY still be older pages.
+    
+          Example:
+          The user saved all first 20 jobs.
+    
+          Don't immediately claim there are
+          no jobs because pagination may find
+          more.
+        */
+        if (
+          homeJobsHasMore
+        ) {
+
+          homeJobsList.innerHTML = `
+        <div class="job-card">
+
+          <div class="job-title">
+            Looking for more jobs...
+          </div>
+
+          <div class="job-desc">
+            Saved jobs are hidden from Home.
+            More jobs will load automatically.
+          </div>
+
+        </div>
+      `;
+
+        } else {
+
+          homeJobsList.innerHTML = `
+        <div class="job-card">
+
+          <div class="job-title">
+            No available jobs yet
+          </div>
+
+          <div class="job-desc">
+            Saved jobs are hidden from the
+            home page and moved to Saved Jobs.
+          </div>
+
+        </div>
+      `;
+
+        }
+
+
+        /*
+          If everything currently loaded
+          was saved, immediately check if
+          another page should be loaded.
+        */
+        maybeAutoLoadMoreHomeJobs();
+
+
+        return;
+
+      }
+
+
+      /* ══════════════════════════════════════
+         JOB CARDS
+      ═══════════════════════════════════════ */
+
+      visibleJobs.forEach(
+        job => {
+
+          const card =
+            createHomeJobCard(
+              job.id,
+              job
+            );
+
+
+          homeJobsList.appendChild(
+            card
+          );
+
+        }
+      );
+
+
+      /*
+        Preserve current header search
+        when another page gets appended.
+      */
+      if (
+        typeof filterHeaderSearch ===
+        "function"
+      ) {
+
+        filterHeaderSearch();
+
+      }
+
     }
 
     document.addEventListener(
@@ -10771,48 +10932,711 @@
       }
     }
 
-    function listenToHomeJobs() {
-      if (!homeJobsList) return;
+    /* ══════════════════════════════════════
+   HOME JOB INFINITE SCROLL STATUS
+══════════════════════════════════════ */
 
-      if (unsubscribeHomeJobs) {
-        unsubscribeHomeJobs();
-        unsubscribeHomeJobs = null;
+    function updateHomeJobsInfiniteStatus() {
+
+      const sentinel =
+        document.getElementById(
+          "homeJobsInfiniteSentinel"
+        );
+
+
+      const status =
+        document.getElementById(
+          "homeJobsInfiniteStatus"
+        );
+
+
+      if (
+        !sentinel ||
+        !status
+      ) {
+
+        return;
+
       }
 
-      const jobsQuery = query(
-        collection(db, "jobs"),
-        where("status", "==", "active"),
-        orderBy("createdAt", "desc"),
-        limit(20)
+
+      /* LOADING */
+
+      if (
+        homeJobsLoading
+      ) {
+
+        sentinel.hidden =
+          false;
+
+
+        status.classList.add(
+          "loading"
+        );
+
+
+        status.textContent =
+          allHomeJobs.length
+            ? "Loading more jobs..."
+            : "Loading jobs...";
+
+
+        return;
+
+      }
+
+
+      status.classList.remove(
+        "loading"
       );
 
-      unsubscribeHomeJobs =
-        onSnapshot(
-          jobsQuery,
-          (snapshot) => {
 
-            allHomeJobs =
-              snapshot.docs.map(
-                (docSnap) => ({
-                  id: docSnap.id,
-                  ...docSnap.data()
-                })
-              );
+      /* ERROR */
 
-            syncEmployerProfileListeners();
+      if (
+        homeJobsLoadError
+      ) {
+
+        sentinel.hidden =
+          false;
 
 
-            renderHomeJobs();
-          }, (error) => {
-            console.error("Failed to load home jobs:", error);
+        status.textContent =
+          "Couldn't load more jobs. Tap to retry.";
 
-            homeJobsList.innerHTML = `
+
+        return;
+
+      }
+
+
+      /* END OF FEED */
+
+      if (
+        !homeJobsHasMore
+      ) {
+
+        if (
+          allHomeJobs.length
+        ) {
+
+          sentinel.hidden =
+            false;
+
+
+          status.textContent =
+            "You're all caught up.";
+
+        } else {
+
+          sentinel.hidden =
+            true;
+
+
+          status.textContent =
+            "";
+
+        }
+
+
+        return;
+
+      }
+
+
+      /*
+        There are more jobs.
+    
+        Keep the sentinel physically on
+        the page so IntersectionObserver
+        can detect it, but don't show text.
+      */
+      sentinel.hidden =
+        false;
+
+
+      status.textContent =
+        "";
+
+    }
+
+
+    /* ══════════════════════════════════════
+       LOAD NEXT 20 JOBS
+    ══════════════════════════════════════ */
+
+    async function loadNextHomeJobsPage(
+      {
+        reset = false
+      } = {}
+    ) {
+
+      /*
+        Never allow overlapping requests.
+      */
+      if (
+        !homeJobsList ||
+        homeJobsLoading
+      ) {
+
+        return;
+
+      }
+
+
+      /* ══════════════════════════════════════
+         START FEED FROM THE BEGINNING
+      ═══════════════════════════════════════ */
+
+      if (
+        reset
+      ) {
+
+        homeJobsLastDocument =
+          null;
+
+
+        homeJobsHasMore =
+          true;
+
+
+        homeJobsLoadError =
+          false;
+
+
+        allHomeJobs =
+          [];
+
+
+        cleanupApplicantCountListeners(
+          homeApplicantCountUnsubs
+        );
+
+
+        homeJobsList.innerHTML = `
       <div class="job-card">
-        <div class="job-title">Failed to load jobs</div>
-        <div class="job-desc">Check Firestore query, indexes, or rules.</div>
+
+        <div class="job-title">
+          Loading jobs...
+        </div>
+
+        <div class="job-desc">
+          Please wait while we find
+          available jobs for you.
+        </div>
+
       </div>
     `;
-          });
+
+      }
+
+
+      /*
+        Firestore has already told us
+        there are no more pages.
+      */
+      if (
+        !homeJobsHasMore
+      ) {
+
+        updateHomeJobsInfiniteStatus();
+
+        return;
+
+      }
+
+
+      homeJobsLoading =
+        true;
+
+
+      homeJobsLoadError =
+        false;
+
+
+      updateHomeJobsInfiniteStatus();
+
+
+      try {
+
+        /* ══════════════════════════════════════
+           FIRESTORE QUERY CONSTRAINTS
+        ═══════════════════════════════════════ */
+
+        const constraints = [
+
+          where(
+            "status",
+            "==",
+            "active"
+          ),
+
+
+          orderBy(
+            "createdAt",
+            "desc"
+          )
+
+        ];
+
+
+        /*
+          FIRST PAGE:
+    
+          active
+          newest first
+          limit 20
+    
+    
+          NEXT PAGE:
+    
+          active
+          newest first
+          START AFTER previous page's
+          final Firestore document
+          limit 20
+        */
+        if (
+          homeJobsLastDocument
+        ) {
+
+          constraints.push(
+            startAfter(
+              homeJobsLastDocument
+            )
+          );
+
+        }
+
+
+        constraints.push(
+          limit(
+            HOME_JOBS_PAGE_SIZE
+          )
+        );
+
+
+        const jobsQuery =
+          query(
+            collection(
+              db,
+              "jobs"
+            ),
+            ...constraints
+          );
+
+
+        /* ══════════════════════════════════════
+           DOWNLOAD THIS PAGE
+        ═══════════════════════════════════════ */
+
+        const snapshot =
+          await getDocs(
+            jobsQuery
+          );
+
+
+        /*
+          Avoid duplicate cards even if
+          another part of the application
+          inserted the same job into memory.
+        */
+        const existingJobIds =
+          new Set(
+            allHomeJobs.map(
+              job =>
+                job.id
+            )
+          );
+
+
+        snapshot.docs.forEach(
+          docSnap => {
+
+            if (
+              existingJobIds.has(
+                docSnap.id
+              )
+            ) {
+
+              return;
+
+            }
+
+
+            allHomeJobs.push({
+              id:
+                docSnap.id,
+
+              ...docSnap.data()
+            });
+
+
+            existingJobIds.add(
+              docSnap.id
+            );
+
+          }
+        );
+
+
+        /* ══════════════════════════════════════
+           MOVE FIRESTORE CURSOR
+        ═══════════════════════════════════════ */
+
+        if (
+          snapshot.docs.length
+        ) {
+
+          homeJobsLastDocument =
+            snapshot.docs[
+            snapshot.docs.length - 1
+            ];
+
+        }
+
+
+        /*
+          Less than 20 means this was
+          definitely the final page.
+    
+          If exactly 20 were returned,
+          another scroll checks for the
+          following page.
+        */
+        homeJobsHasMore =
+          snapshot.docs.length ===
+          HOME_JOBS_PAGE_SIZE;
+
+
+        /* ══════════════════════════════════════
+           EXISTING BLUESPACE SYSTEMS
+        ═══════════════════════════════════════ */
+
+        /*
+          Start/reconcile realtime Employer
+          profile listeners for Employers
+          represented by newly loaded jobs.
+        */
+        syncEmployerProfileListeners();
+
+
+        /*
+          Display everything loaded so far.
+        */
+        renderHomeJobs();
+
+
+        console.log(
+          "HOME JOB PAGE LOADED:",
+          {
+            received:
+              snapshot.docs.length,
+
+            loadedTotal:
+              allHomeJobs.length,
+
+            hasMore:
+              homeJobsHasMore
+          }
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "FAILED TO LOAD HOME JOB PAGE:",
+          error
+        );
+
+
+        homeJobsLoadError =
+          true;
+
+
+        /*
+          Don't erase already-loaded jobs
+          just because an older page failed.
+        */
+        if (
+          !allHomeJobs.length
+        ) {
+
+          homeJobsList.innerHTML = `
+        <div class="job-card">
+
+          <div class="job-title">
+            Failed to load jobs
+          </div>
+
+          <div class="job-desc">
+            Check your connection and try again.
+          </div>
+
+        </div>
+      `;
+
+        }
+
+
+      } finally {
+
+        homeJobsLoading =
+          false;
+
+
+        updateHomeJobsInfiniteStatus();
+
+
+        /*
+          Important for large screens or
+          when many loaded jobs were saved.
+    
+          If the sentinel is STILL close to
+          the viewport, automatically load
+          another page until the feed has
+          enough content.
+        */
+        maybeAutoLoadMoreHomeJobs();
+
+      }
+
+    }
+
+
+    /* ══════════════════════════════════════
+       AUTO-CHECK THE BOTTOM OF THE FEED
+    ══════════════════════════════════════ */
+
+    function maybeAutoLoadMoreHomeJobs() {
+
+      if (
+        homeJobsLoading ||
+        homeJobsLoadError ||
+        !homeJobsHasMore
+      ) {
+
+        return;
+
+      }
+
+
+      const sentinel =
+        document.getElementById(
+          "homeJobsInfiniteSentinel"
+        );
+
+
+      if (
+        !sentinel
+      ) {
+
+        return;
+
+      }
+
+
+      requestAnimationFrame(
+        () => {
+
+          if (
+            homeJobsLoading ||
+            homeJobsLoadError ||
+            !homeJobsHasMore
+          ) {
+
+            return;
+
+          }
+
+
+          const rect =
+            sentinel
+              .getBoundingClientRect();
+
+
+          /*
+            Preload BEFORE the user physically
+            reaches the bottom.
+    
+            800px gives the next batch time
+            to arrive smoothly.
+          */
+          if (
+            rect.top <=
+            window.innerHeight + 800
+          ) {
+
+            loadNextHomeJobsPage();
+
+          }
+
+        }
+      );
+
+    }
+
+
+    /* ══════════════════════════════════════
+       WATCH BOTTOM OF HOME FEED
+    ══════════════════════════════════════ */
+
+    function setupHomeJobsInfiniteScroll() {
+
+      const sentinel =
+        document.getElementById(
+          "homeJobsInfiniteSentinel"
+        );
+
+
+      if (
+        !sentinel
+      ) {
+
+        return;
+
+      }
+
+
+      /*
+        Avoid multiple observers if auth
+        state or Home initializes again.
+      */
+      if (
+        homeJobsInfiniteObserver
+      ) {
+
+        homeJobsInfiniteObserver.disconnect();
+
+        homeJobsInfiniteObserver =
+          null;
+
+      }
+
+
+      homeJobsInfiniteObserver =
+        new IntersectionObserver(
+
+          entries => {
+
+            const shouldLoad =
+              entries.some(
+                entry =>
+                  entry.isIntersecting
+              );
+
+
+            if (
+              shouldLoad
+            ) {
+
+              loadNextHomeJobsPage();
+
+            }
+
+          },
+
+          {
+            root:
+              null,
+
+            /*
+              Begin loading roughly 800px
+              before reaching the bottom.
+            */
+            rootMargin:
+              "800px 0px",
+
+            threshold:
+              0.01
+          }
+
+        );
+
+
+      homeJobsInfiniteObserver.observe(
+        sentinel
+      );
+
+
+      /*
+        If a page-load request fails,
+        tapping the bottom message retries.
+      */
+      sentinel.onclick =
+        () => {
+
+          if (
+            !homeJobsLoadError
+          ) {
+
+            return;
+
+          }
+
+
+          homeJobsLoadError =
+            false;
+
+
+          loadNextHomeJobsPage();
+
+        };
+
+    }
+
+    /* ══════════════════════════════════════
+   START HOME JOB FEED
+══════════════════════════════════════ */
+
+    function listenToHomeJobs() {
+
+      if (
+        !homeJobsList
+      ) {
+
+        return;
+
+      }
+
+
+      /*
+        Old code used a 20-document
+        onSnapshot listener.
+    
+        Clean it if an older version
+        happened to create one.
+      */
+      if (
+        unsubscribeHomeJobs
+      ) {
+
+        unsubscribeHomeJobs();
+
+        unsubscribeHomeJobs =
+          null;
+
+      }
+
+
+      /*
+        Start automatic Facebook-style
+        bottom detection.
+      */
+      setupHomeJobsInfiniteScroll();
+
+
+      /*
+        Load the newest 20 immediately.
+    
+        No need to await because this
+        function is started by auth setup.
+      */
+      loadNextHomeJobsPage({
+        reset:
+          true
+      });
+
     }
 
     function listenToMyApplicationsCount(uid) {
@@ -11121,6 +11945,37 @@
           unsubscribeHomeJobs();
           unsubscribeHomeJobs = null;
         }
+
+        /* STOP INFINITE-SCROLL OBSERVER */
+
+        if (
+          homeJobsInfiniteObserver
+        ) {
+
+          homeJobsInfiniteObserver.disconnect();
+
+          homeJobsInfiniteObserver =
+            null;
+
+        }
+
+
+        /* RESET PAGINATION */
+
+        homeJobsLastDocument =
+          null;
+
+
+        homeJobsHasMore =
+          true;
+
+
+        homeJobsLoading =
+          false;
+
+
+        homeJobsLoadError =
+          false;
 
         if (unsubscribeSavedJobs) {
           unsubscribeSavedJobs();
