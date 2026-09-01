@@ -862,6 +862,215 @@ function selectJobCategoryRole(
 
 }
 
+/* ══════════════════════════════════════
+   MOBILE JOB TYPE DROPDOWN
+   Keeps original select + filter logic
+══════════════════════════════════════ */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    const wrapper =
+      document.getElementById(
+        "mobileJobTypeDropdown"
+      );
+
+
+    const button =
+      document.getElementById(
+        "mobileJobTypeBtn"
+      );
+
+
+    const label =
+      document.getElementById(
+        "mobileJobTypeLabel"
+      );
+
+
+    const menu =
+      document.getElementById(
+        "mobileJobTypeMenu"
+      );
+
+
+    const originalSelect =
+      document.getElementById(
+        "jobTypeSelect"
+      );
+
+
+    if (
+      !wrapper ||
+      !button ||
+      !label ||
+      !menu ||
+      !originalSelect
+    ) {
+      return;
+    }
+
+
+    /* OPEN / CLOSE */
+    button.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const isOpen =
+          wrapper.classList.toggle(
+            "open"
+          );
+
+
+        button.setAttribute(
+          "aria-expanded",
+          String(isOpen)
+        );
+
+      }
+    );
+
+
+    /* SELECT OPTION */
+    menu
+      .querySelectorAll(
+        "button[data-value]"
+      )
+      .forEach(
+        optionButton => {
+
+          optionButton.addEventListener(
+            "click",
+            () => {
+
+              const value =
+                optionButton.dataset.value;
+
+
+              const text =
+                optionButton.textContent.trim();
+
+
+              /*
+                Update original SELECT.
+              */
+              originalSelect.value =
+                value;
+
+
+              /*
+                This triggers your CURRENT:
+
+                onchange="
+                  setJobTypeFilter(this.value)
+                "
+
+                and your existing change
+                event listener.
+              */
+              originalSelect.dispatchEvent(
+                new Event(
+                  "change",
+                  {
+                    bubbles: true
+                  }
+                )
+              );
+
+
+              /* Update visible label */
+              label.textContent =
+                text;
+
+
+              /* Active option */
+              menu
+                .querySelectorAll(
+                  "button"
+                )
+                .forEach(
+                  item => {
+
+                    item.classList.toggle(
+                      "active",
+                      item ===
+                      optionButton
+                    );
+
+                  }
+                );
+
+
+              /* Close */
+              wrapper.classList.remove(
+                "open"
+              );
+
+
+              button.setAttribute(
+                "aria-expanded",
+                "false"
+              );
+
+            }
+          );
+
+        }
+      );
+
+
+    /* CLOSE WHEN CLICKING OUTSIDE */
+    document.addEventListener(
+      "click",
+      event => {
+
+        if (
+          !wrapper.contains(
+            event.target
+          )
+        ) {
+
+          wrapper.classList.remove(
+            "open"
+          );
+
+
+          button.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+        }
+
+      }
+    );
+
+
+    /* DEFAULT ACTIVE OPTION */
+    const initialOption =
+      menu.querySelector(
+        `[data-value="${originalSelect.value}"]`
+      );
+
+
+    if (initialOption) {
+
+      initialOption.classList.add(
+        "active"
+      );
+
+      label.textContent =
+        initialOption.textContent.trim();
+
+    }
+
+  }
+);
+
 function normalizeJobCategoryText(
   value
 ) {

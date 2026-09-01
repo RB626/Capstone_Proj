@@ -1215,7 +1215,7 @@ body {
        JOBS PAGE
     ══════════════════════════════════════ */
 .jobs-page-card {
-  background: #f8fafc;
+  background: #f3f4f6;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.05);
   overflow: hidden;
@@ -8392,9 +8392,7 @@ body.dark-mode .experience-modal-footer {
   justify-content: center;
 
   padding:
-    20px
-    12px
-    28px;
+    20px 12px 28px;
 
 }
 
@@ -8444,13 +8442,10 @@ body.dark-mode .experience-modal-footer {
   flex-shrink: 0;
 
   border:
-    2.5px solid
-    rgba(
-      20,
+    2.5px solid rgba(20,
       184,
       166,
-      0.2
-    );
+      0.2);
 
   border-top-color:
     #14b8a6;
@@ -8459,10 +8454,7 @@ body.dark-mode .experience-modal-footer {
     50%;
 
   animation:
-    homeJobsInfiniteSpinner
-    0.75s
-    linear
-    infinite;
+    homeJobsInfiniteSpinner 0.75s linear infinite;
 
 }
 
@@ -8490,8 +8482,7 @@ body.dark-mode .experience-modal-footer {
 
 /* DARK MODE */
 
-body.dark-mode
-.home-jobs-infinite-status {
+body.dark-mode .home-jobs-infinite-status {
 
   color: #94a3b8;
 
@@ -8507,9 +8498,7 @@ body.dark-mode
     min-height: 68px;
 
     padding:
-      16px
-      8px
-      24px;
+      16px 8px 24px;
 
   }
 
@@ -8518,6 +8507,434 @@ body.dark-mode
 
     font-size: 12px;
 
+  }
+
+}
+
+/* ══════════════════════════════════════
+   SAVED JOBS PAGE
+   FULL-SCREEN / FULL-WIDTH LAYOUT
+══════════════════════════════════════ */
+
+/*
+  Remove the outer page margin/padding.
+
+  This affects ONLY Saved Jobs.
+*/
+#page-jobs {
+  width: 100%;
+
+  min-height:
+    calc(100vh - var(--nav-h));
+
+  padding:
+    0 !important;
+
+  margin:
+    0 !important;
+
+  background:
+    transparent;
+}
+
+
+/*
+  The old Saved Jobs design was a
+  rounded card floating inside the page.
+
+  Turn that container into the actual
+  page itself.
+*/
+#page-jobs .jobs-page-card {
+
+  width:
+    100% !important;
+
+  max-width:
+    none !important;
+
+  min-height:
+    calc(100vh - var(--nav-h));
+
+  margin:
+    0 !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    0 !important;
+
+  box-shadow:
+    none !important;
+
+  overflow:
+    visible !important;
+
+  background:
+    transparent;
+
+}
+
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+
+#page-jobs .jobs-panel-header {
+
+  padding:
+    28px 28px 0;
+
+}
+
+
+/* ══════════════════════════════════════
+   SEARCH + FILTERS
+══════════════════════════════════════ */
+
+#page-jobs .search-filter-row {
+
+  padding:
+    24px 28px 0;
+
+}
+
+
+/* ══════════════════════════════════════
+   SAVED JOB CARDS AREA
+══════════════════════════════════════ */
+
+#page-jobs #job-items-list {
+
+  width:
+    100%;
+
+  padding:
+    24px 28px 96px;
+
+  box-sizing:
+    border-box;
+
+}
+
+/* ══════════════════════════════════════
+   SAVED JOBS
+   TABLET + MOBILE
+══════════════════════════════════════ */
+
+@media (max-width: 900px) {
+
+  #page-jobs {
+
+    /*
+      Override your older:
+      padding: 14px 12px 84px;
+    */
+    padding:
+      0 !important;
+
+    margin:
+      0 !important;
+
+    width:
+      100%;
+
+    min-height:
+      calc(100dvh - var(--nav-h));
+
+  }
+
+
+  #page-jobs .jobs-page-card {
+
+    width:
+      100% !important;
+
+    min-height:
+      calc(100dvh - var(--nav-h));
+
+    border-radius:
+      0 !important;
+
+    box-shadow:
+      none !important;
+
+  }
+
+
+  /*
+    Keep only useful INNER spacing.
+  */
+  #page-jobs .jobs-panel-header {
+
+    padding:
+      18px 14px 12px;
+
+  }
+
+
+  #page-jobs .search-filter-row {
+
+    padding:
+      10px 12px 0;
+
+  }
+
+
+  #page-jobs #job-items-list {
+
+    padding:
+      14px 12px 96px;
+
+  }
+
+}
+
+/* ══════════════════════════════════════
+   SAVED JOBS
+   SMALL PHONE
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  #page-jobs {
+
+    padding:
+      0 !important;
+
+  }
+
+
+  #page-jobs .jobs-panel-header {
+
+    padding:
+      16px 10px 10px;
+
+  }
+
+
+  #page-jobs .search-filter-row {
+
+    padding:
+      8px 10px 0;
+
+  }
+
+
+  #page-jobs #job-items-list {
+
+    padding:
+      12px 10px 94px;
+
+  }
+
+}
+
+/* ══════════════════════════════════════
+   CUSTOM MOBILE JOB TYPE DROPDOWN
+══════════════════════════════════════ */
+
+.mobile-job-type-dropdown {
+  display: none;
+}
+
+
+/* MOBILE ONLY */
+@media (max-width: 600px) {
+
+  /*
+    Hide the native SELECT.
+
+    This prevents Android/iPhone from
+    opening the black system modal.
+  */
+  .job-type-dropdown {
+    display: none !important;
+  }
+
+
+  .mobile-job-type-dropdown {
+    display: block;
+
+    position: relative;
+
+    width: 100%;
+  }
+
+
+  /* Main button */
+  .mobile-job-type-btn {
+    width: 100%;
+    height: 54px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 16px;
+
+    border: 1.5px solid #d9dee5;
+    border-radius: 13px;
+
+    background: #ffffff;
+
+    color: #374151;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    outline: none;
+
+    box-sizing: border-box;
+  }
+
+
+  .mobile-job-type-btn:focus,
+  .mobile-job-type-dropdown.open .mobile-job-type-btn {
+
+    border-color: #2dd4bf;
+
+    box-shadow:
+      0 0 0 2px rgba(45, 212, 191, 0.12);
+  }
+
+
+  /* Arrow */
+  .mobile-job-type-chevron {
+    width: 17px;
+    height: 17px;
+
+    flex-shrink: 0;
+
+    color: #94a3b8;
+
+    transition: transform 0.18s ease;
+  }
+
+
+  .mobile-job-type-dropdown.open .mobile-job-type-chevron {
+    transform: rotate(180deg);
+  }
+
+
+  /* White dropdown menu */
+  .mobile-job-type-menu {
+    display: none;
+
+    position: absolute;
+
+    top: calc(100% + 2px);
+    left: 0;
+
+    width: 100%;
+
+    background: #ffffff;
+
+    border: 1px solid #9ca3af;
+
+    border-radius: 0;
+
+    overflow: hidden;
+
+    box-shadow:
+      0 5px 14px rgba(0, 0, 0, 0.12);
+
+    z-index: 1000;
+  }
+
+
+  .mobile-job-type-dropdown.open .mobile-job-type-menu {
+    display: block;
+  }
+
+
+  /* Options */
+  .mobile-job-type-menu button {
+    display: block;
+
+    width: 100%;
+
+    padding: 8px 17px;
+
+    border: none;
+
+    background: #ffffff;
+
+    text-align: left;
+
+    color: #1f2937;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+
+    cursor: pointer;
+  }
+
+
+  .mobile-job-type-menu button:hover {
+    background: #f3f4f6;
+  }
+
+
+  .mobile-job-type-menu button.active {
+    background: #256bd6;
+
+    color: #ffffff;
+  }
+
+}
+
+/* ══════════════════════════════════════
+   MOBILE — ALL JOBS SAME SIZE AS
+   JOB CATEGORY
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  .mobile-job-type-btn {
+    width: 100% !important;
+
+    /* Same height as Job Category */
+    height: 44px !important;
+    min-height: 44px !important;
+
+    /* Same spacing */
+    padding: 10px 12px 10px 14px !important;
+
+    /* Same border */
+    border: 1.5px solid #e5e7eb !important;
+    border-radius: 10px !important;
+
+    background: #ffffff;
+
+    /* Same text styling */
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem !important;
+    font-weight: 600;
+
+    color: #374151;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+
+  /* Match the Job Category arrow */
+  .mobile-job-type-chevron {
+    width: 14px !important;
+    height: 14px !important;
+
+    flex-shrink: 0;
+
+    color: #9ca3af;
   }
 
 }

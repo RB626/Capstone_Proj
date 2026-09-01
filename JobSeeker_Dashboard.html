@@ -499,12 +499,49 @@
                 data-i18n="jobsSearchPlaceholder" oninput="filterJobItems()" />
             </div>
             <div class="job-type-dropdown-wrap">
-              <select class="job-type-dropdown" onchange="setJobTypeFilter(this.value)">
+
+              <!-- KEEP ORIGINAL SELECT -->
+              <select class="job-type-dropdown" id="jobTypeSelect" onchange="setJobTypeFilter(this.value)">
                 <option value="all" selected data-i18n="jobsAll">All Jobs</option>
                 <option value="fulltime" data-i18n="jobsFullTime">Full-time</option>
                 <option value="parttime" data-i18n="jobsPartTime">Part-time</option>
                 <option value="contract" data-i18n="jobsContract">Contract</option>
               </select>
+
+
+              <!-- CUSTOM MOBILE DROPDOWN -->
+              <div class="mobile-job-type-dropdown" id="mobileJobTypeDropdown">
+
+                <button type="button" class="mobile-job-type-btn" id="mobileJobTypeBtn" aria-expanded="false">
+                  <span id="mobileJobTypeLabel">All Jobs</span>
+
+                  <svg class="mobile-job-type-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+
+
+                <div class="mobile-job-type-menu" id="mobileJobTypeMenu">
+                  <button type="button" data-value="all">
+                    All Jobs
+                  </button>
+
+                  <button type="button" data-value="fulltime">
+                    Full-time
+                  </button>
+
+                  <button type="button" data-value="parttime">
+                    Part-time
+                  </button>
+
+                  <button type="button" data-value="contract">
+                    Contract
+                  </button>
+                </div>
+
+              </div>
+
             </div>
             <!-- ══════════════════════════════════════
      BLUE COLLAR JOB CATEGORY FILTER
