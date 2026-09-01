@@ -1898,6 +1898,169 @@ function applyTranslations(lang) {
 
 }
 
+/* ══════════════════════════════════════
+   MOBILE MESSAGE KEYBOARD VIEWPORT FIX
+══════════════════════════════════════ */
+
+(function setupMobileChatKeyboard() {
+
+  const chatInput =
+    document.getElementById(
+      "chat-input"
+    );
+
+
+  if (!chatInput) {
+    return;
+  }
+
+
+  const root =
+    document.documentElement;
+
+
+  function updateMobileChatViewport() {
+
+    if (
+      window.innerWidth > 600
+    ) {
+
+      document.body.classList.remove(
+        "chat-keyboard-open"
+      );
+
+
+      root.style.removeProperty(
+        "--mobile-chat-visible-height"
+      );
+
+
+      return;
+    }
+
+
+    /*
+      visualViewport gives us the REAL
+      visible height after the mobile
+      keyboard opens.
+    */
+    const viewport =
+      window.visualViewport;
+
+
+    const visibleHeight =
+      viewport
+        ? viewport.height +
+        viewport.offsetTop
+        : window.innerHeight;
+
+
+    root.style.setProperty(
+      "--mobile-chat-visible-height",
+      `${Math.round(visibleHeight)}px`
+    );
+
+  }
+
+
+  /* ─────────────────────────────────────
+     INPUT FOCUSED
+  ───────────────────────────────────── */
+
+  chatInput.addEventListener(
+    "focus",
+    () => {
+
+      document.body.classList.add(
+        "chat-keyboard-open"
+      );
+
+
+      updateMobileChatViewport();
+
+
+      /*
+        Keyboard animation takes a moment.
+        Recalculate again afterwards.
+      */
+      setTimeout(
+        updateMobileChatViewport,
+        100
+      );
+
+
+      setTimeout(
+        updateMobileChatViewport,
+        300
+      );
+
+    }
+  );
+
+
+  /* ─────────────────────────────────────
+     INPUT CLOSED
+  ───────────────────────────────────── */
+
+  chatInput.addEventListener(
+    "blur",
+    () => {
+
+      /*
+        Give the keyboard enough time
+        to finish closing.
+      */
+      setTimeout(
+        () => {
+
+          document.body.classList.remove(
+            "chat-keyboard-open"
+          );
+
+
+          root.style.removeProperty(
+            "--mobile-chat-visible-height"
+          );
+
+        },
+        150
+      );
+
+    }
+  );
+
+
+  /* ─────────────────────────────────────
+     KEYBOARD RESIZE
+  ───────────────────────────────────── */
+
+  if (
+    window.visualViewport
+  ) {
+
+    window.visualViewport
+      .addEventListener(
+        "resize",
+        updateMobileChatViewport
+      );
+
+
+    window.visualViewport
+      .addEventListener(
+        "scroll",
+        updateMobileChatViewport
+      );
+
+  }
+
+
+  window.addEventListener(
+    "orientationchange",
+    updateMobileChatViewport
+  );
+
+})();
+
 (function initLanguage() {
   const urlParams = new URLSearchParams(window.location.search);
   const urlLang = urlParams.get('lang');

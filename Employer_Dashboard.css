@@ -11580,3 +11580,231 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 }
+
+/* ══════════════════════════════════════
+   MOBILE — FULL SCREEN MESSAGES PAGE
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  /* Remove the normal page spacing */
+  #page-messages {
+    padding: 0 !important;
+    margin: 0 !important;
+
+    width: 100% !important;
+    max-width: none !important;
+
+    height: calc(
+      100dvh - var(--nav-h) - 64px
+    ) !important;
+
+    min-height: 0 !important;
+
+    overflow: hidden;
+  }
+
+
+  /* Message container occupies entire page */
+  #page-messages .msg-shell {
+    width: 100% !important;
+    height: 100% !important;
+
+    min-height: 0 !important;
+
+    margin: 0 !important;
+
+    border-radius: 0 !important;
+
+    box-shadow: none !important;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  /* Conversation list fills screen */
+  #page-messages .conv-list {
+    width: 100% !important;
+    height: 100% !important;
+
+    min-height: 0;
+
+    border-radius: 0;
+
+    overflow-y: auto;
+  }
+
+
+  /* Chat also fills entire available area */
+  #page-messages .chat-area {
+    width: 100% !important;
+    height: 100% !important;
+
+    min-height: 0;
+
+    border-radius: 0;
+  }
+
+
+  /* When conversation is opened */
+  #page-messages .msg-shell.chat-open .chat-area {
+    display: flex;
+    height: 100% !important;
+  }
+
+
+  /* Message area uses remaining vertical space */
+  #page-messages .chat-messages {
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    overflow-y: auto;
+  }
+
+
+  /* Header and typing area must not shrink */
+  #page-messages .chat-header,
+  #page-messages .chat-input-area {
+    flex-shrink: 0;
+  }
+
+}
+
+/* ══════════════════════════════════════
+   MOBILE CHAT — KEYBOARD FIX
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  /*
+    Prevent the whole page from scrolling
+    when the keyboard opens.
+  */
+  body.chat-keyboard-open {
+    overflow: hidden !important;
+  }
+
+
+  /*
+    Hide bottom navigation while typing.
+
+    This prevents the large empty space
+    between the input and keyboard.
+  */
+  body.chat-keyboard-open .mobile-nav {
+    display: none !important;
+  }
+
+
+  /*
+    Use the actual visible mobile viewport
+    calculated by JavaScript.
+  */
+  body.chat-keyboard-open .app-shell {
+    height: var(
+      --mobile-chat-visible-height,
+      100dvh
+    ) !important;
+
+    min-height: 0 !important;
+
+    overflow: hidden !important;
+  }
+
+
+  body.chat-keyboard-open .main-content {
+    height: calc(
+      var(
+        --mobile-chat-visible-height,
+        100dvh
+      ) - var(--nav-h)
+    ) !important;
+
+    min-height: 0 !important;
+
+    overflow: hidden !important;
+  }
+
+
+  body.chat-keyboard-open #page-messages {
+    width: 100% !important;
+    height: 100% !important;
+
+    min-height: 0 !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: hidden !important;
+  }
+
+
+  body.chat-keyboard-open
+  #page-messages .msg-shell {
+
+    width: 100% !important;
+    height: 100% !important;
+
+    min-height: 0 !important;
+
+    margin: 0 !important;
+
+    overflow: hidden !important;
+  }
+
+
+  body.chat-keyboard-open
+  #page-messages .chat-area {
+
+    width: 100% !important;
+    height: 100% !important;
+
+    min-height: 0 !important;
+
+    overflow: hidden !important;
+
+    display: flex !important;
+    flex-direction: column;
+  }
+
+
+  /*
+    Only messages scroll.
+    The entire page should NOT scroll.
+  */
+  body.chat-keyboard-open
+  #page-messages .chat-messages {
+
+    flex: 1 1 auto;
+
+    min-height: 0 !important;
+
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+  }
+
+
+  /*
+    Keep input directly above keyboard.
+  */
+  body.chat-keyboard-open
+  #page-messages .chat-input-area {
+
+    flex: 0 0 auto !important;
+
+    position: relative !important;
+
+    bottom: auto !important;
+
+    margin: 0 !important;
+
+    transform: none !important;
+
+    background: #ffffff;
+  }
+
+}
