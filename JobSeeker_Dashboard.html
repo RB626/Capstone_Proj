@@ -2494,191 +2494,917 @@
     }
 
     function listenToJobSeekerConversations(userId) {
+
       const convItemsContainer =
         document.getElementById("conv-items");
 
-      if (!convItemsContainer || !userId) return;
 
-      if (unsubscribeJobSeekerConversations) {
-        unsubscribeJobSeekerConversations();
-        unsubscribeJobSeekerConversations = null;
+      if (!convItemsContainer || !userId) {
+        return;
       }
 
+
+      /*
+        Remove an older Firestore listener
+        before creating a new one.
+      */
+      if (unsubscribeJobSeekerConversations) {
+
+        unsubscribeJobSeekerConversations();
+
+        unsubscribeJobSeekerConversations =
+          null;
+
+      }
+
+
+      /*
+        This loading screen is shown ONLY
+        when the listener is initially created.
+    
+        It will NOT be shown every time
+        somebody sends a message.
+      */
       convItemsContainer.innerHTML = `
-    <div style="
-      padding: 20px;
-      text-align: center;
-      color: #9ca3af;
-    ">
+    <div
+      data-conversation-loading="true"
+      style="
+        padding: 20px;
+        text-align: center;
+        color: #9ca3af;
+      "
+    >
       Loading conversations...
     </div>
   `;
 
-      const conversationsQuery = query(
-        collection(db, "conversations"),
-        where(
-          "participantIds",
-          "array-contains",
-          userId
-        )
-      );
 
-      unsubscribeJobSeekerConversations = onSnapshot(
-        conversationsQuery,
+      const conversationsQuery =
+        query(
 
-        (snapshot) => {
-          if (snapshot.empty) {
+          collection(
+            db,
+            "conversations"
+          ),
+
+          where(
+            "participantIds",
+            "array-contains",
+            userId
+          )
+
+        );
+
+
+      /*
+        False only during the first
+        Firestore result.
+      */
+      let sidebarInitialized =
+        false;
+
+
+
+      /* ══════════════════════════════════════
+         GET CONVERSATION DATA
+    
+         "estimate" is important because your
+         updatedAt uses serverTimestamp().
+    
+         Without estimate, the timestamp can
+         temporarily become unresolved and
+         cause a row to jump down then back up.
+      ══════════════════════════════════════ */
+
+      function getConversationData(
+        docSnap
+      ) {
+
+        const data =
+          docSnap.data({
+            serverTimestamps:
+              "estimate"
+          });
+
+
+        return {
+
+          id:
+            docSnap.id,
+
+          ...data
+
+        };
+
+      }
+
+
+
+      /* ══════════════════════════════════════
+         SORT NEWEST FIRST
+      ══════════════════════════════════════ */
+
+      function getSortedConversations(
+        snapshot
+      ) {
+
+        return snapshot.docs
+          .map(
+            getConversationData
+          )
+          .sort(
+            (
+              first,
+              second
+            ) => {
+
+              return (
+
+                timestampToMilliseconds(
+                  second.updatedAt
+                )
+
+                -
+
+                timestampToMilliseconds(
+                  first.updatedAt
+                )
+
+              );
+
+            }
+          );
+
+      }
+
+
+
+      /* ══════════════════════════════════════
+         CREATE ONE CONVERSATION ROW
+    
+         Used only:
+         - first load
+         - genuinely new conversation
+    
+         NOT used every time a message changes.
+      ══════════════════════════════════════ */
+
+      function createConversationItem(
+        conversation
+      ) {
+
+        const conversationId =
+          conversation.id;
+
+
+        const realtimeEmployer =
+          getRealtimeEmployerProfile(
+            conversation
+          );
+
+
+        const employerName =
+          realtimeEmployer.name;
+
+
+        const employerAvatar =
+          realtimeEmployer.photoURL;
+
+
+        const employerId =
+          realtimeEmployer.employerId;
+
+
+        const lastMessage =
+          conversation.lastMessage ||
+          "Conversation started";
+
+
+        const updatedAt =
+          conversation.updatedAt
+
+            ? formatPostTime(
+              conversation.updatedAt
+            )
+
+            : "now";
+
+
+        const item =
+          document.createElement(
+            "div"
+          );
+
+
+        item.className =
+          "conv-item";
+
+
+        item.dataset.convid =
+          conversationId;
+
+
+        item.dataset.name =
+          employerName;
+
+
+        item.dataset.avatar =
+          employerAvatar;
+
+
+        item.dataset.status =
+          "Active recently";
+
+
+        item.dataset.employerId =
+          employerId || "";
+
+
+        item.dataset.online =
+          "false";
+
+
+        /*
+          Preserve active row if this is the
+          currently opened conversation.
+        */
+        if (
+          conversationId ===
+          activeConversationId
+        ) {
+
+          item.classList.add(
+            "active"
+          );
+
+        }
+
+
+        item.innerHTML = `
+      <div class="conv-avatar-wrap">
+
+        <img
+          class="conv-avatar"
+          src="${escapeHtml(
+          employerAvatar
+        )}"
+          alt="${escapeHtml(
+          employerName
+        )}"
+        />
+
+      </div>
+
+
+      <div class="conv-body">
+
+        <div class="conv-header-row">
+
+          <span class="conv-name">
+            ${escapeHtml(
+          employerName
+        )}
+          </span>
+
+          <span class="conv-time">
+            ${escapeHtml(
+          updatedAt
+        )}
+          </span>
+
+        </div>
+
+
+        <div class="conv-preview">
+          ${escapeHtml(
+          lastMessage
+        )}
+        </div>
+
+
+        <div class="conv-footer-row">
+
+          <span class="conv-badge employer">
+            Employer
+          </span>
+
+        </div>
+
+      </div>
+    `;
+
+
+        /*
+          Keep your CURRENT openConv logic.
+        */
+        item.addEventListener(
+          "click",
+          () => {
+
+            window.openConv(
+              item,
+              conversationId
+            );
+
+          }
+        );
+
+
+        return item;
+
+      }
+
+
+
+      /* ══════════════════════════════════════
+         UPDATE EXISTING ROW
+    
+         This is what happens when:
+           lastMessage changes
+           updatedAt changes
+           Employer name/photo changes
+    
+         The row itself is NOT recreated.
+      ══════════════════════════════════════ */
+
+      function updateConversationItem(
+        item,
+        conversation
+      ) {
+
+        if (
+          !item ||
+          !conversation
+        ) {
+          return;
+        }
+
+
+        const realtimeEmployer =
+          getRealtimeEmployerProfile(
+            conversation
+          );
+
+
+        const employerName =
+          realtimeEmployer.name;
+
+
+        const employerAvatar =
+          realtimeEmployer.photoURL;
+
+
+        const employerId =
+          realtimeEmployer.employerId;
+
+
+        /* Update datasets */
+        item.dataset.name =
+          employerName;
+
+
+        item.dataset.avatar =
+          employerAvatar;
+
+
+        item.dataset.employerId =
+          employerId || "";
+
+
+        /* Employer name */
+        const nameElement =
+          item.querySelector(
+            ".conv-name"
+          );
+
+
+        if (
+          nameElement &&
+          nameElement.textContent !==
+          employerName
+        ) {
+
+          nameElement.textContent =
+            employerName;
+
+        }
+
+
+        /* Employer avatar */
+        const avatarElement =
+          item.querySelector(
+            ".conv-avatar"
+          );
+
+
+        if (avatarElement) {
+
+          const currentSrc =
+            avatarElement.getAttribute(
+              "src"
+            ) || "";
+
+
+          /*
+            Do NOT reload the image when
+            the URL hasn't changed.
+          */
+          if (
+            currentSrc !==
+            employerAvatar
+          ) {
+
+            avatarElement.setAttribute(
+              "src",
+              employerAvatar
+            );
+
+          }
+
+
+          if (
+            avatarElement.alt !==
+            employerName
+          ) {
+
+            avatarElement.alt =
+              employerName;
+
+          }
+
+        }
+
+
+        /* Last message */
+        const previewText =
+          conversation.lastMessage ||
+          "Conversation started";
+
+
+        const previewElement =
+          item.querySelector(
+            ".conv-preview"
+          );
+
+
+        if (
+          previewElement &&
+          previewElement.textContent !==
+          previewText
+        ) {
+
+          previewElement.textContent =
+            previewText;
+
+        }
+
+
+        /* Time */
+        const updatedText =
+          conversation.updatedAt
+
+            ? formatPostTime(
+              conversation.updatedAt
+            )
+
+            : "now";
+
+
+        const timeElement =
+          item.querySelector(
+            ".conv-time"
+          );
+
+
+        if (
+          timeElement &&
+          timeElement.textContent !==
+          updatedText
+        ) {
+
+          timeElement.textContent =
+            updatedText;
+
+        }
+
+      }
+
+
+
+      /* ══════════════════════════════════════
+         FACEBOOK-STYLE ORDERING
+    
+         Important:
+         Existing DOM rows remain alive.
+    
+         A row is moved ONLY if its position
+         really changed.
+      ══════════════════════════════════════ */
+
+      function reconcileConversationOrder(
+        conversations
+      ) {
+
+        let anchor =
+          convItemsContainer
+            .firstElementChild;
+
+
+        conversations.forEach(
+          conversation => {
+
+            const item =
+              convItemsContainer
+                .querySelector(
+
+                  `.conv-item[data-convid="${CSS.escape(
+                    conversation.id
+                  )}"]`
+
+                );
+
+
+            if (!item) {
+              return;
+            }
+
+
+            /*
+              Already in the correct position.
+    
+              DO NOTHING.
+            */
+            if (
+              item === anchor
+            ) {
+
+              anchor =
+                anchor.nextElementSibling;
+
+              return;
+
+            }
+
+
+            /*
+              Only this row moves.
+    
+              No clearing.
+              No rebuilding.
+            */
+            convItemsContainer
+              .insertBefore(
+                item,
+                anchor
+              );
+
+
+            anchor =
+              item.nextElementSibling;
+
+          }
+        );
+
+      }
+
+
+
+      /* ══════════════════════════════════════
+         KEEP SEARCH FILTER WORKING
+      ══════════════════════════════════════ */
+
+      function reapplyConversationSearch() {
+
+        const searchInput =
+          document.querySelector(
+            ".conv-search"
+          );
+
+
+        if (
+          searchInput &&
+          searchInput.value &&
+          typeof window.filterConvs ===
+          "function"
+        ) {
+
+          window.filterConvs(
+            searchInput.value
+          );
+
+        }
+
+      }
+
+
+
+      /* ══════════════════════════════════════
+         FIRESTORE REALTIME LISTENER
+      ══════════════════════════════════════ */
+
+      unsubscribeJobSeekerConversations =
+        onSnapshot(
+
+          conversationsQuery,
+
+
+          snapshot => {
+
+
+            /* ────────────────────────────────
+               NO CONVERSATIONS
+            ──────────────────────────────── */
+
+            if (
+              snapshot.empty
+            ) {
+
+              latestJobSeekerConversations =
+                [];
+
+
+              syncEmployerProfileListeners();
+
+
+              convItemsContainer.innerHTML = `
+            <div
+              data-conversation-empty="true"
+              style="
+                padding: 20px;
+                text-align: center;
+                color: #9ca3af;
+              "
+            >
+              No conversations yet.
+            </div>
+          `;
+
+
+              /*
+                Preserve your old behavior.
+              */
+              resetJobSeekerChatArea();
+
+
+              sidebarInitialized =
+                true;
+
+
+              return;
+
+            }
+
+
+
+            /* ────────────────────────────────
+               GET CURRENT CONVERSATIONS
+            ──────────────────────────────── */
+
+            const conversations =
+              getSortedConversations(
+                snapshot
+              );
+
+
+            /*
+              Keep your existing global cache.
+            */
+            latestJobSeekerConversations =
+              conversations;
+
+
+            /*
+              Keep existing realtime
+              Employer profile listeners.
+            */
+            syncEmployerProfileListeners();
+
+
+
+            /* ══════════════════════════════════════
+               FIRST LOAD ONLY
+            ══════════════════════════════════════ */
+
+            if (
+              !sidebarInitialized
+            ) {
+
+              /*
+                Clearing here is OK because
+                this happens ONCE when the
+                sidebar first loads.
+              */
+              convItemsContainer
+                .replaceChildren();
+
+
+              conversations.forEach(
+                conversation => {
+
+                  convItemsContainer
+                    .appendChild(
+
+                      createConversationItem(
+                        conversation
+                      )
+
+                    );
+
+                }
+              );
+
+
+              sidebarInitialized =
+                true;
+
+
+              /*
+                Restore your previously
+                opened conversation ONCE.
+              */
+              restoreJobSeekerConversation(
+                convItemsContainer
+              );
+
+
+              reapplyConversationSearch();
+
+
+              return;
+
+            }
+
+
+
+            /*
+              Remove old empty/loading message
+              if a first conversation was added.
+            */
+            convItemsContainer
+              .querySelector(
+                "[data-conversation-empty]"
+              )
+              ?.remove();
+
+
+            convItemsContainer
+              .querySelector(
+                "[data-conversation-loading]"
+              )
+              ?.remove();
+
+
+
+            /*
+              Map lets us retrieve the latest
+              version of each changed document.
+            */
+            const conversationMap =
+              new Map(
+
+                conversations.map(
+                  conversation => [
+
+                    conversation.id,
+                    conversation
+
+                  ]
+                )
+
+              );
+
+
+
+            /* ══════════════════════════════════════
+               ONLY HANDLE CHANGED ROWS
+            ══════════════════════════════════════ */
+
+            snapshot
+              .docChanges()
+              .forEach(
+                change => {
+
+                  const conversationId =
+                    change.doc.id;
+
+
+                  const selector =
+                    `.conv-item[data-convid="${CSS.escape(
+                      conversationId
+                    )}"]`;
+
+
+                  let item =
+                    convItemsContainer
+                      .querySelector(
+                        selector
+                      );
+
+
+                  /* Conversation removed */
+                  if (
+                    change.type ===
+                    "removed"
+                  ) {
+
+                    item?.remove();
+
+                    return;
+
+                  }
+
+
+                  const conversation =
+                    conversationMap.get(
+                      conversationId
+                    );
+
+
+                  if (!conversation) {
+                    return;
+                  }
+
+
+                  /*
+                    Truly new conversation:
+                    create ONE row.
+                  */
+                  if (!item) {
+
+                    item =
+                      createConversationItem(
+                        conversation
+                      );
+
+
+                    convItemsContainer
+                      .appendChild(
+                        item
+                      );
+
+                  }
+
+                  /*
+                    Existing conversation:
+                    update SAME row.
+                  */
+                  else {
+
+                    updateConversationItem(
+                      item,
+                      conversation
+                    );
+
+                  }
+
+                }
+              );
+
+
+
+            /* ══════════════════════════════════════
+               REORDER ONLY IF NEEDED
+            ══════════════════════════════════════ */
+
+            reconcileConversationOrder(
+              conversations
+            );
+
+
+            /*
+              Preserve search state.
+            */
+            reapplyConversationSearch();
+
+          },
+
+
+          error => {
+
+            console.error(
+              "Error listening to conversations:",
+              error
+            );
+
+
             convItemsContainer.innerHTML = `
           <div style="
             padding: 20px;
             text-align: center;
-            color: #9ca3af;
+            color: #ef4444;
           ">
-            No conversations yet.
+            Failed to load conversations:
+            ${escapeHtml(
+              error.code ||
+              "unknown error"
+            )}
           </div>
         `;
 
-            resetJobSeekerChatArea();
-            return;
           }
 
-          const conversations = snapshot.docs
-            .map(docSnap => ({
-              id: docSnap.id,
-              ...docSnap.data()
-            }))
-            .sort((first, second) => {
-              return (
-                timestampToMilliseconds(
-                  second.updatedAt
-                ) -
-                timestampToMilliseconds(
-                  first.updatedAt
-                )
-              );
-            });
+        );
 
-
-          latestJobSeekerConversations =
-            conversations;
-
-          syncEmployerProfileListeners();
-
-          convItemsContainer.innerHTML = "";
-
-          conversations.forEach(conversation => {
-            const conversationId =
-              conversation.id;
-
-            const realtimeEmployer =
-              getRealtimeEmployerProfile(
-                conversation
-              );
-
-
-            const employerName =
-              realtimeEmployer.name;
-
-
-            const employerAvatar =
-              realtimeEmployer.photoURL;
-
-
-            const employerId =
-              realtimeEmployer.employerId;
-
-            const lastMessage =
-              conversation.lastMessage ||
-              "Conversation started";
-
-            const updatedAt =
-              conversation.updatedAt
-                ? formatPostTime(
-                  conversation.updatedAt
-                )
-                : "now";
-
-            const item =
-              document.createElement("div");
-
-            item.className = "conv-item";
-            item.dataset.convid = conversationId;
-            item.dataset.name = employerName;
-            item.dataset.avatar = employerAvatar;
-            item.dataset.status = "Active recently";
-            item.dataset.employerId = employerId;
-            item.dataset.online = "false";
-
-            item.innerHTML = `
-          <div class="conv-avatar-wrap">
-            <img
-              class="conv-avatar"
-              src="${escapeHtml(employerAvatar)}"
-              alt="${escapeHtml(employerName)}"
-            />
-          </div>
-
-          <div class="conv-body">
-            <div class="conv-header-row">
-              <span class="conv-name">
-                ${escapeHtml(employerName)}
-              </span>
-
-              <span class="conv-time">
-                ${escapeHtml(updatedAt)}
-              </span>
-            </div>
-
-            <div class="conv-preview">
-              ${escapeHtml(lastMessage)}
-            </div>
-
-            <div class="conv-footer-row">
-              <span class="conv-badge employer">
-                Employer
-              </span>
-            </div>
-          </div>
-        `;
-
-            item.addEventListener(
-              "click",
-              () => {
-                window.openConv(
-                  item,
-                  conversationId
-                );
-              }
-            );
-
-            convItemsContainer.appendChild(
-              item
-            );
-          });
-
-          restoreJobSeekerConversation(
-            convItemsContainer
-          );
-        },
-
-        (error) => {
-          console.error(
-            "Error listening to conversations:",
-            error
-          );
-
-          convItemsContainer.innerHTML = `
-        <div style="
-          padding: 20px;
-          text-align: center;
-          color: #ef4444;
-        ">
-          Failed to load conversations:
-          ${escapeHtml(error.code || "unknown error")}
-        </div>
-      `;
-        }
-      );
     }
 
     function timestampToMilliseconds(timestamp) {
@@ -2901,20 +3627,114 @@
       }
     }
 
-    function updateConversationSidebarPreview(conversationId, text) {
-      const convItem = document.querySelector(`.conv-item[data-convid="${conversationId}"]`);
-      if (!convItem) return;
+    function updateConversationSidebarPreview(
+      conversationId,
+      text
+    ) {
 
-      const preview = convItem.querySelector(".conv-preview");
-      if (preview) {
-        preview.textContent = text.length > 22 ? text.substring(0, 22) + "..." : text;
+      const convItems =
+        document.getElementById(
+          "conv-items"
+        );
+
+
+      if (
+        !convItems ||
+        !conversationId
+      ) {
+        return;
       }
 
-      const timeEl = convItem.querySelector(".conv-time");
-      if (timeEl) timeEl.textContent = "now";
 
-      const convItems = document.getElementById("conv-items");
-      if (convItems) convItems.prepend(convItem);
+      const convItem =
+        convItems.querySelector(
+
+          `.conv-item[data-convid="${CSS.escape(
+            conversationId
+          )}"]`
+
+        );
+
+
+      if (!convItem) {
+        return;
+      }
+
+
+      /* Update message preview */
+      const preview =
+        convItem.querySelector(
+          ".conv-preview"
+        );
+
+
+      if (preview) {
+
+        const previewText =
+
+          text.length > 22
+
+            ? text.substring(
+              0,
+              22
+            ) + "..."
+
+            : text;
+
+
+        if (
+          preview.textContent !==
+          previewText
+        ) {
+
+          preview.textContent =
+            previewText;
+
+        }
+
+      }
+
+
+      /* Update timestamp */
+      const timeEl =
+        convItem.querySelector(
+          ".conv-time"
+        );
+
+
+      if (
+        timeEl &&
+        timeEl.textContent !==
+        "Just now"
+      ) {
+
+        timeEl.textContent =
+          "Just now";
+
+      }
+
+
+      /*
+        Messenger-style:
+    
+        If already first:
+          DO NOTHING.
+    
+        If not first:
+          move only this existing node.
+      */
+      if (
+        convItem !==
+        convItems.firstElementChild
+      ) {
+
+        convItems.insertBefore(
+          convItem,
+          convItems.firstElementChild
+        );
+
+      }
+
     }
 
     window.openConv = async function (el, convId) {
