@@ -496,8 +496,15 @@
                 <span class="chat-header-online" style="display: none;"></span>
               </div>
               <div class="chat-header-info">
-                <div class="chat-header-name" id="chat-name" data-i18n="msgSelectConvo">Select a Conversation</div>
-                <div class="chat-header-status" id="chat-status">...</div>
+
+                <div class="chat-header-name" id="chat-name">
+                  Loading...
+                </div>
+
+                <div class="chat-header-status" id="chat-status">
+                  Loading...
+                </div>
+
               </div>
               <div class="chat-header-actions">
                 <!-- Back button — mobile only -->
@@ -537,11 +544,17 @@
 
             <!-- Messages -->
             <div class="chat-messages" id="chat-messages">
-              <!-- Messages will be loaded here dynamically -->
-              <div
-                style="text-align:center; color: #9ca3af; padding: 20px; height: 100%; display: flex; align-items: center; justify-content: center;"
-                data-i18n="msgStartMessaging">
-                <div data-i18n="msgStartMessaging">Select a conversation to start messaging.</div>
+
+              <div style="
+      text-align: center;
+      color: #9ca3af;
+      padding: 20px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    ">
+                Loading messages...
               </div>
 
             </div><!-- /chat-messages -->
@@ -10243,6 +10256,8 @@
     let employerConversationDocs = [];
     const employerApplicantsForMessages = new Map();
 
+    let employerTopConversationAutoOpened = false;
+
     window.openConv = async function (element, conversationId) {
       if (!element || !conversationId) {
         console.warn(
@@ -10619,17 +10634,59 @@
         conversationsQuery,
 
         (snapshot) => {
-          employerConversationDocs = snapshot.docs
-            .map(docSnap => ({
-              id: docSnap.id,
-              ...docSnap.data()
-            }))
-            .sort((first, second) => {
-              return (
-                timestampToMilliseconds(second.updatedAt) -
-                timestampToMilliseconds(first.updatedAt)
+          employerConversationDocs =
+            snapshot.docs
+              .map(
+                docSnap => {
+
+                  /*
+                    updatedAt uses serverTimestamp().
+          
+                    "estimate" prevents the conversation
+                    from momentarily getting timestamp 0
+                    while Firebase waits for the server.
+                  */
+                  const data =
+                    docSnap.data({
+                      serverTimestamps:
+                        "estimate"
+                    });
+
+
+                  return {
+
+                    id:
+                      docSnap.id,
+
+                    ...data
+
+                  };
+
+                }
+              )
+              .sort(
+                (
+                  first,
+                  second
+                ) => {
+
+                  return (
+
+                    timestampToMilliseconds(
+                      second.updatedAt
+                    )
+
+                    -
+
+                    timestampToMilliseconds(
+                      first.updatedAt
+                    )
+
+                  );
+
+                }
               );
-            });
+
 
           renderEmployerMessageSidebar();
         },
@@ -10861,118 +10918,872 @@
     }
 
     function renderEmployerMessageSidebar() {
+
       const container =
-        document.getElementById("conv-items");
-
-      if (!container) return;
-
-      container.innerHTML = "";
-
-      /*
-        Track which applicants already have conversations.
-      */
-      const applicantsWithConversation =
-        new Set();
-
-      employerConversationDocs.forEach(conversation => {
-        if (conversation.applicantId) {
-          applicantsWithConversation.add(
-            conversation.applicantId
-          );
-        }
-
-        container.appendChild(
-          createExistingConversationItem(
-            conversation
-          )
+        document.getElementById(
+          "conv-items"
         );
-      });
 
-      /*
-        One applicant may have applied for multiple jobs.
-        Keep only the newest application for each applicant.
-      */
-      const newestApplicationByApplicant =
-        new Map();
 
-      employerApplicantsForMessages
-        .forEach(applicant => {
-          const applicantId =
-            applicant.applicantId;
-
-          if (!applicantId) return;
-
-          /*
-            Do not create a duplicate sidebar entry when an
-            existing conversation already represents them.
-          */
-          if (
-            applicantsWithConversation.has(
-              applicantId
-            )
-          ) {
-            return;
-          }
-
-          const existing =
-            newestApplicationByApplicant.get(
-              applicantId
-            );
-
-          if (
-            !existing ||
-            timestampToMilliseconds(
-              applicant.appliedAt
-            ) >
-            timestampToMilliseconds(
-              existing.appliedAt
-            )
-          ) {
-            newestApplicationByApplicant.set(
-              applicantId,
-              applicant
-            );
-          }
-        });
-
-      const unmessagedApplicants =
-        Array.from(
-          newestApplicationByApplicant.values()
-        ).sort((first, second) => {
-          return (
-            timestampToMilliseconds(
-              second.appliedAt
-            ) -
-            timestampToMilliseconds(
-              first.appliedAt
-            )
-          );
-        });
-
-      unmessagedApplicants.forEach(applicant => {
-        container.appendChild(
-          createUnmessagedApplicantItem(
-            applicant
-          )
-        );
-      });
-
-      if (!container.children.length) {
-        container.innerHTML = `
-      <div style="
-        padding: 20px;
-        text-align: center;
-        color: #9ca3af;
-      ">
-        No applicants or conversations yet.
-      </div>
-    `;
-
-        resetEmployerChatArea();
+      if (!container) {
         return;
       }
 
-      restoreEmployerConversation(container);
+
+      /* ══════════════════════════════════════
+         REMOVE ONLY PLACEHOLDERS
+    
+         DO NOT remove existing conversation
+         rows.
+      ═══════════════════════════════════════ */
+
+      Array
+        .from(container.children)
+        .forEach(
+          child => {
+
+            if (
+              !child.classList.contains(
+                "conv-item"
+              )
+            ) {
+
+              child.remove();
+
+            }
+
+          }
+        );
+
+
+
+      /* ══════════════════════════════════════
+         APPLICANTS WITH REAL CONVERSATIONS
+      ═══════════════════════════════════════ */
+
+      const applicantsWithConversation =
+        new Set();
+
+
+      employerConversationDocs
+        .forEach(
+          conversation => {
+
+            if (
+              conversation.applicantId
+            ) {
+
+              applicantsWithConversation.add(
+                String(
+                  conversation.applicantId
+                )
+              );
+
+            }
+
+          }
+        );
+
+
+
+      /* ══════════════════════════════════════
+         FIND UNMESSAGED APPLICANTS
+    
+         Same logic as your original function:
+         if applicant applied to multiple jobs,
+         keep only newest application.
+      ═══════════════════════════════════════ */
+
+      const newestApplicationByApplicant =
+        new Map();
+
+
+      employerApplicantsForMessages
+        .forEach(
+          applicant => {
+
+            const applicantId =
+              String(
+                applicant.applicantId ||
+                ""
+              );
+
+
+            if (!applicantId) {
+              return;
+            }
+
+
+            /*
+              Already has a conversation.
+              Do not show duplicate
+              "New applicant" row.
+            */
+            if (
+              applicantsWithConversation.has(
+                applicantId
+              )
+            ) {
+
+              return;
+
+            }
+
+
+            const existing =
+              newestApplicationByApplicant
+                .get(
+                  applicantId
+                );
+
+
+            if (
+              !existing ||
+
+              timestampToMilliseconds(
+                applicant.appliedAt
+              )
+
+              >
+
+              timestampToMilliseconds(
+                existing.appliedAt
+              )
+            ) {
+
+              newestApplicationByApplicant
+                .set(
+                  applicantId,
+                  applicant
+                );
+
+            }
+
+          }
+        );
+
+
+      const unmessagedApplicants =
+        Array
+          .from(
+            newestApplicationByApplicant
+              .values()
+          )
+          .sort(
+            (
+              first,
+              second
+            ) => {
+
+              return (
+
+                timestampToMilliseconds(
+                  second.appliedAt
+                )
+
+                -
+
+                timestampToMilliseconds(
+                  first.appliedAt
+                )
+
+              );
+
+            }
+          );
+
+
+
+      /* ══════════════════════════════════════
+         EXPECTED IDs
+    
+         Used to remove only genuinely stale
+         rows, never everything.
+      ═══════════════════════════════════════ */
+
+      const expectedConversationIds =
+        new Set(
+          employerConversationDocs
+            .map(
+              conversation =>
+                String(
+                  conversation.id ||
+                  ""
+                )
+            )
+            .filter(Boolean)
+        );
+
+
+      const expectedPendingApplicantIds =
+        new Set(
+          unmessagedApplicants
+            .map(
+              applicant =>
+                String(
+                  applicant.applicantId ||
+                  ""
+                )
+            )
+            .filter(Boolean)
+        );
+
+
+
+      /* ══════════════════════════════════════
+         REMOVE STALE ROWS ONLY
+      ═══════════════════════════════════════ */
+
+      container
+        .querySelectorAll(
+          ".conv-item"
+        )
+        .forEach(
+          item => {
+
+            const type =
+              item.dataset.type;
+
+
+            /*
+              Existing conversation deleted.
+            */
+            if (
+              type === "conversation"
+            ) {
+
+              const conversationId =
+                String(
+                  item.dataset.convid ||
+                  ""
+                );
+
+
+              if (
+                !expectedConversationIds
+                  .has(
+                    conversationId
+                  )
+              ) {
+
+                item.remove();
+
+              }
+
+
+              return;
+
+            }
+
+
+            /*
+              Pending applicant now has a
+              conversation or application
+              disappeared.
+            */
+            if (
+              type ===
+              "pending-applicant"
+            ) {
+
+              const applicantId =
+                String(
+                  item.dataset.applicantId ||
+                  ""
+                );
+
+
+              if (
+                !expectedPendingApplicantIds
+                  .has(
+                    applicantId
+                  )
+              ) {
+
+                item.remove();
+
+              }
+
+            }
+
+          }
+        );
+
+
+
+      /* ══════════════════════════════════════
+         UPDATE / CREATE REAL CONVERSATIONS
+      ═══════════════════════════════════════ */
+
+      const orderedElements =
+        [];
+
+
+      employerConversationDocs
+        .forEach(
+          conversation => {
+
+            const conversationId =
+              String(
+                conversation.id ||
+                ""
+              );
+
+
+            if (!conversationId) {
+              return;
+            }
+
+
+            /*
+              Look for EXISTING row first.
+            */
+            let item =
+              container.querySelector(
+
+                `.conv-item[data-type="conversation"][data-convid="${CSS.escape(
+                  conversationId
+                )}"]`
+
+              );
+
+
+            /*
+              Only create when genuinely new.
+            */
+            if (!item) {
+
+              item =
+                createExistingConversationItem(
+                  conversation
+                );
+
+
+              container.appendChild(
+                item
+              );
+
+            }
+
+
+            /* ══════════════════════════════════════
+               UPDATE SAME EXISTING NODE
+            ═══════════════════════════════════════ */
+
+            const realtimeApplicant =
+              getRealtimeApplicantProfile(
+                conversation
+              );
+
+
+            const applicantName =
+              realtimeApplicant.name;
+
+
+            const applicantAvatar =
+              realtimeApplicant.photoURL;
+
+
+            const applicantId =
+              String(
+                conversation.applicantId ||
+                ""
+              );
+
+
+            /* Dataset */
+            item.dataset.convid =
+              conversationId;
+
+
+            item.dataset.applicantId =
+              applicantId;
+
+
+            item.dataset.name =
+              applicantName;
+
+
+            item.dataset.avatar =
+              applicantAvatar;
+
+
+            item.dataset.type =
+              "conversation";
+
+
+            /* Name */
+            const nameElement =
+              item.querySelector(
+                ".conv-name"
+              );
+
+
+            if (
+              nameElement &&
+              nameElement.textContent !==
+              applicantName
+            ) {
+
+              nameElement.textContent =
+                applicantName;
+
+            }
+
+
+            /* Avatar */
+            const avatarElement =
+              item.querySelector(
+                ".conv-avatar"
+              );
+
+
+            if (avatarElement) {
+
+              /*
+                IMPORTANT:
+                Do not assign src again when
+                nothing changed.
+    
+                Reassigning an image URL can
+                itself cause visual flicker.
+              */
+              const currentAvatar =
+                avatarElement.getAttribute(
+                  "src"
+                ) || "";
+
+
+              if (
+                currentAvatar !==
+                applicantAvatar
+              ) {
+
+                avatarElement.setAttribute(
+                  "src",
+                  applicantAvatar
+                );
+
+              }
+
+
+              if (
+                avatarElement.alt !==
+                applicantName
+              ) {
+
+                avatarElement.alt =
+                  applicantName;
+
+              }
+
+            }
+
+
+            /* Last message */
+            const lastMessage =
+              conversation.lastMessage ||
+              "Conversation started";
+
+
+            const previewElement =
+              item.querySelector(
+                ".conv-preview"
+              );
+
+
+            if (
+              previewElement &&
+              previewElement.textContent !==
+              lastMessage
+            ) {
+
+              previewElement.textContent =
+                lastMessage;
+
+            }
+
+
+            /* Time */
+            const updatedAtText =
+              conversation.updatedAt
+
+                ? formatPostTime(
+                  conversation.updatedAt
+                )
+
+                : "now";
+
+
+            const timeElement =
+              item.querySelector(
+                ".conv-time"
+              );
+
+
+            if (
+              timeElement &&
+              timeElement.textContent !==
+              updatedAtText
+            ) {
+
+              timeElement.textContent =
+                updatedAtText;
+
+            }
+
+
+            /*
+              Preserve active state.
+            */
+            if (
+              conversationId ===
+              activeConversationId
+            ) {
+
+              item.classList.add(
+                "active"
+              );
+
+            }
+
+
+            orderedElements.push(
+              item
+            );
+
+          }
+        );
+
+
+
+      /* ══════════════════════════════════════
+         UPDATE / CREATE PENDING APPLICANTS
+      ═══════════════════════════════════════ */
+
+      unmessagedApplicants
+        .forEach(
+          applicant => {
+
+            const applicantId =
+              String(
+                applicant.applicantId ||
+                ""
+              );
+
+
+            if (!applicantId) {
+              return;
+            }
+
+
+            let item =
+              container.querySelector(
+
+                `.conv-item[data-type="pending-applicant"][data-applicant-id="${CSS.escape(
+                  applicantId
+                )}"]`
+
+              );
+
+
+            /*
+              Create pending applicant only
+              when it does not already exist.
+            */
+            if (!item) {
+
+              item =
+                createUnmessagedApplicantItem(
+                  applicant
+                );
+
+
+              container.appendChild(
+                item
+              );
+
+            }
+
+
+            const realtimeApplicant =
+              getRealtimeApplicantProfile(
+                applicant
+              );
+
+
+            const applicantName =
+              realtimeApplicant.name;
+
+
+            const applicantAvatar =
+              realtimeApplicant.photoURL;
+
+
+            item.dataset.applicantId =
+              applicantId;
+
+
+            item.dataset.name =
+              applicantName;
+
+
+            item.dataset.avatar =
+              applicantAvatar;
+
+
+            item.dataset.type =
+              "pending-applicant";
+
+
+            /* Name */
+            const nameElement =
+              item.querySelector(
+                ".conv-name"
+              );
+
+
+            if (
+              nameElement &&
+              nameElement.textContent !==
+              applicantName
+            ) {
+
+              nameElement.textContent =
+                applicantName;
+
+            }
+
+
+            /* Avatar */
+            const avatarElement =
+              item.querySelector(
+                ".conv-avatar"
+              );
+
+
+            if (avatarElement) {
+
+              const currentAvatar =
+                avatarElement.getAttribute(
+                  "src"
+                ) || "";
+
+
+              if (
+                currentAvatar !==
+                applicantAvatar
+              ) {
+
+                avatarElement.setAttribute(
+                  "src",
+                  applicantAvatar
+                );
+
+              }
+
+
+              avatarElement.alt =
+                applicantName;
+
+            }
+
+
+            /* Applied job */
+            const appliedJob =
+              applicant.title ||
+              "your job post";
+
+
+            const previewElement =
+              item.querySelector(
+                ".conv-preview"
+              );
+
+
+            const pendingPreview =
+              `Applied for ${appliedJob}`;
+
+
+            if (
+              previewElement &&
+              previewElement.textContent !==
+              pendingPreview
+            ) {
+
+              previewElement.textContent =
+                pendingPreview;
+
+            }
+
+
+            /* Applied time */
+            const appliedTime =
+              applicant.appliedAt
+
+                ? formatPostTime(
+                  applicant.appliedAt
+                )
+
+                : "Recently";
+
+
+            const timeElement =
+              item.querySelector(
+                ".conv-time"
+              );
+
+
+            if (
+              timeElement &&
+              timeElement.textContent !==
+              appliedTime
+            ) {
+
+              timeElement.textContent =
+                appliedTime;
+
+            }
+
+
+            orderedElements.push(
+              item
+            );
+
+          }
+        );
+
+
+
+      /* ══════════════════════════════════════
+         FACEBOOK / MESSENGER-STYLE ORDER
+    
+         We move an existing DOM node ONLY
+         when its position actually changed.
+    
+         No innerHTML.
+         No rebuilding.
+         No flashing.
+      ═══════════════════════════════════════ */
+
+      let anchor =
+        container.firstElementChild;
+
+
+      orderedElements
+        .forEach(
+          item => {
+
+            /*
+              Already in correct position.
+              Do absolutely nothing.
+            */
+            if (
+              item === anchor
+            ) {
+
+              anchor =
+                anchor.nextElementSibling;
+
+              return;
+
+            }
+
+
+            /*
+              Only this particular existing
+              node needs to move.
+            */
+            container.insertBefore(
+              item,
+              anchor
+            );
+
+
+            anchor =
+              item.nextElementSibling;
+
+          }
+        );
+
+
+
+      /* ══════════════════════════════════════
+         EMPTY STATE
+      ═══════════════════════════════════════ */
+
+      if (
+        orderedElements.length === 0
+      ) {
+
+        const empty =
+          document.createElement(
+            "div"
+          );
+
+
+        empty.dataset.employerMessagesEmpty =
+          "true";
+
+
+        empty.style.padding =
+          "20px";
+
+
+        empty.style.textAlign =
+          "center";
+
+
+        empty.style.color =
+          "#9ca3af";
+
+
+        empty.textContent =
+          "No applicants or conversations yet.";
+
+
+        container.appendChild(
+          empty
+        );
+
+
+        resetEmployerChatArea();
+
+        return;
+
+      }
+
+
+
+      restoreEmployerConversation(
+        container
+      );
+
+
+
+      /* ══════════════════════════════════════
+         PRESERVE SEARCH FILTER
+      ═══════════════════════════════════════ */
+
+      const conversationSearch =
+        document.querySelector(
+          "#page-messages .conv-search"
+        );
+
+
+      if (
+        conversationSearch &&
+        conversationSearch.value &&
+        typeof window.filterConvs ===
+        "function"
+      ) {
+
+        window.filterConvs(
+          conversationSearch.value
+        );
+
+      }
+
     }
 
     function createExistingConversationItem(
@@ -11167,90 +11978,157 @@
       container
     ) {
 
-      if (!container) return;
+      if (!container) {
+        return;
+      }
 
 
-      const savedConversationId =
+      /*
+        Find the FIRST existing conversation.
+    
+        Your employerConversationDocs is already
+        sorted newest-first, so this is the
+        conversation shown at the top.
+      */
+      const topConversation =
+        container.querySelector(
+          '.conv-item[data-type="conversation"][data-convid]'
+        );
+
+
+      /*
+        Employer may have applicants but no
+        actual conversation yet.
+    
+        In that case there is nothing we can
+        automatically load.
+      */
+      if (!topConversation) {
+
+        resetEmployerChatArea();
+
+        return;
+      }
+
+
+      const topConversationId =
+        topConversation.dataset.convid;
+
+
+      if (!topConversationId) {
+        return;
+      }
+
+
+      /*
+        Find whatever conversation is currently
+        active after the first automatic load.
+      */
+      const currentConversationId =
+
+        activeConversationId ||
+
+        window.activeConversationId ||
+
         localStorage.getItem(
           "activeEmployerConversationId"
         );
 
 
-      /*
-        Prefer the conversation that is
-        already active in memory.
-    
-        This prevents Firestore sidebar
-        updates from reopening the chat.
-      */
-      const currentConversationId =
-        activeConversationId ||
-        window.activeConversationId ||
-        savedConversationId;
-
-
-      let itemToOpen = null;
+      let currentItem =
+        null;
 
 
       if (currentConversationId) {
 
-        itemToOpen =
+        currentItem =
           container.querySelector(
-            `.conv-item[data-type="conversation"][data-convid="${CSS.escape(currentConversationId)}"]`
+
+            `.conv-item[data-type="conversation"][data-convid="${CSS.escape(
+              currentConversationId
+            )}"]`
+
           );
 
       }
 
 
-      /*
-        Fallback to first conversation only
-        when nothing is currently selected.
-      */
-      if (!itemToOpen) {
 
-        itemToOpen =
-          container.querySelector(
-            '.conv-item[data-type="conversation"][data-convid]'
-          );
-
-      }
-
-
-      if (!itemToOpen) {
-
-        resetEmployerChatArea();
-
-        return;
-      }
-
-
-      const conversationId =
-        itemToOpen.dataset.convid;
-
-
-      if (!conversationId) {
-
-        resetEmployerChatArea();
-
-        return;
-      }
-
-
-      /*
-        IMPORTANT FIX:
+      /* ══════════════════════════════════════
+         FIRST LOAD
     
-        If this is already the open
-        conversation, DO NOT call openConv()
-        again.
+         ALWAYS open the TOP conversation.
     
-        Just restore the active highlight
-        because the sidebar DOM was rebuilt.
-      */
+         We intentionally ignore an older
+         localStorage selection here.
+      ═══════════════════════════════════════ */
+
       if (
-        activeConversationId ===
-        conversationId &&
-        unsubscribeActiveMessages
+        !employerTopConversationAutoOpened
       ) {
+
+        employerTopConversationAutoOpened =
+          true;
+
+
+        /*
+          Clear visual active state first.
+        */
+        container
+          .querySelectorAll(
+            ".conv-item"
+          )
+          .forEach(
+            item => {
+
+              item.classList.remove(
+                "active"
+              );
+
+            }
+          );
+
+
+        topConversation.classList.add(
+          "active"
+        );
+
+
+        /*
+          Open the top conversation.
+    
+          This loads:
+          - applicant name
+          - profile picture
+          - online status
+          - message history
+          - calls
+          - realtime messages
+        */
+        window.openConv(
+          topConversation,
+          topConversationId
+        );
+
+
+        return;
+
+      }
+
+
+
+      /* ══════════════════════════════════════
+         REALTIME FIRESTORE UPDATE
+    
+         After initial load, DO NOT constantly
+         force the Employer back to the first
+         conversation.
+    
+         Preserve the chat they're currently
+         reading.
+      ═══════════════════════════════════════ */
+
+      if (currentItem) {
 
         container
           .querySelectorAll(
@@ -11267,22 +12145,38 @@
           );
 
 
-        itemToOpen.classList.add(
+        currentItem.classList.add(
           "active"
         );
 
 
+        /*
+          IMPORTANT:
+    
+          Don't call openConv() again.
+    
+          The existing realtime message
+          listener is already running.
+        */
         return;
+
       }
 
 
-      /*
-        Only actually open the conversation
-        when it is a different/new chat.
-      */
+
+      /* ══════════════════════════════════════
+         ACTIVE CONVERSATION DISAPPEARED
+    
+         For example:
+         - conversation deleted
+         - data changed
+    
+         Fall back safely to newest chat.
+      ═══════════════════════════════════════ */
+
       window.openConv(
-        itemToOpen,
-        conversationId
+        topConversation,
+        topConversationId
       );
 
     }
@@ -11302,50 +12196,25 @@
           "chat-messages"
         );
 
-      if (
-        chatName
-      ) {
+      if (chatName) {
 
         /*
-          There is no real person's name now,
-          so translation is allowed again.
+          No conversation exists.
+          Do not show "Select a Conversation".
         */
         delete chatName.dataset.dynamicName;
 
-
-        chatName.setAttribute(
-          "data-i18n",
-          "msgSelectConvo"
+        chatName.removeAttribute(
+          "data-i18n"
         );
 
-
-        /*
-          Use the currently selected language.
-        */
-        const currentLanguage =
-          localStorage.getItem(
-            "preferredLanguage"
-          ) || "en";
-
         chatName.textContent =
-          "Select a Conversation";
-
-
-        if (
-          typeof applyTranslations ===
-          "function"
-        ) {
-
-          applyTranslations(
-            currentLanguage
-          );
-
-        }
+          "Messages";
 
       }
 
       if (chatStatus) {
-        chatStatus.textContent = "...";
+        chatStatus.textContent = "";
       }
 
       if (chatAvatar) {
@@ -11354,19 +12223,21 @@
       }
 
       if (chatMessages) {
+
         chatMessages.innerHTML = `
-      <div style="
-        text-align: center;
-        color: #9ca3af;
-        padding: 20px;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      ">
-        Select a conversation to start messaging.
-      </div>
-    `;
+    <div style="
+      text-align: center;
+      color: #9ca3af;
+      padding: 20px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    ">
+      No conversations yet.
+    </div>
+  `;
+
       }
     }
 
@@ -12668,6 +13539,140 @@
       );
 
       return card;
+    }
+
+    /* ══════════════════════════════════════
+   EMPLOYER SIDEBAR — INSTANT PREVIEW
+
+   Updates only the currently affected
+   conversation row.
+
+   Does NOT rebuild the sidebar.
+══════════════════════════════════════ */
+
+    function updateConversationSidebarPreview(
+      conversationId,
+      text
+    ) {
+
+      const container =
+        document.getElementById(
+          "conv-items"
+        );
+
+
+      if (
+        !container ||
+        !conversationId
+      ) {
+
+        return;
+
+      }
+
+
+      const item =
+        container.querySelector(
+
+          `.conv-item[data-type="conversation"][data-convid="${CSS.escape(
+            conversationId
+          )}"]`
+
+        );
+
+
+      if (!item) {
+        return;
+      }
+
+
+      /* Last-message preview */
+      const preview =
+        item.querySelector(
+          ".conv-preview"
+        );
+
+
+      if (preview) {
+
+        const previewText =
+
+          String(
+            text || ""
+          ).length > 22
+
+            ? String(
+              text || ""
+            ).substring(
+              0,
+              22
+            ) + "..."
+
+            : String(
+              text || ""
+            );
+
+
+        if (
+          preview.textContent !==
+          previewText
+        ) {
+
+          preview.textContent =
+            previewText;
+
+        }
+
+      }
+
+
+      /* Immediate timestamp */
+      const time =
+        item.querySelector(
+          ".conv-time"
+        );
+
+
+      if (
+        time &&
+        time.textContent !==
+        "Just now"
+      ) {
+
+        time.textContent =
+          "Just now";
+
+      }
+
+
+      /*
+        Messenger behavior:
+    
+        Newest conversation goes to top,
+        BUT only move it if it isn't
+        already first.
+    
+        If already first, absolutely
+        nothing moves.
+      */
+      const firstConversation =
+        container.querySelector(
+          '.conv-item[data-type="conversation"]'
+        );
+
+
+      if (
+        firstConversation &&
+        item !== firstConversation
+      ) {
+
+        container.insertBefore(
+          item,
+          firstConversation
+        );
+
+      }
+
     }
 
     window.sendRealtimeMessage = async function (text) {
