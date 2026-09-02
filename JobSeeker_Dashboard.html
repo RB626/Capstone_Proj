@@ -2706,38 +2706,112 @@
     function restoreJobSeekerConversation(
       convItemsContainer
     ) {
+
+      if (!convItemsContainer) {
+        return;
+      }
+
+
       const savedConversationId =
         localStorage.getItem(
           "activeJobSeekerConversationId"
         );
 
-      let conversationToOpen = null;
 
-      if (savedConversationId) {
+      const currentConversationId =
+        activeConversationId ||
+        window.activeConversationId ||
+        savedConversationId;
+
+
+      let conversationToOpen =
+        null;
+
+
+      if (currentConversationId) {
+
         conversationToOpen =
           convItemsContainer.querySelector(
-            `.conv-item[data-convid="${CSS.escape(savedConversationId)}"]`
+            `.conv-item[data-convid="${CSS.escape(currentConversationId)}"]`
           );
+
       }
+
+
+      /*
+        Only fall back to first conversation
+        if no active conversation exists.
+      */
+      if (!conversationToOpen) {
+
+        conversationToOpen =
+          convItemsContainer.querySelector(
+            ".conv-item[data-convid]"
+          );
+
+      }
+
 
       if (!conversationToOpen) {
-        conversationToOpen =
-          convItemsContainer.querySelector(
-            ".conv-item"
-          );
+        return;
       }
 
-      if (!conversationToOpen) return;
 
       const conversationId =
         conversationToOpen.dataset.convid;
 
-      if (!conversationId) return;
 
+      if (!conversationId) {
+        return;
+      }
+
+
+      /*
+        Same fix as Employer:
+    
+        Sidebar may have been rebuilt,
+        but the actual chat is already alive.
+    
+        Restore active styling only.
+      */
+      if (
+        activeConversationId ===
+        conversationId &&
+        unsubscribeActiveMessages
+      ) {
+
+        convItemsContainer
+          .querySelectorAll(
+            ".conv-item"
+          )
+          .forEach(
+            item => {
+
+              item.classList.remove(
+                "active"
+              );
+
+            }
+          );
+
+
+        conversationToOpen.classList.add(
+          "active"
+        );
+
+
+        return;
+      }
+
+
+      /*
+        New/different conversation only.
+      */
       window.openConv(
         conversationToOpen,
         conversationId
       );
+
     }
 
     function resetJobSeekerChatArea() {
@@ -3002,62 +3076,532 @@
       }
     };
 
-    window.listenToConversationMessages = function (conversationId) {
-      try {
-        if (unsubscribeActiveMessages) {
-          unsubscribeActiveMessages();
-          unsubscribeActiveMessages = null;
-        }
+    window.listenToConversationMessages =
+      function (conversationId) {
 
-        const chatMessages = document.getElementById("chat-messages");
-        if (!chatMessages || !conversationId) return;
+        try {
 
-        chatMessages.innerHTML = `<div style="text-align:center; color: #9ca3af; padding: 20px;">Loading messages...</div>`;
+          /*
+            Stop listener ONLY when actually
+            changing conversations.
+    
+            Because Change #1 prevents this
+            function from being called every
+            time lastMessage changes.
+          */
+          if (unsubscribeActiveMessages) {
 
-        const messagesQuery = query(
-          collection(db, "conversations", conversationId, "messages"),
-          orderBy("createdAt", "asc")
-        );
+            unsubscribeActiveMessages();
 
-        unsubscribeActiveMessages = onSnapshot(messagesQuery, (snapshot) => {
-          chatMessages.innerHTML = "";
+            unsubscribeActiveMessages =
+              null;
 
-          if (snapshot.empty) {
-            chatMessages.innerHTML = `<div style="text-align:center; color: #9ca3af; padding: 20px;">No messages yet. Start the conversation!</div>`;
+          }
+
+
+          const chatMessages =
+            document.getElementById(
+              "chat-messages"
+            );
+
+
+          if (
+            !chatMessages ||
+            !conversationId
+          ) {
             return;
           }
 
-          snapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            const isMine = data.senderId === auth.currentUser.uid;
-            const text = escapeHtml(data.text || "");
-            const createdAt = data.createdAt?.toDate?.();
-            const timeText = createdAt ? createdAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "Sending...";
 
-            const wrap = document.createElement("div");
-            wrap.className = `msg-bubble-wrap ${isMine ? "sent" : "received"}`;
-            wrap.innerHTML = `<div class="msg-bubble ${isMine ? "sent" : "received"}">${text}</div>`;
+          /*
+            Loading appears only when opening
+            a DIFFERENT conversation.
+    
+            It will no longer happen whenever
+            someone sends a message.
+          */
+          chatMessages.innerHTML = `
+        <div
+          data-chat-loading="true"
+          style="
+            text-align:center;
+            color:#9ca3af;
+            padding:20px;
+          "
+        >
+          Loading messages...
+        </div>
+      `;
 
-            const ts = document.createElement("div");
-            ts.className = `msg-timestamp ${isMine ? "right" : ""}`;
-            ts.textContent = timeText;
 
-            chatMessages.appendChild(wrap);
-            chatMessages.appendChild(ts);
-          });
+          const messagesQuery =
+            query(
 
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, (error) => {
-          console.error("LISTEN MESSAGES ERROR:", error);
-          const errorMsg = error.code === 'permission-denied'
-            ? "Permission denied. Please check your Firestore security rules."
-            : `Failed to load messages. (${error.code || 'unknown'})`;
-          chatMessages.innerHTML = `<div class="msg-bubble-wrap received"><div class="msg-bubble received" style="background-color: #fee2e2; color: #b91c1c;">${errorMsg}</div></div>`;
-        });
-      } catch (error) {
-        console.error("SETUP MESSAGE LISTENER ERROR:", error);
-      }
-    };
+              collection(
+                db,
+                "conversations",
+                conversationId,
+                "messages"
+              ),
+
+              orderBy(
+                "createdAt",
+                "asc"
+              )
+
+            );
+
+
+          let firstSnapshot = true;
+
+
+          unsubscribeActiveMessages =
+            onSnapshot(
+
+              messagesQuery,
+
+              {
+                /*
+                  Allows "Sending..." to
+                  become the real timestamp
+                  without rebuilding chat.
+                */
+                includeMetadataChanges: true
+              },
+
+
+              snapshot => {
+
+                /*
+                  Check whether user is already
+                  near the newest message.
+                */
+                const distanceFromBottom =
+
+                  chatMessages.scrollHeight -
+                  chatMessages.scrollTop -
+                  chatMessages.clientHeight;
+
+
+                const wasNearBottom =
+                  distanceFromBottom < 120;
+
+
+                /*
+                  First Firestore result:
+                  remove Loading... one time.
+                */
+                if (firstSnapshot) {
+
+                  chatMessages.innerHTML =
+                    "";
+
+                }
+
+
+                /*
+                  No messages.
+                */
+                if (snapshot.empty) {
+
+                  if (
+                    !chatMessages.querySelector(
+                      "[data-chat-empty]"
+                    )
+                  ) {
+
+                    chatMessages.innerHTML = `
+                  <div
+                    data-chat-empty="true"
+                    style="
+                      text-align:center;
+                      color:#9ca3af;
+                      padding:20px;
+                    "
+                  >
+                    No messages yet.
+                    Start the conversation!
+                  </div>
+                `;
+
+                  }
+
+
+                  firstSnapshot = false;
+
+                  return;
+                }
+
+
+                /*
+                  Remove empty placeholder
+                  once a real message exists.
+                */
+                chatMessages
+                  .querySelector(
+                    "[data-chat-empty]"
+                  )
+                  ?.remove();
+
+
+                let myNewMessageAdded =
+                  false;
+
+
+                /*
+                  ONLY process changed docs.
+    
+                  No more deleting and
+                  recreating every message.
+                */
+                snapshot
+                  .docChanges()
+                  .forEach(
+                    change => {
+
+                      const messageDoc =
+                        change.doc;
+
+
+                      const data =
+                        messageDoc.data();
+
+
+                      const messageId =
+                        messageDoc.id;
+
+
+                      const safeMessageId =
+                        CSS.escape(
+                          messageId
+                        );
+
+
+                      /*
+                        Message removed.
+                      */
+                      if (
+                        change.type ===
+                        "removed"
+                      ) {
+
+                        chatMessages
+                          .querySelectorAll(
+                            `[data-message-id="${safeMessageId}"]`
+                          )
+                          .forEach(
+                            element => {
+
+                              element.remove();
+
+                            }
+                          );
+
+
+                        return;
+
+                      }
+
+
+                      const isMine =
+
+                        data.senderId ===
+                        auth.currentUser?.uid;
+
+
+                      if (
+                        change.type ===
+                        "added" &&
+                        isMine
+                      ) {
+
+                        myNewMessageAdded =
+                          true;
+
+                      }
+
+
+                      /*
+                        Locate existing bubble
+                        if Firestore is simply
+                        updating its timestamp.
+                      */
+                      let wrap =
+                        chatMessages.querySelector(
+                          `.msg-bubble-wrap[data-message-id="${safeMessageId}"]`
+                        );
+
+
+                      let timestamp =
+                        chatMessages.querySelector(
+                          `.msg-timestamp[data-message-id="${safeMessageId}"]`
+                        );
+
+
+                      /*
+                        Create this message
+                        ONLY if it doesn't
+                        exist yet.
+                      */
+                      if (!wrap) {
+
+                        wrap =
+                          document.createElement(
+                            "div"
+                          );
+
+
+                        wrap.dataset.messageId =
+                          messageId;
+
+
+                        chatMessages.appendChild(
+                          wrap
+                        );
+
+                      }
+
+
+                      if (!timestamp) {
+
+                        timestamp =
+                          document.createElement(
+                            "div"
+                          );
+
+
+                        timestamp.dataset.messageId =
+                          messageId;
+
+
+                        chatMessages.appendChild(
+                          timestamp
+                        );
+
+                      }
+
+
+                      /*
+                        Update message bubble.
+                        textContent is safe and
+                        doesn't interpret HTML.
+                      */
+                      wrap.className =
+                        `msg-bubble-wrap ${isMine
+                          ? "sent"
+                          : "received"
+                        }`;
+
+
+                      let bubble =
+                        wrap.querySelector(
+                          ".msg-bubble"
+                        );
+
+
+                      if (!bubble) {
+
+                        bubble =
+                          document.createElement(
+                            "div"
+                          );
+
+
+                        wrap.appendChild(
+                          bubble
+                        );
+
+                      }
+
+
+                      bubble.className =
+                        `msg-bubble ${isMine
+                          ? "sent"
+                          : "received"
+                        }`;
+
+
+                      bubble.textContent =
+                        String(
+                          data.text || ""
+                        );
+
+
+                      /*
+                        Firestore writes using
+                        serverTimestamp().
+    
+                        Local write:
+                        "Sending..."
+    
+                        Server confirms:
+                        real timestamp.
+    
+                        Only timestamp changes;
+                        whole chat does NOT.
+                      */
+                      const hasPendingWrites =
+                        messageDoc
+                          .metadata
+                          .hasPendingWrites;
+
+
+                      const createdAt =
+                        data.createdAt
+                          ?.toDate?.();
+
+
+                      let timeText =
+                        "Sending...";
+
+
+                      if (
+                        !hasPendingWrites &&
+                        createdAt
+                      ) {
+
+                        timeText =
+                          createdAt
+                            .toLocaleTimeString(
+                              [],
+                              {
+                                hour:
+                                  "numeric",
+
+                                minute:
+                                  "2-digit"
+                              }
+                            );
+
+                      }
+
+
+                      timestamp.className =
+                        `msg-timestamp ${isMine
+                          ? "right"
+                          : ""
+                        }`;
+
+
+                      timestamp.textContent =
+                        timeText;
+
+                    }
+                  );
+
+
+                /*
+                  Messenger-like scrolling.
+    
+                  Scroll automatically when:
+                  - first opening chat
+                  - user was already at bottom
+                  - current user sent message
+    
+                  Don't pull them down if
+                  they're reading older chat.
+                */
+                if (
+                  firstSnapshot ||
+                  wasNearBottom ||
+                  myNewMessageAdded
+                ) {
+
+                  requestAnimationFrame(
+                    () => {
+
+                      chatMessages.scrollTop =
+                        chatMessages.scrollHeight;
+
+                    }
+                  );
+
+                }
+
+
+                firstSnapshot = false;
+
+              },
+
+
+              error => {
+
+                console.error(
+                  "LISTEN MESSAGES ERROR:",
+                  error
+                );
+
+
+                const errorMsg =
+
+                  error.code ===
+                    "permission-denied"
+
+                    ? "Permission denied. Please check your Firestore security rules."
+
+                    : `Failed to load messages. (${error.code ||
+                    "unknown"
+                    })`;
+
+
+                chatMessages.innerHTML = "";
+
+
+                const errorWrap =
+                  document.createElement(
+                    "div"
+                  );
+
+
+                errorWrap.className =
+                  "msg-bubble-wrap received";
+
+
+                const bubble =
+                  document.createElement(
+                    "div"
+                  );
+
+
+                bubble.className =
+                  "msg-bubble received";
+
+
+                bubble.style.backgroundColor =
+                  "#fee2e2";
+
+
+                bubble.style.color =
+                  "#b91c1c";
+
+
+                bubble.textContent =
+                  errorMsg;
+
+
+                errorWrap.appendChild(
+                  bubble
+                );
+
+
+                chatMessages.appendChild(
+                  errorWrap
+                );
+
+              }
+
+            );
+
+        } catch (error) {
+
+          console.error(
+            "SETUP MESSAGE LISTENER ERROR:",
+            error
+          );
+
+        }
+
+      };
 
     window.toggleJobSeekerNotifications = function (event) {
       if (event) {
