@@ -12137,3 +12137,77 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 }
+
+/* ══════════════════════════════════════
+   MOBILE CHAT
+   KEEP INPUT ABOVE PHONE KEYBOARD
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  body.chat-keyboard-open #page-messages .chat-area {
+
+    position: relative !important;
+
+    height: 100% !important;
+    min-height: 0 !important;
+
+    overflow: hidden !important;
+  }
+
+
+  /*
+    Messages consume only the available
+    space above the input.
+  */
+  body.chat-keyboard-open #page-messages .chat-messages {
+
+    flex: 1 1 0 !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    overflow-y: auto !important;
+  }
+
+
+  /*
+    Input must always stay inside the
+    visible browser viewport.
+  */
+  body.chat-keyboard-open #page-messages .chat-input-area {
+
+    flex: 0 0 auto !important;
+
+    position: relative !important;
+
+    bottom: auto !important;
+
+    width: 100% !important;
+
+    margin: 0 !important;
+
+    padding:
+      10px 12px max(10px,
+        env(safe-area-inset-bottom)) !important;
+
+    background: #ffffff !important;
+
+    z-index: 50 !important;
+
+    transform: none !important;
+  }
+
+
+  /*
+    Prevent browser scrolling the input
+    underneath the keyboard.
+  */
+  body.chat-keyboard-open #page-messages {
+
+    overscroll-behavior: none;
+
+    touch-action: pan-y;
+  }
+
+}

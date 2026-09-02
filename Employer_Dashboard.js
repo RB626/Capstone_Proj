@@ -2140,25 +2140,44 @@ function applyTranslations(lang) {
     }
 
 
-    /*
-      visualViewport gives us the REAL
-      visible height after the mobile
-      keyboard opens.
-    */
     const viewport =
       window.visualViewport;
 
 
+    /*
+      IMPORTANT:
+    
+      Use ONLY visualViewport.height.
+    
+      Do not add offsetTop.
+    
+      Android Chrome can change offsetTop
+      while the keyboard/browser toolbar
+      moves, which can make the chat taller
+      than the actually visible area.
+    */
     const visibleHeight =
       viewport
-        ? viewport.height +
-        viewport.offsetTop
+        ? viewport.height
         : window.innerHeight;
+
+
+    /*
+      Never allow the calculated height
+      to exceed window.innerHeight.
+    */
+    const safeVisibleHeight =
+      Math.min(
+        visibleHeight,
+        window.innerHeight
+      );
 
 
     root.style.setProperty(
       "--mobile-chat-visible-height",
-      `${Math.round(visibleHeight)}px`
+      `${Math.floor(
+        safeVisibleHeight
+      )}px`
     );
 
   }
