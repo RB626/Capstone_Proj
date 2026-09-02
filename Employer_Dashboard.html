@@ -352,23 +352,86 @@
             <div class="job-listings-filters">
 
               <!-- EXISTING STATUS FILTER -->
-              <select class="job-status-dropdown" id="jobStatusFilter" onchange="filterJobPostings()">
-                <option value="all" data-i18n="jobsAll">
-                  All Jobs
-                </option>
+              <!-- ══════════════════════════════════════
+     JOB STATUS FILTER
+     Native desktop + custom mobile
+══════════════════════════════════════ -->
+              <div class="employer-status-filter-wrap" id="employerStatusFilterWrap">
 
-                <option value="active" data-i18n="jobsActive">
-                  Active
-                </option>
+                <!--
+    ORIGINAL SELECT.
+    DO NOT REMOVE.
 
-                <option value="draft" data-i18n="jobsDrafts">
-                  Drafts
-                </option>
+    filterJobPostings() still reads this.
+  -->
+                <select class="job-status-dropdown" id="jobStatusFilter" onchange="filterJobPostings()">
+                  <option value="all" data-i18n="jobsAll">
+                    All Jobs
+                  </option>
 
-                <option value="closed" data-i18n="jobsClosed">
-                  Closed
-                </option>
-              </select>
+                  <option value="active" data-i18n="jobsActive">
+                    Active
+                  </option>
+
+                  <option value="draft" data-i18n="jobsDrafts">
+                    Drafts
+                  </option>
+
+                  <option value="closed" data-i18n="jobsClosed">
+                    Closed
+                  </option>
+                </select>
+
+
+                <!--
+    CUSTOM MOBILE VERSION.
+    Hidden on desktop.
+  -->
+                <div class="employer-mobile-status-dropdown" id="employerMobileStatusDropdown">
+
+                  <button type="button" class="employer-mobile-status-btn" id="employerMobileStatusBtn"
+                    aria-expanded="false">
+
+                    <span id="employerMobileStatusLabel" data-i18n="jobsAll">
+                      All Jobs
+                    </span>
+
+
+                    <svg class="employer-mobile-status-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+
+                  </button>
+
+
+                  <div class="employer-mobile-status-menu" id="employerMobileStatusMenu">
+
+                    <button type="button" class="employer-mobile-status-option active" data-value="all"
+                      data-i18n="jobsAll">
+                      All Jobs
+                    </button>
+
+                    <button type="button" class="employer-mobile-status-option" data-value="active"
+                      data-i18n="jobsActive">
+                      Active
+                    </button>
+
+                    <button type="button" class="employer-mobile-status-option" data-value="draft"
+                      data-i18n="jobsDrafts">
+                      Drafts
+                    </button>
+
+                    <button type="button" class="employer-mobile-status-option" data-value="closed"
+                      data-i18n="jobsClosed">
+                      Closed
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
 
 
               <!-- NEW JOB CATEGORY FILTER -->

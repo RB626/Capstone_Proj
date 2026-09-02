@@ -2310,3 +2310,408 @@ window.selectEmployerJobRole =
 
 window.filterJobPostings =
   filterJobPostings;
+
+/* ══════════════════════════════════════
+ EMPLOYER MOBILE STATUS DROPDOWN
+
+ IMPORTANT:
+ This is UI only.
+
+ Existing filterJobPostings() remains
+ completely unchanged.
+══════════════════════════════════════ */
+
+(function initEmployerMobileStatusDropdown() {
+
+
+  function setupEmployerMobileStatusDropdown() {
+
+    const wrapper =
+      document.getElementById(
+        "employerMobileStatusDropdown"
+      );
+
+
+    const button =
+      document.getElementById(
+        "employerMobileStatusBtn"
+      );
+
+
+    const label =
+      document.getElementById(
+        "employerMobileStatusLabel"
+      );
+
+
+    const menu =
+      document.getElementById(
+        "employerMobileStatusMenu"
+      );
+
+
+    /*
+      THIS IS YOUR ORIGINAL SELECT.
+
+      filterJobPostings() already reads
+      this exact element.
+    */
+    const originalSelect =
+      document.getElementById(
+        "jobStatusFilter"
+      );
+
+
+    if (
+      !wrapper ||
+      !button ||
+      !label ||
+      !menu ||
+      !originalSelect
+    ) {
+
+      console.warn(
+        "Employer mobile status dropdown could not initialize."
+      );
+
+      return;
+    }
+
+
+    const options =
+      Array.from(
+        menu.querySelectorAll(
+          ".employer-mobile-status-option"
+        )
+      );
+
+
+    /* ══════════════════════════════════════
+       CLOSE DROPDOWN
+    ══════════════════════════════════════ */
+
+    function closeMobileStatusDropdown() {
+
+      wrapper.classList.remove(
+        "open"
+      );
+
+
+      button.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+    }
+
+
+    /* ══════════════════════════════════════
+       SYNC CUSTOM UI WITH ORIGINAL SELECT
+    ══════════════════════════════════════ */
+
+    function syncMobileStatusDropdown() {
+
+      const value =
+        originalSelect.value ||
+        "all";
+
+
+      const selectedOption =
+        originalSelect.options[
+        originalSelect.selectedIndex
+        ];
+
+
+      const selectedCustomOption =
+        options.find(
+          option => {
+
+            return (
+              option.dataset.value ===
+              value
+            );
+
+          }
+        );
+
+
+      /*
+        Use the translated custom option
+        text whenever possible.
+      */
+      const displayText =
+
+        selectedCustomOption
+          ?.textContent
+          ?.trim()
+
+        ||
+
+        selectedOption
+          ?.textContent
+          ?.trim()
+
+        ||
+
+        "All Jobs";
+
+
+      label.textContent =
+        displayText;
+
+
+      /*
+        Keep your existing translation
+        system working.
+
+        jobsAll
+        jobsActive
+        jobsDrafts
+        jobsClosed
+      */
+      const translationKey =
+
+        selectedCustomOption
+          ?.dataset
+          ?.i18n
+
+        ||
+
+        selectedOption
+          ?.dataset
+          ?.i18n;
+
+
+      if (translationKey) {
+
+        label.dataset.i18n =
+          translationKey;
+
+      }
+
+
+      options.forEach(
+        option => {
+
+          option.classList.toggle(
+            "active",
+            option.dataset.value ===
+            value
+          );
+
+        }
+      );
+
+    }
+
+
+    /* ══════════════════════════════════════
+       OPEN / CLOSE BUTTON
+    ══════════════════════════════════════ */
+
+    button.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+
+        /*
+          Avoid overlapping with your
+          existing Job Category menu.
+        */
+        if (
+          typeof closeEmployerJobCategory ===
+          "function"
+        ) {
+
+          closeEmployerJobCategory();
+
+        }
+
+
+        const willOpen =
+          !wrapper.classList.contains(
+            "open"
+          );
+
+
+        wrapper.classList.toggle(
+          "open",
+          willOpen
+        );
+
+
+        button.setAttribute(
+          "aria-expanded",
+          String(willOpen)
+        );
+
+      }
+    );
+
+
+    /* ══════════════════════════════════════
+       SELECT STATUS
+    ══════════════════════════════════════ */
+
+    options.forEach(
+      optionButton => {
+
+        optionButton.addEventListener(
+          "click",
+          event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            const value =
+              optionButton.dataset.value;
+
+
+            if (!value) {
+              return;
+            }
+
+
+            /*
+              THE IMPORTANT PART:
+
+              Update YOUR ORIGINAL
+              jobStatusFilter select.
+            */
+            originalSelect.value =
+              value;
+
+
+            /*
+              Trigger its EXISTING:
+
+              onchange="filterJobPostings()"
+
+              Therefore we are NOT
+              replacing your filtering
+              logic.
+            */
+            originalSelect.dispatchEvent(
+              new Event(
+                "change",
+                {
+                  bubbles: true
+                }
+              )
+            );
+
+
+            /*
+              Update custom appearance.
+            */
+            syncMobileStatusDropdown();
+
+
+            /*
+              Close menu.
+            */
+            closeMobileStatusDropdown();
+
+          }
+        );
+
+      }
+    );
+
+
+    /* ══════════════════════════════════════
+       IF ORIGINAL SELECT CHANGES ELSEWHERE
+    ══════════════════════════════════════ */
+
+    originalSelect.addEventListener(
+      "change",
+      syncMobileStatusDropdown
+    );
+
+
+    /* ══════════════════════════════════════
+       CLICK OUTSIDE
+       
+       Capture = true is intentional.
+       
+       Your existing Job Category button
+       uses stopPropagation(), so capture
+       lets us close this menu BEFORE that.
+    ══════════════════════════════════════ */
+
+    document.addEventListener(
+      "click",
+      event => {
+
+        if (
+          !wrapper.contains(
+            event.target
+          )
+        ) {
+
+          closeMobileStatusDropdown();
+
+        }
+
+      },
+      true
+    );
+
+
+    /* ══════════════════════════════════════
+       RETURNING TO DESKTOP
+    ══════════════════════════════════════ */
+
+    window.addEventListener(
+      "resize",
+      () => {
+
+        if (
+          window.innerWidth > 600
+        ) {
+
+          closeMobileStatusDropdown();
+
+        }
+
+      }
+    );
+
+
+    /*
+      Initial state = All Jobs,
+      or whatever your original select
+      currently contains.
+    */
+    syncMobileStatusDropdown();
+
+  }
+
+
+  /*
+    Employer_Dashboard.js loads while
+    the document is still being parsed,
+    so this makes initialization safe.
+  */
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      setupEmployerMobileStatusDropdown
+    );
+
+  } else {
+
+    setupEmployerMobileStatusDropdown();
+
+  }
+
+
+})();
