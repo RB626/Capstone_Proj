@@ -12211,3 +12211,452 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 }
+
+/* ══════════════════════════════════════
+   FINAL MOBILE — APPLICANTS CARD
+   Clean responsive phone layout
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  /* ─────────────────────────────────────
+     APPLICANTS PAGE CONTAINER
+  ───────────────────────────────────── */
+
+  #employer-home-applicants {
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  #employer-home-applicants
+  .applicants-modern-card {
+    width: 100%;
+
+    padding: 16px 14px !important;
+
+    border-radius: 16px;
+
+    overflow: visible;
+  }
+
+
+  /* ─────────────────────────────────────
+     HEADER
+
+     Applicants              3 applicants
+  ───────────────────────────────────── */
+
+  #employer-home-applicants
+  .applicants-modern-header {
+    display: flex !important;
+
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    gap: 10px;
+
+    padding-bottom: 14px;
+    margin-bottom: 0;
+  }
+
+
+  #employer-home-applicants
+  .applicants-modern-header h2 {
+    font-size: 1.12rem;
+    line-height: 1.2;
+
+    min-width: 0;
+  }
+
+
+  #employer-home-applicants
+  .applicants-count-pill {
+    flex-shrink: 0;
+
+    padding: 7px 11px;
+
+    font-size: 0.76rem;
+  }
+
+
+  /* ─────────────────────────────────────
+     EACH APPLICANT
+  ───────────────────────────────────── */
+
+  #employer-home-applicants
+  .applicant-modern-item {
+    width: 100%;
+
+    padding: 0 !important;
+
+    min-width: 0;
+  }
+
+
+  #employer-home-applicants
+  .applicant-card-wide {
+    position: relative;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    align-items: stretch !important;
+
+    width: 100%;
+    min-width: 0;
+
+    gap: 0 !important;
+
+    padding:
+      18px 0
+      18px 0 !important;
+
+    border-bottom:
+      1px solid #e5e7eb;
+  }
+
+
+  /* Leave room for 3-dot button */
+  #employer-home-applicants
+  .applicant-card-wide-left {
+    width: 100%;
+    min-width: 0;
+
+    padding-right: 34px;
+  }
+
+
+  /* ─────────────────────────────────────
+     PROFILE HEADER
+  ───────────────────────────────────── */
+
+  #employer-home-applicants
+  .applicant-card-wide-header {
+    display: grid !important;
+
+    grid-template-columns:
+      54px minmax(0, 1fr);
+
+    align-items: start;
+
+    gap: 12px !important;
+
+    width: 100%;
+
+    margin-bottom: 14px !important;
+  }
+
+
+  #employer-home-applicants
+  .applicant-modern-avatar {
+    width: 54px !important;
+    height: 54px !important;
+
+    border-width: 2px;
+
+    flex-shrink: 0;
+  }
+
+
+  #employer-home-applicants
+  .applicant-card-wide-info {
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  #employer-home-applicants
+  .applicant-card-wide-topline {
+    width: 100%;
+    min-width: 0;
+
+    gap: 5px;
+  }
+
+
+  /* Name + verified + Individual */
+  #employer-home-applicants
+  .applicant-card-wide-name-row {
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    flex-wrap: wrap;
+
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  #employer-home-applicants
+  .applicant-modern-name {
+    max-width: 100%;
+
+    font-size: 0.96rem !important;
+    line-height: 1.25;
+
+    overflow-wrap: anywhere;
+  }
+
+
+  #employer-home-applicants
+  .applicant-card-wide-name-row
+  .employer-badge {
+    font-size: 0.68rem;
+
+    padding: 4px 8px;
+  }
+
+
+  #employer-home-applicants
+  .post-time {
+    font-size: 0.76rem;
+
+    line-height: 1.2;
+  }
+
+
+  /* ─────────────────────────────────────
+     CONTENT
+  ───────────────────────────────────── */
+
+  #employer-home-applicants
+  .applicant-card-wide-content {
+    width: 100%;
+    min-width: 0;
+
+    padding: 0 !important;
+  }
+
+
+  /*
+    Applied for:
+    Long job titles are allowed to wrap.
+  */
+  #employer-home-applicants
+  .applicant-card-wide-jobline {
+    width: 100%;
+
+    margin-bottom: 12px;
+
+    font-size: 0.88rem !important;
+    line-height: 1.45;
+
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+
+  #employer-home-applicants
+  .applicant-card-wide-jobline strong {
+    display: inline;
+
+    font-weight: 700;
+  }
+
+
+  /* ─────────────────────────────────────
+     SKILLS
+  ───────────────────────────────────── */
+
+  #employer-home-applicants
+  .applicant-modern-skills {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 7px !important;
+
+    margin-bottom: 12px !important;
+  }
+
+
+  #employer-home-applicants
+  .applicant-modern-skill {
+    max-width: 100%;
+
+    padding: 5px 10px;
+
+    font-size: 0.75rem;
+
+    overflow-wrap: anywhere;
+  }
+
+
+  /* ─────────────────────────────────────
+     MATCH
+  ───────────────────────────────────── */
+
+  #employer-home-applicants
+  .applicant-card-wide-bottom {
+    display: flex;
+
+    align-items: center;
+
+    width: 100%;
+
+    margin-bottom: 14px;
+  }
+
+
+  #employer-home-applicants
+  .applicant-modern-match {
+    padding: 6px 11px;
+
+    font-size: 0.74rem;
+  }
+
+
+  /* ─────────────────────────────────────
+     3-DOT MENU
+  ───────────────────────────────────── */
+
+  #employer-home-applicants
+  .applicant-more-wrap {
+    position: absolute !important;
+
+    top: 12px !important;
+    right: 0 !important;
+
+    margin: 0 !important;
+
+    z-index: 25;
+  }
+
+
+  #employer-home-applicants
+  .applicant-more-btn {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+
+  #employer-home-applicants
+  .applicant-more-menu {
+    right: 0 !important;
+    left: auto !important;
+
+    width: max-content;
+    min-width: 175px;
+    max-width: calc(100vw - 38px);
+  }
+
+
+  /* ─────────────────────────────────────
+     ACTION BUTTONS
+
+     [ Message ] [ Rate & Review ]
+     [       View Profile       ]
+  ───────────────────────────────────── */
+
+  #employer-home-applicants
+  .applicant-actions-wide {
+    display: grid !important;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    width: 100% !important;
+
+    gap: 8px !important;
+
+    margin:
+      0 !important;
+
+    align-items: stretch !important;
+  }
+
+
+  #employer-home-applicants
+  .applicant-actions-wide
+  .employer-btn-secondary,
+
+  #employer-home-applicants
+  .applicant-actions-wide
+  .employer-btn-review,
+
+  #employer-home-applicants
+  .applicant-actions-wide
+  .employer-btn-primary {
+
+    width: 100% !important;
+    min-width: 0 !important;
+
+    height: 42px !important;
+
+    padding: 0 10px !important;
+
+    margin: 0 !important;
+
+    font-size: 0.78rem !important;
+
+    border-radius: 11px;
+
+    white-space: nowrap;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  /*
+    View Profile gets its own full-width
+    row because it's the main action.
+  */
+  #employer-home-applicants
+  .applicant-profile-btn {
+    grid-column: 1 / -1;
+  }
+
+}
+
+
+/* ══════════════════════════════════════
+   EXTRA SMALL PHONES
+══════════════════════════════════════ */
+
+@media (max-width: 380px) {
+
+  #employer-home-applicants
+  .applicants-modern-card {
+    padding:
+      14px 12px !important;
+  }
+
+
+  #employer-home-applicants
+  .applicant-card-wide-header {
+    grid-template-columns:
+      48px minmax(0, 1fr);
+  }
+
+
+  #employer-home-applicants
+  .applicant-modern-avatar {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+
+  /*
+    Very small screen:
+    stack all buttons.
+  */
+  #employer-home-applicants
+  .applicant-actions-wide {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  #employer-home-applicants
+  .applicant-profile-btn {
+    grid-column: auto;
+  }
+
+}
