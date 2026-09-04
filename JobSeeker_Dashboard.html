@@ -3737,6 +3737,273 @@
 
     }
 
+    /* ══════════════════════════════════════
+   CHAT — SCROLL TO NEWEST MESSAGE
+══════════════════════════════════════ */
+
+    function scrollChatToLatest() {
+
+      const chatMessages =
+        document.getElementById(
+          "chat-messages"
+        );
+
+
+      if (!chatMessages) {
+        return;
+      }
+
+
+      const jumpToBottom = () => {
+
+        chatMessages.scrollTop =
+          chatMessages.scrollHeight;
+
+      };
+
+
+      /*
+        Immediate attempt.
+      */
+      jumpToBottom();
+
+
+      /*
+        Wait for browser layout.
+      */
+      requestAnimationFrame(
+        () => {
+
+          jumpToBottom();
+
+
+          /*
+            One more frame catches mobile
+            panel/display changes.
+          */
+          requestAnimationFrame(
+            jumpToBottom
+          );
+
+        }
+      );
+
+
+      /*
+        Android/mobile browsers sometimes
+        finish layout slightly later.
+      */
+      setTimeout(
+        jumpToBottom,
+        60
+      );
+
+
+      setTimeout(
+        jumpToBottom,
+        180
+      );
+
+    }
+
+    /* ══════════════════════════════════════
+   JOB SEEKER
+   INITIAL CHAT SCROLL AFTER LOGIN
+
+   Problem:
+   The conversation is loaded while the
+   Messages page is still hidden.
+
+   Solution:
+   Wait until #page-messages becomes
+   visible, then jump to newest message.
+══════════════════════════════════════ */
+
+    let jobSeekerInitialChatScrollPending =
+      true;
+
+
+    /*
+      Check whether Messages page is
+      actually visible before scrolling.
+    */
+    function scrollInitialJobSeekerChatWhenVisible() {
+
+      if (
+        !jobSeekerInitialChatScrollPending
+      ) {
+        return;
+      }
+
+
+      const messagesPage =
+        document.getElementById(
+          "page-messages"
+        );
+
+
+      const chatMessages =
+        document.getElementById(
+          "chat-messages"
+        );
+
+
+      if (
+        !messagesPage ||
+        !chatMessages
+      ) {
+        return;
+      }
+
+
+      /*
+        Your page system uses .active
+        when a page becomes visible.
+      */
+      if (
+        !messagesPage.classList.contains(
+          "active"
+        )
+      ) {
+        return;
+      }
+
+
+      /*
+        There must already be a real
+        conversation loaded.
+      */
+      if (
+        !activeConversationId
+      ) {
+        return;
+      }
+
+
+      /*
+        Do not finish while the message
+        listener still shows Loading...
+      */
+      if (
+        chatMessages.querySelector(
+          "[data-chat-loading]"
+        )
+      ) {
+
+        setTimeout(
+          scrollInitialJobSeekerChatWhenVisible,
+          60
+        );
+
+        return;
+      }
+
+
+      /*
+        Messages page is visible and
+        messages have rendered.
+    
+        Now scrolling will use the REAL
+        container height.
+      */
+      requestAnimationFrame(
+        () => {
+
+          scrollChatToLatest();
+
+
+          requestAnimationFrame(
+            () => {
+
+              scrollChatToLatest();
+
+            }
+          );
+
+        }
+      );
+
+
+      /*
+        Extra mobile/browser layout safety.
+      */
+      setTimeout(
+        scrollChatToLatest,
+        80
+      );
+
+
+      setTimeout(
+        scrollChatToLatest,
+        200
+      );
+
+
+      /*
+        Run this automatic-login behavior
+        only once.
+    
+        Later manual scrolling is preserved.
+      */
+      jobSeekerInitialChatScrollPending =
+        false;
+
+    }
+
+
+    /* ══════════════════════════════════════
+       WATCH MESSAGES PAGE
+    
+       showPage('messages') changes the
+       page's class to "active".
+    
+       We watch that change without touching
+       your existing showPage logic.
+    ══════════════════════════════════════ */
+
+    (function observeJobSeekerMessagesPage() {
+
+      const messagesPage =
+        document.getElementById(
+          "page-messages"
+        );
+
+
+      if (!messagesPage) {
+        return;
+      }
+
+
+      const observer =
+        new MutationObserver(
+          () => {
+
+            if (
+              messagesPage.classList.contains(
+                "active"
+              )
+            ) {
+
+              scrollInitialJobSeekerChatWhenVisible();
+
+            }
+
+          }
+        );
+
+
+      observer.observe(
+        messagesPage,
+        {
+          attributes: true,
+          attributeFilter: [
+            "class"
+          ]
+        }
+      );
+
+    })();
+
     window.openConv = async function (el, convId) {
       document.querySelectorAll('.conv-item').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
@@ -3777,8 +4044,42 @@
       document.getElementById('chat-avatar').src = fallbackAvatar;
       document.querySelector('.chat-header-online').style.display = 'none';
 
-      if (window.listenToConversationMessages) {
-        window.listenToConversationMessages(convId);
+      /*
+  MOBILE:
+
+  Show chat before Firestore messages
+  render so the browser knows the real
+  scrollable height.
+*/
+      const earlyMessageShell =
+        document.querySelector(
+          ".msg-shell"
+        );
+
+
+      if (
+        window.innerWidth < 900 &&
+        earlyMessageShell
+      ) {
+
+        earlyMessageShell.classList.add(
+          "chat-open"
+        );
+
+      }
+
+
+      /*
+        Keep existing listener logic.
+      */
+      if (
+        window.listenToConversationMessages
+      ) {
+
+        window.listenToConversationMessages(
+          convId
+        );
+
       }
 
       if (unsubscribeActiveParticipant) {
@@ -3851,8 +4152,11 @@
       if (window.innerWidth < 900 && shell) {
         shell.classList.add('chat-open');
       }
-      const msgs = document.getElementById('chat-messages');
-      setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 100);
+      /*
+  Final safety scroll after profile/
+  conversation details finish loading.
+*/
+      scrollChatToLatest();
     }
 
     window.sendRealtimeMessage = async function (text) {
@@ -4321,8 +4625,71 @@
                   Don't pull them down if
                   they're reading older chat.
                 */
-                if (
-                  firstSnapshot ||
+                /*
+  OPENING A CONVERSATION:
+
+  Always show newest message.
+
+  AFTER opening:
+  only auto-scroll when user is already
+  near the bottom or sends a new message.
+*/
+                if (firstSnapshot) {
+
+                  const messagesPage =
+                    document.getElementById(
+                      "page-messages"
+                    );
+
+
+                  /*
+                    If Messages is already visible,
+                    scroll immediately.
+                
+                    This covers manually clicking a
+                    conversation.
+                  */
+                  if (
+                    messagesPage &&
+                    messagesPage.classList.contains(
+                      "active"
+                    )
+                  ) {
+
+                    scrollChatToLatest();
+
+
+                    /*
+                      Since we successfully opened a
+                      visible conversation, the special
+                      login scroll is no longer needed.
+                    */
+                    jobSeekerInitialChatScrollPending =
+                      false;
+
+                  }
+
+
+                  /*
+                    If Messages is hidden because this
+                    happened during LOGIN:
+                
+                    Do NOT mark the scroll as finished.
+                
+                    The MutationObserver will perform
+                    the scroll when the user enters
+                    Messages.
+                  */
+                  else {
+
+                    jobSeekerInitialChatScrollPending =
+                      true;
+
+                  }
+
+                }
+
+                else if (
                   wasNearBottom ||
                   myNewMessageAdded
                 ) {

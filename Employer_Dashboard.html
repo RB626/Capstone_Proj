@@ -10252,6 +10252,75 @@
       }
     }
 
+    /* ══════════════════════════════════════
+   CHAT — SCROLL TO NEWEST MESSAGE
+══════════════════════════════════════ */
+
+    function scrollChatToLatest() {
+
+      const chatMessages =
+        document.getElementById(
+          "chat-messages"
+        );
+
+
+      if (!chatMessages) {
+        return;
+      }
+
+
+      const jumpToBottom = () => {
+
+        chatMessages.scrollTop =
+          chatMessages.scrollHeight;
+
+      };
+
+
+      /*
+        Immediate attempt.
+      */
+      jumpToBottom();
+
+
+      /*
+        Wait for browser layout.
+      */
+      requestAnimationFrame(
+        () => {
+
+          jumpToBottom();
+
+
+          /*
+            One more frame catches mobile
+            panel/display changes.
+          */
+          requestAnimationFrame(
+            jumpToBottom
+          );
+
+        }
+      );
+
+
+      /*
+        Android/mobile browsers sometimes
+        finish layout slightly later.
+      */
+      setTimeout(
+        jumpToBottom,
+        60
+      );
+
+
+      setTimeout(
+        jumpToBottom,
+        180
+      );
+
+    }
+
     let unsubscribeEmployerConversations = null;
     let employerConversationDocs = [];
     const employerApplicantsForMessages = new Map();
@@ -10345,7 +10414,34 @@
       }
 
       /*
-        Start loading the messages immediately.
+  MOBILE:
+
+  Make the chat panel visible BEFORE
+  Firestore renders the messages.
+
+  This ensures scrollHeight is calculated
+  using the real visible chat size.
+*/
+      const earlyMessageShell =
+        document.querySelector(
+          ".msg-shell"
+        );
+
+
+      if (
+        window.innerWidth < 900 &&
+        earlyMessageShell
+      ) {
+
+        earlyMessageShell.classList.add(
+          "chat-open"
+        );
+
+      }
+
+
+      /*
+        Now start loading messages.
       */
       window.listenToConversationMessages(
         conversationId
@@ -10587,17 +10683,11 @@
         );
       }
 
-      const chatMessages =
-        document.getElementById(
-          "chat-messages"
-        );
-
-      requestAnimationFrame(() => {
-        if (chatMessages) {
-          chatMessages.scrollTop =
-            chatMessages.scrollHeight;
-        }
-      });
+      /*
+  Final safety scroll after profile/
+  conversation details finish loading.
+*/
+      scrollChatToLatest();
     };
 
     function listenToEmployerConversations(userId) {
@@ -14175,8 +14265,22 @@
                   Don't pull them down if
                   they're reading older chat.
                 */
-                if (
-                  firstSnapshot ||
+                /*
+    OPENING A CONVERSATION:
+  
+    Always show newest message.
+  
+    AFTER opening:
+    only auto-scroll when user is already
+    near the bottom or sends a new message.
+  */
+                if (firstSnapshot) {
+
+                  scrollChatToLatest();
+
+                }
+
+                else if (
                   wasNearBottom ||
                   myNewMessageAdded
                 ) {
