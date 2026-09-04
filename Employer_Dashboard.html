@@ -10321,6 +10321,199 @@
 
     }
 
+    /* ══════════════════════════════════════
+   EMPLOYER
+   INITIAL CHAT SCROLL AFTER LOGIN
+
+   The first conversation is loaded
+   while Employer is still on Home.
+
+   Wait until Messages is ACTUALLY
+   visible before scrolling to bottom.
+══════════════════════════════════════ */
+
+    let employerInitialChatScrollPending =
+      true;
+
+
+    function scrollInitialEmployerChatWhenVisible() {
+
+      /*
+        Already completed the login-time
+        scroll. Don't interfere afterward.
+      */
+      if (
+        !employerInitialChatScrollPending
+      ) {
+        return;
+      }
+
+
+      const messagesPage =
+        document.getElementById(
+          "page-messages"
+        );
+
+
+      const chatMessages =
+        document.getElementById(
+          "chat-messages"
+        );
+
+
+      if (
+        !messagesPage ||
+        !chatMessages
+      ) {
+        return;
+      }
+
+
+      /*
+        Messages page must actually be
+        visible first.
+      */
+      if (
+        !messagesPage.classList.contains(
+          "active"
+        )
+      ) {
+        return;
+      }
+
+
+      /*
+        A real conversation must already
+        have been auto-selected.
+      */
+      if (
+        !activeConversationId
+      ) {
+        return;
+      }
+
+
+      /*
+        Firestore may still be showing
+        "Loading messages...".
+    
+        Wait until real messages finish
+        rendering.
+      */
+      if (
+        chatMessages.querySelector(
+          "[data-chat-loading]"
+        )
+      ) {
+
+        setTimeout(
+          scrollInitialEmployerChatWhenVisible,
+          60
+        );
+
+        return;
+      }
+
+
+      /*
+        Messages are rendered AND the page
+        is visible.
+    
+        Now the browser knows the real
+        scrollable height.
+      */
+      requestAnimationFrame(
+        () => {
+
+          scrollChatToLatest();
+
+
+          requestAnimationFrame(
+            () => {
+
+              scrollChatToLatest();
+
+            }
+          );
+
+        }
+      );
+
+
+      /*
+        Desktop/mobile layout safety.
+      */
+      setTimeout(
+        scrollChatToLatest,
+        80
+      );
+
+
+      setTimeout(
+        scrollChatToLatest,
+        200
+      );
+
+
+      /*
+        Login-time correction is complete.
+    
+        Normal Messenger-style scrolling
+        takes over afterward.
+      */
+      employerInitialChatScrollPending =
+        false;
+
+    }
+
+
+    /* ══════════════════════════════════════
+       WATCH EMPLOYER MESSAGES PAGE
+    ══════════════════════════════════════ */
+
+    (function observeEmployerMessagesPage() {
+
+      const messagesPage =
+        document.getElementById(
+          "page-messages"
+        );
+
+
+      if (!messagesPage) {
+        return;
+      }
+
+
+      const observer =
+        new MutationObserver(
+          () => {
+
+            if (
+              messagesPage.classList.contains(
+                "active"
+              )
+            ) {
+
+              scrollInitialEmployerChatWhenVisible();
+
+            }
+
+          }
+        );
+
+
+      observer.observe(
+        messagesPage,
+        {
+          attributes: true,
+          attributeFilter: [
+            "class"
+          ]
+        }
+      );
+
+    })();
+
     let unsubscribeEmployerConversations = null;
     let employerConversationDocs = [];
     const employerApplicantsForMessages = new Map();
@@ -10687,7 +10880,31 @@
   Final safety scroll after profile/
   conversation details finish loading.
 */
-      scrollChatToLatest();
+      /*
+  Final safety scroll.
+
+  Only do it immediately when the
+  Messages page is actually visible.
+
+  During login, the pending-scroll
+  helper will handle it later.
+*/
+      const visibleMessagesPage =
+        document.getElementById(
+          "page-messages"
+        );
+
+
+      if (
+        visibleMessagesPage &&
+        visibleMessagesPage.classList.contains(
+          "active"
+        )
+      ) {
+
+        scrollChatToLatest();
+
+      }
     };
 
     function listenToEmployerConversations(userId) {
@@ -14276,7 +14493,55 @@
   */
                 if (firstSnapshot) {
 
-                  scrollChatToLatest();
+                  const messagesPage =
+                    document.getElementById(
+                      "page-messages"
+                    );
+
+
+                  /*
+                    CASE 1:
+                    Employer clicked a conversation while
+                    already viewing Messages.
+                
+                    Scroll immediately.
+                  */
+                  if (
+                    messagesPage &&
+                    messagesPage.classList.contains(
+                      "active"
+                    )
+                  ) {
+
+                    scrollChatToLatest();
+
+
+                    /*
+                      The chat is already visible, so
+                      there is no pending login scroll.
+                    */
+                    employerInitialChatScrollPending =
+                      false;
+
+                  }
+
+
+                  /*
+                    CASE 2:
+                    Conversation was auto-opened during
+                    login while Employer is still on Home.
+                
+                    Do NOT consider the scrolling finished.
+                
+                    The MutationObserver will scroll when
+                    Employer opens Messages.
+                  */
+                  else {
+
+                    employerInitialChatScrollPending =
+                      true;
+
+                  }
 
                 }
 
