@@ -13357,27 +13357,24 @@
    START HOME JOB FEED
 ══════════════════════════════════════ */
 
+    /* ══════════════════════════════════════
+   START HOME JOB FEED
+
+   NEWEST JOBS  = REALTIME
+   OLDER JOBS   = INFINITE SCROLL
+══════════════════════════════════════ */
+
     function listenToHomeJobs() {
 
-      if (
-        !homeJobsList
-      ) {
-
+      if (!homeJobsList) {
         return;
-
       }
 
 
       /*
-        Old code used a 20-document
-        onSnapshot listener.
-    
-        Clean it if an older version
-        happened to create one.
+        Stop previous realtime listener.
       */
-      if (
-        unsubscribeHomeJobs
-      ) {
+      if (unsubscribeHomeJobs) {
 
         unsubscribeHomeJobs();
 
@@ -13387,23 +13384,604 @@
       }
 
 
+      /* ══════════════════════════════════════
+         RESET HOME FEED ON INITIAL START
+      ═══════════════════════════════════════ */
+
+      homeJobsLastDocument =
+        null;
+
+
+      homeJobsHasMore =
+        true;
+
+
+      homeJobsLoading =
+        false;
+
+
+      homeJobsLoadError =
+        false;
+
+
+      allHomeJobs =
+        [];
+
+
+      cleanupApplicantCountListeners(
+        homeApplicantCountUnsubs
+      );
+
+
+      homeJobsList.innerHTML = `
+    <div class="job-card">
+
+      <div class="job-title">
+        Loading jobs...
+      </div>
+
+      <div class="job-desc">
+        Please wait while we find
+        available jobs for you.
+      </div>
+
+    </div>
+  `;
+
+
       /*
-        Start automatic Facebook-style
-        bottom detection.
+        Keep your existing infinite-scroll
+        observer for older jobs.
       */
       setupHomeJobsInfiniteScroll();
 
 
-      /*
-        Load the newest 20 immediately.
+
+      /* ══════════════════════════════════════
+         REALTIME QUERY
     
-        No need to await because this
-        function is started by auth setup.
-      */
-      loadNextHomeJobsPage({
-        reset:
-          true
-      });
+         Watch ONLY newest 20 active jobs.
+    
+         This keeps Firestore reads reasonable
+         while still making newly posted jobs
+         appear immediately.
+      ═══════════════════════════════════════ */
+
+      const realtimeJobsQuery =
+        query(
+
+          collection(
+            db,
+            "jobs"
+          ),
+
+          where(
+            "status",
+            "==",
+            "active"
+          ),
+
+          orderBy(
+            "createdAt",
+            "desc"
+          ),
+
+          limit(
+            HOME_JOBS_PAGE_SIZE
+          )
+
+        );
+
+
+      let firstRealtimeSnapshot =
+        true;
+
+
+
+      /* ══════════════════════════════════════
+         SORT HELPER
+      ═══════════════════════════════════════ */
+
+      function sortHomeJobsNewestFirst() {
+
+        allHomeJobs.sort(
+          (
+            first,
+            second
+          ) => {
+
+            return (
+
+              timestampToMilliseconds(
+                second.createdAt
+              )
+
+              -
+
+              timestampToMilliseconds(
+                first.createdAt
+              )
+
+            );
+
+          }
+        );
+
+      }
+
+
+
+      /* ══════════════════════════════════════
+         VERIFY A "REMOVED" REALTIME JOB
+    
+         Important:
+    
+         Because the realtime query uses
+         limit(20), a job can be reported as
+         "removed" simply because a newer job
+         pushed it from #20 to #21.
+    
+         We must NOT delete that job from
+         our loaded feed unless Firestore
+         confirms it was really deleted or
+         is no longer active.
+      ═══════════════════════════════════════ */
+
+      async function verifyRemovedRealtimeJob(
+        jobId
+      ) {
+
+        try {
+
+          const jobRef =
+            doc(
+              db,
+              "jobs",
+              jobId
+            );
+
+
+          const jobSnapshot =
+            await getDoc(
+              jobRef
+            );
+
+
+          /*
+            CASE 1:
+            Employer actually deleted it.
+          */
+          if (
+            !jobSnapshot.exists()
+          ) {
+
+            allHomeJobs =
+              allHomeJobs.filter(
+                job =>
+                  job.id !== jobId
+              );
+
+
+            syncEmployerProfileListeners();
+
+            renderHomeJobs();
+
+            return;
+
+          }
+
+
+          const jobData =
+            jobSnapshot.data();
+
+
+          /*
+            CASE 2:
+            Employer closed/drafted it.
+    
+            It should no longer appear on
+            Job Seeker Home.
+          */
+          if (
+            String(
+              jobData.status || ""
+            ).toLowerCase() !==
+            "active"
+          ) {
+
+            allHomeJobs =
+              allHomeJobs.filter(
+                job =>
+                  job.id !== jobId
+              );
+
+
+            syncEmployerProfileListeners();
+
+            renderHomeJobs();
+
+          }
+
+
+          /*
+            CASE 3:
+    
+            Job still exists and is active.
+    
+            It simply moved below the newest
+            20 because another job was posted.
+    
+            KEEP IT in allHomeJobs.
+          */
+
+        } catch (error) {
+
+          console.error(
+            "Failed to verify realtime job:",
+            jobId,
+            error
+          );
+
+        }
+
+      }
+
+
+
+      /* ══════════════════════════════════════
+         FIRESTORE REALTIME LISTENER
+      ═══════════════════════════════════════ */
+
+      unsubscribeHomeJobs =
+        onSnapshot(
+
+          realtimeJobsQuery,
+
+
+          snapshot => {
+
+
+            /* ══════════════════════════════════════
+               FIRST LOAD
+            ═══════════════════════════════════════ */
+
+            if (
+              firstRealtimeSnapshot
+            ) {
+
+              allHomeJobs =
+                snapshot.docs.map(
+                  docSnap => ({
+
+                    id:
+                      docSnap.id,
+
+                    ...docSnap.data()
+
+                  })
+                );
+
+
+              sortHomeJobsNewestFirst();
+
+
+              /*
+                Set pagination cursor to the
+                oldest document of the first
+                realtime batch.
+    
+                loadNextHomeJobsPage() will
+                continue AFTER this document.
+              */
+              if (
+                snapshot.docs.length
+              ) {
+
+                homeJobsLastDocument =
+                  snapshot.docs[
+                  snapshot.docs.length - 1
+                  ];
+
+              } else {
+
+                homeJobsLastDocument =
+                  null;
+
+              }
+
+
+              /*
+                Exactly 20 means there MAY be
+                more older jobs.
+    
+                Less than 20 means everything
+                currently available is loaded.
+              */
+              homeJobsHasMore =
+                snapshot.docs.length ===
+                HOME_JOBS_PAGE_SIZE;
+
+
+              firstRealtimeSnapshot =
+                false;
+
+
+              syncEmployerProfileListeners();
+
+
+              renderHomeJobs();
+
+
+              updateHomeJobsInfiniteStatus();
+
+
+              /*
+                On large screens, automatically
+                load more if necessary.
+              */
+              maybeAutoLoadMoreHomeJobs();
+
+
+              console.log(
+                "HOME REALTIME INITIALIZED:",
+                snapshot.docs.length
+              );
+
+
+              return;
+
+            }
+
+
+
+            /* ══════════════════════════════════════
+               REALTIME UPDATES
+            ═══════════════════════════════════════ */
+
+            let homeFeedChanged =
+              false;
+
+
+            snapshot
+              .docChanges()
+              .forEach(
+                change => {
+
+                  const jobId =
+                    change.doc.id;
+
+
+                  const jobData = {
+
+                    id:
+                      jobId,
+
+                    ...change.doc.data()
+
+                  };
+
+
+                  /* ────────────────────────────────
+                     NEW JOB POSTED
+                  ──────────────────────────────── */
+
+                  if (
+                    change.type ===
+                    "added"
+                  ) {
+
+                    const existingIndex =
+                      allHomeJobs.findIndex(
+                        job =>
+                          job.id ===
+                          jobId
+                      );
+
+
+                    /*
+                      Brand-new job.
+                    */
+                    if (
+                      existingIndex === -1
+                    ) {
+
+                      allHomeJobs.push(
+                        jobData
+                      );
+
+
+                      homeFeedChanged =
+                        true;
+
+
+                      console.log(
+                        "NEW JOB RECEIVED REALTIME:",
+                        jobId
+                      );
+
+                    }
+
+
+                    /*
+                      Job already existed in
+                      loaded pages.
+    
+                      Refresh its data instead
+                      of creating a duplicate.
+                    */
+                    else {
+
+                      allHomeJobs[
+                        existingIndex
+                      ] =
+                        jobData;
+
+
+                      homeFeedChanged =
+                        true;
+
+                    }
+
+
+                    return;
+
+                  }
+
+
+
+                  /* ────────────────────────────────
+                     JOB UPDATED
+                  ──────────────────────────────── */
+
+                  if (
+                    change.type ===
+                    "modified"
+                  ) {
+
+                    const existingIndex =
+                      allHomeJobs.findIndex(
+                        job =>
+                          job.id ===
+                          jobId
+                      );
+
+
+                    if (
+                      existingIndex !== -1
+                    ) {
+
+                      allHomeJobs[
+                        existingIndex
+                      ] =
+                        jobData;
+
+                    } else {
+
+                      allHomeJobs.push(
+                        jobData
+                      );
+
+                    }
+
+
+                    homeFeedChanged =
+                      true;
+
+
+                    return;
+
+                  }
+
+
+
+                  /* ────────────────────────────────
+                     JOB LEFT TOP-20 QUERY
+                  ──────────────────────────────── */
+
+                  if (
+                    change.type ===
+                    "removed"
+                  ) {
+
+                    /*
+                      DO NOT immediately remove.
+    
+                      A brand-new post can push
+                      the old #20 job to #21.
+    
+                      Verify whether Employer
+                      really deleted/closed it.
+                    */
+                    verifyRemovedRealtimeJob(
+                      jobId
+                    );
+
+                  }
+
+                }
+              );
+
+
+
+            /* ══════════════════════════════════════
+               UPDATE UI ONLY WHEN NECESSARY
+            ═══════════════════════════════════════ */
+
+            if (
+              homeFeedChanged
+            ) {
+
+              sortHomeJobsNewestFirst();
+
+
+              /*
+                Make Employer names/photos realtime
+                for newly received jobs too.
+              */
+              syncEmployerProfileListeners();
+
+
+              /*
+                Existing renderHomeJobs() already
+                handles:
+                - saved jobs
+                - filters
+                - match %
+                - applicant count
+              */
+              renderHomeJobs();
+
+
+              updateHomeJobsInfiniteStatus();
+
+            }
+
+          },
+
+
+          error => {
+
+            console.error(
+              "HOME JOB REALTIME ERROR:",
+              error
+            );
+
+
+            /*
+              Don't crash or erase existing jobs
+              if realtime listener fails.
+            */
+            if (
+              !allHomeJobs.length
+            ) {
+
+              homeJobsList.innerHTML = `
+            <div class="job-card">
+
+              <div class="job-title">
+                Failed to load jobs
+              </div>
+
+              <div class="job-desc">
+                Check your connection and
+                try again.
+              </div>
+
+            </div>
+          `;
+
+            }
+
+
+            homeJobsLoadError =
+              true;
+
+
+            updateHomeJobsInfiniteStatus();
+
+          }
+
+        );
 
     }
 
