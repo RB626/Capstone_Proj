@@ -9228,3 +9228,156 @@ body.dark-mode .home-jobs-infinite-status {
   }
 
 }
+
+/* ══════════════════════════════════════
+   EMPLOYER JOB CARD — DESCRIPTION
+   Balanced spacing
+══════════════════════════════════════ */
+
+.job-card-description {
+
+  width: 100%;
+  max-width: 820px;
+
+  /*
+    Balanced:
+    Title → Description = 12px
+    Description → Skills = 14px
+  */
+  margin: 0 !important;
+
+  padding: 0;
+
+  color:
+    #64748b;
+
+  font-size:
+    0.82rem;
+
+  font-weight:
+    400;
+
+  line-height:
+    1.5;
+
+  letter-spacing:
+    0;
+
+  display:
+    -webkit-box;
+
+  -webkit-box-orient:
+    vertical;
+
+  -webkit-line-clamp:
+    2;
+
+  overflow:
+    hidden;
+
+  text-overflow:
+    ellipsis;
+
+  white-space:
+    normal;
+
+  overflow-wrap:
+    anywhere;
+}
+
+
+/*
+  Title spacing when description exists.
+*/
+.job-title:has(+ .job-card-description) {
+
+  margin-bottom:
+    12px;
+
+}
+
+
+/*
+  Skills should not be pulled upward.
+*/
+.job-card-description+.skill-tags {
+
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+
+}
+
+
+/* DARK MODE */
+
+body.dark-mode .job-card-description {
+
+  color:
+    #94a3b8;
+
+}
+
+
+/* TABLET */
+
+@media (max-width: 900px) {
+
+  .job-card-description {
+
+    max-width:
+      100%;
+
+    font-size:
+      0.8rem;
+
+    margin-bottom:
+      13px;
+
+  }
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  .job-card-description {
+
+    width:
+      100%;
+
+    max-width:
+      100%;
+
+    margin:
+      0 0 12px;
+
+    padding:
+      0;
+
+    font-size:
+      0.76rem;
+
+    line-height:
+      1.45;
+
+    -webkit-line-clamp:
+      2;
+
+  }
+
+}
+
+/* Job description — match existing BlueSpace UI */
+.job-card-description {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.875rem !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  color: #6b7280 !important;
+}
+
+body.dark-mode .job-card-description {
+  color: #94a3b8 !important;
+}

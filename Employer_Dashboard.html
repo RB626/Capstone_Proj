@@ -1623,6 +1623,19 @@
             <input id="jobPostTitle" type="text" placeholder="Example: Carpenter Needed for Home Renovation">
           </div>
 
+          <!-- JOB DESCRIPTION -->
+          <div class="job-post-field full job-post-description-field">
+
+            <label for="jobPostDescription">
+              Description
+            </label>
+
+            <textarea id="jobPostDescription" rows="4" maxlength="1000"
+              placeholder="Describe the job, responsibilities, schedule, requirements, or other important details..."></textarea>
+
+
+          </div>
+
           <div class="job-post-field">
             <label for="jobPostBadge" data-i18n="modalEmployerBadge">Employer Badge</label>
             <select id="jobPostBadge" class="job-status-dropdown">
@@ -1699,6 +1712,17 @@
       </div>
 
       <div class="job-preview-body">
+        <div class="job-preview-field job-preview-description-field">
+
+          <label>
+            Description
+          </label>
+
+          <div id="previewJobDescription" class="job-preview-description">
+            No description provided.
+          </div>
+
+        </div>
         <div class="job-preview-grid">
           <div class="job-preview-field">
             <label>Badge</label>
@@ -13497,6 +13521,7 @@
 
       card.dataset.categorySearch = [
         job.title || "",
+        job.description || "",
         job.location || "",
         ...safeSkills
       ].join(" ");
@@ -13525,6 +13550,7 @@
           "Employer"
         )}&background=ccfbf1&color=0f766e`;
       const title = escapeHtml(job.title || "Untitled Job");
+      const description = escapeHtml(job.description || "");
       const location = escapeHtml(job.location || "Not specified");
       const duration = escapeHtml(job.duration || "Not specified");
       const pay = escapeHtml(job.pay || "0");
@@ -13583,11 +13609,27 @@
 </div>
     </div>
 
-    <div class="job-title">${title}</div>
+    <div class="job-title">
+  ${title}
+</div>
 
-    <div class="skill-tags">
-      ${skillsHTML}
-    </div>
+
+${description
+          ? `
+      <div
+        class="job-card-description"
+        title="${description}"
+      >
+        ${description}
+      </div>
+    `
+          : ""
+        }
+
+
+<div class="skill-tags">
+  ${skillsHTML}
+</div>
 
     <div class="job-meta">
       <div class="meta-item">
@@ -14667,6 +14709,7 @@
 
     async function submitJobPost() {
       const title = document.getElementById('jobPostTitle').value.trim();
+      const description = document.getElementById('jobPostDescription').value.trim();
       const badge = document.getElementById('jobPostBadge').value;
       const jobType = document.getElementById('jobPostType').value;
       const location = document.getElementById('jobPostLocation').value.trim();
@@ -14708,6 +14751,7 @@
           employerPhotoURL,
           badge,
           title,
+          description,
           jobType,
           location: location || "Not specified",
           duration: duration || "Not specified",
@@ -14723,6 +14767,7 @@
         closeJobPostModal();
 
         document.getElementById('jobPostTitle').value = '';
+        document.getElementById('jobPostDescription').value = '';
         document.getElementById('jobPostBadge').value = 'Individual';
         document.getElementById('jobPostType').value = 'Full-time';
         document.getElementById('jobPostLocation').value = '';
@@ -16387,6 +16432,8 @@
 
       document.getElementById("previewJobTitle").textContent = job.title || "Untitled Job";
       document.getElementById("previewEmployerName").textContent = job.employerName || "Employer";
+      const descriptionElement = document.getElementById("previewJobDescription");
+      if (descriptionElement) { descriptionElement.textContent = job.description || "No description provided."; }
       document.getElementById("previewBadge").textContent = job.badge || "Not specified";
       document.getElementById("previewJobType").textContent = job.jobType || "Not specified";
       document.getElementById("previewLocation").textContent = job.location || "Not specified";
