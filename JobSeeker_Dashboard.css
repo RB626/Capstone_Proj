@@ -9271,6 +9271,7 @@ body.dark-mode .home-jobs-infinite-status {
 
   -webkit-line-clamp:
     2;
+    line-clamp: 2;
 
   overflow:
     hidden;
@@ -9364,6 +9365,8 @@ body.dark-mode .job-card-description {
 
     -webkit-line-clamp:
       2;
+
+      line-clamp: 2;
 
   }
 
