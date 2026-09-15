@@ -617,6 +617,39 @@
           <!-- Chat Area -->
           <div class="chat-area">
 
+            <!-- ══════════════════════════════════════
+       DRAG & DROP ATTACHMENT OVERLAY
+  ══════════════════════════════════════ -->
+            <div class="chat-drop-overlay" id="chatDropOverlay" aria-hidden="true">
+
+              <div class="chat-drop-card">
+
+                <div class="chat-drop-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 16V4"></path>
+                    <polyline points="7 9 12 4 17 9"></polyline>
+
+                    <path d="M20 15v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4">
+                    </path>
+                  </svg>
+                </div>
+
+
+                <div class="chat-drop-title">
+                  Drop files to send
+                </div>
+
+
+                <div class="chat-drop-subtitle">
+                  Photos and supported files
+                </div>
+
+              </div>
+
+            </div>
+
+
             <!-- Chat header -->
             <div class="chat-header">
               <div class="chat-header-avatar-wrap">
@@ -674,6 +707,18 @@
 
             </div><!-- /chat-messages -->
 
+
+            <!-- ══════════════════════════════════════
+     PENDING ATTACHMENT PREVIEW
+
+     Hidden until the user chooses
+     or drops a file.
+══════════════════════════════════════ -->
+            <div class="chat-pending-attachments" id="chatPendingAttachments" hidden>
+              <div class="chat-pending-list" id="chatPendingList"></div>
+            </div>
+
+
             <!-- Input area -->
             <div class="chat-input-area">
 
@@ -693,7 +738,7 @@
 
 
               <!-- HIDDEN DEVICE FILE PICKER -->
-              <input type="file" id="chatAttachmentInput" class="chat-attachment-input" accept="
+              <input type="file" id="chatAttachmentInput" class="chat-attachment-input" multiple accept="
     image/*,
     .pdf,
     .doc,
@@ -711,11 +756,11 @@
 
               <!-- EXISTING MESSAGE INPUT -->
               <input class="chat-input" id="chat-input" type="text" placeholder="Type a message..."
-                data-i18n="msgTypeMessage" onkeydown="sendOnEnter(event)" />
-
+                data-i18n="msgTypeMessage" onkeydown="sendOnEnterWithAttachments(event)" />
 
               <!-- EXISTING SEND BUTTON -->
-              <button class="chat-send-btn" onclick="sendMessage()" aria-label="Send message">
+              <button class="chat-send-btn" id="chatSendBtn" onclick="sendMessageWithAttachments()"
+                aria-label="Send message">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                   stroke-linejoin="round">
                   <line x1="22" y1="2" x2="11" y2="13" />
@@ -4852,33 +4897,1313 @@
 
 
     /* ══════════════════════════════════════
-       FILE SELECTED
+       PENDING CHAT ATTACHMENTS
+    
+       IMPORTANT:
+       Files placed here have NOT been
+       uploaded to Firebase yet.
+    
+       Firebase upload only happens when
+       the user clicks Send.
     ══════════════════════════════════════ */
+
+    const chatPendingAttachments =
+      document.getElementById(
+        "chatPendingAttachments"
+      );
+
+
+    const chatPendingList =
+      document.getElementById(
+        "chatPendingList"
+      );
+
+
+    const chatSendButton =
+      document.getElementById(
+        "chatSendBtn"
+      );
+
+
+    /*
+      Each item:
+    
+      {
+        id,
+        file,
+        messageType,
+        previewURL
+      }
+    */
+    let pendingChatAttachments =
+      [];
+
+
+    let pendingChatAttachmentCounter =
+      0;
+
+
+    /* ══════════════════════════════════════
+       ADD FILES TO PENDING LIST
+    ══════════════════════════════════════ */
+
+    function stageJobSeekerChatAttachments(
+      files
+    ) {
+
+      const selectedFiles =
+        Array.from(
+          files || []
+        );
+
+
+      if (
+        selectedFiles.length === 0
+      ) {
+
+        return;
+
+      }
+
+
+      if (
+        !auth.currentUser
+      ) {
+
+        alert(
+          "You must be logged in first."
+        );
+
+        return;
+
+      }
+
+
+      if (
+        !activeConversationId
+      ) {
+
+        alert(
+          "Please select a conversation first."
+        );
+
+        return;
+
+      }
+
+
+      for (
+        const file of selectedFiles
+      ) {
+
+        /*
+          Reuse your EXISTING validation.
+    
+          This keeps:
+          - 15 MB limit
+          - image detection
+          - supported document extensions
+        */
+        const validation =
+          validateChatAttachment(
+            file
+          );
+
+
+        if (
+          !validation.valid
+        ) {
+
+          alert(
+            `${file.name}: ${validation.message}`
+          );
+
+          continue;
+
+        }
+
+
+        /*
+          Prevent accidentally adding the
+          exact same file twice.
+        */
+        const alreadyAdded =
+          pendingChatAttachments.some(
+            item =>
+
+              item.file.name ===
+              file.name &&
+
+              item.file.size ===
+              file.size &&
+
+              item.file.lastModified ===
+              file.lastModified
+          );
+
+
+        if (
+          alreadyAdded
+        ) {
+
+          continue;
+
+        }
+
+
+        pendingChatAttachmentCounter +=
+          1;
+
+
+        const messageType =
+          validation.messageType;
+
+
+        /*
+          Local browser preview only.
+    
+          This does NOT upload anything.
+        */
+        const previewURL =
+          messageType === "image"
+
+            ? URL.createObjectURL(
+              file
+            )
+
+            : "";
+
+
+        pendingChatAttachments.push(
+          {
+
+            id:
+              `pending-chat-${pendingChatAttachmentCounter}`,
+
+            file:
+              file,
+
+            messageType:
+              messageType,
+
+            previewURL:
+              previewURL
+
+          }
+        );
+
+      }
+
+
+      renderPendingChatAttachments();
+
+
+      /*
+        Allows selecting the same file
+        again later after it is removed.
+      */
+      if (
+        chatAttachmentInput
+      ) {
+
+        chatAttachmentInput.value =
+          "";
+
+      }
+
+    }
+
+
+    /* ══════════════════════════════════════
+       REMOVE ONE PENDING ATTACHMENT
+    ══════════════════════════════════════ */
+
+    function removePendingChatAttachment(
+      attachmentId
+    ) {
+
+      const index =
+        pendingChatAttachments.findIndex(
+          item =>
+            item.id === attachmentId
+        );
+
+
+      if (
+        index === -1
+      ) {
+
+        return;
+
+      }
+
+
+      const item =
+        pendingChatAttachments[
+        index
+        ];
+
+
+      /*
+        Release temporary local image URL.
+      */
+      if (
+        item.previewURL
+      ) {
+
+        URL.revokeObjectURL(
+          item.previewURL
+        );
+
+      }
+
+
+      pendingChatAttachments.splice(
+        index,
+        1
+      );
+
+
+      renderPendingChatAttachments();
+
+    }
+
+
+    /* ══════════════════════════════════════
+       CLEAR ALL PENDING FILES
+    ══════════════════════════════════════ */
+
+    function clearPendingChatAttachments() {
+
+      for (
+        const item of
+        pendingChatAttachments
+      ) {
+
+        if (
+          item.previewURL
+        ) {
+
+          URL.revokeObjectURL(
+            item.previewURL
+          );
+
+        }
+
+      }
+
+
+      pendingChatAttachments =
+        [];
+
+
+      renderPendingChatAttachments();
+
+    }
+
+
+    /* ══════════════════════════════════════
+       FILE ICON
+    ══════════════════════════════════════ */
+
+    function createPendingFileIcon() {
+
+      const icon =
+        document.createElement(
+          "span"
+        );
+
+
+      icon.className =
+        "chat-pending-file-icon";
+
+
+      icon.innerHTML = `
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path
+        d="M14 2H6a2 2 0 0 0-2 2v16a2 2
+        0 0 0 2 2h12a2 2 0 0 0
+        2-2V8z">
+      </path>
+
+      <polyline
+        points="14 2 14 8 20 8">
+      </polyline>
+
+      <line
+        x1="16"
+        y1="13"
+        x2="8"
+        y2="13">
+      </line>
+
+      <line
+        x1="16"
+        y1="17"
+        x2="8"
+        y2="17">
+      </line>
+    </svg>
+  `;
+
+
+      return icon;
+
+    }
+
+
+    /* ══════════════════════════════════════
+       RENDER PENDING FILES
+    ══════════════════════════════════════ */
+
+    function renderPendingChatAttachments() {
+
+      if (
+        !chatPendingAttachments ||
+        !chatPendingList
+      ) {
+
+        return;
+
+      }
+
+
+      chatPendingList.innerHTML =
+        "";
+
+
+      /*
+        Hide entire area when empty.
+      */
+      if (
+        pendingChatAttachments.length ===
+        0
+      ) {
+
+        chatPendingAttachments.hidden =
+          true;
+
+        return;
+
+      }
+
+
+      chatPendingAttachments.hidden =
+        false;
+
+
+      /* ════════════════════════════════════
+         + ADD MORE BUTTON
+      ════════════════════════════════════ */
+
+      const addMoreButton =
+        document.createElement(
+          "button"
+        );
+
+
+      addMoreButton.type =
+        "button";
+
+
+      addMoreButton.className =
+        "chat-pending-add";
+
+
+      addMoreButton.setAttribute(
+        "aria-label",
+        "Add another attachment"
+      );
+
+
+      addMoreButton.setAttribute(
+        "title",
+        "Add another attachment"
+      );
+
+
+      addMoreButton.innerHTML = `
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <rect
+        x="4"
+        y="4"
+        width="14"
+        height="16"
+        rx="2">
+      </rect>
+
+      <line
+        x1="11"
+        y1="8"
+        x2="11"
+        y2="16">
+      </line>
+
+      <line
+        x1="7"
+        y1="12"
+        x2="15"
+        y2="12">
+      </line>
+    </svg>
+  `;
+
+
+      addMoreButton.addEventListener(
+        "click",
+        () => {
+
+          chatAttachmentInput
+            ?.click();
+
+        }
+      );
+
+
+      chatPendingList.appendChild(
+        addMoreButton
+      );
+
+
+      /* ════════════════════════════════════
+         ATTACHMENT CARDS
+      ════════════════════════════════════ */
+
+      for (
+        const item of
+        pendingChatAttachments
+      ) {
+
+        const card =
+          document.createElement(
+            "div"
+          );
+
+
+        card.className =
+          `chat-pending-item ${item.messageType === "image"
+            ? "is-image"
+            : "is-file"
+          }`;
+
+
+        /* ────────────────────────────────
+           IMAGE PREVIEW
+        ──────────────────────────────── */
+
+        if (
+          item.messageType ===
+          "image"
+        ) {
+
+          const image =
+            document.createElement(
+              "img"
+            );
+
+
+          image.className =
+            "chat-pending-image";
+
+
+          image.src =
+            item.previewURL;
+
+
+          image.alt =
+            item.file.name ||
+            "Selected photo";
+
+
+          card.appendChild(
+            image
+          );
+
+        }
+
+
+        /* ────────────────────────────────
+           DOCUMENT / FILE PREVIEW
+        ──────────────────────────────── */
+
+        else {
+
+          const fileInner =
+            document.createElement(
+              "div"
+            );
+
+
+          fileInner.className =
+            "chat-pending-file";
+
+
+          const icon =
+            createPendingFileIcon();
+
+
+          const fileName =
+            document.createElement(
+              "span"
+            );
+
+
+          fileName.className =
+            "chat-pending-file-name";
+
+
+          fileName.textContent =
+            item.file.name ||
+            "Attachment";
+
+
+          fileInner.appendChild(
+            icon
+          );
+
+
+          fileInner.appendChild(
+            fileName
+          );
+
+
+          card.appendChild(
+            fileInner
+          );
+
+        }
+
+
+        /* ────────────────────────────────
+           REMOVE X BUTTON
+        ──────────────────────────────── */
+
+        const removeButton =
+          document.createElement(
+            "button"
+          );
+
+
+        removeButton.type =
+          "button";
+
+
+        removeButton.className =
+          "chat-pending-remove";
+
+
+        removeButton.setAttribute(
+          "aria-label",
+          `Remove ${item.file.name ||
+          "attachment"
+          }`
+        );
+
+
+        removeButton.innerHTML = `
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M18 6L6 18"></path>
+        <path d="M6 6l12 12"></path>
+      </svg>
+    `;
+
+
+        removeButton.addEventListener(
+          "click",
+          () => {
+
+            removePendingChatAttachment(
+              item.id
+            );
+
+          }
+        );
+
+
+        card.appendChild(
+          removeButton
+        );
+
+
+        chatPendingList.appendChild(
+          card
+        );
+
+      }
+
+    }
+
+    /* ══════════════════════════════════════
+   FILE SELECTED
+
+   Do NOT send immediately.
+   Put selected files in preview first.
+══════════════════════════════════════ */
 
     chatAttachmentInput
       ?.addEventListener(
         "change",
-        async event => {
+        event => {
 
-          const file =
+          const files =
             event.target
-              ?.files?.[0];
+              ?.files;
 
 
-          if (!file) {
+          if (
+            !files ||
+            files.length === 0
+          ) {
 
             return;
 
           }
 
 
-          await sendJobSeekerChatAttachment(
-            file
+          stageJobSeekerChatAttachments(
+            files
           );
 
         }
       );
 
+
+    /* ══════════════════════════════════════
+       CHAT DRAG & DROP ATTACHMENTS
+    
+       IMPORTANT:
+       This reuses the EXISTING:
+       sendJobSeekerChatAttachment(file)
+    
+       Firebase upload logic is NOT duplicated.
+    ══════════════════════════════════════ */
+
+    const jobSeekerChatArea =
+      document.querySelector(
+        "#page-messages .chat-area"
+      );
+
+
+    const jobSeekerChatDropOverlay =
+      document.getElementById(
+        "chatDropOverlay"
+      );
+
+
+    let jobSeekerChatDragDepth =
+      0;
+
+
+    /* ══════════════════════════════════════
+       CHECK WHETHER USER IS DRAGGING FILES
+    ══════════════════════════════════════ */
+
+    function isJobSeekerFileDrag(
+      event
+    ) {
+
+      const types =
+        Array.from(
+          event?.dataTransfer?.types || []
+        );
+
+
+      return types.includes(
+        "Files"
+      );
+
+    }
+
+
+    /* ══════════════════════════════════════
+       SHOW DROP OVERLAY
+    ══════════════════════════════════════ */
+
+    function showJobSeekerDropOverlay() {
+
+      if (
+        !jobSeekerChatArea ||
+        !jobSeekerChatDropOverlay
+      ) {
+
+        return;
+
+      }
+
+
+      jobSeekerChatArea.classList.add(
+        "chat-drag-active"
+      );
+
+
+      jobSeekerChatDropOverlay.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+    }
+
+
+    /* ══════════════════════════════════════
+       HIDE DROP OVERLAY
+    ══════════════════════════════════════ */
+
+    function hideJobSeekerDropOverlay() {
+
+      if (
+        !jobSeekerChatArea ||
+        !jobSeekerChatDropOverlay
+      ) {
+
+        return;
+
+      }
+
+
+      jobSeekerChatArea.classList.remove(
+        "chat-drag-active"
+      );
+
+
+      jobSeekerChatDropOverlay.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      jobSeekerChatDragDepth =
+        0;
+
+    }
+
+
+    /* ══════════════════════════════════════
+       FILE ENTERS CHAT AREA
+    ══════════════════════════════════════ */
+
+    jobSeekerChatArea
+      ?.addEventListener(
+        "dragenter",
+        event => {
+
+          if (
+            !isJobSeekerFileDrag(
+              event
+            )
+          ) {
+
+            return;
+
+          }
+
+
+          event.preventDefault();
+          event.stopPropagation();
+
+
+          jobSeekerChatDragDepth +=
+            1;
+
+
+          showJobSeekerDropOverlay();
+
+        }
+      );
+
+
+    /* ══════════════════════════════════════
+       FILE MOVES OVER CHAT
+    ══════════════════════════════════════ */
+
+    jobSeekerChatArea
+      ?.addEventListener(
+        "dragover",
+        event => {
+
+          if (
+            !isJobSeekerFileDrag(
+              event
+            )
+          ) {
+
+            return;
+
+          }
+
+
+          /*
+            CRITICAL.
+    
+            Without this, Chrome may try
+            to open the dropped file.
+          */
+          event.preventDefault();
+          event.stopPropagation();
+
+
+          if (
+            event.dataTransfer
+          ) {
+
+            event.dataTransfer.dropEffect =
+              "copy";
+
+          }
+
+
+          showJobSeekerDropOverlay();
+
+        }
+      );
+
+
+    /* ══════════════════════════════════════
+       FILE LEAVES CHAT AREA
+    ══════════════════════════════════════ */
+
+    jobSeekerChatArea
+      ?.addEventListener(
+        "dragleave",
+        event => {
+
+          if (
+            !isJobSeekerFileDrag(
+              event
+            )
+          ) {
+
+            return;
+
+          }
+
+
+          event.preventDefault();
+          event.stopPropagation();
+
+
+          if (
+            jobSeekerChatDragDepth > 0
+          ) {
+
+            jobSeekerChatDragDepth -=
+              1;
+
+          }
+
+
+          /*
+            Prevent flickering when moving
+            across elements inside the chat.
+          */
+          if (
+            jobSeekerChatDragDepth === 0
+          ) {
+
+            hideJobSeekerDropOverlay();
+
+          }
+
+        }
+      );
+
+
+    /* ══════════════════════════════════════
+       FILE DROPPED INTO CHAT
+    ══════════════════════════════════════ */
+
+    jobSeekerChatArea
+      ?.addEventListener(
+        "drop",
+        event => {
+
+          if (
+            !isJobSeekerFileDrag(
+              event
+            )
+          ) {
+
+            return;
+
+          }
+
+
+          event.preventDefault();
+          event.stopPropagation();
+
+
+          hideJobSeekerDropOverlay();
+
+
+          /* Must be logged in */
+          if (
+            !auth.currentUser
+          ) {
+
+            alert(
+              "You must be logged in first."
+            );
+
+            return;
+
+          }
+
+
+          /* Must have a conversation open */
+          if (
+            !activeConversationId
+          ) {
+
+            alert(
+              "Please select a conversation first."
+            );
+
+            return;
+
+          }
+
+
+          const droppedFiles =
+            Array.from(
+              event.dataTransfer?.files || []
+            );
+
+
+          if (
+            droppedFiles.length === 0
+          ) {
+
+            return;
+
+          }
+
+          stageJobSeekerChatAttachments(
+            droppedFiles
+          );
+
+        }
+      );
+
+
+    /* ══════════════════════════════════════
+       CLEANUP IF DRAG IS CANCELLED
+    ══════════════════════════════════════ */
+
+    document.addEventListener(
+      "dragend",
+      () => {
+
+        hideJobSeekerDropOverlay();
+
+      }
+    );
+
+    /* ══════════════════════════════════════
+   SEND MESSAGE + PENDING ATTACHMENTS
+
+   Existing text-only behavior is kept.
+══════════════════════════════════════ */
+
+    window.sendMessageWithAttachments =
+      async function () {
+
+        const input =
+          document.getElementById(
+            "chat-input"
+          );
+
+
+        const text =
+          String(
+            input?.value || ""
+          ).trim();
+
+
+        /*
+          Nothing to send.
+        */
+        if (
+          !text &&
+          pendingChatAttachments.length ===
+          0
+        ) {
+
+          return;
+
+        }
+
+
+        /*
+          IMPORTANT:
+    
+          If there are NO staged attachments,
+          use your original sendMessage()
+          exactly like before.
+        */
+        if (
+          pendingChatAttachments.length ===
+          0
+        ) {
+
+          if (
+            typeof window.sendMessage ===
+            "function"
+          ) {
+
+            window.sendMessage();
+
+            return;
+
+          }
+
+
+          /*
+            Safety fallback only.
+        */
+          if (
+            text &&
+            typeof window.sendRealtimeMessage ===
+            "function"
+          ) {
+
+            await window.sendRealtimeMessage(
+              text
+            );
+
+
+            if (
+              input
+            ) {
+
+              input.value =
+                "";
+
+            }
+
+          }
+
+
+          return;
+
+        }
+
+
+        if (
+          !auth.currentUser
+        ) {
+
+          alert(
+            "You must be logged in first."
+          );
+
+          return;
+
+        }
+
+
+        if (
+          !activeConversationId
+        ) {
+
+          alert(
+            "Please select a conversation first."
+          );
+
+          return;
+
+        }
+
+
+        /*
+          Copy the pending list so UI changes
+          do not affect files currently sending.
+        */
+        const attachmentsToSend =
+          [
+            ...pendingChatAttachments
+          ];
+
+
+        /*
+          Disable Send during upload.
+        */
+        if (
+          chatSendButton
+        ) {
+
+          chatSendButton.disabled =
+            true;
+
+
+          chatSendButton.classList.add(
+            "sending-attachments"
+          );
+
+        }
+
+
+        try {
+
+          /*
+            If the user also typed text,
+            send their normal text message.
+          */
+          if (
+            text &&
+            typeof window.sendRealtimeMessage ===
+            "function"
+          ) {
+
+            await window.sendRealtimeMessage(
+              text
+            );
+
+
+            if (
+              input
+            ) {
+
+              input.value =
+                "";
+
+            }
+
+          }
+
+
+          /*
+            NOW upload/send the staged files.
+    
+            This is the first time your existing
+            Firebase attachment function runs.
+          */
+          for (
+            const item of attachmentsToSend
+          ) {
+
+            await sendJobSeekerChatAttachment(
+              item.file
+            );
+
+          }
+
+
+          /*
+            Only remove previews after the
+            Send action has completed.
+          */
+          clearPendingChatAttachments();
+
+        }
+
+        catch (error) {
+
+          console.error(
+            "SEND PENDING ATTACHMENTS ERROR:",
+            error
+          );
+
+
+          alert(
+            "Unable to send attachment: " +
+            (
+              error.message ||
+              error
+            )
+          );
+
+        }
+
+        finally {
+
+          if (
+            chatSendButton
+          ) {
+
+            chatSendButton.disabled =
+              false;
+
+
+            chatSendButton.classList.remove(
+              "sending-attachments"
+            );
+
+          }
+
+        }
+
+      };
+
+
+    /* ══════════════════════════════════════
+       ENTER KEY SUPPORT
+    ══════════════════════════════════════ */
+
+    window.sendOnEnterWithAttachments =
+      function (event) {
+
+        /*
+          If an attachment is staged,
+          Enter sends it using the new system.
+        */
+        if (
+          event.key === "Enter" &&
+          pendingChatAttachments.length > 0
+        ) {
+
+          event.preventDefault();
+
+
+          window.sendMessageWithAttachments();
+
+          return;
+
+        }
+
+
+        /*
+          No attachment staged?
+    
+          Keep the ORIGINAL Enter logic.
+        */
+        if (
+          typeof window.sendOnEnter ===
+          "function"
+        ) {
+
+          window.sendOnEnter(
+            event
+          );
+
+        }
+
+      };
+
+
+    /* KEEP YOUR EXISTING TEXT MESSAGE CODE */
     window.sendRealtimeMessage = async function (text) {
       try {
         if (!auth.currentUser) {
