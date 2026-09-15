@@ -12985,15 +12985,6 @@ body.dark-mode .worker-public-back-btn:hover {
 }
 
 
-/* ───────────────────────────────────
-   METADATA SPACING
-
-   LOCATION
-   DURATION
-   PAY
-   JOB TYPE
-   APPLICANTS
-─────────────────────────────────── */
 
 .job-card.dynamic-post .job-meta {
   gap:
@@ -13328,17 +13319,6 @@ body.dark-mode .job-card.dynamic-post .job-card-description-toggle:hover {
       0.74rem !important;
   }
 
-
-  /* ══════════════════════════════════════
-     JOB INFORMATION
-
-     CRITICAL FIX:
-     Old mobile CSS sets:
-     .meta-item { min-width:100%; }
-
-     We explicitly cancel that here.
-  ═══════════════════════════════════════ */
-
   .job-card.dynamic-post .job-meta {
     width:
       100% !important;
@@ -13346,18 +13326,18 @@ body.dark-mode .job-card.dynamic-post .job-card-description-toggle:hover {
     display:
       grid !important;
 
-    /*
-      Keep all 5 items on one row,
-      like your Job Seeker card.
-    */
     grid-template-columns:
-      1fr 1fr 0.72fr 1.15fr 1.2fr !important;
+      repeat(3,
+        minmax(0, 1fr)) !important;
 
     align-items:
       start !important;
 
-    gap:
-      8px !important;
+    column-gap:
+      12px !important;
+
+    row-gap:
+      18px !important;
 
     margin:
       0 0 20px !important;
@@ -13706,6 +13686,251 @@ body.dark-mode .job-card.dynamic-post .job-card-description-toggle:hover {
 
     margin-top:
       18px !important;
+  }
+
+}
+
+/* ══════════════════════════════════════
+   SMALL MOBILE JOB META
+══════════════════════════════════════ */
+
+@media (max-width: 430px) {
+
+  .job-card.dynamic-post .job-meta {
+
+    /*
+      Smaller phones:
+      2 items per row.
+    */
+    grid-template-columns:
+      repeat(2,
+        minmax(0, 1fr)) !important;
+
+    column-gap:
+      14px !important;
+
+    row-gap:
+      16px !important;
+  }
+
+}
+
+/* ══════════════════════════════════════
+   FINAL MOBILE JOB META LAYOUT
+
+   ROW 1:
+   LOCATION | DURATION | PAY | JOB TYPE
+
+   ROW 2:
+   APPLICANTS
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  .job-card.dynamic-post .job-meta {
+
+    width:
+      100% !important;
+
+    display:
+      grid !important;
+
+    /*
+      4 columns on first row.
+
+      Job Type receives slightly
+      more room because PART-TIME
+      is the longest value.
+    */
+    grid-template-columns:
+      1.05fr 1.15fr 0.72fr 1.35fr !important;
+
+    column-gap:
+      8px !important;
+
+    row-gap:
+      18px !important;
+
+    align-items:
+      start !important;
+
+    margin:
+      0 0 20px !important;
+  }
+
+
+  /* Every information block */
+  .job-card.dynamic-post .meta-item {
+
+    width:
+      auto !important;
+
+    min-width:
+      0 !important;
+
+    max-width:
+      none !important;
+
+    margin:
+      0 !important;
+
+    display:
+      flex !important;
+
+    flex-direction:
+      column !important;
+
+    align-items:
+      flex-start !important;
+
+    gap:
+      5px !important;
+  }
+
+
+  /*
+    APPLICANTS = fifth item.
+
+    Force it onto its own second row,
+    beginning from the left.
+  */
+  .job-card.dynamic-post .meta-item:nth-child(5) {
+
+    grid-column:
+      1 / -1 !important;
+
+    grid-row:
+      2 !important;
+  }
+
+
+  /* Labels */
+  .job-card.dynamic-post .meta-label {
+
+    font-size:
+      0.62rem !important;
+
+    font-weight:
+      600 !important;
+
+    line-height:
+      1.2 !important;
+
+    letter-spacing:
+      0.02em !important;
+
+    white-space:
+      nowrap !important;
+  }
+
+
+  /* Values */
+  .job-card.dynamic-post .meta-val-row {
+
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    min-width:
+      0 !important;
+
+    gap:
+      4px !important;
+
+    font-size:
+      0.76rem !important;
+
+    font-weight:
+      700 !important;
+
+    line-height:
+      1.25 !important;
+
+    white-space:
+      nowrap !important;
+  }
+
+
+  /* Icons */
+  .job-card.dynamic-post .meta-val-row svg {
+
+    width:
+      13px !important;
+
+    height:
+      13px !important;
+
+    flex:
+      0 0 13px !important;
+  }
+
+}
+
+/* ══════════════════════════════════════
+   MOBILE JOB INFO — FINAL LAYOUT
+
+   ROW 1:
+   LOCATION | DURATION | PAY
+
+   ROW 2:
+   JOB TYPE | APPLICANTS
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  .job-card.dynamic-post .job-meta {
+    display: grid !important;
+
+    width: 100% !important;
+
+    grid-template-columns:
+      minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 0.7fr) !important;
+
+    column-gap: 10px !important;
+    row-gap: 18px !important;
+
+    align-items: start !important;
+  }
+
+
+  /* LOCATION */
+  .job-card.dynamic-post .meta-item:nth-child(1) {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+
+  /* DURATION */
+  .job-card.dynamic-post .meta-item:nth-child(2) {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+
+
+  /* PAY */
+  .job-card.dynamic-post .meta-item:nth-child(3) {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+  }
+
+
+  /* JOB TYPE */
+  .job-card.dynamic-post .meta-item:nth-child(4) {
+    grid-column: 1 / 2 !important;
+    grid-row: 2 !important;
+
+    width: auto !important;
+  }
+
+
+  /* APPLICANTS — BESIDE JOB TYPE */
+  .job-card.dynamic-post .meta-item:nth-child(5) {
+    grid-column: 2 / 4 !important;
+    grid-row: 2 !important;
+
+    width: auto !important;
   }
 
 }
