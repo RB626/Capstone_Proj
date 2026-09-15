@@ -5199,6 +5199,299 @@
 
     }
 
+    /* ══════════════════════════════════════
+   CHAT FILE DOWNLOAD
+
+   LAPTOP:
+   Opens native Save As dialog.
+
+   FALLBACK:
+   Downloads directly without opening
+   another browser tab.
+══════════════════════════════════════ */
+
+    async function saveChatFileToDevice(
+      fileURL,
+      attachment
+    ) {
+
+      const safeURL =
+        getSafeChatAttachmentURL(
+          fileURL
+        );
+
+
+      if (!safeURL) {
+
+        throw new Error(
+          "Invalid attachment URL."
+        );
+
+      }
+
+
+      const originalName =
+        String(
+          attachment?.name ||
+          "attachment"
+        );
+
+
+      /*
+        Remove Windows-invalid filename
+        characters while preserving the
+        extension.
+      */
+      const safeFileName =
+        originalName
+          .replace(
+            /[<>:"/\\|?*\x00-\x1F]/g,
+            "_"
+          )
+          .trim() ||
+        "attachment";
+
+
+      const mimeType =
+        String(
+          attachment?.mimeType ||
+          "application/octet-stream"
+        );
+
+
+      const fileExtension =
+
+        safeFileName.includes(".")
+
+          ? safeFileName
+            .split(".")
+            .pop()
+            .toLowerCase()
+
+          : "";
+
+
+      /*
+        Use the Save As picker only
+        on laptop / desktop.
+    
+        Chrome and Edge support this
+        on secure pages / localhost.
+      */
+      const isLaptop =
+        window.matchMedia(
+          "(min-width: 769px)"
+        ).matches;
+
+
+      let fileHandle =
+        null;
+
+
+      if (
+        isLaptop &&
+        window.isSecureContext &&
+        "showSaveFilePicker" in window
+      ) {
+
+        const pickerOptions = {
+
+          suggestedName:
+            safeFileName
+
+        };
+
+
+        /*
+          Tell Windows what file type
+          we are saving.
+    
+          Example:
+          application/pdf → .pdf
+        */
+        if (
+          fileExtension &&
+          mimeType
+        ) {
+
+          pickerOptions.types = [
+            {
+              description:
+                "Chat attachment",
+
+              accept: {
+                [mimeType]:
+                  [
+                    `.${fileExtension}`
+                  ]
+              }
+            }
+          ];
+
+        }
+
+
+        try {
+
+          /*
+            IMPORTANT:
+            Open the Save As dialog
+            BEFORE downloading.
+    
+            This must happen directly
+            from the user's click.
+          */
+          fileHandle =
+            await window.showSaveFilePicker(
+              pickerOptions
+            );
+
+        }
+
+        catch (error) {
+
+          /*
+            User clicked Cancel.
+            Do absolutely nothing.
+          */
+          if (
+            error?.name ===
+            "AbortError"
+          ) {
+
+            return;
+
+          }
+
+
+          /*
+            If the Save As API isn't
+            available for some reason,
+            continue to normal download.
+          */
+          console.warn(
+            "Save As picker unavailable:",
+            error
+          );
+
+          fileHandle =
+            null;
+
+        }
+
+      }
+
+
+      /*
+        Download the Firebase file
+        WITHOUT navigating the browser.
+      */
+      const response =
+        await fetch(
+          safeURL
+        );
+
+
+      if (
+        !response.ok
+      ) {
+
+        throw new Error(
+          `Unable to download file (${response.status}).`
+        );
+
+      }
+
+
+      const blob =
+        await response.blob();
+
+
+      /* ════════════════════════════════════
+         LAPTOP SAVE AS
+      ════════════════════════════════════ */
+
+      if (
+        fileHandle
+      ) {
+
+        const writable =
+          await fileHandle
+            .createWritable();
+
+
+        await writable.write(
+          blob
+        );
+
+
+        await writable.close();
+
+
+        return;
+
+      }
+
+
+      /* ════════════════════════════════════
+         FALLBACK DOWNLOAD
+    
+         Used for browsers that don't have
+         showSaveFilePicker().
+      ════════════════════════════════════ */
+
+      const objectURL =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      const downloadLink =
+        document.createElement(
+          "a"
+        );
+
+
+      downloadLink.href =
+        objectURL;
+
+
+      downloadLink.download =
+        safeFileName;
+
+
+      /*
+        IMPORTANT:
+        NO target="_blank".
+      */
+      downloadLink.style.display =
+        "none";
+
+
+      document.body.appendChild(
+        downloadLink
+      );
+
+
+      downloadLink.click();
+
+
+      downloadLink.remove();
+
+
+      setTimeout(
+        () => {
+
+          URL.revokeObjectURL(
+            objectURL
+          );
+
+        },
+        1000
+      );
+
+    }
+
     function renderJobSeekerChatMessage(
       bubble,
       data
@@ -5510,16 +5803,106 @@
           "chat-file-card";
 
 
+        /*
+          Keep an href for accessibility,
+          but JavaScript intercepts the click
+          so it does NOT open another tab.
+        */
         fileLink.href =
           fileURL;
 
 
-        fileLink.target =
-          "_blank";
-
-
         fileLink.rel =
           "noopener noreferrer";
+
+
+        /*
+          Tell the browser the desired
+          download filename too.
+        */
+        fileLink.download =
+          attachment.name ||
+          "Attachment";
+
+
+        fileLink.addEventListener(
+          "click",
+          async event => {
+
+            /*
+              CRITICAL:
+              Stop the <a> from navigating
+              to Firebase in another browser tab.
+            */
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            /*
+              Prevent repeated clicks while
+              the download is being prepared.
+            */
+            if (
+              fileLink.dataset.downloading ===
+              "true"
+            ) {
+
+              return;
+
+            }
+
+
+            fileLink.dataset.downloading =
+              "true";
+
+
+            fileLink.classList.add(
+              "downloading"
+            );
+
+
+            try {
+
+              await saveChatFileToDevice(
+                fileURL,
+                attachment
+              );
+
+            }
+
+            catch (error) {
+
+              console.error(
+                "CHAT FILE DOWNLOAD ERROR:",
+                error
+              );
+
+
+              alert(
+                "Unable to download file: " +
+                (
+                  error.message ||
+                  error
+                )
+              );
+
+            }
+
+            finally {
+
+              fileLink.dataset.downloading =
+                "false";
+
+
+              fileLink.classList.remove(
+                "downloading"
+              );
+
+            }
+
+          }
+        );
 
 
         const fileIcon =
@@ -5601,8 +5984,8 @@
 
         fileMeta.textContent =
           fileSize
-            ? `${fileSize} • Open file`
-            : "Open file";
+            ? `${fileSize} • Save file`
+            : "Save file";
 
 
         fileInfo.appendChild(

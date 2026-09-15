@@ -10708,3 +10708,15 @@ body.chat-photo-viewer-open {
   }
 
 }
+
+/* ══════════════════════════════════════
+   CHAT FILE DOWNLOADING
+══════════════════════════════════════ */
+
+.chat-file-card.downloading {
+  opacity: 0.65;
+
+  pointer-events: none;
+
+  cursor: wait;
+}
