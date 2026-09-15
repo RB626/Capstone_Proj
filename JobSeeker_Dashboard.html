@@ -675,12 +675,11 @@
             </div><!-- /chat-messages -->
 
             <!-- Input area -->
-            <!-- Input area -->
             <div class="chat-input-area">
 
-              <!-- PHOTO / IMAGE BUTTON — UI ONLY FOR NOW -->
-              <button type="button" class="chat-image-btn" id="chatImageBtn" aria-label="Attach photo"
-                title="Attach photo">
+              <!-- PHOTO / FILE ATTACHMENT -->
+              <button type="button" class="chat-image-btn" id="chatImageBtn" aria-label="Attach photo or file"
+                title="Attach photo or file">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                   stroke-linejoin="round" aria-hidden="true">
                   <rect x="3" y="3" width="18" height="18" rx="3"></rect>
@@ -688,10 +687,26 @@
                   <circle cx="8.5" cy="8.5" r="1.5"></circle>
 
                   <path d="M21 15l-5-5L5 21"></path>
-
                   <path d="M14 12l-3-3-8 8"></path>
                 </svg>
               </button>
+
+
+              <!-- HIDDEN DEVICE FILE PICKER -->
+              <input type="file" id="chatAttachmentInput" class="chat-attachment-input" accept="
+    image/*,
+    .pdf,
+    .doc,
+    .docx,
+    .xls,
+    .xlsx,
+    .ppt,
+    .pptx,
+    .txt,
+    .csv,
+    .zip,
+    .rar
+  " />
 
 
               <!-- EXISTING MESSAGE INPUT -->
@@ -4191,12 +4206,678 @@
       if (window.innerWidth < 900 && shell) {
         shell.classList.add('chat-open');
       }
-      /*
-  Final safety scroll after profile/
-  conversation details finish loading.
-*/
+
       scrollChatToLatest();
     }
+
+
+    /* ══════════════════════════════════════
+       JOB SEEKER CHAT ATTACHMENTS
+    
+       Supports:
+       - Images
+       - PDF
+       - Word
+       - Excel
+       - PowerPoint
+       - TXT
+       - CSV
+       - ZIP / RAR
+    ══════════════════════════════════════ */
+
+    const chatImageButton =
+      document.getElementById(
+        "chatImageBtn"
+      );
+
+    const chatAttachmentInput =
+      document.getElementById(
+        "chatAttachmentInput"
+      );
+
+
+    /*
+      15 MB maximum per attachment.
+    */
+    const CHAT_ATTACHMENT_MAX_SIZE =
+      15 * 1024 * 1024;
+
+
+    /*
+      File extensions that can be sent
+      as regular document/file messages.
+    */
+    const CHAT_ALLOWED_FILE_EXTENSIONS =
+      new Set([
+        "pdf",
+        "doc",
+        "docx",
+        "xls",
+        "xlsx",
+        "ppt",
+        "pptx",
+        "txt",
+        "csv",
+        "zip",
+        "rar"
+      ]);
+
+
+    /* ══════════════════════════════════════
+       GET FILE EXTENSION
+    ══════════════════════════════════════ */
+
+    function getChatFileExtension(
+      fileName
+    ) {
+
+      const parts =
+        String(fileName || "")
+          .toLowerCase()
+          .split(".");
+
+      return parts.length > 1
+        ? parts.pop()
+        : "";
+
+    }
+
+
+    /* ══════════════════════════════════════
+       SAFE STORAGE FILE NAME
+    ══════════════════════════════════════ */
+
+    function makeSafeChatFileName(
+      fileName
+    ) {
+
+      const original =
+        String(
+          fileName ||
+          "attachment"
+        );
+
+
+      /*
+        Remove characters that could make
+        Firebase Storage paths confusing.
+      */
+      const cleaned =
+        original
+          .replace(
+            /[^a-zA-Z0-9._-]/g,
+            "_"
+          )
+          .replace(
+            /_+/g,
+            "_"
+          );
+
+
+      return cleaned ||
+        "attachment";
+
+    }
+
+
+    /* ══════════════════════════════════════
+       FORMAT FILE SIZE
+    ══════════════════════════════════════ */
+
+    function formatChatFileSize(
+      bytes
+    ) {
+
+      const size =
+        Number(bytes || 0);
+
+
+      if (
+        !Number.isFinite(size) ||
+        size <= 0
+      ) {
+
+        return "";
+
+      }
+
+
+      if (
+        size < 1024
+      ) {
+
+        return `${size} B`;
+
+      }
+
+
+      if (
+        size < 1024 * 1024
+      ) {
+
+        return `${(
+          size / 1024
+        ).toFixed(1)} KB`;
+
+      }
+
+
+      return `${(
+        size /
+        (1024 * 1024)
+      ).toFixed(1)} MB`;
+
+    }
+
+
+    /* ══════════════════════════════════════
+       VALIDATE ATTACHMENT
+    ══════════════════════════════════════ */
+
+    function validateChatAttachment(
+      file
+    ) {
+
+      if (!file) {
+
+        return {
+          valid: false,
+          message:
+            "No file was selected."
+        };
+
+      }
+
+
+      if (
+        file.size >
+        CHAT_ATTACHMENT_MAX_SIZE
+      ) {
+
+        return {
+          valid: false,
+          message:
+            "The file is too large. Maximum size is 15 MB."
+        };
+
+      }
+
+
+      const isImage =
+        String(
+          file.type || ""
+        ).startsWith(
+          "image/"
+        );
+
+
+      if (isImage) {
+
+        return {
+          valid: true,
+          messageType: "image"
+        };
+
+      }
+
+
+      const extension =
+        getChatFileExtension(
+          file.name
+        );
+
+
+      if (
+        !CHAT_ALLOWED_FILE_EXTENSIONS
+          .has(extension)
+      ) {
+
+        return {
+          valid: false,
+          message:
+            "This file type is not supported."
+        };
+
+      }
+
+
+      return {
+        valid: true,
+        messageType: "file"
+      };
+
+    }
+
+
+    /* ══════════════════════════════════════
+       SEND ATTACHMENT
+    ══════════════════════════════════════ */
+
+    async function sendJobSeekerChatAttachment(
+      file
+    ) {
+
+      if (
+        !auth.currentUser
+      ) {
+
+        alert(
+          "You must be logged in to send an attachment."
+        );
+
+        return;
+
+      }
+
+
+      if (
+        !activeConversationId
+      ) {
+
+        alert(
+          "Please select a conversation first."
+        );
+
+        return;
+
+      }
+
+
+      const validation =
+        validateChatAttachment(
+          file
+        );
+
+
+      if (
+        !validation.valid
+      ) {
+
+        alert(
+          validation.message
+        );
+
+        return;
+
+      }
+
+
+      const messageType =
+        validation.messageType;
+
+
+      const senderId =
+        auth.currentUser.uid;
+
+
+      const safeFileName =
+        makeSafeChatFileName(
+          file.name
+        );
+
+
+      /*
+        Add timestamp + random suffix so two
+        files with the same name never collide.
+      */
+      const uniqueFileName =
+        `${Date.now()}_${Math.random()
+          .toString(36)
+          .slice(2, 9)}_${safeFileName}`;
+
+
+      /*
+        IMPORTANT:
+    
+        Keep chat uploads inside the existing
+        user's Firebase Storage directory.
+    
+        Your project already uploads profile,
+        cover and portfolio content under
+        users/{uid}/...
+      */
+      const filePath =
+        `users/${senderId}/chatAttachments/${activeConversationId}/${uniqueFileName}`;
+
+
+      const storageReference =
+        ref(
+          storage,
+          filePath
+        );
+
+
+      /*
+        Used to delete the uploaded object
+        if creating the Firestore message fails.
+      */
+      let uploadedSuccessfully =
+        false;
+
+
+      try {
+
+        /* ────────────────────────────────
+           SHOW UPLOADING STATE
+        ──────────────────────────────── */
+
+        if (
+          chatImageButton
+        ) {
+
+          chatImageButton.disabled =
+            true;
+
+          chatImageButton.classList.add(
+            "uploading"
+          );
+
+          chatImageButton.setAttribute(
+            "aria-label",
+            "Uploading attachment"
+          );
+
+          chatImageButton.setAttribute(
+            "title",
+            "Uploading..."
+          );
+
+        }
+
+
+        /* ────────────────────────────────
+           UPLOAD TO FIREBASE STORAGE
+        ──────────────────────────────── */
+
+        await uploadBytes(
+          storageReference,
+          file,
+          {
+            contentType:
+              file.type ||
+              "application/octet-stream"
+          }
+        );
+
+
+        uploadedSuccessfully =
+          true;
+
+
+        const downloadURL =
+          await getDownloadURL(
+            storageReference
+          );
+
+
+        /* ────────────────────────────────
+           CREATE FIRESTORE MESSAGE
+        ──────────────────────────────── */
+
+        await addDoc(
+          collection(
+            db,
+            "conversations",
+            activeConversationId,
+            "messages"
+          ),
+          {
+
+            senderId:
+              senderId,
+
+            /*
+              Keep text for backward
+              compatibility with your existing
+              message structure.
+            */
+            text:
+              "",
+
+            messageType:
+              messageType,
+
+            attachment: {
+
+              url:
+                downloadURL,
+
+              name:
+                file.name ||
+                "Attachment",
+
+              mimeType:
+                file.type ||
+                "application/octet-stream",
+
+              size:
+                Number(
+                  file.size || 0
+                ),
+
+              storagePath:
+                filePath
+
+            },
+
+            createdAt:
+              serverTimestamp()
+
+          }
+        );
+
+
+        /* ────────────────────────────────
+           UPDATE CONVERSATION PREVIEW
+        ──────────────────────────────── */
+
+        const lastMessageText =
+          messageType === "image"
+            ? "📷 Photo"
+            : `📎 ${file.name ||
+            "File"}`;
+
+
+        await setDoc(
+          doc(
+            db,
+            "conversations",
+            activeConversationId
+          ),
+          {
+
+            lastMessage:
+              lastMessageText,
+
+            updatedAt:
+              serverTimestamp()
+
+          },
+          {
+            merge: true
+          }
+        );
+
+
+        /*
+          Keep your existing realtime sidebar
+          behavior.
+        */
+        updateConversationSidebarPreview(
+          activeConversationId,
+          lastMessageText
+        );
+
+
+        /*
+          Existing realtime message listener
+          will display the attachment.
+        */
+        scrollChatToLatest();
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "CHAT ATTACHMENT UPLOAD ERROR:",
+          error
+        );
+
+
+        /*
+          If Storage upload succeeded but
+          Firestore failed, remove the orphaned
+          Storage file.
+        */
+        if (
+          uploadedSuccessfully
+        ) {
+
+          try {
+
+            await deleteObject(
+              storageReference
+            );
+
+          }
+
+          catch (cleanupError) {
+
+            console.warn(
+              "Failed to clean up chat attachment:",
+              cleanupError
+            );
+
+          }
+
+        }
+
+
+        alert(
+          "Failed to send attachment: " +
+          (
+            error.message ||
+            error
+          )
+        );
+
+      }
+
+      finally {
+
+        if (
+          chatImageButton
+        ) {
+
+          chatImageButton.disabled =
+            false;
+
+          chatImageButton.classList.remove(
+            "uploading"
+          );
+
+          chatImageButton.setAttribute(
+            "aria-label",
+            "Attach photo or file"
+          );
+
+          chatImageButton.setAttribute(
+            "title",
+            "Attach photo or file"
+          );
+
+        }
+
+
+        /*
+          Important:
+          lets the user select the same file
+          again afterward.
+        */
+        if (
+          chatAttachmentInput
+        ) {
+
+          chatAttachmentInput.value =
+            "";
+
+        }
+
+      }
+
+    }
+
+
+    /* ══════════════════════════════════════
+       ATTACH BUTTON CLICK
+    ══════════════════════════════════════ */
+
+    chatImageButton
+      ?.addEventListener(
+        "click",
+        () => {
+
+          if (
+            !auth.currentUser
+          ) {
+
+            alert(
+              "You must be logged in first."
+            );
+
+            return;
+
+          }
+
+
+          if (
+            !activeConversationId
+          ) {
+
+            alert(
+              "Please select a conversation first."
+            );
+
+            return;
+
+          }
+
+
+          chatAttachmentInput
+            ?.click();
+
+        }
+      );
+
+
+    /* ══════════════════════════════════════
+       FILE SELECTED
+    ══════════════════════════════════════ */
+
+    chatAttachmentInput
+      ?.addEventListener(
+        "change",
+        async event => {
+
+          const file =
+            event.target
+              ?.files?.[0];
+
+
+          if (!file) {
+
+            return;
+
+          }
+
+
+          await sendJobSeekerChatAttachment(
+            file
+          );
+
+        }
+      );
 
     window.sendRealtimeMessage = async function (text) {
       try {
@@ -4239,19 +4920,737 @@
       }
     };
 
+    /* ══════════════════════════════════════
+   RENDER CHAT MESSAGE CONTENT
+══════════════════════════════════════ */
+
+    function getSafeChatAttachmentURL(
+      value
+    ) {
+
+      try {
+
+        const parsed =
+          new URL(
+            String(value || "")
+          );
+
+
+        if (
+          parsed.protocol !== "https:" &&
+          parsed.protocol !== "http:"
+        ) {
+
+          return "";
+
+        }
+
+
+        return parsed.href;
+
+      }
+
+      catch {
+
+        return "";
+
+      }
+
+    }
+
+    /* ══════════════════════════════════════
+   CHAT PHOTO VIEWER
+   Messenger-style image preview
+══════════════════════════════════════ */
+
+    function ensureJobSeekerChatPhotoViewer() {
+
+      let viewer =
+        document.getElementById(
+          "jobSeekerChatPhotoViewer"
+        );
+
+
+      if (viewer) {
+        return viewer;
+      }
+
+
+      viewer =
+        document.createElement(
+          "div"
+        );
+
+
+      viewer.id =
+        "jobSeekerChatPhotoViewer";
+
+
+      viewer.className =
+        "chat-photo-viewer";
+
+
+      viewer.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      viewer.innerHTML = `
+
+    <button
+      type="button"
+      class="chat-photo-viewer-close"
+      aria-label="Close photo"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M18 6L6 18"></path>
+        <path d="M6 6l12 12"></path>
+      </svg>
+    </button>
+
+
+    <div class="chat-photo-viewer-content">
+
+      <img
+        class="chat-photo-viewer-image"
+        id="jobSeekerChatPhotoViewerImage"
+        src=""
+        alt="Chat photo"
+      />
+
+    </div>
+
+  `;
+
+
+      document.body.appendChild(
+        viewer
+      );
+
+
+      const closeButton =
+        viewer.querySelector(
+          ".chat-photo-viewer-close"
+        );
+
+
+      closeButton?.addEventListener(
+        "click",
+        () => {
+          closeJobSeekerChatPhotoViewer();
+        }
+      );
+
+
+      viewer.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target === viewer
+          ) {
+
+            closeJobSeekerChatPhotoViewer();
+
+          }
+
+        }
+      );
+
+
+      document.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key === "Escape" &&
+            viewer.classList.contains(
+              "open"
+            )
+          ) {
+
+            closeJobSeekerChatPhotoViewer();
+
+          }
+
+        }
+      );
+
+
+      return viewer;
+
+    }
+
+
+    function openJobSeekerChatPhotoViewer(
+      imageURL,
+      imageName = "Chat photo"
+    ) {
+
+      const viewer =
+        ensureJobSeekerChatPhotoViewer();
+
+
+      const viewerImage =
+        document.getElementById(
+          "jobSeekerChatPhotoViewerImage"
+        );
+
+
+      if (
+        !viewer ||
+        !viewerImage
+      ) {
+        return;
+      }
+
+
+      viewerImage.src =
+        imageURL;
+
+
+      viewerImage.alt =
+        imageName;
+
+
+      viewer.classList.add(
+        "open"
+      );
+
+
+      viewer.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+
+      document.body.classList.add(
+        "chat-photo-viewer-open"
+      );
+
+    }
+
+
+    function closeJobSeekerChatPhotoViewer() {
+
+      const viewer =
+        document.getElementById(
+          "jobSeekerChatPhotoViewer"
+        );
+
+
+      const viewerImage =
+        document.getElementById(
+          "jobSeekerChatPhotoViewerImage"
+        );
+
+
+      if (!viewer) {
+        return;
+      }
+
+
+      viewer.classList.remove(
+        "open"
+      );
+
+
+      viewer.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      document.body.classList.remove(
+        "chat-photo-viewer-open"
+      );
+
+
+      /*
+        Remove the previous Firebase URL
+        after the closing animation.
+      */
+      setTimeout(
+        () => {
+
+          if (
+            viewerImage &&
+            !viewer.classList.contains(
+              "open"
+            )
+          ) {
+
+            viewerImage.src =
+              "";
+
+          }
+
+        },
+        180
+      );
+
+    }
+
+    function renderJobSeekerChatMessage(
+      bubble,
+      data
+    ) {
+
+      if (!bubble) {
+        return;
+      }
+
+
+      /* Clear old content */
+      bubble.innerHTML = "";
+
+
+      bubble.classList.remove(
+        "chat-attachment-bubble",
+        "chat-image-bubble",
+        "chat-file-bubble"
+      );
+
+
+      const attachment =
+        data?.attachment || null;
+
+
+      /*
+        IMPORTANT:
+    
+        Do not depend only on messageType.
+    
+        If an older/new message has an
+        attachment but messageType was not
+        saved correctly, we can still detect
+        whether it is a photo from mimeType.
+      */
+      const mimeType =
+        String(
+          attachment?.mimeType || ""
+        ).toLowerCase();
+
+
+      const storedType =
+        String(
+          data?.messageType || ""
+        ).toLowerCase();
+
+
+      const isImage =
+        storedType === "image" ||
+        mimeType.startsWith("image/");
+
+
+      const isFile =
+        storedType === "file" ||
+        (
+          attachment &&
+          !isImage
+        );
+
+      /* ════════════════════════════════════
+         IMAGE MESSAGE
+      ════════════════════════════════════ */
+
+      if (
+        attachment &&
+        isImage
+      ) {
+
+        const imageURL =
+          String(
+            attachment.url || ""
+          ).trim();
+
+
+        if (!imageURL) {
+
+          bubble.textContent =
+            "Photo unavailable.";
+
+          return;
+
+        }
+
+
+        bubble.classList.add(
+          "chat-attachment-bubble",
+          "chat-image-bubble"
+        );
+
+
+        /*
+          Messenger-like clickable photo.
+      
+          It is a button instead of an <a>,
+          so it stays inside BlueSpace.
+        */
+        const imageButton =
+          document.createElement(
+            "button"
+          );
+
+
+        imageButton.type =
+          "button";
+
+
+        imageButton.className =
+          "chat-image-preview-btn";
+
+
+        imageButton.setAttribute(
+          "aria-label",
+          `View ${attachment.name ||
+          "shared photo"}`
+        );
+
+
+        const image =
+          document.createElement(
+            "img"
+          );
+
+
+        image.className =
+          "chat-message-image";
+
+
+        image.alt =
+          attachment.name ||
+          "Shared photo";
+
+
+        image.loading =
+          "lazy";
+
+
+        /*
+          Show a loading appearance until
+          Firebase finishes loading the image.
+        */
+        image.classList.add(
+          "loading"
+        );
+
+
+        image.onload =
+          function () {
+
+            image.classList.remove(
+              "loading"
+            );
+
+
+            requestAnimationFrame(
+              () => {
+
+                /*
+                  Only keep the newest messages
+                  visible after image dimensions
+                  become available.
+                */
+                const chatMessages =
+                  document.getElementById(
+                    "chat-messages"
+                  );
+
+
+                if (!chatMessages) {
+                  return;
+                }
+
+
+                const distanceFromBottom =
+
+                  chatMessages.scrollHeight -
+                  chatMessages.scrollTop -
+                  chatMessages.clientHeight;
+
+
+                if (
+                  distanceFromBottom < 180
+                ) {
+
+                  chatMessages.scrollTop =
+                    chatMessages.scrollHeight;
+
+                }
+
+              }
+            );
+
+          };
+
+
+        image.onerror =
+          function () {
+
+            console.error(
+              "CHAT IMAGE FAILED TO LOAD:",
+              imageURL
+            );
+
+
+            imageButton.remove();
+
+
+            const errorText =
+              document.createElement(
+                "div"
+              );
+
+
+            errorText.className =
+              "chat-attachment-error";
+
+
+            errorText.textContent =
+              "Photo could not be loaded.";
+
+
+            bubble.appendChild(
+              errorText
+            );
+
+          };
+
+
+        /*
+          Open the large Messenger-like
+          photo viewer.
+        */
+        imageButton.addEventListener(
+          "click",
+          event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            openJobSeekerChatPhotoViewer(
+              imageURL,
+              attachment.name ||
+              "Shared photo"
+            );
+
+          }
+        );
+
+
+        imageButton.appendChild(
+          image
+        );
+
+
+        bubble.appendChild(
+          imageButton
+        );
+
+
+        /*
+          Set src after handlers and after
+          inserting the <img> into the DOM.
+        */
+        image.src =
+          imageURL;
+
+
+        return;
+
+      }
+      /* ════════════════════════════════════
+         FILE MESSAGE
+      ════════════════════════════════════ */
+
+      if (
+        attachment &&
+        isFile
+      ) {
+
+        const fileURL =
+          String(
+            attachment.url || ""
+          ).trim();
+
+
+        if (!fileURL) {
+
+          bubble.textContent =
+            "File unavailable.";
+
+          return;
+
+        }
+
+
+        bubble.classList.add(
+          "chat-attachment-bubble",
+          "chat-file-bubble"
+        );
+
+
+        const fileLink =
+          document.createElement(
+            "a"
+          );
+
+
+        fileLink.className =
+          "chat-file-card";
+
+
+        fileLink.href =
+          fileURL;
+
+
+        fileLink.target =
+          "_blank";
+
+
+        fileLink.rel =
+          "noopener noreferrer";
+
+
+        const fileIcon =
+          document.createElement(
+            "span"
+          );
+
+
+        fileIcon.className =
+          "chat-file-icon";
+
+
+        fileIcon.innerHTML = `
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path
+          d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z">
+        </path>
+
+        <polyline
+          points="14 2 14 8 20 8">
+        </polyline>
+      </svg>
+    `;
+
+
+        const fileInfo =
+          document.createElement(
+            "span"
+          );
+
+
+        fileInfo.className =
+          "chat-file-info";
+
+
+        const fileName =
+          document.createElement(
+            "span"
+          );
+
+
+        fileName.className =
+          "chat-file-name";
+
+
+        fileName.textContent =
+          attachment.name ||
+          "Attachment";
+
+
+        const fileMeta =
+          document.createElement(
+            "span"
+          );
+
+
+        fileMeta.className =
+          "chat-file-meta";
+
+
+        const fileSize =
+          typeof formatChatFileSize ===
+            "function"
+
+            ? formatChatFileSize(
+              attachment.size
+            )
+
+            : "";
+
+
+        fileMeta.textContent =
+          fileSize
+            ? `${fileSize} • Open file`
+            : "Open file";
+
+
+        fileInfo.appendChild(
+          fileName
+        );
+
+
+        fileInfo.appendChild(
+          fileMeta
+        );
+
+
+        fileLink.appendChild(
+          fileIcon
+        );
+
+
+        fileLink.appendChild(
+          fileInfo
+        );
+
+
+        bubble.appendChild(
+          fileLink
+        );
+
+
+        return;
+
+      }
+
+
+      /* ════════════════════════════════════
+         NORMAL TEXT MESSAGE
+      ════════════════════════════════════ */
+
+      bubble.textContent =
+        String(
+          data?.text || ""
+        );
+
+    }
+
     window.listenToConversationMessages =
       function (conversationId) {
 
         try {
 
-          /*
-            Stop listener ONLY when actually
-            changing conversations.
-    
-            Because Change #1 prevents this
-            function from being called every
-            time lastMessage changes.
-          */
           if (unsubscribeActiveMessages) {
 
             unsubscribeActiveMessages();
@@ -4584,25 +5983,11 @@
                         }`;
 
 
-                      bubble.textContent =
-                        String(
-                          data.text || ""
-                        );
+                      renderJobSeekerChatMessage(
+                        bubble,
+                        data
+                      );
 
-
-                      /*
-                        Firestore writes using
-                        serverTimestamp().
-    
-                        Local write:
-                        "Sending..."
-    
-                        Server confirms:
-                        real timestamp.
-    
-                        Only timestamp changes;
-                        whole chat does NOT.
-                      */
                       const hasPendingWrites =
                         messageDoc
                           .metadata
