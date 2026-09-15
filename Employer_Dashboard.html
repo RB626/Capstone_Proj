@@ -560,16 +560,40 @@
             </div><!-- /chat-messages -->
 
             <!-- Input area -->
+            <!-- Input area -->
             <div class="chat-input-area">
+
+              <!-- PHOTO / IMAGE BUTTON — UI ONLY FOR NOW -->
+              <button type="button" class="chat-image-btn" id="chatImageBtn" aria-label="Attach photo"
+                title="Attach photo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+
+                  <path d="M21 15l-5-5L5 21"></path>
+
+                  <path d="M14 12l-3-3-8 8"></path>
+                </svg>
+              </button>
+
+
+              <!-- EXISTING MESSAGE INPUT -->
               <input class="chat-input" id="chat-input" type="text" placeholder="Type a message..."
                 data-i18n="msgTypeMessage" onkeydown="sendOnEnter(event)" />
-              <button class="chat-send-btn" onclick="sendMessage()">
+
+
+              <!-- EXISTING SEND BUTTON -->
+              <button class="chat-send-btn" onclick="sendMessage()" aria-label="Send message">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                   stroke-linejoin="round">
                   <line x1="22" y1="2" x2="11" y2="13" />
+
                   <polygon points="22 2 15 22 11 13 2 9 22 2" />
                 </svg>
               </button>
+
             </div>
 
           </div><!-- /chat-area -->
