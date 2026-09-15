@@ -379,13 +379,28 @@
                   Job Title
                 </h2>
 
-                <div id="jobDetailsSkills" class="job-details-skills"></div>
+                <div id="jobDetailsSkills" class="job-details-skills">
+                </div>
 
               </div>
 
               <span id="jobDetailsUrgent" class="urgent-badge" hidden>
                 Urgent
               </span>
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+            <div class="job-details-description-section">
+
+              <div class="job-details-description-label">
+                DESCRIPTION
+              </div>
+
+              <div id="jobDetailsDescription" class="job-details-description">
+                No description provided.
+              </div>
 
             </div>
 
@@ -10989,8 +11004,8 @@
 
 
       /* ══════════════════════════════════════
-         JOB TITLE
-      ══════════════════════════════════════ */
+   JOB TITLE
+══════════════════════════════════════ */
 
       document.getElementById(
         "jobDetailsTitle"
@@ -11000,8 +11015,47 @@
 
 
       /* ══════════════════════════════════════
+         DESCRIPTION
+      ══════════════════════════════════════ */
+
+      const jobDetailsDescription =
+        document.getElementById(
+          "jobDetailsDescription"
+        );
+
+
+      /*
+        Fallback for older Saved Jobs
+        that may have been saved before
+        description was stored.
+      */
+      const originalDescriptionJob =
+        allHomeJobs.find(
+          homeJob =>
+            String(homeJob.id || "") ===
+            String(jobId || "")
+        );
+
+
+      if (jobDetailsDescription) {
+
+        jobDetailsDescription.textContent =
+          job.description ||
+          originalDescriptionJob?.description ||
+          "No description provided.";
+
+      }
+
+
+      /* ══════════════════════════════════════
          LOCATION
       ══════════════════════════════════════ */
+
+      document.getElementById(
+        "jobDetailsLocation"
+      ).textContent =
+        job.location ||
+        "Not specified";
 
       document.getElementById(
         "jobDetailsLocation"
