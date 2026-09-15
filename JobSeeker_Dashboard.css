@@ -9271,7 +9271,7 @@ body.dark-mode .home-jobs-infinite-status {
 
   -webkit-line-clamp:
     2;
-    line-clamp: 2;
+  line-clamp: 2;
 
   overflow:
     hidden;
@@ -9366,7 +9366,7 @@ body.dark-mode .job-card-description {
     -webkit-line-clamp:
       2;
 
-      line-clamp: 2;
+    line-clamp: 2;
 
   }
 
@@ -9383,4 +9383,139 @@ body.dark-mode .job-card-description {
 
 body.dark-mode .job-card-description {
   color: #94a3b8 !important;
+}
+
+/* ══════════════════════════════════════
+   JOB CARD DESCRIPTION
+   SEE MORE / SEE LESS
+══════════════════════════════════════ */
+
+
+/* Expanded description */
+.job-card-description.expanded {
+  display: block !important;
+
+  -webkit-line-clamp:
+    unset !important;
+
+  line-clamp:
+    unset !important;
+
+  overflow:
+    visible !important;
+
+  text-overflow:
+    unset !important;
+}
+
+
+/* See More / See Less */
+.job-card-description-toggle {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    flex-start;
+
+  width:
+    fit-content;
+
+  margin:
+    5px 0 0;
+
+  padding:
+    0;
+
+  border:
+    none;
+
+  outline:
+    none;
+
+  background:
+    transparent;
+
+  font-family:
+    'Inter',
+    sans-serif;
+
+  font-size:
+    0.82rem;
+
+  font-weight:
+    700;
+
+  line-height:
+    1.4;
+
+  color:
+    var(--teal-dark);
+
+  cursor:
+    pointer;
+
+  transition:
+    color 0.18s ease,
+    opacity 0.18s ease;
+}
+
+
+.job-card-description-toggle:hover {
+  color:
+    #0f766e;
+
+  text-decoration:
+    underline;
+}
+
+
+/*
+  Required because JS uses
+  the hidden attribute.
+*/
+.job-card-description-toggle[hidden] {
+  display:
+    none !important;
+}
+
+
+/*
+  The button is now between
+  Description and Skills.
+
+  Preserve your original spacing.
+*/
+.job-card-description-toggle+.skill-tags {
+  margin-top:
+    14px !important;
+
+  margin-bottom:
+    16px !important;
+}
+
+
+/* Dark mode */
+body.dark-mode .job-card-description-toggle {
+  color:
+    #5eead4;
+}
+
+
+body.dark-mode .job-card-description-toggle:hover {
+  color:
+    #99f6e4;
+}
+
+
+/* Mobile */
+@media (max-width: 600px) {
+
+  .job-card-description-toggle {
+    font-size:
+      0.76rem;
+  }
+
 }

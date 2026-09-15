@@ -9157,6 +9157,7 @@
           await setDoc(savedJobRef, {
             jobId,
             title: job.title || "",
+            description: job.description || "",
             employerName: job.employerName || "",
             employerPhotoURL: job.employerPhotoURL || "",
             badge: job.badge || "",
@@ -11778,6 +11779,217 @@
       };
     }
 
+    /* ══════════════════════════════════════
+   JOB CARD DESCRIPTION
+   SEE MORE / SEE LESS
+══════════════════════════════════════ */
+
+    function setupJobCardDescriptionToggle(card) {
+
+      const description =
+        card.querySelector(
+          ".job-card-description"
+        );
+
+      const toggleButton =
+        card.querySelector(
+          ".job-card-description-toggle"
+        );
+
+
+      if (
+        !description ||
+        !toggleButton
+      ) {
+        return;
+      }
+
+
+      /* Always start collapsed */
+      description.classList.remove(
+        "expanded"
+      );
+
+      toggleButton.textContent =
+        "See more";
+
+      toggleButton.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+
+      /*
+        IMPORTANT FIX:
+    
+        Keep the button available first.
+    
+        Saved Jobs may be rendered while
+        the Jobs page is display:none.
+        We must NOT hide the button simply
+        because the page is currently hidden.
+      */
+      toggleButton.hidden =
+        false;
+
+
+      /*
+        Check whether the description really
+        exceeds the 2-line clamp.
+    
+        Returns false if the element cannot
+        be measured yet because its page
+        is currently hidden.
+      */
+      const checkDescriptionOverflow =
+        () => {
+
+          if (
+            !description.isConnected
+          ) {
+            return false;
+          }
+
+
+          const width =
+            description.getBoundingClientRect()
+              .width;
+
+
+          /*
+            Page/card is hidden.
+    
+            DO NOT hide See more.
+            Wait until the card becomes visible.
+          */
+          if (
+            width <= 0
+          ) {
+            return false;
+          }
+
+
+          const isOverflowing =
+            description.scrollHeight >
+            description.clientHeight + 1;
+
+
+          toggleButton.hidden =
+            !isOverflowing;
+
+
+          return true;
+
+        };
+
+
+      /*
+        Home cards can normally be measured
+        immediately.
+      */
+      requestAnimationFrame(
+        () => {
+
+          const measured =
+            checkDescriptionOverflow();
+
+
+          /*
+            If the card was created while
+            Jobs page was hidden, wait until
+            the card actually becomes visible.
+          */
+          if (
+            !measured &&
+            "IntersectionObserver" in window
+          ) {
+
+            const visibilityObserver =
+              new IntersectionObserver(
+                entries => {
+
+                  const isVisible =
+                    entries.some(
+                      entry =>
+                        entry.isIntersecting
+                    );
+
+
+                  if (
+                    !isVisible
+                  ) {
+                    return;
+                  }
+
+
+                  requestAnimationFrame(
+                    () => {
+
+                      checkDescriptionOverflow();
+
+                      visibilityObserver
+                        .disconnect();
+
+                    }
+                  );
+
+                },
+                {
+                  threshold: 0.01
+                }
+              );
+
+
+            visibilityObserver.observe(
+              card
+            );
+
+          }
+
+        }
+      );
+
+
+      /* SEE MORE / SEE LESS */
+      toggleButton.addEventListener(
+        "click",
+        event => {
+
+          event.preventDefault();
+          event.stopPropagation();
+
+
+          const isExpanded =
+            description.classList.toggle(
+              "expanded"
+            );
+
+
+          toggleButton.textContent =
+            isExpanded
+              ? "See less"
+              : "See more";
+
+
+          toggleButton.setAttribute(
+            "aria-expanded",
+            String(isExpanded)
+          );
+
+
+          /*
+            Never hide the button while
+            expanded because the user needs
+            See less to collapse it again.
+          */
+          toggleButton.hidden =
+            false;
+
+        }
+      );
+
+    }
+
     function createHomeJobCard(jobId, job) {
       const card = document.createElement("div");
       card.className = "job-card";
@@ -11829,6 +12041,7 @@
 
       const postTime = formatPostTime(job.createdAt);
       const title = escapeHtml(job.title || "Untitled Job");
+      const description = escapeHtml(job.description || "");
       const location = escapeHtml(job.location || "Not specified");
       const duration = escapeHtml(job.duration || "Not specified");
       const pay = escapeHtml(job.pay || "Not specified");
@@ -11876,7 +12089,22 @@
 
     <div class="job-title">${title}</div>
 
-    <div class="skill-tags">
+    ${description ? `
+  <div class="job-card-description">
+    ${description}
+  </div>
+
+  <button
+    type="button"
+    class="job-card-description-toggle"
+    aria-expanded="false"
+    hidden
+  >
+    See more
+  </button>
+` : ""}
+
+<div class="skill-tags">
       ${skillsHTML}
     </div>
 
@@ -11963,6 +12191,11 @@
       </div>
     </div>
   `;
+
+      /* Description See More */
+      setupJobCardDescriptionToggle(
+        card
+      );
 
       const employerAvatarLink =
         card.querySelector(
@@ -12382,6 +12615,8 @@
 
       const postTime = formatPostTime(job.createdAt);
       const title = escapeHtml(job.title || "Untitled Job");
+      const originalHomeJob = allHomeJobs.find(homeJob => String(homeJob.id || "") === String(jobId || ""));
+      const description = escapeHtml(job.description || "");
       const location = escapeHtml(job.location || "Not specified");
       const duration = escapeHtml(job.duration || "Not specified");
       const pay = escapeHtml(job.pay || "Not specified");
@@ -12428,8 +12663,23 @@
     </div>
 
     <div class="job-title">${title}</div>
+    
+    ${description ? `
+  <div class="job-card-description">
+    ${description}
+  </div>
 
-    <div class="skill-tags">
+  <button
+    type="button"
+    class="job-card-description-toggle"
+    aria-expanded="false"
+    hidden
+  >
+    See more
+  </button>
+` : ""}
+
+<div class="skill-tags">
       ${skillsHTML}
     </div>
 
@@ -12523,6 +12773,10 @@
       </div>
     </div>
   `;
+
+      setupJobCardDescriptionToggle(
+        card
+      );
 
       const employerAvatarLink =
         card.querySelector(
