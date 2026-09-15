@@ -12229,8 +12229,7 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicants-modern-card {
+  #employer-home-applicants .applicants-modern-card {
     width: 100%;
 
     padding: 16px 14px !important;
@@ -12247,8 +12246,7 @@ body.dark-mode .worker-public-back-btn:hover {
      Applicants              3 applicants
   ───────────────────────────────────── */
 
-  #employer-home-applicants
-  .applicants-modern-header {
+  #employer-home-applicants .applicants-modern-header {
     display: flex !important;
 
     flex-direction: row !important;
@@ -12262,8 +12260,7 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicants-modern-header h2 {
+  #employer-home-applicants .applicants-modern-header h2 {
     font-size: 1.12rem;
     line-height: 1.2;
 
@@ -12271,8 +12268,7 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicants-count-pill {
+  #employer-home-applicants .applicants-count-pill {
     flex-shrink: 0;
 
     padding: 7px 11px;
@@ -12285,8 +12281,7 @@ body.dark-mode .worker-public-back-btn:hover {
      EACH APPLICANT
   ───────────────────────────────────── */
 
-  #employer-home-applicants
-  .applicant-modern-item {
+  #employer-home-applicants .applicant-modern-item {
     width: 100%;
 
     padding: 0 !important;
@@ -12295,8 +12290,7 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicant-card-wide {
+  #employer-home-applicants .applicant-card-wide {
     position: relative;
 
     display: flex !important;
@@ -12310,8 +12304,7 @@ body.dark-mode .worker-public-back-btn:hover {
     gap: 0 !important;
 
     padding:
-      18px 0
-      18px 0 !important;
+      18px 0 18px 0 !important;
 
     border-bottom:
       1px solid #e5e7eb;
@@ -12319,8 +12312,7 @@ body.dark-mode .worker-public-back-btn:hover {
 
 
   /* Leave room for 3-dot button */
-  #employer-home-applicants
-  .applicant-card-wide-left {
+  #employer-home-applicants .applicant-card-wide-left {
     width: 100%;
     min-width: 0;
 
@@ -12332,8 +12324,7 @@ body.dark-mode .worker-public-back-btn:hover {
      PROFILE HEADER
   ───────────────────────────────────── */
 
-  #employer-home-applicants
-  .applicant-card-wide-header {
+  #employer-home-applicants .applicant-card-wide-header {
     display: grid !important;
 
     grid-template-columns:
@@ -12349,8 +12340,7 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicant-modern-avatar {
+  #employer-home-applicants .applicant-modern-avatar {
     width: 54px !important;
     height: 54px !important;
 
@@ -12360,15 +12350,13 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicant-card-wide-info {
+  #employer-home-applicants .applicant-card-wide-info {
     width: 100%;
     min-width: 0;
   }
 
 
-  #employer-home-applicants
-  .applicant-card-wide-topline {
+  #employer-home-applicants .applicant-card-wide-topline {
     width: 100%;
     min-width: 0;
 
@@ -12377,8 +12365,7 @@ body.dark-mode .worker-public-back-btn:hover {
 
 
   /* Name + verified + Individual */
-  #employer-home-applicants
-  .applicant-card-wide-name-row {
+  #employer-home-applicants .applicant-card-wide-name-row {
     display: flex;
 
     align-items: center;
@@ -12392,8 +12379,7 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicant-modern-name {
+  #employer-home-applicants .applicant-modern-name {
     max-width: 100%;
 
     font-size: 0.96rem !important;
@@ -12403,17 +12389,14 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicant-card-wide-name-row
-  .employer-badge {
+  #employer-home-applicants .applicant-card-wide-name-row .employer-badge {
     font-size: 0.68rem;
 
     padding: 4px 8px;
   }
 
 
-  #employer-home-applicants
-  .post-time {
+  #employer-home-applicants .post-time {
     font-size: 0.76rem;
 
     line-height: 1.2;
@@ -12424,8 +12407,7 @@ body.dark-mode .worker-public-back-btn:hover {
      CONTENT
   ───────────────────────────────────── */
 
-  #employer-home-applicants
-  .applicant-card-wide-content {
+  #employer-home-applicants .applicant-card-wide-content {
     width: 100%;
     min-width: 0;
 
@@ -12437,8 +12419,7 @@ body.dark-mode .worker-public-back-btn:hover {
     Applied for:
     Long job titles are allowed to wrap.
   */
-  #employer-home-applicants
-  .applicant-card-wide-jobline {
+  #employer-home-applicants .applicant-card-wide-jobline {
     width: 100%;
 
     margin-bottom: 12px;
@@ -12451,8 +12432,7 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicant-card-wide-jobline strong {
+  #employer-home-applicants .applicant-card-wide-jobline strong {
     display: inline;
 
     font-weight: 700;
@@ -12463,8 +12443,7 @@ body.dark-mode .worker-public-back-btn:hover {
      SKILLS
   ───────────────────────────────────── */
 
-  #employer-home-applicants
-  .applicant-modern-skills {
+  #employer-home-applicants .applicant-modern-skills {
     display: flex;
 
     flex-wrap: wrap;
@@ -12475,8 +12454,7 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicant-modern-skill {
+  #employer-home-applicants .applicant-modern-skill {
     max-width: 100%;
 
     padding: 5px 10px;
@@ -12491,8 +12469,7 @@ body.dark-mode .worker-public-back-btn:hover {
      MATCH
   ───────────────────────────────────── */
 
-  #employer-home-applicants
-  .applicant-card-wide-bottom {
+  #employer-home-applicants .applicant-card-wide-bottom {
     display: flex;
 
     align-items: center;
@@ -12503,8 +12480,7 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicant-modern-match {
+  #employer-home-applicants .applicant-modern-match {
     padding: 6px 11px;
 
     font-size: 0.74rem;
@@ -12515,8 +12491,7 @@ body.dark-mode .worker-public-back-btn:hover {
      3-DOT MENU
   ───────────────────────────────────── */
 
-  #employer-home-applicants
-  .applicant-more-wrap {
+  #employer-home-applicants .applicant-more-wrap {
     position: absolute !important;
 
     top: 12px !important;
@@ -12528,15 +12503,13 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicant-more-btn {
+  #employer-home-applicants .applicant-more-btn {
     width: 34px !important;
     height: 34px !important;
   }
 
 
-  #employer-home-applicants
-  .applicant-more-menu {
+  #employer-home-applicants .applicant-more-menu {
     right: 0 !important;
     left: auto !important;
 
@@ -12553,8 +12526,7 @@ body.dark-mode .worker-public-back-btn:hover {
      [       View Profile       ]
   ───────────────────────────────────── */
 
-  #employer-home-applicants
-  .applicant-actions-wide {
+  #employer-home-applicants .applicant-actions-wide {
     display: grid !important;
 
     grid-template-columns:
@@ -12571,17 +12543,11 @@ body.dark-mode .worker-public-back-btn:hover {
   }
 
 
-  #employer-home-applicants
-  .applicant-actions-wide
-  .employer-btn-secondary,
+  #employer-home-applicants .applicant-actions-wide .employer-btn-secondary,
 
-  #employer-home-applicants
-  .applicant-actions-wide
-  .employer-btn-review,
+  #employer-home-applicants .applicant-actions-wide .employer-btn-review,
 
-  #employer-home-applicants
-  .applicant-actions-wide
-  .employer-btn-primary {
+  #employer-home-applicants .applicant-actions-wide .employer-btn-primary {
 
     width: 100% !important;
     min-width: 0 !important;
@@ -12608,8 +12574,7 @@ body.dark-mode .worker-public-back-btn:hover {
     View Profile gets its own full-width
     row because it's the main action.
   */
-  #employer-home-applicants
-  .applicant-profile-btn {
+  #employer-home-applicants .applicant-profile-btn {
     grid-column: 1 / -1;
   }
 
@@ -12622,22 +12587,19 @@ body.dark-mode .worker-public-back-btn:hover {
 
 @media (max-width: 380px) {
 
-  #employer-home-applicants
-  .applicants-modern-card {
+  #employer-home-applicants .applicants-modern-card {
     padding:
       14px 12px !important;
   }
 
 
-  #employer-home-applicants
-  .applicant-card-wide-header {
+  #employer-home-applicants .applicant-card-wide-header {
     grid-template-columns:
       48px minmax(0, 1fr);
   }
 
 
-  #employer-home-applicants
-  .applicant-modern-avatar {
+  #employer-home-applicants .applicant-modern-avatar {
     width: 48px !important;
     height: 48px !important;
   }
@@ -12647,16 +12609,214 @@ body.dark-mode .worker-public-back-btn:hover {
     Very small screen:
     stack all buttons.
   */
-  #employer-home-applicants
-  .applicant-actions-wide {
+  #employer-home-applicants .applicant-actions-wide {
     grid-template-columns:
       1fr;
   }
 
 
-  #employer-home-applicants
-  .applicant-profile-btn {
+  #employer-home-applicants .applicant-profile-btn {
     grid-column: auto;
   }
 
+}
+
+/* ══════════════════════════════════════
+   EMPLOYER JOB PREVIEW
+   LAPTOP / DESKTOP FINAL FIX
+══════════════════════════════════════ */
+
+@media (min-width: 769px) {
+
+  /* ─────────────────────────────────────
+     OVERLAY
+  ───────────────────────────────────── */
+
+  .job-preview-overlay {
+    /*
+      Keep modal centered horizontally
+      and vertically.
+    */
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 24px 32px !important;
+
+    /*
+      Overlay itself should not scroll.
+      The modal BODY will scroll instead.
+    */
+    overflow: hidden !important;
+  }
+
+
+  /* ─────────────────────────────────────
+     MODAL
+
+     Your original CSS has max-width: 620px.
+     This overrides it ONLY on laptop/desktop.
+  ───────────────────────────────────── */
+
+  .job-preview-modal {
+    width:
+      min(1050px,
+        calc(100vw - 64px)) !important;
+
+    max-width:
+      1050px !important;
+
+    /*
+      Prevent modal from becoming taller
+      than the laptop screen.
+    */
+    height:
+      auto !important;
+
+    max-height:
+      calc(100vh - 48px) !important;
+
+    max-height:
+      calc(100dvh - 48px) !important;
+
+    display:
+      flex !important;
+
+    flex-direction:
+      column !important;
+
+    overflow:
+      hidden !important;
+  }
+
+
+  /* ─────────────────────────────────────
+     HEADER
+
+     Employer name always stays visible.
+  ───────────────────────────────────── */
+
+  .job-preview-header {
+    flex:
+      0 0 auto !important;
+
+    width:
+      100% !important;
+
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      space-between !important;
+
+    padding:
+      16px 22px !important;
+
+    background:
+      #ffffff;
+
+    position:
+      relative;
+
+    z-index:
+      5;
+  }
+
+
+  .job-preview-header-employer {
+    flex:
+      1;
+
+    min-width:
+      0;
+  }
+
+
+  .job-preview-header #previewEmployerName {
+    display:
+      block !important;
+
+    margin:
+      0 !important;
+
+    font-size:
+      1.05rem !important;
+
+    font-weight:
+      800 !important;
+
+    color:
+      #0f172a !important;
+
+    visibility:
+      visible !important;
+
+    opacity:
+      1 !important;
+  }
+
+
+  /* ─────────────────────────────────────
+     SCROLL ONLY THE MIDDLE CONTENT
+  ───────────────────────────────────── */
+
+  .job-preview-body {
+    flex:
+      1 1 auto !important;
+
+    min-height:
+      0 !important;
+
+    overflow-y:
+      auto !important;
+
+    overflow-x:
+      hidden !important;
+
+    padding:
+      18px 22px 12px !important;
+
+    scrollbar-gutter:
+      stable;
+  }
+
+
+  /* ─────────────────────────────────────
+     KEEP DETAILS TWO-COLUMN
+  ───────────────────────────────────── */
+
+  .job-preview-grid {
+    grid-template-columns:
+      repeat(2,
+        minmax(0, 1fr)) !important;
+
+    gap:
+      14px 18px !important;
+  }
+
+
+  /* ─────────────────────────────────────
+     FOOTER
+
+     Footer stays visible.
+  ───────────────────────────────────── */
+
+  .job-preview-footer {
+    flex:
+      0 0 auto !important;
+
+    padding:
+      14px 22px 16px !important;
+
+    background:
+      #ffffff;
+  }
+
+}
+
+/* Job Preview — Description should not be bold */
+#previewJobDescription {
+  font-weight: 400 !important;
 }

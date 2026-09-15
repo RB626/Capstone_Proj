@@ -1704,14 +1704,37 @@
   <div class="job-preview-overlay" id="jobPreviewOverlay">
     <div class="job-preview-modal">
       <div class="job-preview-header">
-        <div>
-          <h3 id="previewJobTitle">Job Preview</h3>
-          <p id="previewEmployerName">Employer</p>
+
+        <div class="job-preview-header-employer">
+
+          <h3 id="previewEmployerName">
+            Employer
+          </h3>
+
         </div>
-        <button type="button" class="job-preview-close" onclick="closeJobPreviewModal()">✕</button>
+
+
+        <button type="button" class="job-preview-close" onclick="closeJobPreviewModal()">
+          ✕
+        </button>
+
       </div>
 
       <div class="job-preview-body">
+
+        <!-- JOB TITLE -->
+        <div class="job-preview-field job-preview-title-field">
+
+          <label>
+            Job Title
+          </label>
+
+          <div id="previewJobTitle" class="job-preview-title-box">
+            Job Title
+          </div>
+
+        </div>
+
         <div class="job-preview-field job-preview-description-field">
 
           <label>
@@ -16464,6 +16487,15 @@ ${description
         });
       } else {
         skillsWrap.innerHTML = `<span class="job-preview-skill">No skills listed</span>`;
+      }
+
+      const previewBody =
+        document.querySelector(
+          "#jobPreviewOverlay .job-preview-body"
+        );
+
+      if (previewBody) {
+        previewBody.scrollTop = 0;
       }
 
       document.getElementById("jobPreviewOverlay").classList.add("open");
