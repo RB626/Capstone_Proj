@@ -12820,3 +12820,892 @@ body.dark-mode .worker-public-back-btn:hover {
 #previewJobDescription {
   font-weight: 400 !important;
 }
+
+/* ══════════════════════════════════════
+   EMPLOYER JOB POST
+   MATCH JOB SEEKER CARD DESIGN
+══════════════════════════════════════ */
+
+
+/* ───────────────────────────────────
+   DESCRIPTION
+─────────────────────────────────── */
+.job-card.dynamic-post .job-card-description.expanded {
+
+  display:
+    block !important;
+
+  /*
+    Keep the expanded description
+    at a comfortable reading width.
+  */
+  width:
+    100% !important;
+
+  max-width:
+    1050px !important;
+
+  -webkit-line-clamp:
+    unset !important;
+
+  line-clamp:
+    unset !important;
+
+  overflow:
+    visible !important;
+
+  text-overflow:
+    unset !important;
+}
+
+
+/* ───────────────────────────────────
+   EXPANDED DESCRIPTION
+─────────────────────────────────── */
+
+.job-card.dynamic-post .job-card-description.expanded {
+  display:
+    block !important;
+
+  -webkit-line-clamp:
+    unset !important;
+
+  line-clamp:
+    unset !important;
+
+  overflow:
+    visible !important;
+
+  text-overflow:
+    unset !important;
+}
+
+
+/* ───────────────────────────────────
+   TITLE → DESCRIPTION
+─────────────────────────────────── */
+
+.job-card.dynamic-post .job-title:has(+ .job-card-description) {
+  margin-bottom:
+    12px !important;
+}
+
+
+/* ───────────────────────────────────
+   SEE MORE / SEE LESS
+─────────────────────────────────── */
+
+.job-card.dynamic-post .job-card-description-toggle {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    flex-start;
+
+  width:
+    fit-content;
+
+  margin:
+    6px 0 0;
+
+  padding:
+    0;
+
+  border:
+    none;
+
+  outline:
+    none;
+
+  background:
+    transparent;
+
+  color:
+    var(--teal-dark);
+
+  font-family:
+    'Inter',
+    sans-serif;
+
+  font-size:
+    0.82rem;
+
+  font-weight:
+    700;
+
+  line-height:
+    1.4;
+
+  cursor:
+    pointer;
+
+  transition:
+    color 0.18s ease,
+    opacity 0.18s ease;
+}
+
+
+.job-card.dynamic-post .job-card-description-toggle:hover {
+  color:
+    #0f766e;
+
+  text-decoration:
+    underline;
+}
+
+
+.job-card.dynamic-post .job-card-description-toggle[hidden] {
+  display:
+    none !important;
+}
+
+
+/* ───────────────────────────────────
+   DESCRIPTION → SKILLS
+─────────────────────────────────── */
+
+.job-card.dynamic-post .job-card-description+.skill-tags {
+  margin-top:
+    16px !important;
+
+  margin-bottom:
+    16px !important;
+}
+
+
+.job-card.dynamic-post .job-card-description-toggle+.skill-tags {
+  margin-top:
+    16px !important;
+
+  margin-bottom:
+    16px !important;
+}
+
+
+/* ───────────────────────────────────
+   METADATA SPACING
+
+   LOCATION
+   DURATION
+   PAY
+   JOB TYPE
+   APPLICANTS
+─────────────────────────────────── */
+
+.job-card.dynamic-post .job-meta {
+  gap:
+    34px;
+
+  margin-bottom:
+    18px;
+}
+
+
+/* ───────────────────────────────────
+   FOOTER
+─────────────────────────────────── */
+
+.job-card.dynamic-post .job-footer {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    14px;
+
+  flex-wrap:
+    wrap;
+}
+
+
+.job-card.dynamic-post .job-actions {
+  margin-left:
+    auto;
+}
+
+
+/* ══════════════════════════════════════
+   DARK MODE
+══════════════════════════════════════ */
+
+body.dark-mode .job-card.dynamic-post .job-card-description {
+  color:
+    #94a3b8 !important;
+}
+
+
+body.dark-mode .job-card.dynamic-post .job-card-description-toggle {
+  color:
+    #5eead4;
+}
+
+
+body.dark-mode .job-card.dynamic-post .job-card-description-toggle:hover {
+  color:
+    #99f6e4;
+}
+
+
+/* ══════════════════════════════════════
+   MOBILE
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  .job-card.dynamic-post .job-card-description {
+    font-size:
+      0.76rem !important;
+
+    line-height:
+      1.45 !important;
+
+    -webkit-line-clamp:
+      2;
+
+    line-clamp:
+      2;
+  }
+
+
+  .job-card.dynamic-post .job-card-description.expanded {
+    -webkit-line-clamp:
+      unset !important;
+
+    line-clamp:
+      unset !important;
+  }
+
+
+  .job-card.dynamic-post .job-card-description-toggle {
+    font-size:
+      0.76rem;
+  }
+
+}
+
+/* ══════════════════════════════════════
+   FINAL MOBILE EMPLOYER JOB CARD
+   MATCH JOB SEEKER MOBILE DESIGN
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  /* ───────────────────────────────────
+     CARD
+  ─────────────────────────────────── */
+
+  .job-card.dynamic-post {
+    width: 100% !important;
+
+    padding:
+      16px 14px 18px !important;
+
+    border-radius:
+      14px !important;
+
+    overflow:
+      visible !important;
+  }
+
+
+  /* ───────────────────────────────────
+     EMPLOYER HEADER
+  ─────────────────────────────────── */
+
+  .job-card.dynamic-post .job-card-header {
+    display:
+      flex !important;
+
+    align-items:
+      flex-start !important;
+
+    gap:
+      10px !important;
+
+    margin-bottom:
+      16px !important;
+  }
+
+
+  .job-card.dynamic-post .employer-avatar {
+    width:
+      44px !important;
+
+    height:
+      44px !important;
+
+    flex:
+      0 0 44px !important;
+  }
+
+
+  .job-card.dynamic-post .employer-info {
+    flex:
+      1 1 auto;
+
+    min-width:
+      0;
+  }
+
+
+  .job-card.dynamic-post .employer-name {
+    font-size:
+      0.92rem !important;
+  }
+
+
+  .job-card.dynamic-post .post-time {
+    font-size:
+      0.76rem !important;
+  }
+
+
+  /*
+    Keep Employer 3-dot menu.
+    Do NOT add Job Seeker bookmark.
+  */
+  .job-card.dynamic-post .job-more-wrap {
+    margin-left:
+      auto !important;
+
+    flex:
+      0 0 auto;
+  }
+
+
+  /* ───────────────────────────────────
+     JOB TITLE
+  ─────────────────────────────────── */
+
+  .job-card.dynamic-post .job-title {
+    margin-bottom:
+      12px !important;
+
+    font-size:
+      1rem !important;
+
+    font-weight:
+      700 !important;
+
+    line-height:
+      1.35 !important;
+  }
+
+
+  /* ───────────────────────────────────
+     DESCRIPTION
+  ─────────────────────────────────── */
+
+  .job-card.dynamic-post .job-card-description {
+    width:
+      100% !important;
+
+    max-width:
+      100% !important;
+
+    margin:
+      0 !important;
+
+    font-size:
+      0.84rem !important;
+
+    font-weight:
+      400 !important;
+
+    line-height:
+      1.5 !important;
+
+    color:
+      #6b7280 !important;
+
+    display:
+      -webkit-box !important;
+
+    -webkit-box-orient:
+      vertical !important;
+
+    -webkit-line-clamp:
+      2 !important;
+
+    line-clamp:
+      2 !important;
+
+    overflow:
+      hidden !important;
+
+    text-overflow:
+      ellipsis !important;
+  }
+
+
+  .job-card.dynamic-post .job-card-description.expanded {
+    display:
+      block !important;
+
+    -webkit-line-clamp:
+      unset !important;
+
+    line-clamp:
+      unset !important;
+
+    overflow:
+      visible !important;
+  }
+
+
+  /* ───────────────────────────────────
+     SEE MORE
+  ─────────────────────────────────── */
+
+  .job-card.dynamic-post .job-card-description-toggle {
+    display:
+      inline-flex !important;
+
+    width:
+      auto !important;
+
+    margin:
+      5px 0 0 !important;
+
+    padding:
+      0 !important;
+
+    border:
+      none !important;
+
+    background:
+      transparent !important;
+
+    color:
+      var(--teal-dark) !important;
+
+    font-size:
+      0.78rem !important;
+
+    font-weight:
+      700 !important;
+
+    cursor:
+      pointer !important;
+  }
+
+
+  /* ───────────────────────────────────
+     SKILLS
+  ─────────────────────────────────── */
+
+  .job-card.dynamic-post .job-card-description-toggle+.skill-tags {
+    margin-top:
+      18px !important;
+  }
+
+
+  .job-card.dynamic-post .skill-tags {
+    display:
+      flex !important;
+
+    flex-wrap:
+      wrap !important;
+
+    gap:
+      8px !important;
+
+    margin-bottom:
+      18px !important;
+  }
+
+
+  .job-card.dynamic-post .skill-tag {
+    padding:
+      5px 11px !important;
+
+    font-size:
+      0.74rem !important;
+  }
+
+
+  /* ══════════════════════════════════════
+     JOB INFORMATION
+
+     CRITICAL FIX:
+     Old mobile CSS sets:
+     .meta-item { min-width:100%; }
+
+     We explicitly cancel that here.
+  ═══════════════════════════════════════ */
+
+  .job-card.dynamic-post .job-meta {
+    width:
+      100% !important;
+
+    display:
+      grid !important;
+
+    /*
+      Keep all 5 items on one row,
+      like your Job Seeker card.
+    */
+    grid-template-columns:
+      1fr 1fr 0.72fr 1.15fr 1.2fr !important;
+
+    align-items:
+      start !important;
+
+    gap:
+      8px !important;
+
+    margin:
+      0 0 20px !important;
+  }
+
+
+  .job-card.dynamic-post .meta-item {
+    width:
+      auto !important;
+
+    min-width:
+      0 !important;
+
+    max-width:
+      none !important;
+
+    display:
+      flex !important;
+
+    flex-direction:
+      column !important;
+
+    gap:
+      4px !important;
+  }
+
+
+  .job-card.dynamic-post .meta-label {
+    font-size:
+      0.63rem !important;
+
+    font-weight:
+      600 !important;
+
+    line-height:
+      1.2 !important;
+
+    white-space:
+      nowrap;
+  }
+
+
+  .job-card.dynamic-post .meta-val-row {
+    min-width:
+      0;
+
+    gap:
+      4px !important;
+
+    font-size:
+      0.77rem !important;
+
+    font-weight:
+      600 !important;
+
+    white-space:
+      nowrap !important;
+  }
+
+
+  .job-card.dynamic-post .meta-val-row svg {
+    width:
+      13px !important;
+
+    height:
+      13px !important;
+
+    flex:
+      0 0 13px !important;
+  }
+
+
+  /* ══════════════════════════════════════
+     URGENT + MATCH
+
+     Old CSS makes these width:100%.
+     Cancel that.
+  ═══════════════════════════════════════ */
+
+  .job-card.dynamic-post .job-footer {
+    width:
+      100% !important;
+
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    flex-wrap:
+      wrap !important;
+
+    gap:
+      12px !important;
+  }
+
+
+  .job-card.dynamic-post .urgent-badge {
+    width:
+      auto !important;
+
+    flex:
+      0 0 auto !important;
+
+    padding:
+      7px 14px !important;
+  }
+
+
+  .job-card.dynamic-post .match-row {
+    width:
+      auto !important;
+
+    flex:
+      0 0 auto !important;
+  }
+
+
+  .job-card.dynamic-post .match-bar {
+    width:
+      54px !important;
+  }
+
+
+  /* ══════════════════════════════════════
+     BUTTONS
+
+     Keep Preview + View Applicants
+     side-by-side like Job Seeker.
+  ═══════════════════════════════════════ */
+
+  .job-card.dynamic-post .job-actions {
+    width:
+      100% !important;
+
+    margin:
+      4px 0 0 !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      1fr 1fr !important;
+
+    gap:
+      10px !important;
+  }
+
+
+  .job-card.dynamic-post .btn-view,
+  .job-card.dynamic-post .btn-apply {
+    width:
+      100% !important;
+
+    min-width:
+      0 !important;
+
+    padding:
+      11px 10px !important;
+
+    font-size:
+      0.84rem !important;
+
+    text-align:
+      center !important;
+  }
+
+}
+
+/* ══════════════════════════════════════
+   EMPLOYER JOB CARD
+   LAPTOP DESCRIPTION — FINAL
+══════════════════════════════════════ */
+
+@media (min-width: 601px) {
+
+  .job-card.dynamic-post .job-card-description {
+
+    width:
+      100% !important;
+
+    max-width:
+      820px !important;
+
+
+    margin:
+      0 !important;
+
+    padding:
+      0 !important;
+
+
+    font-family:
+      'Inter',
+      sans-serif !important;
+
+    font-size:
+      0.875rem !important;
+
+    font-weight:
+      400 !important;
+
+    line-height:
+      1.55 !important;
+
+    color:
+      #6b7280 !important;
+
+
+    /*
+      EXACTLY 2 LINES
+    */
+    display:
+      -webkit-box !important;
+
+    -webkit-box-orient:
+      vertical !important;
+
+    -webkit-line-clamp:
+      2 !important;
+
+    line-clamp:
+      2 !important;
+
+    overflow:
+      hidden !important;
+
+    text-overflow:
+      ellipsis !important;
+
+    white-space:
+      normal !important;
+
+    overflow-wrap:
+      anywhere;
+  }
+
+
+  .job-card.dynamic-post .job-card-description.expanded {
+
+    display:
+      block !important;
+
+    /*
+    IMPORTANT:
+    Do not allow See More to suddenly
+    stretch the description across
+    the whole job card.
+  */
+    width:
+      820px !important;
+
+    max-width:
+      100% !important;
+
+    -webkit-line-clamp:
+      unset !important;
+
+    line-clamp:
+      unset !important;
+
+    overflow:
+      visible !important;
+
+    text-overflow:
+      unset !important;
+
+    white-space:
+      normal !important;
+
+    overflow-wrap:
+      anywhere;
+  }
+
+
+  /*
+    SEE MORE / SEE LESS
+  */
+  .job-card.dynamic-post .job-card-description-toggle {
+
+    display:
+      inline-flex !important;
+
+    align-items:
+      center !important;
+
+    width:
+      auto !important;
+
+    margin:
+      6px 0 0 !important;
+
+    padding:
+      0 !important;
+
+    border:
+      none !important;
+
+    background:
+      transparent !important;
+
+    color:
+      var(--teal-dark) !important;
+
+    font-family:
+      'Inter',
+      sans-serif !important;
+
+    font-size:
+      0.82rem !important;
+
+    font-weight:
+      700 !important;
+
+    line-height:
+      1.4 !important;
+
+    cursor:
+      pointer !important;
+
+    pointer-events:
+      auto !important;
+
+    position:
+      relative;
+
+    z-index:
+      2;
+  }
+
+
+  .job-card.dynamic-post .job-card-description-toggle:hover {
+
+    color:
+      #0f766e !important;
+
+    text-decoration:
+      underline;
+  }
+
+
+  /*
+    Keep proper spacing before Skills
+  */
+  .job-card.dynamic-post .job-card-description-toggle+.skill-tags {
+
+    margin-top:
+      18px !important;
+  }
+
+}

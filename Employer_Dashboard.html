@@ -13529,6 +13529,103 @@
 
     }
 
+    window.toggleEmployerJobDescription =
+      function (button, event) {
+
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        const card =
+          button.closest(
+            ".job-card.dynamic-post"
+          );
+
+        if (!card) {
+          return;
+        }
+
+        const description =
+          card.querySelector(
+            ".job-card-description"
+          );
+
+        if (!description) {
+          return;
+        }
+
+        const expanded =
+          description.classList.toggle(
+            "expanded"
+          );
+
+        button.textContent =
+          expanded
+            ? "See less"
+            : "See more";
+
+        button.setAttribute(
+          "aria-expanded",
+          String(expanded)
+        );
+
+      };
+
+    /* ══════════════════════════════════════
+   EMPLOYER JOB CARD DESCRIPTION
+   SEE MORE / SEE LESS
+══════════════════════════════════════ */
+
+    function setupEmployerJobDescriptionToggle(card) {
+
+      const description =
+        card.querySelector(
+          ".job-card-description"
+        );
+
+      const toggleButton =
+        card.querySelector(
+          ".job-card-description-toggle"
+        );
+
+
+      if (
+        !description ||
+        !toggleButton
+      ) {
+        return;
+      }
+
+
+      /* Start collapsed */
+      description.classList.remove(
+        "expanded"
+      );
+
+      toggleButton.textContent =
+        "See more";
+
+      toggleButton.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+      /*
+        IMPORTANT:
+        Always show the control.
+    
+        The previous version tried to
+        measure the card while pages could
+        still be hidden, which caused the
+        button to disappear.
+      */
+      toggleButton.hidden =
+        false;
+
+
+    }
+
     function renderJobCard(jobId, job, source = "listing") {
       const card = document.createElement("div");
       card.className = "job-card dynamic-post";
@@ -13639,12 +13736,18 @@
 
 ${description
           ? `
-      <div
-        class="job-card-description"
-        title="${description}"
-      >
+      <div class="job-card-description">
         ${description}
       </div>
+
+      <button
+  type="button"
+  class="job-card-description-toggle"
+  aria-expanded="false"
+  onclick="toggleEmployerJobDescription(this, event)"
+>
+  See more
+</button>
     `
           : ""
         }
@@ -13685,13 +13788,11 @@ ${description
       </div>
 
       <div class="meta-item">
-        <div class="meta-label">TYPE</div>
+        <div class="meta-label">JOB TYPE</div>
         <div class="meta-val-row">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="7" width="18" height="13" rx="2" />
-            <path d="M16 3v4" />
-            <path d="M8 3v4" />
-            <path d="M3 11h18" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+            <path d="M8 7V5a4 4 0 0 1 8 0v2"></path>
           </svg>
           <span>${jobType}</span>
         </div>
@@ -13740,6 +13841,11 @@ ${description
       </div>
     </div>
   `;
+
+      /* Job description See More / See Less */
+      setupEmployerJobDescriptionToggle(
+        card
+      );
 
       /* ══════════════════════════════════════
          JOB 3-DOT MENU
