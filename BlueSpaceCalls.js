@@ -56,6 +56,7 @@ export function initBlueSpaceCalling({
   const endBtn = document.getElementById("blueCallEndBtn");
   const muteBtn = document.getElementById("blueCallMuteBtn");
   const cameraBtn = document.getElementById("blueCallCameraBtn");
+  const screenBtn = document.getElementById("blueCallScreenBtn");
 
   if (
     !overlay ||
@@ -156,6 +157,15 @@ export function initBlueSpaceCalling({
 
 
   let cameraDisabled =
+    false;
+
+  let screenStream =
+    null;
+
+  let screenSharing =
+    false;
+
+  let stoppingScreenShare =
     false;
 
 
@@ -894,6 +904,23 @@ export function initBlueSpaceCalling({
     cameraBtn.hidden =
       type !== "video";
 
+    if (
+      screenBtn
+    ) {
+
+      screenBtn.hidden =
+        type !== "video";
+
+
+      /*
+        Don't allow sharing until the
+        other person has accepted.
+      */
+      screenBtn.disabled =
+        true;
+
+    }
+
 
     document.body.style.overflow =
       "hidden";
@@ -907,7 +934,9 @@ export function initBlueSpaceCalling({
       "open",
       "video-mode",
       "audio-mode",
-      "remote-video-ready"
+      "remote-video-ready",
+      "local-screen-sharing",
+      "remote-screen-sharing"
     );
 
 
@@ -1370,6 +1399,28 @@ export function initBlueSpaceCalling({
             data;
 
 
+          const remoteScreenSharing =
+
+            data.screenSharing === true &&
+
+            Boolean(
+              data.screenSharingBy
+            ) &&
+
+            data.screenSharingBy !==
+            auth.currentUser?.uid;
+
+
+          /*
+            Receiver uses this class to display
+            the shared desktop without cropping it.
+          */
+          overlay.classList.toggle(
+            "remote-screen-sharing",
+            remoteScreenSharing
+          );
+
+
           if (
             data.status ===
             "accepted"
@@ -1389,6 +1440,16 @@ export function initBlueSpaceCalling({
             setCallStatus(
               "Connected"
             );
+
+            if (
+              screenBtn &&
+              activeCallType === "video"
+            ) {
+
+              screenBtn.disabled =
+                false;
+
+            }
 
           }
 
@@ -2491,6 +2552,629 @@ export function initBlueSpaceCalling({
 
 
   /* ══════════════════════════════════════
+   SCREEN SHARE
+══════════════════════════════════════ */
+
+
+  /* ──────────────────────────────────────
+     UPDATE SHARE BUTTON
+  ────────────────────────────────────── */
+
+  function updateScreenShareButton() {
+
+    if (
+      !screenBtn
+    ) {
+
+      return;
+
+    }
+
+
+    screenBtn.classList.toggle(
+      "active",
+      screenSharing
+    );
+
+
+    screenBtn.title =
+      screenSharing
+        ? "Stop sharing screen"
+        : "Share screen";
+
+
+    const label =
+      screenBtn.querySelector(
+        "small"
+      );
+
+
+    if (
+      label
+    ) {
+
+      label.textContent =
+        screenSharing
+          ? "Stop Share"
+          : "Share";
+
+    }
+
+  }
+
+
+  /* ──────────────────────────────────────
+     FIND CURRENT VIDEO SENDER
+  
+     Your existing WebRTC call already has
+     one camera sender. We reuse it instead
+     of creating another peer connection.
+  ────────────────────────────────────── */
+
+  function getCallVideoSender() {
+
+    if (
+      !peerConnection
+    ) {
+
+      return null;
+
+    }
+
+
+    return (
+      peerConnection
+        .getSenders()
+        .find(
+          sender =>
+            sender.track?.kind ===
+            "video"
+        ) ||
+      null
+    );
+
+  }
+
+
+  /* ──────────────────────────────────────
+     START SCREEN SHARE
+  ────────────────────────────────────── */
+
+  async function startScreenShare() {
+
+    /*
+      Screen sharing is only available
+      during an active VIDEO call.
+    */
+    if (
+      activeCallType !== "video" ||
+      !peerConnection ||
+      !activeCallRef
+    ) {
+
+      return;
+
+    }
+
+
+    /*
+      Don't start while the recipient
+      is still being called.
+    */
+    if (
+      activeCallData?.status !==
+      "accepted"
+    ) {
+
+      alert(
+        "Wait until the video call is connected before sharing your screen."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      screenSharing
+    ) {
+
+      await stopScreenShare();
+
+      return;
+
+    }
+
+
+    /*
+      Browser support check.
+    */
+    if (
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices
+        .getDisplayMedia
+    ) {
+
+      alert(
+        "Screen sharing is not supported by this browser."
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      /*
+        Browser now opens its native:
+  
+        - Entire Screen
+        - Window
+        - Browser Tab
+  
+        selector.
+      */
+      const selectedScreenStream =
+        await navigator.mediaDevices
+          .getDisplayMedia(
+            {
+              video: {
+                frameRate: {
+                  ideal: 15,
+                  max: 30
+                }
+              },
+
+              /*
+                Keep the existing microphone.
+  
+                We are NOT replacing microphone
+                audio with desktop/system audio.
+              */
+              audio: false
+            }
+          );
+
+
+      const screenTrack =
+        selectedScreenStream
+          .getVideoTracks()[0];
+
+
+      if (
+        !screenTrack
+      ) {
+
+        selectedScreenStream
+          .getTracks()
+          .forEach(
+            track =>
+              track.stop()
+          );
+
+        return;
+
+      }
+
+
+      const videoSender =
+        getCallVideoSender();
+
+
+      if (
+        !videoSender
+      ) {
+
+        selectedScreenStream
+          .getTracks()
+          .forEach(
+            track =>
+              track.stop()
+          );
+
+
+        alert(
+          "The video connection is not ready for screen sharing."
+        );
+
+        return;
+
+      }
+
+
+      /*
+        CRITICAL PART:
+  
+        Replace ONLY the outgoing video
+        track.
+  
+        This means:
+        - microphone stays unchanged
+        - WebRTC connection stays unchanged
+        - no new offer/answer is needed
+        - ICE logic stays unchanged
+      */
+      await videoSender.replaceTrack(
+        screenTrack
+      );
+
+
+      screenStream =
+        selectedScreenStream;
+
+
+      screenSharing =
+        true;
+
+
+      /*
+        Local small preview now shows
+        what the Employer is sharing.
+      */
+      localVideo.srcObject =
+        screenStream;
+
+
+      overlay.classList.add(
+        "local-screen-sharing"
+      );
+
+
+      updateScreenShareButton();
+
+
+      /*
+        Let the other participant know
+        that the incoming video is a
+        shared screen so their UI can
+        use object-fit: contain.
+      */
+      try {
+
+        await updateDoc(
+          activeCallRef,
+          {
+            screenSharing:
+              true,
+
+            screenSharingBy:
+              auth.currentUser.uid
+          }
+        );
+
+      } catch (error) {
+
+        console.warn(
+          "Could not publish screen-share state:",
+          error
+        );
+
+      }
+
+
+      /*
+        IMPORTANT:
+  
+        Chrome/Edge show their own
+        "Stop sharing" button.
+  
+        If the user presses that browser
+        button, restore the camera
+        automatically.
+      */
+      screenTrack.addEventListener(
+        "ended",
+        () => {
+
+          if (
+            screenSharing &&
+            screenStream
+              ?.getVideoTracks()[0] ===
+            screenTrack
+          ) {
+
+            stopScreenShare();
+
+          }
+
+        },
+        {
+          once: true
+        }
+      );
+
+    }
+
+    catch (error) {
+
+      /*
+        AbortError:
+        User closed/cancelled the
+        screen-picker.
+  
+        NotAllowedError:
+        Permission/share was denied.
+      */
+      if (
+        error?.name ===
+        "AbortError" ||
+        error?.name ===
+        "NotAllowedError"
+      ) {
+
+        console.log(
+          "Screen sharing cancelled."
+        );
+
+        return;
+
+      }
+
+
+      console.error(
+        "SCREEN SHARE ERROR:",
+        error
+      );
+
+
+      alert(
+        "The screen could not be shared."
+      );
+
+    }
+
+  }
+
+
+  /* ──────────────────────────────────────
+     STOP SCREEN SHARE
+  ────────────────────────────────────── */
+
+  async function stopScreenShare({
+    notifyRemote = true,
+    restoreCamera = true
+  } = {}) {
+
+    if (
+      stoppingScreenShare
+    ) {
+
+      return;
+
+    }
+
+
+    stoppingScreenShare =
+      true;
+
+
+    const currentScreenStream =
+      screenStream;
+
+
+    const currentScreenTrack =
+      currentScreenStream
+        ?.getVideoTracks()[0] ||
+      null;
+
+
+    try {
+
+      /*
+        Restore original camera track.
+      */
+      if (
+        restoreCamera &&
+        peerConnection
+      ) {
+
+        const cameraTrack =
+          localStream
+            ?.getVideoTracks()[0] ||
+          null;
+
+
+        const videoSender =
+          peerConnection
+            .getSenders()
+            .find(
+              sender =>
+
+                sender.track?.kind ===
+                "video" ||
+
+                (
+                  currentScreenTrack &&
+                  sender.track ===
+                  currentScreenTrack
+                )
+            );
+
+
+        if (
+          videoSender
+        ) {
+
+          await videoSender.replaceTrack(
+            cameraTrack
+          );
+
+        }
+
+      }
+
+
+      /*
+        Stop browser screen capture.
+      */
+      currentScreenStream
+        ?.getTracks()
+        .forEach(
+          track => {
+
+            try {
+
+              track.stop();
+
+            } catch {
+              // Already stopped.
+            }
+
+          }
+        );
+
+
+      screenStream =
+        null;
+
+
+      screenSharing =
+        false;
+
+
+      /*
+        Restore local camera preview.
+      */
+      if (
+        activeCallType === "video" &&
+        localStream
+      ) {
+
+        localVideo.srcObject =
+          localStream;
+
+      } else {
+
+        localVideo.srcObject =
+          null;
+
+      }
+
+
+      overlay.classList.remove(
+        "local-screen-sharing"
+      );
+
+
+      updateScreenShareButton();
+
+
+      /*
+        Notify receiving participant.
+      */
+      if (
+        notifyRemote &&
+        activeCallRef
+      ) {
+
+        try {
+
+          await updateDoc(
+            activeCallRef,
+            {
+              screenSharing:
+                false,
+
+              screenSharingBy:
+                null
+            }
+          );
+
+        } catch (error) {
+
+          console.warn(
+            "Could not clear screen-share state:",
+            error
+          );
+
+        }
+
+      }
+
+    }
+
+    finally {
+
+      stoppingScreenShare =
+        false;
+
+    }
+
+  }
+
+
+  /* ──────────────────────────────────────
+     CLEAN SCREEN CAPTURE DURING CALL END
+  
+     This version does NOT touch Firestore
+     and does NOT try to restore the camera.
+  ────────────────────────────────────── */
+
+  function cleanupScreenShareMedia() {
+
+    screenStream
+      ?.getTracks()
+      .forEach(
+        track => {
+
+          try {
+
+            track.stop();
+
+          } catch {
+            // Already stopped.
+          }
+
+        }
+      );
+
+
+    screenStream =
+      null;
+
+
+    screenSharing =
+      false;
+
+
+    stoppingScreenShare =
+      false;
+
+
+    overlay.classList.remove(
+      "local-screen-sharing",
+      "remote-screen-sharing"
+    );
+
+
+    updateScreenShareButton();
+
+  }
+
+
+  /* ──────────────────────────────────────
+     SHARE BUTTON
+  ────────────────────────────────────── */
+
+  function toggleScreenShare() {
+
+    if (
+      screenSharing
+    ) {
+
+      stopScreenShare();
+
+      return;
+
+    }
+
+
+    startScreenShare();
+
+  }
+
+  /* ══════════════════════════════════════
      CLEANUP PENDING INCOMING
   ═══════════════════════════════════════ */
 
@@ -2578,6 +3262,15 @@ export function initBlueSpaceCalling({
       null;
 
 
+    /*
+      Stop screen capture FIRST.
+    */
+    cleanupScreenShareMedia();
+
+
+    /*
+      Existing camera/microphone cleanup.
+    */
     stopLocalMedia();
 
 
@@ -2642,6 +3335,40 @@ export function initBlueSpaceCalling({
     cameraBtn.classList.remove(
       "active"
     );
+
+    if (
+      screenBtn
+    ) {
+
+      screenBtn.classList.remove(
+        "active"
+      );
+
+
+      screenBtn.disabled =
+        true;
+
+
+      const screenLabel =
+        screenBtn.querySelector(
+          "small"
+        );
+
+
+      if (
+        screenLabel
+      ) {
+
+        screenLabel.textContent =
+          "Share";
+
+      }
+
+
+      screenBtn.title =
+        "Share screen";
+
+    }
 
 
     const muteLabel =
@@ -2898,14 +3625,13 @@ export function initBlueSpaceCalling({
     toggleCamera
   );
 
+  screenBtn
+    ?.addEventListener(
+      "click",
+      toggleScreenShare
+    );
 
-  /*
-    Do not silently end the remote call
-    from beforeunload because browsers
-    often block async Firestore writes.
 
-    We DO stop local hardware.
-  */
   window.addEventListener(
     "beforeunload",
     () => {
@@ -2916,6 +3642,11 @@ export function initBlueSpaceCalling({
       stopCallSounds();
 
 
+
+      /*
+  Stop screen capture.
+*/
+      cleanupScreenShareMedia();
       /*
         Stop mic/camera.
       */

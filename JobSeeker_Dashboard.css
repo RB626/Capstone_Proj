@@ -11478,3 +11478,141 @@ body.dark-mode .chat-pending-remove {
   }
 
 }
+
+/* ══════════════════════════════════════
+   BLUESPACE SCREEN SHARING
+   JOB SEEKER
+══════════════════════════════════════ */
+
+
+/* ──────────────────────────────────────
+   RECEIVING ANOTHER USER'S SCREEN
+
+   Screen shares should show the entire
+   desktop/window instead of cropping it
+   like normal camera video.
+────────────────────────────────────── */
+
+.blue-call-overlay.remote-screen-sharing .blue-call-remote-video {
+  object-fit:
+    contain !important;
+
+  background:
+    #050b14;
+}
+
+
+/* ──────────────────────────────────────
+   MY SCREEN-SHARE PREVIEW
+
+   When Job Seeker shares their screen,
+   the small top-right preview becomes
+   wider so the desktop is easier to see.
+────────────────────────────────────── */
+
+.blue-call-overlay.local-screen-sharing .blue-call-local-video {
+  width:
+    300px;
+
+  height:
+    170px;
+
+  object-fit:
+    contain;
+
+  background:
+    #050b14;
+
+  border:
+    2px solid rgba(45,
+      212,
+      191,
+      0.8);
+}
+
+
+/* ──────────────────────────────────────
+   ACTIVE SHARE BUTTON
+────────────────────────────────────── */
+
+.blue-call-screen.active {
+  background:
+    #2dd4bf !important;
+
+  color:
+    #062a26 !important;
+
+  box-shadow:
+    0 0 0 4px rgba(45,
+      212,
+      191,
+      0.18);
+}
+
+
+/* ──────────────────────────────────────
+   DISABLED BEFORE CALL CONNECTS
+────────────────────────────────────── */
+
+.blue-call-screen:disabled {
+  opacity:
+    0.42;
+
+  cursor:
+    not-allowed;
+
+  transform:
+    none !important;
+}
+
+
+/* ══════════════════════════════════════
+   MOBILE
+══════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  /*
+    Smaller shared-screen preview.
+  */
+  .blue-call-overlay.local-screen-sharing .blue-call-local-video {
+    width:
+      150px;
+
+    height:
+      92px;
+
+    top:
+      18px;
+
+    right:
+      16px;
+
+    border-radius:
+      12px;
+  }
+
+
+  /*
+    There are now four controls:
+
+    Mute
+    Camera
+    Share
+    End
+  */
+  .blue-call-controls {
+    gap:
+      12px;
+  }
+
+
+  .blue-call-control {
+    width:
+      62px;
+
+    min-height:
+      62px;
+  }
+
+}

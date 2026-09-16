@@ -15741,3 +15741,123 @@ body.dark-mode .chat-pending-remove {
   }
 
 }
+
+/* ══════════════════════════════════════
+   BLUESPACE SCREEN SHARING
+══════════════════════════════════════ */
+
+
+/*
+  RECEIVING A SHARED SCREEN
+
+  Desktop screens should not be cropped.
+*/
+.blue-call-overlay.remote-screen-sharing .blue-call-remote-video {
+  object-fit:
+    contain !important;
+
+  background:
+    #050b14;
+}
+
+
+/*
+  LOCAL PREVIEW WHILE I AM SHARING.
+
+  Make the small preview slightly wider
+  so a desktop screen is readable.
+*/
+.blue-call-overlay.local-screen-sharing .blue-call-local-video {
+  width:
+    300px;
+
+  height:
+    170px;
+
+  object-fit:
+    contain;
+
+  background:
+    #050b14;
+
+  border:
+    2px solid rgba(45,
+      212,
+      191,
+      0.8);
+}
+
+
+/*
+  Active Share button.
+*/
+.blue-call-screen.active {
+  background:
+    #2dd4bf !important;
+
+  color:
+    #062a26 !important;
+
+  box-shadow:
+    0 0 0 4px rgba(45,
+      212,
+      191,
+      0.18);
+}
+
+
+/*
+  Before the call is accepted.
+*/
+.blue-call-screen:disabled {
+  opacity:
+    0.42;
+
+  cursor:
+    not-allowed;
+
+  transform:
+    none !important;
+}
+
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+  .blue-call-overlay.local-screen-sharing .blue-call-local-video {
+    width:
+      150px;
+
+    height:
+      92px;
+
+    top:
+      18px;
+
+    right:
+      16px;
+
+    border-radius:
+      12px;
+  }
+
+
+  /*
+    Four controls now need to fit:
+    Mute / Camera / Share / End
+  */
+  .blue-call-controls {
+    gap:
+      12px;
+  }
+
+
+  .blue-call-control {
+    width:
+      62px;
+
+    min-height:
+      62px;
+  }
+
+}
