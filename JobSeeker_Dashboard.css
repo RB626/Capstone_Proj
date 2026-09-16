@@ -11616,3 +11616,85 @@ body.dark-mode .chat-pending-remove {
   }
 
 }
+
+/* ══════════════════════════════════════
+   FLIP CAMERA
+══════════════════════════════════════ */
+
+.blue-call-flip:disabled {
+  opacity:
+    0.42;
+
+  cursor:
+    not-allowed;
+
+  transform:
+    none !important;
+}
+
+
+/*
+  Small rotation while browser
+  is opening the other camera.
+*/
+.blue-call-flip.switching svg {
+  animation:
+    blueCallFlipCameraSpin 0.7s linear infinite;
+}
+
+
+@keyframes blueCallFlipCameraSpin {
+
+  to {
+    transform:
+      rotate(360deg);
+  }
+
+}
+
+
+/* ══════════════════════════════════════
+   FIVE CALL CONTROLS ON MOBILE
+══════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  .blue-call-controls {
+    gap:
+      clamp(5px,
+        2vw,
+        8px);
+
+    max-width:
+      calc(100vw - 16px);
+  }
+
+
+  .blue-call-control {
+    width:
+      clamp(48px,
+        15vw,
+        56px);
+
+    min-height:
+      clamp(48px,
+        15vw,
+        56px);
+
+    flex:
+      0 0 auto;
+  }
+
+
+  .blue-call-control span {
+    font-size:
+      19px;
+  }
+
+
+  .blue-call-control small {
+    font-size:
+      9px;
+  }
+
+}

@@ -57,6 +57,7 @@ export function initBlueSpaceCalling({
   const muteBtn = document.getElementById("blueCallMuteBtn");
   const cameraBtn = document.getElementById("blueCallCameraBtn");
   const screenBtn = document.getElementById("blueCallScreenBtn");
+  const flipCameraBtn = document.getElementById("blueCallFlipCameraBtn");
 
   if (
     !overlay ||
@@ -157,6 +158,13 @@ export function initBlueSpaceCalling({
 
 
   let cameraDisabled =
+    false;
+
+  let currentFacingMode =
+    "user";
+
+
+  let switchingCamera =
     false;
 
   let screenStream =
@@ -905,17 +913,24 @@ export function initBlueSpaceCalling({
       type !== "video";
 
     if (
+      flipCameraBtn
+    ) {
+
+      flipCameraBtn.hidden =
+        type !== "video";
+
+      flipCameraBtn.disabled =
+        true;
+
+    }
+
+    if (
       screenBtn
     ) {
 
       screenBtn.hidden =
         type !== "video";
 
-
-      /*
-        Don't allow sharing until the
-        other person has accepted.
-      */
       screenBtn.disabled =
         true;
 
@@ -982,18 +997,10 @@ export function initBlueSpaceCalling({
   }
 
 
-  /* ══════════════════════════════════════
-     MEDIA
-  ═══════════════════════════════════════ */
-
   async function startLocalMedia(
     type
   ) {
 
-    /*
-      Camera is requested ONLY for
-      a video call.
-    */
     localStream =
       await navigator.mediaDevices
         .getUserMedia(
@@ -1003,8 +1010,10 @@ export function initBlueSpaceCalling({
             video:
               type === "video"
                 ? {
-                  facingMode:
-                    "user"
+                  facingMode: {
+                    ideal:
+                      currentFacingMode
+                  }
                 }
                 : false
           }
@@ -1015,8 +1024,40 @@ export function initBlueSpaceCalling({
       type === "video"
     ) {
 
+      const initialVideoTrack =
+        localStream
+          .getVideoTracks()[0];
+
+
+      /*
+        Some browsers report which
+        camera was actually selected.
+      */
+      const actualFacingMode =
+        initialVideoTrack
+          ?.getSettings?.()
+          ?.facingMode;
+
+
+      if (
+        actualFacingMode === "user" ||
+        actualFacingMode === "environment"
+      ) {
+
+        currentFacingMode =
+          actualFacingMode;
+
+      }
+
+
       localVideo.srcObject =
         localStream;
+
+
+      /*
+        Camera is ready.
+      */
+      updateFlipCameraButton();
 
     }
 
@@ -2548,6 +2589,540 @@ export function initBlueSpaceCalling({
 
     }
 
+    updateFlipCameraButton();
+
+  }
+
+  /* ══════════════════════════════════════
+   FRONT / BACK CAMERA SWITCHING
+══════════════════════════════════════ */
+
+
+  /* ──────────────────────────────────────
+     UPDATE FLIP BUTTON
+  ────────────────────────────────────── */
+
+  function updateFlipCameraButton() {
+
+    if (
+      !flipCameraBtn
+    ) {
+
+      return;
+
+    }
+
+
+    const videoCallActive =
+      activeCallType === "video";
+
+
+    /*
+      Audio call = never show it.
+    */
+    flipCameraBtn.hidden =
+      !videoCallActive;
+
+
+    /*
+      Do not allow camera switching:
+      - before camera is ready
+      - while camera is turned off
+      - while screen sharing
+      - while another switch is running
+    */
+    flipCameraBtn.disabled =
+
+      !videoCallActive ||
+
+      !localStream ||
+
+      cameraDisabled ||
+
+      screenSharing ||
+
+      switchingCamera;
+
+
+    flipCameraBtn.classList.toggle(
+      "switching",
+      switchingCamera
+    );
+
+
+    flipCameraBtn.title =
+      switchingCamera
+        ? "Switching camera..."
+        : (
+          currentFacingMode ===
+            "environment"
+
+            ? "Switch to front camera"
+
+            : "Switch to back camera"
+        );
+
+  }
+
+
+  /* ──────────────────────────────────────
+     REQUEST THE OTHER CAMERA
+  ────────────────────────────────────── */
+
+  async function getReplacementCamera(
+    targetFacingMode,
+    oldTrack
+  ) {
+
+    let replacementStream =
+      null;
+
+
+    /*
+      MOBILE FIRST:
+  
+      Ask specifically for:
+      front OR back.
+    */
+    try {
+
+      replacementStream =
+        await navigator.mediaDevices
+          .getUserMedia(
+            {
+              audio: false,
+
+              video: {
+                facingMode: {
+                  exact:
+                    targetFacingMode
+                }
+              }
+            }
+          );
+
+    }
+
+    catch (exactError) {
+
+      /*
+        Desktop browsers and some phones
+        may not support exact facingMode.
+  
+        Fall back to "ideal".
+      */
+      replacementStream =
+        await navigator.mediaDevices
+          .getUserMedia(
+            {
+              audio: false,
+
+              video: {
+                facingMode: {
+                  ideal:
+                    targetFacingMode
+                }
+              }
+            }
+          );
+
+    }
+
+
+    let replacementTrack =
+      replacementStream
+        .getVideoTracks()[0];
+
+
+    if (
+      !replacementTrack
+    ) {
+
+      throw new Error(
+        "No replacement camera was found."
+      );
+
+    }
+
+
+    /*
+      Desktop fallback.
+  
+      A desktop webcam might not report
+      "user" / "environment".
+  
+      If the browser gave us the SAME
+      camera again, look for another
+      physical video-input device.
+    */
+    const oldDeviceId =
+      oldTrack
+        ?.getSettings?.()
+        ?.deviceId ||
+      "";
+
+
+    const replacementDeviceId =
+      replacementTrack
+        ?.getSettings?.()
+        ?.deviceId ||
+      "";
+
+
+    if (
+      oldDeviceId &&
+      replacementDeviceId &&
+      oldDeviceId ===
+      replacementDeviceId &&
+      navigator.mediaDevices
+        ?.enumerateDevices
+    ) {
+
+      const devices =
+        await navigator.mediaDevices
+          .enumerateDevices();
+
+
+      const alternativeCamera =
+        devices
+          .filter(
+            device =>
+              device.kind ===
+              "videoinput"
+          )
+          .find(
+            device =>
+              device.deviceId &&
+              device.deviceId !==
+              oldDeviceId
+          );
+
+
+      if (
+        alternativeCamera
+      ) {
+
+        /*
+          Stop the duplicate camera
+          stream first.
+        */
+        replacementStream
+          .getTracks()
+          .forEach(
+            track =>
+              track.stop()
+          );
+
+
+        replacementStream =
+          await navigator.mediaDevices
+            .getUserMedia(
+              {
+                audio: false,
+
+                video: {
+                  deviceId: {
+                    exact:
+                      alternativeCamera
+                        .deviceId
+                  }
+                }
+              }
+            );
+
+
+        replacementTrack =
+          replacementStream
+            .getVideoTracks()[0];
+
+      }
+
+    }
+
+
+    if (
+      !replacementTrack
+    ) {
+
+      throw new Error(
+        "No second camera is available."
+      );
+
+    }
+
+
+    return {
+      stream:
+        replacementStream,
+
+      track:
+        replacementTrack
+    };
+
+  }
+
+
+  /* ──────────────────────────────────────
+     FLIP FRONT ↔ BACK
+  ────────────────────────────────────── */
+
+  async function flipCamera() {
+
+    if (
+      switchingCamera ||
+      activeCallType !== "video" ||
+      !localStream
+    ) {
+
+      return;
+
+    }
+
+
+    /*
+      Screen share currently replaces the
+      outgoing camera track.
+  
+      Do not interfere with that.
+    */
+    if (
+      screenSharing
+    ) {
+
+      return;
+
+    }
+
+
+    /*
+      If camera is turned off,
+      don't switch behind the scenes.
+    */
+    if (
+      cameraDisabled
+    ) {
+
+      return;
+
+    }
+
+
+    const oldVideoTrack =
+      localStream
+        .getVideoTracks()[0];
+
+
+    if (
+      !oldVideoTrack
+    ) {
+
+      return;
+
+    }
+
+
+    const targetFacingMode =
+
+      currentFacingMode ===
+        "environment"
+
+        ? "user"
+
+        : "environment";
+
+
+    switchingCamera =
+      true;
+
+
+    updateFlipCameraButton();
+
+
+    let replacementStream =
+      null;
+
+
+    let newVideoTrack =
+      null;
+
+
+    try {
+
+      const replacement =
+        await getReplacementCamera(
+          targetFacingMode,
+          oldVideoTrack
+        );
+
+
+      replacementStream =
+        replacement.stream;
+
+
+      newVideoTrack =
+        replacement.track;
+
+
+      if (
+        !newVideoTrack
+      ) {
+
+        throw new Error(
+          "The new camera could not be opened."
+        );
+
+      }
+
+
+      /*
+        Keep Camera On/Off state consistent.
+      */
+      newVideoTrack.enabled =
+        !cameraDisabled;
+
+
+      /*
+        Find the EXISTING WebRTC
+        video sender.
+  
+        We do not create another
+        PeerConnection.
+      */
+      const videoSender =
+        peerConnection
+          ?.getSenders()
+          ?.find(
+            sender =>
+              sender.track?.kind ===
+              "video"
+          );
+
+
+      /*
+        If the WebRTC connection has
+        already been created, replace
+        only its video track.
+      */
+      if (
+        videoSender
+      ) {
+
+        await videoSender.replaceTrack(
+          newVideoTrack
+        );
+
+      }
+
+
+      /*
+        Replace only the video track
+        inside our existing localStream.
+  
+        Microphone track remains intact.
+      */
+      localStream.removeTrack(
+        oldVideoTrack
+      );
+
+
+      localStream.addTrack(
+        newVideoTrack
+      );
+
+
+      /*
+        Refresh our small local preview.
+      */
+      localVideo.srcObject =
+        localStream;
+
+
+      /*
+        Find what the browser actually
+        selected.
+      */
+      const actualFacingMode =
+        newVideoTrack
+          .getSettings?.()
+          ?.facingMode;
+
+
+      currentFacingMode =
+
+        actualFacingMode === "user" ||
+          actualFacingMode ===
+          "environment"
+
+          ? actualFacingMode
+
+          : targetFacingMode;
+
+
+      /*
+        New camera is now active,
+        so the previous track can stop.
+      */
+      oldVideoTrack.stop();
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "CAMERA SWITCH ERROR:",
+        error
+      );
+
+
+      /*
+        If switching failed, clean up
+        only the newly requested stream.
+  
+        Existing camera stays intact.
+      */
+      replacementStream
+        ?.getTracks()
+        .forEach(
+          track => {
+
+            if (
+              track !==
+              oldVideoTrack
+            ) {
+
+              try {
+
+                track.stop();
+
+              }
+
+              catch {
+                // Already stopped.
+              }
+
+            }
+
+          }
+        );
+
+
+      alert(
+        "Unable to switch camera. " +
+        "This device may only have one available camera."
+      );
+
+    }
+
+    finally {
+
+      switchingCamera =
+        false;
+
+
+      updateFlipCameraButton();
+
+    }
+
   }
 
 
@@ -2823,13 +3398,8 @@ export function initBlueSpaceCalling({
 
       updateScreenShareButton();
 
+      updateFlipCameraButton();
 
-      /*
-        Let the other participant know
-        that the incoming video is a
-        shared screen so their UI can
-        use object-fit: contain.
-      */
       try {
 
         await updateDoc(
@@ -3059,6 +3629,8 @@ export function initBlueSpaceCalling({
 
       updateScreenShareButton();
 
+      updateFlipCameraButton();
+
 
       /*
         Notify receiving participant.
@@ -3149,6 +3721,8 @@ export function initBlueSpaceCalling({
 
 
     updateScreenShareButton();
+
+    updateFlipCameraButton();
 
   }
 
@@ -3325,6 +3899,51 @@ export function initBlueSpaceCalling({
 
     cameraDisabled =
       false;
+
+    currentFacingMode =
+      "user";
+
+
+    switchingCamera =
+      false;
+
+    if (
+      flipCameraBtn
+    ) {
+
+      flipCameraBtn.disabled =
+        true;
+
+
+      flipCameraBtn.hidden =
+        true;
+
+
+      flipCameraBtn.classList.remove(
+        "switching"
+      );
+
+
+      flipCameraBtn.title =
+        "Switch camera";
+
+
+      const flipLabel =
+        flipCameraBtn.querySelector(
+          "small"
+        );
+
+
+      if (
+        flipLabel
+      ) {
+
+        flipLabel.textContent =
+          "Flip";
+
+      }
+
+    }
 
 
     muteBtn.classList.remove(
@@ -3624,6 +4243,14 @@ export function initBlueSpaceCalling({
     "click",
     toggleCamera
   );
+
+
+  flipCameraBtn
+    ?.addEventListener(
+      "click",
+      flipCamera
+    );
+
 
   screenBtn
     ?.addEventListener(
