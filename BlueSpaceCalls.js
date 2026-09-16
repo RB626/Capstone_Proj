@@ -2665,115 +2665,238 @@ export function initBlueSpaceCalling({
   }
 
 
-  /* ──────────────────────────────────────
-     REQUEST THE OTHER CAMERA
-  ────────────────────────────────────── */
-
   async function getReplacementCamera(
     targetFacingMode,
-    oldTrack
+    oldDeviceId = ""
   ) {
 
-    let replacementStream =
+    let lastError =
       null;
 
 
     /*
-      MOBILE FIRST:
-  
-      Ask specifically for:
-      front OR back.
+      Small helper that tries to open
+      one camera configuration.
     */
-    try {
-
-      replacementStream =
-        await navigator.mediaDevices
-          .getUserMedia(
-            {
-              audio: false,
-
-              video: {
-                facingMode: {
-                  exact:
-                    targetFacingMode
-                }
-              }
-            }
-          );
-
-    }
-
-    catch (exactError) {
-
-      /*
-        Desktop browsers and some phones
-        may not support exact facingMode.
-  
-        Fall back to "ideal".
-      */
-      replacementStream =
-        await navigator.mediaDevices
-          .getUserMedia(
-            {
-              audio: false,
-
-              video: {
-                facingMode: {
-                  ideal:
-                    targetFacingMode
-                }
-              }
-            }
-          );
-
-    }
-
-
-    let replacementTrack =
-      replacementStream
-        .getVideoTracks()[0];
-
-
-    if (
-      !replacementTrack
+    async function tryOpenCamera(
+      videoConstraints
     ) {
 
-      throw new Error(
-        "No replacement camera was found."
+      try {
+
+        const stream =
+          await navigator.mediaDevices
+            .getUserMedia(
+              {
+                audio: false,
+
+                video:
+                  videoConstraints
+              }
+            );
+
+
+        const track =
+          stream
+            .getVideoTracks()[0];
+
+
+        if (!track) {
+
+          stream
+            .getTracks()
+            .forEach(
+              mediaTrack =>
+                mediaTrack.stop()
+            );
+
+
+          throw new Error(
+            "Camera stream did not contain a video track."
+          );
+
+        }
+
+
+        return {
+          stream,
+          track
+        };
+
+      }
+
+      catch (error) {
+
+        lastError =
+          error;
+
+
+        console.warn(
+          "CAMERA OPEN ATTEMPT FAILED:",
+          error?.name,
+          error?.message
+        );
+
+
+        return null;
+
+      }
+
+    }
+
+
+    /* ════════════════════════════════════
+       ATTEMPT 1
+       Specifically request front/back
+    ════════════════════════════════════ */
+
+    let result =
+      await tryOpenCamera(
+        {
+          facingMode: {
+            exact:
+              targetFacingMode
+          }
+        }
       );
+
+
+    /* ════════════════════════════════════
+       ATTEMPT 2
+       Less strict fallback
+    ════════════════════════════════════ */
+
+    if (!result) {
+
+      result =
+        await tryOpenCamera(
+          {
+            facingMode: {
+              ideal:
+                targetFacingMode
+            }
+          }
+        );
 
     }
 
 
     /*
-      Desktop fallback.
-  
-      A desktop webcam might not report
-      "user" / "environment".
-  
-      If the browser gave us the SAME
-      camera again, look for another
-      physical video-input device.
+      If facingMode gave us the exact
+      SAME physical camera, try another
+      video-input device directly.
     */
-    const oldDeviceId =
-      oldTrack
-        ?.getSettings?.()
-        ?.deviceId ||
-      "";
-
-
-    const replacementDeviceId =
-      replacementTrack
-        ?.getSettings?.()
-        ?.deviceId ||
-      "";
-
-
     if (
+      result &&
       oldDeviceId &&
-      replacementDeviceId &&
-      oldDeviceId ===
-      replacementDeviceId &&
+      navigator.mediaDevices
+        ?.enumerateDevices
+    ) {
+
+      const selectedDeviceId =
+        result.track
+          ?.getSettings?.()
+          ?.deviceId ||
+        "";
+
+
+      if (
+        selectedDeviceId ===
+        oldDeviceId
+      ) {
+
+        const devices =
+          await navigator.mediaDevices
+            .enumerateDevices();
+
+
+        const cameras =
+          devices.filter(
+            device =>
+              device.kind ===
+              "videoinput" &&
+              device.deviceId &&
+              device.deviceId !==
+              oldDeviceId
+          );
+
+
+        /*
+          Prefer a device whose label
+          looks like the requested side.
+        */
+        const wantedLabel =
+
+          targetFacingMode ===
+            "environment"
+
+            ? /back|rear|environment|world/i
+
+            : /front|user|face/i;
+
+
+        const preferredCamera =
+
+          cameras.find(
+            device =>
+              wantedLabel.test(
+                device.label || ""
+              )
+          )
+
+          ||
+
+          cameras[0];
+
+
+        if (
+          preferredCamera
+        ) {
+
+          /*
+            Close the duplicate stream.
+          */
+          result.stream
+            .getTracks()
+            .forEach(
+              mediaTrack =>
+                mediaTrack.stop()
+            );
+
+
+          const deviceResult =
+            await tryOpenCamera(
+              {
+                deviceId: {
+                  exact:
+                    preferredCamera.deviceId
+                }
+              }
+            );
+
+
+          if (
+            deviceResult
+          ) {
+
+            result =
+              deviceResult;
+
+          }
+
+        }
+
+      }
+
+    }
+
+
+    /*
+      Last fallback:
+      directly enumerate cameras.
+    */
+    if (
+      !result &&
       navigator.mediaDevices
         ?.enumerateDevices
     ) {
@@ -2783,81 +2906,73 @@ export function initBlueSpaceCalling({
           .enumerateDevices();
 
 
-      const alternativeCamera =
-        devices
-          .filter(
-            device =>
-              device.kind ===
-              "videoinput"
-          )
-          .find(
-            device =>
-              device.deviceId &&
-              device.deviceId !==
-              oldDeviceId
-          );
+      const cameras =
+        devices.filter(
+          device =>
+            device.kind ===
+            "videoinput" &&
+            device.deviceId &&
+            device.deviceId !==
+            oldDeviceId
+        );
+
+
+      const wantedLabel =
+
+        targetFacingMode ===
+          "environment"
+
+          ? /back|rear|environment|world/i
+
+          : /front|user|face/i;
+
+
+      const preferredCamera =
+
+        cameras.find(
+          device =>
+            wantedLabel.test(
+              device.label || ""
+            )
+        )
+
+        ||
+
+        cameras[0];
 
 
       if (
-        alternativeCamera
+        preferredCamera
       ) {
 
-        /*
-          Stop the duplicate camera
-          stream first.
-        */
-        replacementStream
-          .getTracks()
-          .forEach(
-            track =>
-              track.stop()
-          );
-
-
-        replacementStream =
-          await navigator.mediaDevices
-            .getUserMedia(
-              {
-                audio: false,
-
-                video: {
-                  deviceId: {
-                    exact:
-                      alternativeCamera
-                        .deviceId
-                  }
-                }
+        result =
+          await tryOpenCamera(
+            {
+              deviceId: {
+                exact:
+                  preferredCamera.deviceId
               }
-            );
-
-
-        replacementTrack =
-          replacementStream
-            .getVideoTracks()[0];
+            }
+          );
 
       }
 
     }
 
 
-    if (
-      !replacementTrack
-    ) {
+    if (!result) {
 
-      throw new Error(
-        "No second camera is available."
+      throw (
+        lastError ||
+        new Error(
+          "No alternative camera could be opened."
+        )
       );
 
     }
 
 
-    return {
-      stream:
-        replacementStream,
-
-      track:
-        replacementTrack
-    };
+    return result;
 
   }
 
@@ -2880,10 +2995,8 @@ export function initBlueSpaceCalling({
 
 
     /*
-      Screen share currently replaces the
-      outgoing camera track.
-  
-      Do not interfere with that.
+      Do not interfere with
+      screen sharing.
     */
     if (
       screenSharing
@@ -2895,8 +3008,7 @@ export function initBlueSpaceCalling({
 
 
     /*
-      If camera is turned off,
-      don't switch behind the scenes.
+      Camera is currently disabled.
     */
     if (
       cameraDisabled
@@ -2921,6 +3033,36 @@ export function initBlueSpaceCalling({
     }
 
 
+    const oldSettings =
+      oldVideoTrack
+        .getSettings?.() ||
+      {};
+
+
+    const oldDeviceId =
+      oldSettings.deviceId ||
+      "";
+
+
+    /*
+      Save this in case switching fails
+      and we need to restore the camera.
+    */
+    const previousFacingMode =
+
+      oldSettings.facingMode ===
+        "environment"
+
+        ? "environment"
+
+        : oldSettings.facingMode ===
+          "user"
+
+          ? "user"
+
+          : currentFacingMode;
+
+
     const targetFacingMode =
 
       currentFacingMode ===
@@ -2929,6 +3071,53 @@ export function initBlueSpaceCalling({
         ? "user"
 
         : "environment";
+
+
+    /*
+      Phones frequently cannot open
+      front + rear cameras simultaneously.
+  
+      If we're on a phone/tablet OR the
+      track reports user/environment,
+      release the active camera FIRST.
+    */
+    const mobileDevice =
+      /Android|iPhone|iPad|iPod/i
+        .test(
+          navigator.userAgent
+        );
+
+
+    const facingCamera =
+      oldSettings.facingMode ===
+      "user" ||
+      oldSettings.facingMode ===
+      "environment";
+
+
+    const releaseOldCameraFirst =
+      mobileDevice ||
+      facingCamera;
+
+
+    /*
+      Keep a reference to the existing
+      WebRTC sender.
+  
+      We do NOT recreate the call.
+    */
+    const videoSender =
+      peerConnection
+        ?.getSenders()
+        ?.find(
+          sender =>
+
+            sender.track ===
+            oldVideoTrack ||
+
+            sender.track?.kind ===
+            "video"
+        );
 
 
     switchingCamera =
@@ -2946,12 +3135,45 @@ export function initBlueSpaceCalling({
       null;
 
 
+    let oldCameraReleased =
+      false;
+
+
     try {
+
+      /* ════════════════════════════════════
+         MOBILE FIX
+  
+         Release current camera BEFORE
+         requesting the opposite camera.
+      ════════════════════════════════════ */
+
+      if (
+        releaseOldCameraFirst
+      ) {
+
+        localStream.removeTrack(
+          oldVideoTrack
+        );
+
+
+        oldVideoTrack.stop();
+
+
+        oldCameraReleased =
+          true;
+
+      }
+
+
+      /* ════════════════════════════════════
+         OPEN OTHER CAMERA
+      ════════════════════════════════════ */
 
       const replacement =
         await getReplacementCamera(
           targetFacingMode,
-          oldVideoTrack
+          oldDeviceId
         );
 
 
@@ -2968,41 +3190,22 @@ export function initBlueSpaceCalling({
       ) {
 
         throw new Error(
-          "The new camera could not be opened."
+          "The requested camera did not return a video track."
         );
 
       }
 
 
-      /*
-        Keep Camera On/Off state consistent.
-      */
       newVideoTrack.enabled =
         !cameraDisabled;
 
 
-      /*
-        Find the EXISTING WebRTC
-        video sender.
+      /* ════════════════════════════════════
+         CHANGE WEBRTC VIDEO ONLY
   
-        We do not create another
-        PeerConnection.
-      */
-      const videoSender =
-        peerConnection
-          ?.getSenders()
-          ?.find(
-            sender =>
-              sender.track?.kind ===
-              "video"
-          );
+         Microphone and call stay alive.
+      ════════════════════════════════════ */
 
-
-      /*
-        If the WebRTC connection has
-        already been created, replace
-        only its video track.
-      */
       if (
         videoSender
       ) {
@@ -3015,80 +3218,37 @@ export function initBlueSpaceCalling({
 
 
       /*
-        Replace only the video track
-        inside our existing localStream.
-  
-        Microphone track remains intact.
+        On desktop we may not have
+        removed the old camera yet.
       */
-      localStream.removeTrack(
-        oldVideoTrack
-      );
+      if (
+        !oldCameraReleased
+      ) {
 
+        localStream.removeTrack(
+          oldVideoTrack
+        );
 
-      localStream.addTrack(
-        newVideoTrack
-      );
+      }
 
 
       /*
-        Refresh our small local preview.
+        Prevent duplicate video tracks.
       */
-      localVideo.srcObject =
-        localStream;
-
-
-      /*
-        Find what the browser actually
-        selected.
-      */
-      const actualFacingMode =
-        newVideoTrack
-          .getSettings?.()
-          ?.facingMode;
-
-
-      currentFacingMode =
-
-        actualFacingMode === "user" ||
-          actualFacingMode ===
-          "environment"
-
-          ? actualFacingMode
-
-          : targetFacingMode;
-
-
-      /*
-        New camera is now active,
-        so the previous track can stop.
-      */
-      oldVideoTrack.stop();
-
-    }
-
-    catch (error) {
-
-      console.error(
-        "CAMERA SWITCH ERROR:",
-        error
-      );
-
-
-      /*
-        If switching failed, clean up
-        only the newly requested stream.
-  
-        Existing camera stays intact.
-      */
-      replacementStream
-        ?.getTracks()
+      localStream
+        .getVideoTracks()
         .forEach(
           track => {
 
             if (
               track !==
-              oldVideoTrack
+              newVideoTrack
             ) {
+
+              localStream.removeTrack(
+                track
+              );
+
 
               try {
 
@@ -3106,10 +3266,261 @@ export function initBlueSpaceCalling({
         );
 
 
-      alert(
-        "Unable to switch camera. " +
-        "This device may only have one available camera."
+      localStream.addTrack(
+        newVideoTrack
       );
+
+
+      /*
+        Update our local picture.
+      */
+      localVideo.srcObject =
+        localStream;
+
+
+      /*
+        Find what camera the browser
+        actually selected.
+      */
+      const newSettings =
+        newVideoTrack
+          .getSettings?.() ||
+        {};
+
+
+      if (
+        newSettings.facingMode ===
+        "user" ||
+        newSettings.facingMode ===
+        "environment"
+      ) {
+
+        currentFacingMode =
+          newSettings.facingMode;
+
+      }
+
+      else {
+
+        currentFacingMode =
+          targetFacingMode;
+
+      }
+
+
+      /*
+        Desktop old track may still
+        be running.
+      */
+      if (
+        oldVideoTrack.readyState !==
+        "ended"
+      ) {
+
+        oldVideoTrack.stop();
+
+      }
+
+
+      console.log(
+        "CAMERA SWITCHED:",
+        {
+          requested:
+            targetFacingMode,
+
+          actual:
+            currentFacingMode,
+
+          deviceId:
+            newSettings.deviceId ||
+            ""
+        }
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "CAMERA SWITCH ERROR:",
+        error?.name,
+        error?.message,
+        error
+      );
+
+
+      /*
+        Clean up any half-open
+        replacement camera.
+      */
+      replacementStream
+        ?.getTracks()
+        .forEach(
+          track => {
+
+            try {
+
+              track.stop();
+
+            }
+
+            catch {
+              // Already stopped.
+            }
+
+          }
+        );
+
+
+      /*
+        IMPORTANT:
+  
+        If we had to stop the front camera
+        before requesting the rear camera,
+        try to restore the original camera
+        rather than leaving the call black.
+      */
+      if (
+        oldCameraReleased
+      ) {
+
+        try {
+
+          const recovery =
+            await getReplacementCamera(
+              previousFacingMode,
+              ""
+            );
+
+
+          const recoveryTrack =
+            recovery.track;
+
+
+          recoveryTrack.enabled =
+            !cameraDisabled;
+
+
+          if (
+            videoSender
+          ) {
+
+            await videoSender.replaceTrack(
+              recoveryTrack
+            );
+
+          }
+
+
+          /*
+            Make sure localStream contains
+            only this restored camera.
+          */
+          localStream
+            .getVideoTracks()
+            .forEach(
+              track => {
+
+                localStream.removeTrack(
+                  track
+                );
+
+
+                try {
+
+                  track.stop();
+
+                }
+
+                catch {
+                  // Ignore.
+                }
+
+              }
+            );
+
+
+          localStream.addTrack(
+            recoveryTrack
+          );
+
+
+          localVideo.srcObject =
+            localStream;
+
+
+          const recoveryFacing =
+            recoveryTrack
+              .getSettings?.()
+              ?.facingMode;
+
+
+          currentFacingMode =
+
+            recoveryFacing ===
+              "user" ||
+              recoveryFacing ===
+              "environment"
+
+              ? recoveryFacing
+
+              : previousFacingMode;
+
+        }
+
+        catch (
+        recoveryError
+        ) {
+
+          console.error(
+            "CAMERA RECOVERY ERROR:",
+            recoveryError
+          );
+
+        }
+
+      }
+
+
+      /*
+        Better error message for debugging.
+      */
+      const errorName =
+        error?.name ||
+        "";
+
+
+      if (
+        errorName ===
+        "NotFoundError" ||
+        errorName ===
+        "OverconstrainedError"
+      ) {
+
+        alert(
+          "No other camera was found on this device."
+        );
+
+      }
+
+      else if (
+        errorName ===
+        "NotAllowedError"
+      ) {
+
+        alert(
+          "Camera permission was not granted."
+        );
+
+      }
+
+      else {
+
+        alert(
+          "Unable to switch camera. Please check that the browser has permission to use both cameras."
+        );
+
+      }
 
     }
 
@@ -3125,15 +3536,9 @@ export function initBlueSpaceCalling({
 
   }
 
-
   /* ══════════════════════════════════════
    SCREEN SHARE
 ══════════════════════════════════════ */
-
-
-  /* ──────────────────────────────────────
-     UPDATE SHARE BUTTON
-  ────────────────────────────────────── */
 
   function updateScreenShareButton() {
 
