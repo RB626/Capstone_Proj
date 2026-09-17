@@ -837,6 +837,17 @@ export function initBlueSpaceCalling({
     }
   );
 
+  function supportsBlueSpaceScreenShare() {
+
+    return Boolean(
+      navigator.mediaDevices &&
+      typeof navigator.mediaDevices
+        .getDisplayMedia ===
+      "function"
+    );
+
+  }
+
 
   /* ══════════════════════════════════════
      UI
@@ -928,11 +939,25 @@ export function initBlueSpaceCalling({
       screenBtn
     ) {
 
+      const screenShareSupported =
+        supportsBlueSpaceScreenShare();
+
+
       screenBtn.hidden =
-        type !== "video";
+
+        type !== "video" ||
+
+        !screenShareSupported;
+
 
       screenBtn.disabled =
         true;
+
+
+      screenBtn.title =
+        screenShareSupported
+          ? "Share screen"
+          : "Screen sharing is not available on this browser";
 
     }
 
@@ -1484,7 +1509,8 @@ export function initBlueSpaceCalling({
 
             if (
               screenBtn &&
-              activeCallType === "video"
+              activeCallType === "video" &&
+              supportsBlueSpaceScreenShare()
             ) {
 
               screenBtn.disabled =
