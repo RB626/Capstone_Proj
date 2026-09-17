@@ -513,7 +513,7 @@
 
 
                 <div class="chat-drop-subtitle">
-                  Photos and supported files
+                  Photos, videos and supported files
                 </div>
 
               </div>
@@ -608,15 +608,16 @@
             <div class="chat-input-area">
 
               <!-- PHOTO / FILE ATTACHMENT -->
-              <button type="button" class="chat-image-btn" id="chatImageBtn" aria-label="Attach photo or file"
-                title="Attach photo or file">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
-                  <path d="M0 0h16v16H0z" fill="none" />
-                  <g fill="currentColor">
-                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0" />
-                    <path
-                      d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71l-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z" />
-                  </g>
+              <button type="button" class="chat-image-btn" id="chatImageBtn" aria-label="Attach photo, video or file"
+                title="Attach photo, video or file">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                viewBox="0 0 16 16">
+                <path d="M0 0h16v16H0z" fill="none" />
+                <g fill="currentColor">
+                  <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0" />
+                  <path
+                    d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71l-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z" />
+                </g>
                 </svg>
               </button>
 
@@ -624,6 +625,15 @@
               <!-- HIDDEN DEVICE FILE PICKER -->
               <input type="file" id="chatAttachmentInput" class="chat-attachment-input" multiple accept="
     image/*,
+    video/mp4,
+    video/webm,
+    video/quicktime,
+    video/3gpp,
+    .mp4,
+    .webm,
+    .mov,
+    .m4v,
+    .3gp,
     .pdf,
     .doc,
     .docx,
@@ -14219,6 +14229,7 @@ ${description
 
       if (
         text === "You sent a photo" ||
+        text === "You sent a video" ||
         text === "You sent an attachment"
       ) {
 
@@ -14278,6 +14289,52 @@ ${description
 
       }
 
+      /* ════════════════════════════════════
+         VIDEO
+      ════════════════════════════════════ */
+
+      const isVideoMessage =
+
+        text === "Sent a video" ||
+
+        text === "🎥 Video";
+
+
+      if (
+        isVideoMessage
+      ) {
+
+        /*
+          Employer sent video.
+        */
+        if (
+          lastSenderId &&
+          lastSenderId ===
+          auth.currentUser?.uid
+        ) {
+
+          return "You sent a video";
+
+        }
+
+
+        /*
+          Job Seeker sent video.
+        */
+        if (
+          lastSenderId &&
+          lastSenderId !==
+          auth.currentUser?.uid
+        ) {
+
+          return `${firstName} sent a video`;
+
+        }
+
+
+        return "Sent a video";
+
+      }
 
       /* ════════════════════════════════════
          FILE / ATTACHMENT
@@ -14503,11 +14560,23 @@ ${description
       );
 
 
-    /*
-      15 MB maximum per attachment.
-    */
-    const CHAT_ATTACHMENT_MAX_SIZE =
-      15 * 1024 * 1024;
+    /* ══════════════════════════════════════
+   CHAT UPLOAD LIMITS
+══════════════════════════════════════ */
+
+    /* Photos: 10 MB */
+    const CHAT_IMAGE_MAX_SIZE =
+      10 * 1024 * 1024;
+
+
+    /* Videos: 25 MB */
+    const CHAT_VIDEO_MAX_SIZE =
+      25 * 1024 * 1024;
+
+
+    /* Documents / ZIP / etc: 10 MB */
+    const CHAT_FILE_MAX_SIZE =
+      10 * 1024 * 1024;
 
 
     /*
@@ -14529,6 +14598,21 @@ ${description
         "rar"
       ]);
 
+    /*
+Supported video extensions.
+
+Extension fallback is important for
+phones that return an empty MIME type.
+*/
+    const CHAT_ALLOWED_VIDEO_EXTENSIONS =
+      new Set([
+        "mp4",
+        "webm",
+        "mov",
+        "m4v",
+        "3gp"
+      ]);
+
 
     /* ══════════════════════════════════════
        GET FILE EXTENSION
@@ -14546,6 +14630,80 @@ ${description
       return parts.length > 1
         ? parts.pop()
         : "";
+
+    }
+
+    /* ══════════════════════════════════════
+   CHAT UPLOAD CONTENT TYPE
+
+   Some phones return file.type = ""
+   even for valid videos.
+══════════════════════════════════════ */
+
+    function getChatUploadContentType(
+      file
+    ) {
+
+      const browserType =
+        String(
+          file?.type || ""
+        ).trim();
+
+
+      if (
+        browserType &&
+        browserType !==
+        "application/octet-stream"
+      ) {
+
+        return browserType;
+
+      }
+
+
+      const extension =
+        getChatFileExtension(
+          file?.name
+        );
+
+
+      const videoMimeTypes = {
+
+        mp4:
+          "video/mp4",
+
+        webm:
+          "video/webm",
+
+        mov:
+          "video/quicktime",
+
+        m4v:
+          "video/mp4",
+
+        "3gp":
+          "video/3gpp"
+
+      };
+
+
+      if (
+        videoMimeTypes[
+        extension
+        ]
+      ) {
+
+        return videoMimeTypes[
+          extension
+        ];
+
+      }
+
+
+      return (
+        browserType ||
+        "application/octet-stream"
+      );
 
     }
 
@@ -14656,36 +14814,10 @@ ${description
       }
 
 
-      if (
-        file.size >
-        CHAT_ATTACHMENT_MAX_SIZE
-      ) {
-
-        return {
-          valid: false,
-          message:
-            "The file is too large. Maximum size is 15 MB."
-        };
-
-      }
-
-
-      const isImage =
+      const mimeType =
         String(
           file.type || ""
-        ).startsWith(
-          "image/"
-        );
-
-
-      if (isImage) {
-
-        return {
-          valid: true,
-          messageType: "image"
-        };
-
-      }
+        ).toLowerCase();
 
 
       const extension =
@@ -14694,9 +14826,93 @@ ${description
         );
 
 
+      /* ════════════════════════════════════
+         PHOTO
+      ════════════════════════════════════ */
+
+      const isImage =
+        mimeType.startsWith(
+          "image/"
+        );
+
+
+      if (isImage) {
+
+        if (
+          file.size >
+          CHAT_IMAGE_MAX_SIZE
+        ) {
+
+          return {
+            valid: false,
+            message:
+              "Photo is too large. Maximum photo size is 10 MB."
+          };
+
+        }
+
+
+        return {
+          valid: true,
+          messageType:
+            "image"
+        };
+
+      }
+
+
+      /* ════════════════════════════════════
+         VIDEO
+      ════════════════════════════════════ */
+
+      const isVideo =
+
+        mimeType.startsWith(
+          "video/"
+        )
+
+        ||
+
+        CHAT_ALLOWED_VIDEO_EXTENSIONS
+          .has(
+            extension
+          );
+
+
+      if (isVideo) {
+
+        if (
+          file.size >
+          CHAT_VIDEO_MAX_SIZE
+        ) {
+
+          return {
+            valid: false,
+            message:
+              "Video is too large. Maximum video size is 25 MB."
+          };
+
+        }
+
+
+        return {
+          valid: true,
+          messageType:
+            "video"
+        };
+
+      }
+
+
+      /* ════════════════════════════════════
+         DOCUMENT / FILE
+      ════════════════════════════════════ */
+
       if (
         !CHAT_ALLOWED_FILE_EXTENSIONS
-          .has(extension)
+          .has(
+            extension
+          )
       ) {
 
         return {
@@ -14708,13 +14924,27 @@ ${description
       }
 
 
+      if (
+        file.size >
+        CHAT_FILE_MAX_SIZE
+      ) {
+
+        return {
+          valid: false,
+          message:
+            "Attachment is too large. Maximum attachment size is 10 MB."
+        };
+
+      }
+
+
       return {
         valid: true,
-        messageType: "file"
+        messageType:
+          "file"
       };
 
     }
-
 
     /* ══════════════════════════════════════
        SEND ATTACHMENT
@@ -14804,7 +15034,7 @@ ${description
         users/{uid}/...
       */
       const filePath =
-        `users/${senderId}/chatAttachments/${activeConversationId}/${uniqueFileName}`;
+        `employers/${senderId}/chatAttachments/${activeConversationId}/${uniqueFileName}`;
 
 
       const storageReference =
@@ -14861,8 +15091,9 @@ ${description
           file,
           {
             contentType:
-              file.type ||
-              "application/octet-stream"
+              getChatUploadContentType(
+                file
+              )
           }
         );
 
@@ -14914,8 +15145,9 @@ ${description
                 "Attachment",
 
               mimeType:
-                file.type ||
-                "application/octet-stream",
+                getChatUploadContentType(
+                  file
+                ),
 
               size:
                 Number(
@@ -14944,7 +15176,11 @@ ${description
 
             ? "Sent a photo"
 
-            : "Sent an attachment";
+            : messageType === "video"
+
+              ? "Sent a video"
+
+              : "Sent an attachment";
 
 
         await setDoc(
@@ -14980,12 +15216,11 @@ ${description
           behavior.
         */
         const immediateSidebarPreview =
-
           messageType === "image"
-
             ? "You sent a photo"
-
-            : "You sent an attachment";
+            : messageType === "video"
+              ? "You sent a video"
+              : "You sent an attachment";
 
 
         updateConversationSidebarPreview(
@@ -15064,12 +15299,12 @@ ${description
 
           chatImageButton.setAttribute(
             "aria-label",
-            "Attach photo or file"
+            "Attach photo, video or file"
           );
 
           chatImageButton.setAttribute(
             "title",
-            "Attach photo or file"
+            "Attach photo, video or file"
           );
 
         }
@@ -15304,7 +15539,9 @@ ${description
           This does NOT upload anything.
         */
         const previewURL =
-          messageType === "image"
+
+          messageType === "image" ||
+            messageType === "video"
 
             ? URL.createObjectURL(
               file
@@ -15638,7 +15875,11 @@ ${description
         card.className =
           `chat-pending-item ${item.messageType === "image"
             ? "is-image"
-            : "is-file"
+
+            : item.messageType === "video"
+              ? "is-video"
+
+              : "is-file"
           }`;
 
 
@@ -15672,6 +15913,47 @@ ${description
 
           card.appendChild(
             image
+          );
+
+        }
+
+        /* ────────────────────────────────
+   VIDEO PREVIEW
+──────────────────────────────── */
+
+        else if (
+          item.messageType ===
+          "video"
+        ) {
+
+          const video =
+            document.createElement(
+              "video"
+            );
+
+
+          video.className =
+            "chat-pending-video";
+
+
+          video.src =
+            item.previewURL;
+
+
+          video.muted =
+            true;
+
+
+          video.playsInline =
+            true;
+
+
+          video.preload =
+            "metadata";
+
+
+          card.appendChild(
+            video
           );
 
         }
@@ -17120,6 +17402,7 @@ ${description
       bubble.classList.remove(
         "chat-attachment-bubble",
         "chat-image-bubble",
+        "chat-video-bubble",
         "chat-file-bubble"
       );
 
@@ -17142,14 +17425,24 @@ ${description
 
       const isImage =
         storedType === "image" ||
-        mimeType.startsWith("image/");
+        mimeType.startsWith(
+          "image/"
+        );
+
+
+      const isVideo =
+        storedType === "video" ||
+        mimeType.startsWith(
+          "video/"
+        );
 
 
       const isFile =
         storedType === "file" ||
         (
           attachment &&
-          !isImage
+          !isImage &&
+          !isVideo
         );
 
       /* ════════════════════════════════════
@@ -17358,6 +17651,104 @@ ${description
         */
         image.src =
           imageURL;
+
+
+        return;
+
+      }
+
+      /* ════════════════════════════════════
+   VIDEO MESSAGE
+════════════════════════════════════ */
+
+      if (
+        attachment &&
+        isVideo
+      ) {
+
+        const videoURL =
+          String(
+            attachment.url || ""
+          ).trim();
+
+
+        if (!videoURL) {
+
+          bubble.textContent =
+            "Video unavailable.";
+
+          return;
+
+        }
+
+
+        bubble.classList.add(
+          "chat-attachment-bubble",
+          "chat-video-bubble"
+        );
+
+
+        const video =
+          document.createElement(
+            "video"
+          );
+
+
+        video.className =
+          "chat-message-video";
+
+
+        video.src =
+          videoURL;
+
+
+        video.controls =
+          true;
+
+
+        video.playsInline =
+          true;
+
+
+        /*
+          Only load basic video metadata
+          until the user presses Play.
+        */
+        video.preload =
+          "metadata";
+
+
+        /*
+          Messenger-like behavior:
+          do NOT automatically play videos.
+        */
+        video.autoplay =
+          false;
+
+
+        video.setAttribute(
+          "aria-label",
+          attachment.name ||
+          "Shared video"
+        );
+
+
+        video.addEventListener(
+          "error",
+          () => {
+
+            console.error(
+              "CHAT VIDEO FAILED TO LOAD:",
+              videoURL
+            );
+
+          }
+        );
+
+
+        bubble.appendChild(
+          video
+        );
 
 
         return;

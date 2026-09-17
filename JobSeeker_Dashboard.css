@@ -11698,3 +11698,76 @@ body.dark-mode .chat-pending-remove {
   }
 
 }
+
+/* ══════════════════════════════════════
+   CHAT VIDEO ATTACHMENTS
+══════════════════════════════════════ */
+
+/* Pending video before Send */
+.chat-pending-item.is-video {
+  width: 100px;
+  max-width: 100px;
+  overflow: visible;
+}
+
+
+.chat-pending-video {
+  display: block;
+
+  width: 100px;
+  height: 60px;
+
+  object-fit: cover;
+
+  border-radius: 12px;
+
+  background: #111827;
+}
+
+
+/* Sent video bubble */
+.chat-video-bubble {
+  padding: 0 !important;
+
+  overflow: hidden;
+
+  background: transparent !important;
+}
+
+
+.chat-message-video {
+  display: block;
+
+  width: min(420px,
+      65vw);
+
+  max-width: 100%;
+
+  max-height: 420px;
+
+  object-fit: contain;
+
+  border-radius: 15px;
+
+  background: #000000;
+}
+
+
+/* MOBILE */
+@media (max-width: 600px) {
+
+  .chat-pending-item.is-video,
+  .chat-pending-video {
+    width: 86px;
+    height: 54px;
+  }
+
+
+  .chat-message-video {
+    width: min(300px,
+        76vw);
+
+    max-height: 360px;
+  }
+
+}
