@@ -2772,7 +2772,171 @@
 
       }
 
+      /* ══════════════════════════════════════
+         FORMAT CONVERSATION PREVIEW
+      ══════════════════════════════════════ */
 
+      function formatConversationPreview(
+        conversation,
+        employerName = "Employer"
+      ) {
+
+        const text =
+          String(
+            conversation?.lastMessage || ""
+          ).trim();
+
+
+        const lastSenderId =
+          String(
+            conversation?.lastMessageSenderId || ""
+          ).trim();
+
+
+        /* ════════════════════════════════════
+           EMPLOYER FIRST NAME
+      
+           Example:
+           RB O. Belas
+           ↓
+           RB
+        ════════════════════════════════════ */
+
+        const firstName =
+          String(
+            employerName || "Employer"
+          )
+            .trim()
+            .split(/\s+/)[0] ||
+          "Employer";
+
+
+        /* ════════════════════════════════════
+           PHOTO PREVIEW
+        ════════════════════════════════════ */
+
+        const isPhotoMessage =
+
+          text === "Sent a photo" ||
+
+          text === "📷 Photo";
+
+
+        if (
+          isPhotoMessage
+        ) {
+
+          /*
+            Job Seeker sent photo.
+          */
+          if (
+            lastSenderId &&
+            lastSenderId ===
+            auth.currentUser?.uid
+          ) {
+
+            return "You sent a photo";
+
+          }
+
+
+          /*
+            Employer sent photo.
+          */
+          if (
+            lastSenderId &&
+            lastSenderId !==
+            auth.currentUser?.uid
+          ) {
+
+            return `${firstName} sent a photo`;
+
+          }
+
+
+          /*
+            Older conversation without
+            sender information.
+          */
+          return "Sent a photo";
+
+        }
+
+
+        /* ════════════════════════════════════
+           FILE / ATTACHMENT PREVIEW
+      
+           Supports BOTH:
+      
+           New:
+           Sent an attachment
+      
+           Old:
+           📎 Resume.pdf
+           📎 rules.docx
+           📎 File
+        ════════════════════════════════════ */
+
+        const isAttachmentMessage =
+
+          text === "Sent an attachment" ||
+
+          text.startsWith(
+            "📎"
+          );
+
+
+        if (
+          isAttachmentMessage
+        ) {
+
+          /*
+            Job Seeker sent file.
+          */
+          if (
+            lastSenderId &&
+            lastSenderId ===
+            auth.currentUser?.uid
+          ) {
+
+            return "You sent an attachment";
+
+          }
+
+
+          /*
+            Employer sent file.
+          */
+          if (
+            lastSenderId &&
+            lastSenderId !==
+            auth.currentUser?.uid
+          ) {
+
+            return `${firstName} sent an attachment`;
+
+          }
+
+
+          /*
+            Older attachment where we don't
+            know who sent it.
+          */
+          return "Sent an attachment";
+
+        }
+
+
+        /* ════════════════════════════════════
+           NORMAL TEXT MESSAGE
+        ════════════════════════════════════ */
+
+        return (
+          text ||
+          "Conversation started"
+        );
+
+      }
 
       /* ══════════════════════════════════════
          CREATE ONE CONVERSATION ROW
@@ -2811,8 +2975,10 @@
 
 
         const lastMessage =
-          conversation.lastMessage ||
-          "Conversation started";
+          formatConversationPreview(
+            conversation,
+            employerName
+          );
 
 
         const updatedAt =
@@ -3071,9 +3237,12 @@
 
 
         /* Last message */
+        /* Last message */
         const previewText =
-          conversation.lastMessage ||
-          "Conversation started";
+          formatConversationPreview(
+            conversation,
+            employerName
+          );
 
 
         const previewElement =
@@ -4753,10 +4922,12 @@
         ──────────────────────────────── */
 
         const lastMessageText =
+
           messageType === "image"
-            ? "📷 Photo"
-            : `📎 ${file.name ||
-            "File"}`;
+
+            ? "Sent a photo"
+
+            : "Sent an attachment";
 
 
         await setDoc(
@@ -4769,6 +4940,16 @@
 
             lastMessage:
               lastMessageText,
+
+
+            /*
+              NEW:
+              tells both dashboards who sent
+              the latest attachment.
+            */
+            lastMessageSenderId:
+              senderId,
+
 
             updatedAt:
               serverTimestamp()
@@ -4784,9 +4965,15 @@
           Keep your existing realtime sidebar
           behavior.
         */
+        const immediateSidebarPreview =
+          messageType === "image"
+            ? "You sent a photo"
+            : "You sent an attachment";
+
+
         updateConversationSidebarPreview(
           activeConversationId,
-          lastMessageText
+          immediateSidebarPreview
         );
 
 

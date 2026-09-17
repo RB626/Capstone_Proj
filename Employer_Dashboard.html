@@ -11857,8 +11857,10 @@
 
             /* Last message */
             const lastMessage =
-              conversation.lastMessage ||
-              "Conversation started";
+              formatEmployerConversationPreview(
+                conversation,
+                applicantName
+              );
 
 
             const previewElement =
@@ -12282,8 +12284,10 @@
         realtimeApplicant.photoURL;
 
       const lastMessage =
-        conversation.lastMessage ||
-        "Conversation started";
+        formatEmployerConversationPreview(
+          conversation,
+          applicantName
+        );
 
       const updatedAtText =
         conversation.updatedAt
@@ -14141,6 +14145,206 @@ ${description
     }
 
     /* ══════════════════════════════════════
+   FORMAT CONVERSATION PREVIEW
+
+   Converts older stored photo preview:
+   📷 Photo
+
+   into:
+   Sent a photo
+══════════════════════════════════════ */
+
+    function formatEmployerConversationPreview(
+      valueOrConversation,
+      applicantName = "Applicant"
+    ) {
+
+      /*
+        Supports:
+    
+        1. Full Firestore conversation object
+        2. Plain text from instant sidebar update
+      */
+      const isConversationObject =
+
+        valueOrConversation &&
+
+        typeof valueOrConversation ===
+        "object" &&
+
+        !Array.isArray(
+          valueOrConversation
+        );
+
+
+      const text =
+        String(
+          isConversationObject
+            ? valueOrConversation.lastMessage || ""
+            : valueOrConversation || ""
+        ).trim();
+
+
+      const lastSenderId =
+        String(
+          isConversationObject
+            ? valueOrConversation.lastMessageSenderId || ""
+            : ""
+        ).trim();
+
+
+      /* ════════════════════════════════════
+         JOB SEEKER FIRST NAME
+    
+         RB O. Belas
+         ↓
+         RB
+      ════════════════════════════════════ */
+
+      const firstName =
+        String(
+          applicantName ||
+          "Applicant"
+        )
+          .trim()
+          .split(/\s+/)[0] ||
+        "Applicant";
+
+
+      /* ════════════════════════════════════
+         INSTANT LOCAL PREVIEWS
+    
+         Keep these exactly as they are.
+      ════════════════════════════════════ */
+
+      if (
+        text === "You sent a photo" ||
+        text === "You sent an attachment"
+      ) {
+
+        return text;
+
+      }
+
+
+      /* ════════════════════════════════════
+         PHOTO
+      ════════════════════════════════════ */
+
+      const isPhotoMessage =
+
+        text === "Sent a photo" ||
+
+        text === "📷 Photo";
+
+
+      if (
+        isPhotoMessage
+      ) {
+
+        /*
+          Employer sent photo.
+        */
+        if (
+          lastSenderId &&
+          lastSenderId ===
+          auth.currentUser?.uid
+        ) {
+
+          return "You sent a photo";
+
+        }
+
+
+        /*
+          Job Seeker sent photo.
+        */
+        if (
+          lastSenderId &&
+          lastSenderId !==
+          auth.currentUser?.uid
+        ) {
+
+          return `${firstName} sent a photo`;
+
+        }
+
+
+        /*
+          Old conversation without
+          sender information.
+        */
+        return "Sent a photo";
+
+      }
+
+
+      /* ════════════════════════════════════
+         FILE / ATTACHMENT
+      ════════════════════════════════════ */
+
+      const isAttachmentMessage =
+
+        text === "Sent an attachment" ||
+
+        text.startsWith(
+          "📎"
+        );
+
+
+      if (
+        isAttachmentMessage
+      ) {
+
+        /*
+          Employer sent attachment.
+        */
+        if (
+          lastSenderId &&
+          lastSenderId ===
+          auth.currentUser?.uid
+        ) {
+
+          return "You sent an attachment";
+
+        }
+
+
+        /*
+          Job Seeker sent attachment.
+        */
+        if (
+          lastSenderId &&
+          lastSenderId !==
+          auth.currentUser?.uid
+        ) {
+
+          return `${firstName} sent an attachment`;
+
+        }
+
+
+        /*
+          Old conversation without
+          sender information.
+        */
+        return "Sent an attachment";
+
+      }
+
+
+      /* ════════════════════════════════════
+         NORMAL TEXT
+      ════════════════════════════════════ */
+
+      return (
+        text ||
+        "Conversation started"
+      );
+
+    }
+
+    /* ══════════════════════════════════════
    EMPLOYER SIDEBAR — INSTANT PREVIEW
 
    Updates only the currently affected
@@ -14194,22 +14398,22 @@ ${description
 
       if (preview) {
 
+        const formattedText =
+          formatEmployerConversationPreview(
+            text
+          );
+
+
         const previewText =
 
-          String(
-            text || ""
-          ).length > 22
+          formattedText.length > 22
 
-            ? String(
-              text || ""
-            ).substring(
+            ? formattedText.substring(
               0,
               22
             ) + "..."
 
-            : String(
-              text || ""
-            );
+            : formattedText;
 
 
         if (
@@ -14735,10 +14939,12 @@ ${description
         ──────────────────────────────── */
 
         const lastMessageText =
+
           messageType === "image"
-            ? "📷 Photo"
-            : `📎 ${file.name ||
-            "File"}`;
+
+            ? "Sent a photo"
+
+            : "Sent an attachment";
 
 
         await setDoc(
@@ -14748,13 +14954,20 @@ ${description
             activeConversationId
           ),
           {
-
             lastMessage:
               lastMessageText,
 
+
+            /*
+              Allows the receiving dashboard
+              to know who sent the attachment.
+            */
+            lastMessageSenderId:
+              senderId,
+
+
             updatedAt:
               serverTimestamp()
-
           },
           {
             merge: true
@@ -14766,9 +14979,18 @@ ${description
           Keep your existing realtime sidebar
           behavior.
         */
+        const immediateSidebarPreview =
+
+          messageType === "image"
+
+            ? "You sent a photo"
+
+            : "You sent an attachment";
+
+
         updateConversationSidebarPreview(
           activeConversationId,
-          lastMessageText
+          immediateSidebarPreview
         );
 
 
