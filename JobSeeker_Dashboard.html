@@ -4169,17 +4169,180 @@
     }
 
     /* ══════════════════════════════════════
-   JOB SEEKER
-   INITIAL CHAT SCROLL AFTER LOGIN
+   CHAT — OPEN CONVERSATION AT NEWEST
 
-   Problem:
-   The conversation is loaded while the
-   Messages page is still hidden.
+   Used only when a conversation is first
+   opened.
 
-   Solution:
-   Wait until #page-messages becomes
-   visible, then jump to newest message.
+   Photos/videos may finish loading AFTER
+   the first scroll and increase the chat
+   height.
+
+   This waits for those media elements and
+   keeps the newest message visible.
 ══════════════════════════════════════ */
+
+    function scrollOpenedConversationToLatest() {
+
+      const chatMessages =
+        document.getElementById(
+          "chat-messages"
+        );
+
+
+      if (!chatMessages) {
+        return;
+      }
+
+
+      /*
+        First immediate scroll.
+      */
+      scrollChatToLatest();
+
+
+      /*
+        Find media that may still change
+        the message layout after loading.
+      */
+      const mediaElements =
+        chatMessages.querySelectorAll(
+          ".chat-message-image, .chat-message-video"
+        );
+
+
+      mediaElements.forEach(
+        media => {
+
+          /* ════════════════════════════════════
+             PHOTO
+          ════════════════════════════════════ */
+
+          if (
+            media.tagName === "IMG"
+          ) {
+
+            /*
+              Already loaded?
+              Nothing else needed.
+            */
+            if (
+              media.complete
+            ) {
+
+              return;
+
+            }
+
+
+            media.addEventListener(
+              "load",
+              () => {
+
+                /*
+                  Image height is now known.
+                  Recalculate the real bottom.
+                */
+                scrollChatToLatest();
+
+              },
+              {
+                once: true
+              }
+            );
+
+
+            media.addEventListener(
+              "error",
+              () => {
+
+                scrollChatToLatest();
+
+              },
+              {
+                once: true
+              }
+            );
+
+          }
+
+
+          /* ════════════════════════════════════
+             VIDEO
+          ════════════════════════════════════ */
+
+          else if (
+            media.tagName === "VIDEO"
+          ) {
+
+            /*
+              readyState >= 1 means metadata
+              and video dimensions are known.
+            */
+            if (
+              media.readyState >= 1
+            ) {
+
+              return;
+
+            }
+
+
+            media.addEventListener(
+              "loadedmetadata",
+              () => {
+
+                /*
+                  Video dimensions are now known.
+                  Recalculate bottom position.
+                */
+                scrollChatToLatest();
+
+              },
+              {
+                once: true
+              }
+            );
+
+
+            media.addEventListener(
+              "error",
+              () => {
+
+                scrollChatToLatest();
+
+              },
+              {
+                once: true
+              }
+            );
+
+          }
+
+        }
+      );
+
+
+      /*
+        Extra layout safety.
+    
+        Useful for Firebase images, mobile
+        browsers and slower rendering.
+      */
+      setTimeout(
+        scrollChatToLatest,
+        120
+      );
+
+
+      setTimeout(
+        scrollChatToLatest,
+        350
+      );
+
+    }
+
+
 
     let jobSeekerInitialChatScrollPending =
       true;
@@ -4271,16 +4434,7 @@
       requestAnimationFrame(
         () => {
 
-          scrollChatToLatest();
-
-
-          requestAnimationFrame(
-            () => {
-
-              scrollChatToLatest();
-
-            }
-          );
+          scrollOpenedConversationToLatest();
 
         }
       );
@@ -7703,6 +7857,45 @@ a reliable MIME type.
         video.autoplay =
           false;
 
+        /*
+Once video dimensions are known,
+keep the newest part of the chat
+visible IF the user is already
+near the bottom.
+*/
+        video.addEventListener(
+          "loadedmetadata",
+          () => {
+
+            const chatMessages =
+              document.getElementById(
+                "chat-messages"
+              );
+
+
+            if (!chatMessages) {
+              return;
+            }
+
+
+            const distanceFromBottom =
+
+              chatMessages.scrollHeight -
+              chatMessages.scrollTop -
+              chatMessages.clientHeight;
+
+
+            if (
+              distanceFromBottom < 220
+            ) {
+
+              scrollChatToLatest();
+
+            }
+
+          }
+        );
+
 
         video.setAttribute(
           "aria-label",
@@ -8434,7 +8627,7 @@ a reliable MIME type.
                     )
                   ) {
 
-                    scrollChatToLatest();
+                    scrollOpenedConversationToLatest();
 
 
                     /*
