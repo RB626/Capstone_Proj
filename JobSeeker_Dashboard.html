@@ -4652,6 +4652,10 @@
             }
             document.getElementById('chat-status').textContent = "Active recently";
             document.getElementById('chat-avatar').src = avatar;
+            refreshReceivedMessageAvatars(
+              avatar,
+              name
+            );
           } else {
             document.getElementById('chat-status').textContent = "Offline";
           }
@@ -8193,6 +8197,82 @@ near the bottom.
 
     }
 
+    /* ══════════════════════════════════════
+   RECEIVED MESSAGE PROFILE PHOTO
+══════════════════════════════════════ */
+
+    function getActiveChatParticipantAvatar() {
+
+      const headerAvatar =
+        document.getElementById(
+          "chat-avatar"
+        );
+
+
+      const headerName =
+        document.getElementById(
+          "chat-name"
+        )?.textContent
+          ?.trim() ||
+        "Employer";
+
+
+      return {
+
+        avatar:
+          headerAvatar?.src ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            headerName
+          )}&background=e5e7eb&color=64748b`,
+
+        name:
+          headerName
+
+      };
+
+    }
+
+
+    /*
+      When the Employer's realtime profile
+      finishes loading, update any message
+      avatars that were already rendered.
+    */
+    function refreshReceivedMessageAvatars(
+      avatarURL,
+      participantName = "Employer"
+    ) {
+
+      const safeAvatar =
+        String(
+          avatarURL || ""
+        ).trim();
+
+
+      if (!safeAvatar) {
+        return;
+      }
+
+
+      document
+        .querySelectorAll(
+          "#chat-messages .msg-sender-avatar"
+        )
+        .forEach(
+          image => {
+
+            image.src =
+              safeAvatar;
+
+
+            image.alt =
+              participantName;
+
+          }
+        );
+
+    }
+
     window.listenToConversationMessages =
       function (conversationId) {
 
@@ -8501,6 +8581,79 @@ near the bottom.
                           : "received"
                         }`;
 
+
+                      /* ════════════════════════════════════
+                         RECEIVED PROFILE PHOTO
+                      ════════════════════════════════════ */
+
+                      let senderAvatar =
+                        wrap.querySelector(
+                          ".msg-sender-avatar"
+                        );
+
+
+                      if (!isMine) {
+
+                        const participant =
+                          getActiveChatParticipantAvatar();
+
+
+                        /*
+                          Create the avatar only once.
+                        */
+                        if (!senderAvatar) {
+
+                          senderAvatar =
+                            document.createElement(
+                              "img"
+                            );
+
+
+                          senderAvatar.className =
+                            "msg-sender-avatar";
+
+
+                          senderAvatar.draggable =
+                            false;
+
+
+                          /*
+                            Put the photo BEFORE the bubble.
+                          */
+                          wrap.insertBefore(
+                            senderAvatar,
+                            wrap.firstChild
+                          );
+
+                        }
+
+
+                        senderAvatar.src =
+                          participant.avatar;
+
+
+                        senderAvatar.alt =
+                          participant.name;
+
+                      }
+
+
+                      /*
+                        Your own messages should never
+                        display your avatar.
+                      */
+                      else if (
+                        senderAvatar
+                      ) {
+
+                        senderAvatar.remove();
+
+                      }
+
+
+                      /* ════════════════════════════════════
+                         EXISTING MESSAGE BUBBLE
+                      ════════════════════════════════════ */
 
                       let bubble =
                         wrap.querySelector(

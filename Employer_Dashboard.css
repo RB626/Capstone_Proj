@@ -16061,3 +16061,105 @@ body.dark-mode .chat-message-video {
   }
 
 }
+
+/* ══════════════════════════════════════
+   FACEBOOK-STYLE RECEIVED MESSAGE AVATAR
+   EMPLOYER DASHBOARD
+══════════════════════════════════════ */
+
+
+/*
+  Received:
+  [avatar] [message bubble]
+*/
+.msg-bubble-wrap.received {
+  display: flex !important;
+
+  align-items: flex-end !important;
+
+  justify-content: flex-start !important;
+
+  gap: 8px !important;
+}
+
+
+/*
+  Employer's messages remain right-aligned.
+*/
+.msg-bubble-wrap.sent {
+  justify-content: flex-end !important;
+}
+
+
+/* Job Seeker profile picture */
+.msg-sender-avatar {
+  width: 32px;
+  height: 32px;
+
+  min-width: 32px;
+  min-height: 32px;
+
+  flex: 0 0 32px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+  object-position: center;
+
+  background: #f1f5f9;
+
+  border: 1px solid #e2e8f0;
+
+  user-select: none;
+
+  pointer-events: none;
+}
+
+
+/*
+  Never display an avatar beside
+  Employer's own sent messages.
+*/
+.msg-bubble-wrap.sent .msg-sender-avatar {
+  display: none !important;
+}
+
+
+/*
+  Prevent received bubble from using
+  the space reserved for the avatar.
+*/
+.msg-bubble-wrap.received .msg-bubble {
+  max-width:
+    calc(100% - 44px);
+}
+
+
+/* ══════════════════════════════════════
+   MOBILE
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  .msg-bubble-wrap.received {
+    gap: 6px !important;
+  }
+
+
+  .msg-sender-avatar {
+    width: 28px;
+    height: 28px;
+
+    min-width: 28px;
+    min-height: 28px;
+
+    flex-basis: 28px;
+  }
+
+
+  .msg-bubble-wrap.received .msg-bubble {
+    max-width:
+      calc(100% - 36px);
+  }
+
+}

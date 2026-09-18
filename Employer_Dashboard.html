@@ -11037,9 +11037,17 @@
         }
 
         if (chatAvatar) {
+
           chatAvatar.src =
             conversationAvatar;
+
         }
+
+
+        refreshReceivedMessageAvatars(
+          conversationAvatar,
+          conversationName
+        );
 
         if (!applicantId) {
           if (chatStatus) {
@@ -11138,9 +11146,21 @@
               }
 
               if (chatAvatar) {
+
                 chatAvatar.src =
                   liveAvatar;
+
               }
+
+
+              /*
+                Use the same Job Seeker photo
+                beside all received messages.
+              */
+              refreshReceivedMessageAvatars(
+                liveAvatar,
+                liveName
+              );
 
               if (chatStatus) {
                 chatStatus.textContent =
@@ -18223,6 +18243,83 @@ newest messages.
 
     }
 
+    /* ══════════════════════════════════════
+   RECEIVED MESSAGE PROFILE PHOTO
+   EMPLOYER DASHBOARD
+══════════════════════════════════════ */
+
+    function getActiveChatParticipantAvatar() {
+
+      const headerAvatar =
+        document.getElementById(
+          "chat-avatar"
+        );
+
+
+      const headerName =
+        document.getElementById(
+          "chat-name"
+        )?.textContent
+          ?.trim() ||
+        "Applicant";
+
+
+      return {
+
+        avatar:
+          headerAvatar?.src ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            headerName
+          )}&background=ccfbf1&color=0f766e`,
+
+        name:
+          headerName
+
+      };
+
+    }
+
+
+    /*
+      Update already-rendered received
+      message avatars whenever the Job
+      Seeker's live profile photo changes.
+    */
+    function refreshReceivedMessageAvatars(
+      avatarURL,
+      participantName = "Applicant"
+    ) {
+
+      const safeAvatar =
+        String(
+          avatarURL || ""
+        ).trim();
+
+
+      if (!safeAvatar) {
+        return;
+      }
+
+
+      document
+        .querySelectorAll(
+          "#chat-messages .msg-sender-avatar"
+        )
+        .forEach(
+          image => {
+
+            image.src =
+              safeAvatar;
+
+
+            image.alt =
+              participantName;
+
+          }
+        );
+
+    }
+
     // This function is now defined inside the module script
     window.listenToConversationMessages =
       function (conversationId) {
@@ -18516,6 +18613,81 @@ newest messages.
                           : "received"
                         }`;
 
+
+                      /* ════════════════════════════════════
+                         JOB SEEKER PROFILE PHOTO
+                      ════════════════════════════════════ */
+
+                      let senderAvatar =
+                        wrap.querySelector(
+                          ".msg-sender-avatar"
+                        );
+
+
+                      if (!isMine) {
+
+                        const participant =
+                          getActiveChatParticipantAvatar();
+
+
+                        /*
+                          Create the avatar only once
+                          for this message.
+                        */
+                        if (!senderAvatar) {
+
+                          senderAvatar =
+                            document.createElement(
+                              "img"
+                            );
+
+
+                          senderAvatar.className =
+                            "msg-sender-avatar";
+
+
+                          senderAvatar.draggable =
+                            false;
+
+
+                          /*
+                            Put avatar before the
+                            received message bubble.
+                          */
+                          wrap.insertBefore(
+                            senderAvatar,
+                            wrap.firstChild
+                          );
+
+                        }
+
+
+                        senderAvatar.src =
+                          participant.avatar;
+
+
+                        senderAvatar.alt =
+                          participant.name;
+
+                      }
+
+
+                      /*
+                        Employer's own messages should
+                        never show the Employer avatar.
+                      */
+                      else if (
+                        senderAvatar
+                      ) {
+
+                        senderAvatar.remove();
+
+                      }
+
+
+                      /* ════════════════════════════════════
+                         EXISTING MESSAGE BUBBLE
+                      ════════════════════════════════════ */
 
                       let bubble =
                         wrap.querySelector(

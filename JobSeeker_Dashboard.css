@@ -11771,3 +11771,104 @@ body.dark-mode .chat-pending-remove {
   }
 
 }
+
+/* ══════════════════════════════════════
+   FACEBOOK-STYLE RECEIVED MESSAGE AVATAR
+══════════════════════════════════════ */
+
+
+/*
+  Received message:
+  [photo] [bubble]
+*/
+.msg-bubble-wrap.received {
+  display: flex !important;
+
+  align-items: flex-end !important;
+
+  justify-content: flex-start !important;
+
+  gap: 8px !important;
+}
+
+
+/*
+  Keep sent messages on the right.
+*/
+.msg-bubble-wrap.sent {
+  justify-content: flex-end !important;
+}
+
+
+/* Sender profile picture */
+.msg-sender-avatar {
+  width: 32px;
+  height: 32px;
+
+  min-width: 32px;
+  min-height: 32px;
+
+  flex: 0 0 32px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  object-position: center;
+
+  background: #f1f5f9;
+
+  border: 1px solid #e2e8f0;
+
+  user-select: none;
+
+  pointer-events: none;
+}
+
+
+/*
+  Never show avatar on your own messages.
+*/
+.msg-bubble-wrap.sent .msg-sender-avatar {
+  display: none !important;
+}
+
+
+/*
+  Leave enough room for the avatar
+  on smaller layouts.
+*/
+.msg-bubble-wrap.received .msg-bubble {
+  max-width:
+    calc(100% - 44px);
+}
+
+
+/* ══════════════════════════════════════
+   MOBILE
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  .msg-bubble-wrap.received {
+    gap: 6px !important;
+  }
+
+
+  .msg-sender-avatar {
+    width: 28px;
+    height: 28px;
+
+    min-width: 28px;
+    min-height: 28px;
+
+    flex-basis: 28px;
+  }
+
+
+  .msg-bubble-wrap.received .msg-bubble {
+    max-width:
+      calc(100% - 36px);
+  }
+
+}
