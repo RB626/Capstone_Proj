@@ -6744,12 +6744,36 @@ a reliable MIME type.
         );
 
         await setDoc(
-          doc(db, "conversations", activeConversationId),
+          doc(
+            db,
+            "conversations",
+            activeConversationId
+          ),
           {
-            lastMessage: trimmed,
-            updatedAt: serverTimestamp()
+
+            lastMessage:
+              trimmed,
+
+
+            /*
+              Keep sender tracking consistent
+              with photo/video/file messages.
+            */
+            lastMessageSenderId:
+              auth.currentUser.uid,
+
+
+            /*
+              This makes the conversation
+              become the newest conversation.
+            */
+            updatedAt:
+              serverTimestamp()
+
           },
-          { merge: true }
+          {
+            merge: true
+          }
         );
 
         updateConversationSidebarPreview(activeConversationId, trimmed);
