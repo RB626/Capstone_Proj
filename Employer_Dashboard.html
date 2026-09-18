@@ -669,6 +669,69 @@
     .rar
   " />
 
+              <!-- ══════════════════════════════════════
+     NATIVE MOBILE CAMERA
+
+     MOBILE:
+     Opens the phone's real camera.
+
+     DESKTOP:
+     JavaScript uses the laptop webcam.
+══════════════════════════════════════ -->
+              <input type="file" id="chatCameraInput" class="chat-attachment-input" accept="image/*"
+                capture="environment" />
+
+
+              <!-- ══════════════════════════════════════
+     DESKTOP / LAPTOP CAMERA
+══════════════════════════════════════ -->
+              <div class="desktop-chat-camera-overlay" id="desktopChatCameraOverlay" hidden>
+
+                <div class="desktop-chat-camera-card">
+
+                  <div class="desktop-chat-camera-header">
+
+                    <span>
+                      Camera
+                    </span>
+
+                    <button type="button" class="desktop-chat-camera-close" id="desktopChatCameraClose"
+                      aria-label="Close camera">
+                      ×
+                    </button>
+
+                  </div>
+
+
+                  <div class="desktop-chat-camera-preview-wrap">
+
+                    <video id="desktopChatCameraPreview" class="desktop-chat-camera-preview" autoplay muted
+                      playsinline></video>
+
+                  </div>
+
+
+                  <div class="desktop-chat-camera-actions">
+
+                    <button type="button" class="desktop-chat-camera-cancel" id="desktopChatCameraCancel">
+                      Cancel
+                    </button>
+
+
+                    <button type="button" class="desktop-chat-camera-capture" id="desktopChatCameraCapture"
+                      aria-label="Take photo" title="Take photo">
+                      <span></span>
+                    </button>
+
+
+                    <div class="desktop-chat-camera-spacer" aria-hidden="true"></div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
 
               <!-- EXISTING MESSAGE INPUT -->
               <input class="chat-input" id="chat-input" type="text" placeholder="Type a message..."
@@ -14736,10 +14799,64 @@ ${description
         "chatImageBtn"
       );
 
+
+    /* Existing camera icon */
+    const chatCameraUiButton =
+      document.getElementById(
+        "chatCameraUiBtn"
+      );
+
+
+    /* Existing normal attachment picker */
     const chatAttachmentInput =
       document.getElementById(
         "chatAttachmentInput"
       );
+
+
+    /* Native phone camera picker */
+    const chatCameraInput =
+      document.getElementById(
+        "chatCameraInput"
+      );
+
+
+    /* ══════════════════════════════════════
+       DESKTOP CAMERA ELEMENTS
+    ══════════════════════════════════════ */
+
+    const desktopChatCameraOverlay =
+      document.getElementById(
+        "desktopChatCameraOverlay"
+      );
+
+
+    const desktopChatCameraPreview =
+      document.getElementById(
+        "desktopChatCameraPreview"
+      );
+
+
+    const desktopChatCameraClose =
+      document.getElementById(
+        "desktopChatCameraClose"
+      );
+
+
+    const desktopChatCameraCancel =
+      document.getElementById(
+        "desktopChatCameraCancel"
+      );
+
+
+    const desktopChatCameraCapture =
+      document.getElementById(
+        "desktopChatCameraCapture"
+      );
+
+
+    let desktopChatCameraStream =
+      null;
 
 
     /* ══════════════════════════════════════
@@ -15510,6 +15627,591 @@ phones that return an empty MIME type.
 
     }
 
+    /* ══════════════════════════════════════
+   CHECK MOBILE DEVICE
+
+   Mobile:
+   → native phone camera
+
+   Desktop:
+   → built-in laptop webcam
+══════════════════════════════════════ */
+
+    function isMobileChatCameraDevice() {
+
+      if (
+        navigator.userAgentData &&
+        typeof navigator.userAgentData.mobile ===
+        "boolean"
+      ) {
+
+        return navigator
+          .userAgentData
+          .mobile;
+
+      }
+
+
+      if (
+        /Android|iPhone|iPad|iPod|Mobile/i
+          .test(
+            navigator.userAgent
+          )
+      ) {
+
+        return true;
+
+      }
+
+
+      /*
+        Modern iPads sometimes report
+        themselves as Macintosh.
+      */
+      if (
+        navigator.maxTouchPoints > 1 &&
+        /Macintosh/i.test(
+          navigator.userAgent
+        )
+      ) {
+
+        return true;
+
+      }
+
+
+      return false;
+
+    }
+
+
+    /* ══════════════════════════════════════
+       STOP LAPTOP CAMERA
+    ══════════════════════════════════════ */
+
+    function stopDesktopChatCamera() {
+
+      if (
+        desktopChatCameraStream
+      ) {
+
+        desktopChatCameraStream
+          .getTracks()
+          .forEach(
+            track => {
+
+              try {
+
+                track.stop();
+
+              }
+
+              catch (
+              error
+              ) {
+
+                console.warn(
+                  "CAMERA TRACK STOP ERROR:",
+                  error
+                );
+
+              }
+
+            }
+          );
+
+      }
+
+
+      desktopChatCameraStream =
+        null;
+
+
+      if (
+        desktopChatCameraPreview
+      ) {
+
+        desktopChatCameraPreview.srcObject =
+          null;
+
+
+        desktopChatCameraPreview
+          .classList.remove(
+            "is-front-camera"
+          );
+
+      }
+
+
+      if (
+        desktopChatCameraOverlay
+      ) {
+
+        desktopChatCameraOverlay.hidden =
+          true;
+
+      }
+
+    }
+
+
+    /* ══════════════════════════════════════
+       OPEN LAPTOP CAMERA
+    
+       Directly use the normal front webcam.
+    ══════════════════════════════════════ */
+
+    async function openDesktopChatCamera() {
+
+      if (
+        !navigator.mediaDevices ||
+        typeof navigator.mediaDevices
+          .getUserMedia !==
+        "function"
+      ) {
+
+        alert(
+          "Camera access is not supported by this browser."
+        );
+
+        return;
+
+      }
+
+
+      stopDesktopChatCamera();
+
+
+      try {
+
+        /*
+          Use the laptop's normal
+          front/default webcam directly.
+        */
+        const stream =
+          await navigator.mediaDevices
+            .getUserMedia(
+              {
+
+                video: {
+
+                  facingMode: {
+                    ideal:
+                      "user"
+                  },
+
+                  width: {
+                    ideal:
+                      1280
+                  },
+
+                  height: {
+                    ideal:
+                      720
+                  },
+
+                  frameRate: {
+                    ideal:
+                      30
+                  }
+
+                },
+
+                audio:
+                  false
+
+              }
+            );
+
+
+        desktopChatCameraStream =
+          stream;
+
+
+        if (
+          desktopChatCameraPreview
+        ) {
+
+          desktopChatCameraPreview.srcObject =
+            stream;
+
+
+          desktopChatCameraPreview.muted =
+            true;
+
+
+          desktopChatCameraPreview.playsInline =
+            true;
+
+
+          /*
+            Selfie-style mirrored preview.
+          */
+          desktopChatCameraPreview
+            .classList.add(
+              "is-front-camera"
+            );
+
+
+          try {
+
+            await desktopChatCameraPreview
+              .play();
+
+          }
+
+          catch (
+          playError
+          ) {
+
+            console.warn(
+              "LAPTOP CAMERA PREVIEW ERROR:",
+              playError
+            );
+
+          }
+
+        }
+
+
+        if (
+          desktopChatCameraOverlay
+        ) {
+
+          desktopChatCameraOverlay.hidden =
+            false;
+
+        }
+
+      }
+
+      catch (
+      error
+      ) {
+
+        console.error(
+          "LAPTOP CAMERA ERROR:",
+          error
+        );
+
+
+        if (
+          error?.name ===
+          "NotAllowedError"
+        ) {
+
+          alert(
+            "Camera permission was denied. Please allow camera access in your browser."
+          );
+
+          return;
+
+        }
+
+
+        if (
+          error?.name ===
+          "NotFoundError"
+        ) {
+
+          alert(
+            "No camera was found on this laptop."
+          );
+
+          return;
+
+        }
+
+
+        alert(
+          "Unable to open the laptop camera."
+        );
+
+      }
+
+    }
+
+
+    /* ══════════════════════════════════════
+       CAMERA ICON CLICK
+    ══════════════════════════════════════ */
+
+    chatCameraUiButton
+      ?.addEventListener(
+        "click",
+        async () => {
+
+          if (
+            !auth.currentUser
+          ) {
+
+            alert(
+              "You must be logged in first."
+            );
+
+            return;
+
+          }
+
+
+          if (
+            !activeConversationId
+          ) {
+
+            alert(
+              "Please select a conversation first."
+            );
+
+            return;
+
+          }
+
+
+          /* ──────────────────────────────────
+             MOBILE
+    
+             Open REAL phone Camera app.
+          ────────────────────────────────── */
+
+          if (
+            isMobileChatCameraDevice()
+          ) {
+
+            if (
+              !chatCameraInput
+            ) {
+
+              return;
+
+            }
+
+
+            chatCameraInput.value =
+              "";
+
+
+            chatCameraInput.click();
+
+
+            return;
+
+          }
+
+
+          /* ──────────────────────────────────
+             LAPTOP / DESKTOP
+    
+             Open laptop webcam directly
+             inside BlueSpace.
+          ────────────────────────────────── */
+
+          await openDesktopChatCamera();
+
+        }
+      );
+
+
+    /* ══════════════════════════════════════
+       LAPTOP — TAKE PHOTO
+    ══════════════════════════════════════ */
+
+    desktopChatCameraCapture
+      ?.addEventListener(
+        "click",
+        async () => {
+
+          if (
+            !desktopChatCameraPreview ||
+            !desktopChatCameraStream
+          ) {
+
+            return;
+
+          }
+
+
+          const width =
+            desktopChatCameraPreview
+              .videoWidth;
+
+
+          const height =
+            desktopChatCameraPreview
+              .videoHeight;
+
+
+          if (
+            !width ||
+            !height
+          ) {
+
+            alert(
+              "Camera is still loading. Please try again."
+            );
+
+            return;
+
+          }
+
+
+          const canvas =
+            document.createElement(
+              "canvas"
+            );
+
+
+          canvas.width =
+            width;
+
+
+          canvas.height =
+            height;
+
+
+          const context =
+            canvas.getContext(
+              "2d"
+            );
+
+
+          if (
+            !context
+          ) {
+
+            return;
+
+          }
+
+
+          /*
+            Capture actual webcam frame.
+    
+            The CSS mirror affects only
+            the preview, not this photo.
+          */
+          context.drawImage(
+            desktopChatCameraPreview,
+            0,
+            0,
+            width,
+            height
+          );
+
+
+          const blob =
+            await new Promise(
+              resolve => {
+
+                canvas.toBlob(
+                  resolve,
+                  "image/jpeg",
+                  0.92
+                );
+
+              }
+            );
+
+
+          if (
+            !blob
+          ) {
+
+            alert(
+              "Unable to take the photo."
+            );
+
+            return;
+
+          }
+
+
+          const file =
+            new File(
+              [
+                blob
+              ],
+              `camera-photo-${Date.now()}.jpg`,
+              {
+
+                type:
+                  "image/jpeg",
+
+                lastModified:
+                  Date.now()
+
+              }
+            );
+
+
+          /*
+            IMPORTANT:
+    
+            Reuse your EXISTING Employer
+            attachment preview system.
+    
+            Do NOT upload immediately.
+          */
+          stageJobSeekerChatAttachments(
+            [
+              file
+            ]
+          );
+
+
+          stopDesktopChatCamera();
+
+        }
+      );
+
+
+    desktopChatCameraClose
+      ?.addEventListener(
+        "click",
+        stopDesktopChatCamera
+      );
+
+
+    desktopChatCameraCancel
+      ?.addEventListener(
+        "click",
+        stopDesktopChatCamera
+      );
+
+
+    desktopChatCameraOverlay
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target ===
+            desktopChatCameraOverlay
+          ) {
+
+            stopDesktopChatCamera();
+
+          }
+
+        }
+      );
+
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Escape" &&
+          desktopChatCameraOverlay &&
+          !desktopChatCameraOverlay.hidden
+        ) {
+
+          stopDesktopChatCamera();
+
+        }
+
+      }
+    );
 
     /* ══════════════════════════════════════
        ATTACH BUTTON CLICK
@@ -16290,6 +16992,50 @@ phones that return an empty MIME type.
           stageJobSeekerChatAttachments(
             files
           );
+
+        }
+      );
+
+    /* ══════════════════════════════════════
+ MOBILE CAMERA PHOTO CAPTURED
+══════════════════════════════════════ */
+
+    chatCameraInput
+      ?.addEventListener(
+        "change",
+        event => {
+
+          const files =
+            event.target
+              ?.files;
+
+
+          if (
+            !files ||
+            files.length === 0
+          ) {
+
+            return;
+
+          }
+
+
+          /*
+            Same existing pending preview.
+    
+            Camera photo does NOT upload
+            until Employer presses Send.
+          */
+          stageJobSeekerChatAttachments(
+            files
+          );
+
+
+          /*
+            Allow another camera capture.
+          */
+          event.target.value =
+            "";
 
         }
       );
