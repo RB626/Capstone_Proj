@@ -2110,6 +2110,132 @@ body {
   height: 18px;
 }
 
+/* ══════════════════════════════════════
+   CHAT CAMERA BUTTON
+   Messenger-style — UI ONLY
+══════════════════════════════════════ */
+
+.chat-camera-ui-btn {
+  width: 40px;
+  height: 40px;
+
+  flex: 0 0 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+
+  color: #1877f2;
+
+  cursor: pointer;
+
+  outline: none;
+
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+
+.chat-camera-ui-btn svg {
+  width: 21px;
+  height: 21px;
+
+  flex-shrink: 0;
+}
+
+
+.chat-camera-ui-btn:hover {
+  background: #f0f2f5;
+
+  transform: scale(1.05);
+}
+
+
+.chat-camera-ui-btn:active {
+  transform: scale(0.96);
+}
+
+
+.chat-camera-ui-btn:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(24,
+      119,
+      242,
+      0.16);
+}
+
+/* ══════════════════════════════════════
+   CHAT VOICE RECORD BUTTON
+   Messenger-style — UI ONLY
+══════════════════════════════════════ */
+
+.chat-voice-ui-btn {
+  width: 40px;
+  height: 40px;
+
+  flex: 0 0 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+
+  color: #1877f2;
+
+  cursor: pointer;
+
+  outline: none;
+
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+
+.chat-voice-ui-btn svg {
+  width: 21px;
+  height: 21px;
+
+  flex-shrink: 0;
+}
+
+
+.chat-voice-ui-btn:hover {
+  background: #f0f2f5;
+
+  transform: scale(1.05);
+}
+
+
+.chat-voice-ui-btn:active {
+  transform: scale(0.96);
+}
+
+
+.chat-voice-ui-btn:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(24,
+      119,
+      242,
+      0.16);
+}
+
 
 
 /* Messages page — no inner padding so shell fills full height */
@@ -9776,6 +9902,32 @@ body.dark-mode .job-details-description {
     min-width: 0;
   }
 
+  #page-messages .chat-camera-ui-btn {
+    width: 38px;
+    height: 38px;
+
+    flex: 0 0 38px;
+  }
+
+
+  #page-messages .chat-camera-ui-btn svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  #page-messages .chat-voice-ui-btn {
+    width: 38px;
+    height: 38px;
+
+    flex: 0 0 38px;
+  }
+
+
+  #page-messages .chat-voice-ui-btn svg {
+    width: 19px;
+    height: 19px;
+  }
+
 }
 
 body.dark-mode .chat-image-btn {
@@ -9784,6 +9936,28 @@ body.dark-mode .chat-image-btn {
 }
 
 body.dark-mode .chat-image-btn:hover {
+  background: #273449;
+}
+
+body.dark-mode .chat-camera-ui-btn {
+  background: transparent;
+
+  color: #60a5fa;
+}
+
+body.dark-mode .chat-voice-ui-btn {
+  background: transparent;
+
+  color: #60a5fa;
+}
+
+
+body.dark-mode .chat-voice-ui-btn:hover {
+  background: #273449;
+}
+
+
+body.dark-mode .chat-camera-ui-btn:hover {
   background: #273449;
 }
 
