@@ -14957,6 +14957,152 @@ ${description
       );
 
     /* ══════════════════════════════════════
+ EMPLOYER MOBILE CHAT
+ STABLE KEYBOARD POSITION
+══════════════════════════════════════ */
+
+    let employerChatBlurTimer =
+      null;
+
+
+    /* ─────────────────────────────────────
+       INPUT FOCUSED
+    
+       Mobile keyboard is about to open.
+    ───────────────────────────────────── */
+
+    jobSeekerChatTextInput
+      ?.addEventListener(
+        "focus",
+        () => {
+
+          if (
+            !jobSeekerMobileComposerMedia.matches
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            employerChatBlurTimer
+          ) {
+
+            clearTimeout(
+              employerChatBlurTimer
+            );
+
+
+            employerChatBlurTimer =
+              null;
+
+          }
+
+
+          /*
+            Hide bottom navigation and allow
+            Messages page to use the entire
+            resized mobile viewport.
+          */
+          document.body.classList.add(
+            "employer-chat-input-focused"
+          );
+
+        }
+      );
+
+
+    /* ─────────────────────────────────────
+       INPUT CLOSED
+    
+       Small delay allows Android keyboard
+       animation to finish before restoring
+       the bottom nav.
+    ───────────────────────────────────── */
+
+    jobSeekerChatTextInput
+      ?.addEventListener(
+        "blur",
+        () => {
+
+          if (
+            !jobSeekerMobileComposerMedia.matches
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            employerChatBlurTimer
+          ) {
+
+            clearTimeout(
+              employerChatBlurTimer
+            );
+
+          }
+
+
+          employerChatBlurTimer =
+            setTimeout(
+              () => {
+
+                /*
+                  If focus immediately returned
+                  to the textarea, do nothing.
+                */
+                if (
+                  document.activeElement ===
+                  jobSeekerChatTextInput
+                ) {
+
+                  return;
+
+                }
+
+
+                document.body.classList.remove(
+                  "employer-chat-input-focused"
+                );
+
+
+                employerChatBlurTimer =
+                  null;
+
+              },
+              220
+            );
+
+        }
+      );
+
+
+    /* ─────────────────────────────────────
+       DESKTOP / ROTATION CLEANUP
+    ───────────────────────────────────── */
+
+    jobSeekerMobileComposerMedia
+      .addEventListener?.(
+        "change",
+        event => {
+
+          if (
+            !event.matches
+          ) {
+
+            document.body.classList.remove(
+              "employer-chat-input-focused"
+            );
+
+          }
+
+        }
+      );
+
+    /* ══════════════════════════════════════
  EMPLOYER — MESSENGER AUTO-GROW INPUT
 ══════════════════════════════════════ */
 

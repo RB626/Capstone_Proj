@@ -11820,221 +11820,7 @@ body.dark-mode .worker-public-back-btn:hover {
 
 }
 
-/* ══════════════════════════════════════
-   MOBILE — FULL SCREEN MESSAGES PAGE
-══════════════════════════════════════ */
 
-@media (max-width: 600px) {
-
-  /* Remove the normal page spacing */
-  #page-messages {
-    padding: 0 !important;
-    margin: 0 !important;
-
-    width: 100% !important;
-    max-width: none !important;
-
-    height: calc(100dvh - var(--nav-h) - 64px) !important;
-
-    min-height: 0 !important;
-
-    overflow: hidden;
-  }
-
-
-  /* Message container occupies entire page */
-  #page-messages .msg-shell {
-    width: 100% !important;
-    height: 100% !important;
-
-    min-height: 0 !important;
-
-    margin: 0 !important;
-
-    border-radius: 0 !important;
-
-    box-shadow: none !important;
-
-    overflow: hidden;
-
-    display: flex;
-    flex-direction: column;
-  }
-
-
-  /* Conversation list fills screen */
-  #page-messages .conv-list {
-    width: 100% !important;
-    height: 100% !important;
-
-    min-height: 0;
-
-    border-radius: 0;
-
-    overflow-y: auto;
-  }
-
-
-  /* Chat also fills entire available area */
-  #page-messages .chat-area {
-    width: 100% !important;
-    height: 100% !important;
-
-    min-height: 0;
-
-    border-radius: 0;
-  }
-
-
-  /* When conversation is opened */
-  #page-messages .msg-shell.chat-open .chat-area {
-    display: flex;
-    height: 100% !important;
-  }
-
-
-  /* Message area uses remaining vertical space */
-  #page-messages .chat-messages {
-    flex: 1 1 auto;
-
-    min-height: 0;
-
-    overflow-y: auto;
-  }
-
-
-  /* Header and typing area must not shrink */
-  #page-messages .chat-header,
-  #page-messages .chat-input-area {
-    flex-shrink: 0;
-  }
-
-}
-
-/* ══════════════════════════════════════
-   MOBILE CHAT — KEYBOARD FIX
-══════════════════════════════════════ */
-
-@media (max-width: 600px) {
-
-  /*
-    Prevent the whole page from scrolling
-    when the keyboard opens.
-  */
-  body.chat-keyboard-open {
-    overflow: hidden !important;
-  }
-
-
-  /*
-    Hide bottom navigation while typing.
-
-    This prevents the large empty space
-    between the input and keyboard.
-  */
-  body.chat-keyboard-open .mobile-nav {
-    display: none !important;
-  }
-
-
-  /*
-    Use the actual visible mobile viewport
-    calculated by JavaScript.
-  */
-  body.chat-keyboard-open .app-shell {
-    height: var(--mobile-chat-visible-height,
-        100dvh) !important;
-
-    min-height: 0 !important;
-
-    overflow: hidden !important;
-  }
-
-
-  body.chat-keyboard-open .main-content {
-    height: calc(var(--mobile-chat-visible-height,
-          100dvh) - var(--nav-h)) !important;
-
-    min-height: 0 !important;
-
-    overflow: hidden !important;
-  }
-
-
-  body.chat-keyboard-open #page-messages {
-    width: 100% !important;
-    height: 100% !important;
-
-    min-height: 0 !important;
-
-    padding: 0 !important;
-    margin: 0 !important;
-
-    overflow: hidden !important;
-  }
-
-
-  body.chat-keyboard-open #page-messages .msg-shell {
-
-    width: 100% !important;
-    height: 100% !important;
-
-    min-height: 0 !important;
-
-    margin: 0 !important;
-
-    overflow: hidden !important;
-  }
-
-
-  body.chat-keyboard-open #page-messages .chat-area {
-
-    width: 100% !important;
-    height: 100% !important;
-
-    min-height: 0 !important;
-
-    overflow: hidden !important;
-
-    display: flex !important;
-    flex-direction: column;
-  }
-
-
-  /*
-    Only messages scroll.
-    The entire page should NOT scroll.
-  */
-  body.chat-keyboard-open #page-messages .chat-messages {
-
-    flex: 1 1 auto;
-
-    min-height: 0 !important;
-
-    overflow-y: auto !important;
-    overscroll-behavior: contain;
-  }
-
-
-  /*
-    Keep input directly above keyboard.
-  */
-  body.chat-keyboard-open #page-messages .chat-input-area {
-
-    flex: 0 0 auto !important;
-
-    position: relative !important;
-
-    bottom: auto !important;
-
-    margin: 0 !important;
-
-    transform: none !important;
-
-    background: #ffffff;
-  }
-
-}
 
 /* ══════════════════════════════════════
    EMPLOYER STATUS FILTER
@@ -12373,80 +12159,6 @@ body.dark-mode .worker-public-back-btn:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-}
-
-/* ══════════════════════════════════════
-   MOBILE CHAT
-   KEEP INPUT ABOVE PHONE KEYBOARD
-══════════════════════════════════════ */
-
-@media (max-width: 600px) {
-
-  body.chat-keyboard-open #page-messages .chat-area {
-
-    position: relative !important;
-
-    height: 100% !important;
-    min-height: 0 !important;
-
-    overflow: hidden !important;
-  }
-
-
-  /*
-    Messages consume only the available
-    space above the input.
-  */
-  body.chat-keyboard-open #page-messages .chat-messages {
-
-    flex: 1 1 0 !important;
-
-    height: auto !important;
-    min-height: 0 !important;
-
-    overflow-y: auto !important;
-  }
-
-
-  /*
-    Input must always stay inside the
-    visible browser viewport.
-  */
-  body.chat-keyboard-open #page-messages .chat-input-area {
-
-    flex: 0 0 auto !important;
-
-    position: relative !important;
-
-    bottom: auto !important;
-
-    width: 100% !important;
-
-    margin: 0 !important;
-
-    padding:
-      10px 12px max(10px,
-        env(safe-area-inset-bottom)) !important;
-
-    background: #ffffff !important;
-
-    z-index: 50 !important;
-
-    transform: none !important;
-  }
-
-
-  /*
-    Prevent browser scrolling the input
-    underneath the keyboard.
-  */
-  body.chat-keyboard-open #page-messages {
-
-    overscroll-behavior: none;
-
-    touch-action: pan-y;
   }
 
 }
@@ -17490,5 +17202,306 @@ body.dark-mode .chat-mobile-tools-toggle:hover {
 
   background:
     #273449;
+
+}
+
+/* ══════════════════════════════════════
+   EMPLOYER MESSAGES
+   STABLE MOBILE VIEWPORT
+
+   Prevents chat/composer from randomly
+   moving upward on Android/mobile.
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  :root {
+    /*
+      Space occupied by your fixed
+      bottom navigation.
+    */
+    --mobile-chat-nav-height: 64px;
+  }
+
+
+  /* ─────────────────────────────────────
+     ENTIRE MESSAGES PAGE
+
+     Pin it between:
+     TOP NAV
+          ↓
+     MESSAGES
+          ↓
+     BOTTOM NAV
+
+     No 100vh / 100dvh calculation.
+  ───────────────────────────────────── */
+
+  #page-messages {
+    position: fixed !important;
+
+    top: var(--nav-h) !important;
+    right: 0 !important;
+    bottom: var(--mobile-chat-nav-height) !important;
+    left: 0 !important;
+
+    width: auto !important;
+    max-width: none !important;
+
+    /*
+      IMPORTANT:
+      top + bottom control the height.
+    */
+    height: auto !important;
+    min-height: 0 !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: hidden !important;
+
+    z-index: 50;
+  }
+
+
+  /* ─────────────────────────────────────
+     MESSAGE SHELL
+  ───────────────────────────────────── */
+
+  #page-messages .msg-shell {
+    width: 100% !important;
+    height: 100% !important;
+
+    min-height: 0 !important;
+
+    margin: 0 !important;
+
+    border-radius: 0 !important;
+
+    box-shadow: none !important;
+
+    overflow: hidden !important;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  /* ─────────────────────────────────────
+     CONVERSATION LIST
+  ───────────────────────────────────── */
+
+  #page-messages .conv-list {
+    width: 100% !important;
+    height: 100% !important;
+
+    min-height: 0 !important;
+
+    border-radius: 0 !important;
+
+    overflow-y: auto !important;
+
+    overscroll-behavior: contain;
+  }
+
+
+  /* ─────────────────────────────────────
+     CHAT AREA
+  ───────────────────────────────────── */
+
+  #page-messages .chat-area {
+    width: 100% !important;
+    height: 100% !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    display: none;
+
+    flex-direction: column;
+
+    overflow: hidden !important;
+
+    position: relative !important;
+  }
+
+
+  /* Conversation opened */
+  #page-messages .msg-shell.chat-open .conv-list {
+    display: none !important;
+  }
+
+
+  #page-messages .msg-shell.chat-open .chat-area {
+    display: flex !important;
+
+    height: 100% !important;
+  }
+
+
+  /* ─────────────────────────────────────
+     HEADER
+  ───────────────────────────────────── */
+
+  #page-messages .chat-header {
+    flex:
+      0 0 auto;
+
+    flex-shrink:
+      0;
+  }
+
+
+  /* ─────────────────────────────────────
+     MESSAGES
+
+     ONLY this section scrolls.
+  ───────────────────────────────────── */
+
+  #page-messages .chat-messages {
+    flex:
+      1 1 0 !important;
+
+    width:
+      100%;
+
+    height:
+      auto !important;
+
+    min-height:
+      0 !important;
+
+    overflow-y:
+      auto !important;
+
+    overflow-x:
+      hidden !important;
+
+    overscroll-behavior:
+      contain;
+
+    -webkit-overflow-scrolling:
+      touch;
+  }
+
+
+  /* ─────────────────────────────────────
+     ATTACHMENT PREVIEW
+  ───────────────────────────────────── */
+
+  #page-messages .chat-pending-attachments {
+    flex:
+      0 0 auto;
+
+    flex-shrink:
+      0;
+  }
+
+
+  /* ─────────────────────────────────────
+     MESSAGE COMPOSER
+
+     Never floats or uses fixed/sticky.
+  ───────────────────────────────────── */
+
+  #page-messages .chat-input-area {
+    position:
+      relative !important;
+
+    top:
+      auto !important;
+
+    right:
+      auto !important;
+
+    bottom:
+      auto !important;
+
+    left:
+      auto !important;
+
+    flex:
+      0 0 auto !important;
+
+    flex-shrink:
+      0 !important;
+
+    width:
+      100% !important;
+
+    margin:
+      0 !important;
+
+    transform:
+      none !important;
+
+    z-index:
+      60;
+  }
+
+
+  /* ══════════════════════════════════════
+     KEYBOARD OPEN
+
+     Browser already resizes viewport
+     because of interactive-widget=resizes-content.
+
+     Therefore:
+     - hide bottom navigation
+     - let chat use that freed space
+  ═══════════════════════════════════════ */
+
+  body.employer-chat-input-focused {
+    overflow:
+      hidden !important;
+  }
+
+
+  body.employer-chat-input-focused .mobile-nav {
+    display:
+      none !important;
+  }
+
+
+  body.employer-chat-input-focused #page-messages {
+    bottom:
+      0 !important;
+  }
+
+
+  body.employer-chat-input-focused #page-messages .chat-area {
+    height:
+      100% !important;
+
+    min-height:
+      0 !important;
+
+    overflow:
+      hidden !important;
+  }
+
+
+  body.employer-chat-input-focused #page-messages .chat-messages {
+    flex:
+      1 1 0 !important;
+
+    min-height:
+      0 !important;
+
+    overflow-y:
+      auto !important;
+  }
+
+
+  body.employer-chat-input-focused #page-messages .chat-input-area {
+    position:
+      relative !important;
+
+    bottom:
+      auto !important;
+
+    transform:
+      none !important;
+  }
 
 }

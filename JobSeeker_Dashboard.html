@@ -4942,6 +4942,150 @@
       );
 
     /* ══════════════════════════════════════
+ JOB SEEKER MOBILE CHAT
+ STABLE KEYBOARD POSITION
+══════════════════════════════════════ */
+
+    let jobSeekerChatBlurTimer =
+      null;
+
+
+    /* ─────────────────────────────────────
+       KEYBOARD / INPUT OPEN
+    ───────────────────────────────────── */
+
+    jobSeekerChatTextInput
+      ?.addEventListener(
+        "focus",
+        () => {
+
+          if (
+            !jobSeekerMobileComposerMedia.matches
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            jobSeekerChatBlurTimer
+          ) {
+
+            clearTimeout(
+              jobSeekerChatBlurTimer
+            );
+
+
+            jobSeekerChatBlurTimer =
+              null;
+
+          }
+
+
+          document.body.classList.add(
+            "jobseeker-chat-input-focused"
+          );
+
+        }
+      );
+
+
+    /* ─────────────────────────────────────
+       KEYBOARD / INPUT CLOSED
+    ───────────────────────────────────── */
+
+    jobSeekerChatTextInput
+      ?.addEventListener(
+        "blur",
+        () => {
+
+          if (
+            !jobSeekerMobileComposerMedia.matches
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            jobSeekerChatBlurTimer
+          ) {
+
+            clearTimeout(
+              jobSeekerChatBlurTimer
+            );
+
+          }
+
+
+          /*
+            Let Android finish its keyboard
+            closing animation before restoring
+            the bottom navigation.
+          */
+          jobSeekerChatBlurTimer =
+            setTimeout(
+              () => {
+
+                if (
+                  document.activeElement ===
+                  jobSeekerChatTextInput
+                ) {
+
+                  return;
+
+                }
+
+
+                document.body.classList.remove(
+                  "jobseeker-chat-input-focused"
+                );
+
+
+                jobSeekerChatBlurTimer =
+                  null;
+
+              },
+              220
+            );
+
+        }
+      );
+
+
+    /* ─────────────────────────────────────
+       DESKTOP / ROTATION CLEANUP
+    ───────────────────────────────────── */
+
+    if (
+      typeof jobSeekerMobileComposerMedia
+        .addEventListener ===
+      "function"
+    ) {
+
+      jobSeekerMobileComposerMedia
+        .addEventListener(
+          "change",
+          event => {
+
+            if (
+              !event.matches
+            ) {
+
+              document.body.classList.remove(
+                "jobseeker-chat-input-focused"
+              );
+
+            }
+
+          }
+        );
+
+    }
+
+    /* ══════════════════════════════════════
  MESSENGER-STYLE AUTO-GROWING INPUT
 ══════════════════════════════════════ */
 

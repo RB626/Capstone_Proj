@@ -9251,221 +9251,6 @@ body.dark-mode .home-jobs-infinite-status {
 
 }
 
-/* ══════════════════════════════════════
-   MOBILE — FULL SCREEN MESSAGES PAGE
-══════════════════════════════════════ */
-
-@media (max-width: 600px) {
-
-  /* Remove the normal page spacing */
-  #page-messages {
-    padding: 0 !important;
-    margin: 0 !important;
-
-    width: 100% !important;
-    max-width: none !important;
-
-    height: calc(100dvh - var(--nav-h) - 64px) !important;
-
-    min-height: 0 !important;
-
-    overflow: hidden;
-  }
-
-
-  /* Message container occupies entire page */
-  #page-messages .msg-shell {
-    width: 100% !important;
-    height: 100% !important;
-
-    min-height: 0 !important;
-
-    margin: 0 !important;
-
-    border-radius: 0 !important;
-
-    box-shadow: none !important;
-
-    overflow: hidden;
-
-    display: flex;
-    flex-direction: column;
-  }
-
-
-  /* Conversation list fills screen */
-  #page-messages .conv-list {
-    width: 100% !important;
-    height: 100% !important;
-
-    min-height: 0;
-
-    border-radius: 0;
-
-    overflow-y: auto;
-  }
-
-
-  /* Chat also fills entire available area */
-  #page-messages .chat-area {
-    width: 100% !important;
-    height: 100% !important;
-
-    min-height: 0;
-
-    border-radius: 0;
-  }
-
-
-  /* When conversation is opened */
-  #page-messages .msg-shell.chat-open .chat-area {
-    display: flex;
-    height: 100% !important;
-  }
-
-
-  /* Message area uses remaining vertical space */
-  #page-messages .chat-messages {
-    flex: 1 1 auto;
-
-    min-height: 0;
-
-    overflow-y: auto;
-  }
-
-
-  /* Header and typing area must not shrink */
-  #page-messages .chat-header,
-  #page-messages .chat-input-area {
-    flex-shrink: 0;
-  }
-
-}
-
-/* ══════════════════════════════════════
-   MOBILE CHAT — KEYBOARD FIX
-══════════════════════════════════════ */
-
-@media (max-width: 600px) {
-
-  /*
-    Prevent the whole page from scrolling
-    when the keyboard opens.
-  */
-  body.chat-keyboard-open {
-    overflow: hidden !important;
-  }
-
-
-  /*
-    Hide bottom navigation while typing.
-
-    This prevents the large empty space
-    between the input and keyboard.
-  */
-  body.chat-keyboard-open .mobile-nav {
-    display: none !important;
-  }
-
-
-  /*
-    Use the actual visible mobile viewport
-    calculated by JavaScript.
-  */
-  body.chat-keyboard-open .app-shell {
-    height: var(--mobile-chat-visible-height,
-        100dvh) !important;
-
-    min-height: 0 !important;
-
-    overflow: hidden !important;
-  }
-
-
-  body.chat-keyboard-open .main-content {
-    height: calc(var(--mobile-chat-visible-height,
-          100dvh) - var(--nav-h)) !important;
-
-    min-height: 0 !important;
-
-    overflow: hidden !important;
-  }
-
-
-  body.chat-keyboard-open #page-messages {
-    width: 100% !important;
-    height: 100% !important;
-
-    min-height: 0 !important;
-
-    padding: 0 !important;
-    margin: 0 !important;
-
-    overflow: hidden !important;
-  }
-
-
-  body.chat-keyboard-open #page-messages .msg-shell {
-
-    width: 100% !important;
-    height: 100% !important;
-
-    min-height: 0 !important;
-
-    margin: 0 !important;
-
-    overflow: hidden !important;
-  }
-
-
-  body.chat-keyboard-open #page-messages .chat-area {
-
-    width: 100% !important;
-    height: 100% !important;
-
-    min-height: 0 !important;
-
-    overflow: hidden !important;
-
-    display: flex !important;
-    flex-direction: column;
-  }
-
-
-  /*
-    Only messages scroll.
-    The entire page should NOT scroll.
-  */
-  body.chat-keyboard-open #page-messages .chat-messages {
-
-    flex: 1 1 auto;
-
-    min-height: 0 !important;
-
-    overflow-y: auto !important;
-    overscroll-behavior: contain;
-  }
-
-
-  /*
-    Keep input directly above keyboard.
-  */
-  body.chat-keyboard-open #page-messages .chat-input-area {
-
-    flex: 0 0 auto !important;
-
-    position: relative !important;
-
-    bottom: auto !important;
-
-    margin: 0 !important;
-
-    transform: none !important;
-
-    background: #ffffff;
-  }
-
-}
 
 /* ══════════════════════════════════════
    MOBILE CHAT
@@ -13035,5 +12820,255 @@ body.dark-mode .chat-mobile-tools-toggle:hover {
 
   background:
     #273449;
+
+}
+
+/* ══════════════════════════════════════
+   JOB SEEKER MESSAGES
+   STABLE MOBILE VIEWPORT
+
+   Prevents chat/composer from randomly
+   moving upward on Android/mobile.
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  :root {
+    --mobile-chat-nav-height: 64px;
+  }
+
+
+  /* ─────────────────────────────────────
+     MESSAGES PAGE
+
+     Pin between:
+     top navigation
+     and bottom mobile navigation.
+  ───────────────────────────────────── */
+
+  #page-messages {
+    position: fixed !important;
+
+    top: var(--nav-h) !important;
+    right: 0 !important;
+    bottom: var(--mobile-chat-nav-height) !important;
+    left: 0 !important;
+
+    width: auto !important;
+    max-width: none !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: hidden !important;
+
+    z-index: 50;
+  }
+
+
+  /* ─────────────────────────────────────
+     MESSAGE SHELL
+  ───────────────────────────────────── */
+
+  #page-messages .msg-shell {
+    width: 100% !important;
+    height: 100% !important;
+
+    min-height: 0 !important;
+
+    margin: 0 !important;
+
+    border-radius: 0 !important;
+
+    box-shadow: none !important;
+
+    overflow: hidden !important;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  /* ─────────────────────────────────────
+     CONVERSATION LIST
+  ───────────────────────────────────── */
+
+  #page-messages .conv-list {
+    width: 100% !important;
+    height: 100% !important;
+
+    min-height: 0 !important;
+
+    border-radius: 0 !important;
+
+    overflow-y: auto !important;
+
+    overscroll-behavior: contain;
+  }
+
+
+  /* ─────────────────────────────────────
+     CHAT AREA
+  ───────────────────────────────────── */
+
+  #page-messages .chat-area {
+    width: 100% !important;
+    height: 100% !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    display: none;
+
+    flex-direction: column;
+
+    overflow: hidden !important;
+
+    position: relative !important;
+  }
+
+
+  /* Conversation opened */
+  #page-messages .msg-shell.chat-open .conv-list {
+    display: none !important;
+  }
+
+
+  #page-messages .msg-shell.chat-open .chat-area {
+    display: flex !important;
+
+    height: 100% !important;
+  }
+
+
+  /* ─────────────────────────────────────
+     CHAT HEADER
+  ───────────────────────────────────── */
+
+  #page-messages .chat-header {
+    flex: 0 0 auto;
+
+    flex-shrink: 0;
+  }
+
+
+  /* ─────────────────────────────────────
+     MESSAGES
+
+     Only this section scrolls.
+  ───────────────────────────────────── */
+
+  #page-messages .chat-messages {
+    flex: 1 1 0 !important;
+
+    width: 100%;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    overscroll-behavior: contain;
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+
+  /* ─────────────────────────────────────
+     PENDING ATTACHMENT PREVIEW
+  ───────────────────────────────────── */
+
+  #page-messages .chat-pending-attachments {
+    flex: 0 0 auto;
+
+    flex-shrink: 0;
+  }
+
+
+  /* ─────────────────────────────────────
+     MESSAGE COMPOSER
+
+     Keep it inside flex layout.
+     Never fixed / sticky / translated.
+  ───────────────────────────────────── */
+
+  #page-messages .chat-input-area {
+    position: relative !important;
+
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    flex: 0 0 auto !important;
+
+    flex-shrink: 0 !important;
+
+    width: 100% !important;
+
+    margin: 0 !important;
+
+    transform: none !important;
+
+    z-index: 60;
+  }
+
+
+  /* ══════════════════════════════════════
+     KEYBOARD OPEN
+
+     The browser already resizes content
+     because interactive-widget=resizes-content
+     is enabled.
+  ═══════════════════════════════════════ */
+
+  body.jobseeker-chat-input-focused {
+    overflow: hidden !important;
+  }
+
+
+  body.jobseeker-chat-input-focused .mobile-nav {
+    display: none !important;
+  }
+
+
+  /*
+    Once bottom nav disappears,
+    let Messages use that space.
+  */
+  body.jobseeker-chat-input-focused #page-messages {
+    bottom: 0 !important;
+  }
+
+
+  body.jobseeker-chat-input-focused #page-messages .chat-area {
+    height: 100% !important;
+
+    min-height: 0 !important;
+
+    overflow: hidden !important;
+  }
+
+
+  body.jobseeker-chat-input-focused #page-messages .chat-messages {
+    flex: 1 1 0 !important;
+
+    min-height: 0 !important;
+
+    overflow-y: auto !important;
+  }
+
+
+  body.jobseeker-chat-input-focused #page-messages .chat-input-area {
+    position: relative !important;
+
+    bottom: auto !important;
+
+    transform: none !important;
+  }
 
 }
