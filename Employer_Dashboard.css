@@ -12089,39 +12089,124 @@ body.dark-mode .worker-public-back-btn:hover {
     This prevents it from becoming
     the black appearance you dislike.
   */
+  /* ══════════════════════════════════════
+   DARK MODE
+   EMPLOYER MOBILE STATUS DROPDOWN
+
+   Match Job Category styling
+══════════════════════════════════════ */
+
   body.dark-mode .employer-mobile-status-btn {
 
-    background: #ffffff !important;
+    background:
+      #0f172a !important;
 
-    border-color: #e5e7eb !important;
+    border-color:
+      #334155 !important;
 
-    color: #0f172a !important;
+    color:
+      #e5e7eb !important;
   }
 
+
+  /* Hover */
+  body.dark-mode .employer-mobile-status-btn:hover {
+
+    background:
+      #111827 !important;
+
+    border-color:
+      #475569 !important;
+
+    color:
+      #ffffff !important;
+  }
+
+
+  /* Open state */
+  body.dark-mode .employer-mobile-status-dropdown.open .employer-mobile-status-btn {
+
+    background:
+      #111827 !important;
+
+    border-color:
+      var(--teal) !important;
+
+    color:
+      #f8fafc !important;
+
+    box-shadow:
+      0 0 0 4px rgba(45,
+        212,
+        191,
+        0.12) !important;
+  }
+
+
+  /* Chevron */
+  body.dark-mode .employer-mobile-status-chevron {
+
+    color:
+      #94a3b8 !important;
+  }
+
+
+  /* ══════════════════════════════════════
+   DROPDOWN MENU
+══════════════════════════════════════ */
 
   body.dark-mode .employer-mobile-status-menu {
 
-    background: #ffffff !important;
+    background:
+      #111827 !important;
 
-    border-color: #8b8b8b !important;
+    border-color:
+      #334155 !important;
 
-    color: #111827 !important;
+    color:
+      #e5e7eb !important;
+
+    box-shadow:
+      0 16px 38px rgba(0,
+        0,
+        0,
+        0.42) !important;
   }
 
 
+  /* Dropdown options */
   body.dark-mode .employer-mobile-status-option {
 
-    background: #ffffff;
+    background:
+      #111827 !important;
 
-    color: #111827;
+    color:
+      #e5e7eb !important;
   }
 
 
+  /* Hover */
+  body.dark-mode .employer-mobile-status-option:hover {
+
+    background:
+      #172033 !important;
+
+    color:
+      #ffffff !important;
+  }
+
+
+  /* Selected option */
   body.dark-mode .employer-mobile-status-option.active {
 
-    background: #246bd3;
+    background:
+      rgba(45,
+        212,
+        191,
+        0.14) !important;
 
-    color: #ffffff;
+    color:
+      #5eead4 !important;
   }
 
 }
@@ -13995,29 +14080,69 @@ body.dark-mode .chat-image-btn {
   color: #60a5fa;
 }
 
-body.dark-mode .chat-image-btn:hover {
-  background: #273449;
-}
+/* ══════════════════════════════════════
+   DARK MODE
+   CHAT TOOL ICONS MATCH SEND BUTTON
+══════════════════════════════════════ */
 
-body.dark-mode .chat-camera-ui-btn {
-  background: transparent;
-
-  color: #60a5fa;
-}
-
-body.dark-mode .chat-camera-ui-btn:hover {
-  background: #273449;
-}
-
+body.dark-mode .chat-image-btn,
+body.dark-mode .chat-camera-ui-btn,
 body.dark-mode .chat-voice-ui-btn {
-  background: transparent;
 
-  color: #60a5fa;
+  background:
+    transparent;
+
+  /*
+    Match the teal Send button.
+  */
+  color:
+    var(--teal);
+
 }
 
 
+/* Hover */
+body.dark-mode .chat-image-btn:hover,
+body.dark-mode .chat-camera-ui-btn:hover,
 body.dark-mode .chat-voice-ui-btn:hover {
-  background: #273449;
+
+  background:
+    rgba(45,
+      212,
+      191,
+      0.10);
+
+  color:
+    #5eead4;
+
+}
+
+
+/* Active press */
+body.dark-mode .chat-image-btn:active,
+body.dark-mode .chat-camera-ui-btn:active,
+body.dark-mode .chat-voice-ui-btn:active {
+
+  background:
+    rgba(45,
+      212,
+      191,
+      0.16);
+
+}
+
+
+/* Keyboard focus */
+body.dark-mode .chat-image-btn:focus-visible,
+body.dark-mode .chat-camera-ui-btn:focus-visible,
+body.dark-mode .chat-voice-ui-btn:focus-visible {
+
+  box-shadow:
+    0 0 0 3px rgba(45,
+      212,
+      191,
+      0.18);
+
 }
 
 /* ══════════════════════════════════════

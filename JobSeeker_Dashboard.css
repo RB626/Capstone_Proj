@@ -3563,55 +3563,266 @@ body {
 
 
 /* ══════════════════════════════════════
-   DARK MODE
+   JOB SEEKER SKILLS
+   DARK MODE — MATCH EMPLOYER VIEW
 ══════════════════════════════════════ */
 
-body.dark-mode .skill-row {
-  background:
-    #171717;
 
-  border-color:
-    #333333;
+/* ──────────────────────────────────────
+   SKILL CARD
+────────────────────────────────────── */
+
+body.dark-mode .skill-row {
+
+  background:
+    #0f172a;
+
+  border:
+    1px solid #334155;
+
+  border-radius:
+    16px;
+
+  padding:
+    16px 20px;
+
+  box-shadow:
+    none;
+
 }
 
 
+/* Hover */
+
 body.dark-mode .skill-row:hover {
+
   background:
-    #1a1a1a;
+    #111c2f;
 
   border-color:
-    #404040;
+    #475569;
+
+  box-shadow:
+    0 8px 22px rgba(0,
+      0,
+      0,
+      0.18);
+
+}
+
+
+/* ──────────────────────────────────────
+   SKILL HEADER
+────────────────────────────────────── */
+
+body.dark-mode .skill-row-main {
+
+  gap:
+    14px;
+
 }
 
 
 body.dark-mode .skill-row .sk-name {
+
   color:
-    #f3f4f6;
+    #f8fafc;
+
+  font-size:
+    1rem;
+
+  font-weight:
+    700;
+
 }
 
 
+/* Medal / skill icon */
+
 body.dark-mode .skill-medal-icon {
+
+  width:
+    46px;
+
+  height:
+    46px;
+
+  flex:
+    0 0 46px;
+
+  background:
+    rgba(45,
+      212,
+      191,
+      0.13);
+
+  color:
+    #5eead4;
+
+}
+
+
+body.dark-mode .skill-medal-icon svg {
+
+  width:
+    22px;
+
+  height:
+    22px;
+
+}
+
+
+/* ══════════════════════════════════════
+   CERTIFICATE AREA
+══════════════════════════════════════ */
+
+body.dark-mode .skill-certificate-area {
+
+  margin-top:
+    16px;
+
+}
+
+
+/* Existing certificate */
+
+body.dark-mode .skill-certificate-file {
+
+  min-height:
+    66px;
+
+  padding:
+    12px 16px;
+
+  gap:
+    12px;
+
+  background:
+    #0f172a;
+
+  border:
+    1px solid #334155;
+
+  border-radius:
+    13px;
+
+}
+
+
+/* File icon */
+
+body.dark-mode .skill-certificate-file-icon {
+
+  width:
+    28px;
+
+  height:
+    28px;
+
+  flex:
+    0 0 28px;
+
+  color:
+    #cbd5e1;
+
+}
+
+
+body.dark-mode .skill-certificate-file-icon svg {
+
+  width:
+    21px;
+
+  height:
+    21px;
+
+}
+
+
+/* File name */
+
+body.dark-mode .skill-certificate-name {
+
+  color:
+    #cbd5e1;
+
+  font-size:
+    0.84rem;
+
+  font-weight:
+    600;
+
+}
+
+
+/* Eye button */
+
+body.dark-mode .skill-certificate-view-btn {
+
+  width:
+    36px;
+
+  height:
+    36px;
+
+  flex:
+    0 0 36px;
+
+  color:
+    #2dd4bf;
+
+}
+
+
+body.dark-mode .skill-certificate-view-btn svg {
+
+  width:
+    20px;
+
+  height:
+    20px;
+
+}
+
+
+body.dark-mode .skill-certificate-view-btn:hover {
+
   background:
     rgba(45,
       212,
       191,
       0.12);
 
-  color:
-    #5eead4;
 }
 
 
+/* ══════════════════════════════════════
+   NO CERTIFICATE YET
+══════════════════════════════════════ */
+
 body.dark-mode .skill-attach-certificate-btn {
-  border-color:
-    #4b5563;
+
+  min-height:
+    52px;
+
+  border:
+    1.5px dashed #475569;
+
+  border-radius:
+    12px;
+
+  background:
+    transparent;
 
   color:
-    #e5e7eb;
+    #cbd5e1;
+
 }
 
 
 body.dark-mode .skill-attach-certificate-btn:hover {
+
   border-color:
     #2dd4bf;
 
@@ -3623,38 +3834,54 @@ body.dark-mode .skill-attach-certificate-btn:hover {
 
   color:
     #5eead4;
+
 }
 
 
-body.dark-mode .skill-certificate-file {
+/* ══════════════════════════════════════
+   ADD SKILL
+
+   Keep it because this is the Job
+   Seeker's own editable profile.
+══════════════════════════════════════ */
+
+body.dark-mode .add-skill-btn {
+
+  min-height:
+    54px;
+
   background:
-    #111111;
+    #0f172a;
+
+  border:
+    1px solid #334155;
+
+  border-radius:
+    13px;
+
+  color:
+    #f8fafc;
+
+  font-size:
+    0.9rem;
+
+  font-weight:
+    700;
+
+}
+
+
+body.dark-mode .add-skill-btn:hover {
+
+  background:
+    #172033;
 
   border-color:
-    #242424;
-}
+    #2dd4bf;
 
-
-body.dark-mode .skill-certificate-file-icon,
-
-body.dark-mode .skill-certificate-name {
-  color:
-    #d1d5db;
-}
-
-
-body.dark-mode .skill-certificate-view-btn {
   color:
     #5eead4;
-}
 
-
-body.dark-mode .skill-certificate-view-btn:hover {
-  background:
-    rgba(45,
-      212,
-      191,
-      0.12);
 }
 
 
@@ -3677,33 +3904,70 @@ body.dark-mode .skill-certificate-view-btn:hover {
 
 
   .skill-row {
+
     padding:
-      11px 12px;
+      14px 16px;
+
   }
 
 
   .skill-medal-icon {
+
     width:
-      32px;
+      42px;
 
     height:
-      32px;
+      42px;
 
-    flex-basis:
-      32px;
+    flex:
+      0 0 42px;
+
+  }
+
+
+  .skill-medal-icon svg {
+
+    width:
+      20px;
+
+    height:
+      20px;
+
   }
 
 
   .skill-row .sk-name {
+
     font-size:
-      0.86rem;
+      0.94rem;
+
   }
 
 
-  .skill-attach-certificate-btn,
+  .skill-certificate-area {
+
+    margin-top:
+      14px;
+
+  }
+
+
   .skill-certificate-file {
+
     min-height:
-      38px;
+      60px;
+
+    padding:
+      10px 13px;
+
+  }
+
+
+  .skill-attach-certificate-btn {
+
+    min-height:
+      48px;
+
   }
 
 }
@@ -10413,35 +10677,69 @@ body.dark-mode .job-details-description {
 
 }
 
-body.dark-mode .chat-image-btn {
-  background: transparent;
-  color: #60a5fa;
-}
+/* ══════════════════════════════════════
+   DARK MODE
+   CHAT TOOL ICONS MATCH SEND BUTTON
+══════════════════════════════════════ */
 
-body.dark-mode .chat-image-btn:hover {
-  background: #273449;
-}
-
-body.dark-mode .chat-camera-ui-btn {
-  background: transparent;
-
-  color: #60a5fa;
-}
-
+body.dark-mode .chat-image-btn,
+body.dark-mode .chat-camera-ui-btn,
 body.dark-mode .chat-voice-ui-btn {
-  background: transparent;
 
-  color: #60a5fa;
+  background:
+    transparent;
+
+  /*
+    Match the teal Send button.
+  */
+  color:
+    var(--teal);
+
 }
 
 
+/* Hover */
+body.dark-mode .chat-image-btn:hover,
+body.dark-mode .chat-camera-ui-btn:hover,
 body.dark-mode .chat-voice-ui-btn:hover {
-  background: #273449;
+
+  background:
+    rgba(45,
+      212,
+      191,
+      0.10);
+
+  color:
+    #5eead4;
+
 }
 
 
-body.dark-mode .chat-camera-ui-btn:hover {
-  background: #273449;
+/* Active press */
+body.dark-mode .chat-image-btn:active,
+body.dark-mode .chat-camera-ui-btn:active,
+body.dark-mode .chat-voice-ui-btn:active {
+
+  background:
+    rgba(45,
+      212,
+      191,
+      0.16);
+
+}
+
+
+/* Keyboard focus */
+body.dark-mode .chat-image-btn:focus-visible,
+body.dark-mode .chat-camera-ui-btn:focus-visible,
+body.dark-mode .chat-voice-ui-btn:focus-visible {
+
+  box-shadow:
+    0 0 0 3px rgba(45,
+      212,
+      191,
+      0.18);
+
 }
 
 /* ══════════════════════════════════════
@@ -14642,6 +14940,128 @@ body.dark-mode #skillModalOverlay .skill-modal-certificate-btn:hover {
 
     font-size:
       0.8rem;
+  }
+
+}
+
+/* ══════════════════════════════════════
+   DARK MODE FIX
+   MOBILE ALL JOBS DROPDOWN
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  /* Main All Jobs button */
+  body.dark-mode .mobile-job-type-btn {
+
+    background:
+      #0f172a !important;
+
+    border-color:
+      #334155 !important;
+
+    color:
+      #e5e7eb !important;
+
+  }
+
+
+  /* Hover */
+  body.dark-mode .mobile-job-type-btn:hover {
+
+    background:
+      #111827 !important;
+
+    border-color:
+      #475569 !important;
+
+  }
+
+
+  /* Open state */
+  body.dark-mode .mobile-job-type-dropdown.open .mobile-job-type-btn {
+
+    background:
+      #111827 !important;
+
+    border-color:
+      var(--teal) !important;
+
+    box-shadow:
+      0 0 0 3px rgba(45,
+        212,
+        191,
+        0.14);
+
+  }
+
+
+  /* Chevron */
+  body.dark-mode .mobile-job-type-chevron {
+
+    color:
+      #94a3b8 !important;
+
+  }
+
+
+  /* ════════════════════════════════════
+     ALL JOBS DROPDOWN MENU
+  ════════════════════════════════════ */
+
+  body.dark-mode .mobile-job-type-menu {
+
+    background:
+      #111827 !important;
+
+    border-color:
+      #334155 !important;
+
+    box-shadow:
+      0 12px 28px rgba(0,
+        0,
+        0,
+        0.38);
+
+  }
+
+
+  /* Dropdown options */
+  body.dark-mode .mobile-job-type-menu button {
+
+    background:
+      #111827 !important;
+
+    color:
+      #e5e7eb !important;
+
+  }
+
+
+  /* Hover */
+  body.dark-mode .mobile-job-type-menu button:hover {
+
+    background:
+      #172033 !important;
+
+    color:
+      #ffffff !important;
+
+  }
+
+
+  /* Selected option */
+  body.dark-mode .mobile-job-type-menu button.active {
+
+    background:
+      rgba(45,
+        212,
+        191,
+        0.14) !important;
+
+    color:
+      #5eead4 !important;
+
   }
 
 }
