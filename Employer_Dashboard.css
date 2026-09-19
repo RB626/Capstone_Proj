@@ -17505,3 +17505,619 @@ body.dark-mode .chat-mobile-tools-toggle:hover {
   }
 
 }
+
+/* ══════════════════════════════════════
+   EMPLOYER VIEW
+   PUBLIC JOB SEEKER SKILLS
+══════════════════════════════════════ */
+
+#workerPublicSkillsList {
+
+  padding:
+    0 20px 20px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    14px;
+
+  margin-bottom:
+    0;
+
+}
+
+
+/* ══════════════════════════════════════
+   SKILL CARD
+══════════════════════════════════════ */
+
+#workerPublicSkillsList .worker-public-skill-card {
+
+  width:
+    100%;
+
+  padding:
+    14px 16px;
+
+  border:
+    1px solid #e2e8f0;
+
+  border-radius:
+    14px;
+
+  background:
+    #ffffff;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+
+}
+
+
+#workerPublicSkillsList .worker-public-skill-card:hover {
+
+  border-color:
+    #cbd5e1;
+
+  box-shadow:
+    0 6px 18px rgba(15,
+      23,
+      42,
+      0.06);
+
+  transform:
+    translateY(-1px);
+
+}
+
+
+/* ══════════════════════════════════════
+   SKILL HEADER
+══════════════════════════════════════ */
+
+#workerPublicSkillsList .worker-public-skill-header {
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  width:
+    100%;
+
+  min-width:
+    0;
+
+}
+
+
+/* Medal icon */
+
+#workerPublicSkillsList .worker-public-skill-icon {
+
+  width:
+    42px;
+
+  height:
+    42px;
+
+  flex:
+    0 0 42px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border-radius:
+    50%;
+
+  background:
+    var(--teal-bg);
+
+  color:
+    var(--teal-dark);
+
+}
+
+
+#workerPublicSkillsList .worker-public-skill-icon svg {
+
+  width:
+    20px;
+
+  height:
+    20px;
+
+}
+
+
+/* Skill name */
+
+#workerPublicSkillsList .worker-public-skill-name {
+
+  flex:
+    1;
+
+  min-width:
+    0;
+
+  color:
+    #374151;
+
+  font-size:
+    0.96rem;
+
+  font-weight:
+    700;
+
+  line-height:
+    1.35;
+
+  overflow-wrap:
+    anywhere;
+
+}
+
+
+/* ══════════════════════════════════════
+   CERTIFICATE ROW
+══════════════════════════════════════ */
+
+#workerPublicSkillsList .worker-public-skill-certificate {
+
+  width:
+    100%;
+
+  min-height:
+    56px;
+
+  margin-top:
+    12px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    10px;
+
+  padding:
+    10px 12px;
+
+  border:
+    1px solid #e2e8f0;
+
+  border-radius:
+    11px;
+
+  background:
+    #f8fafc;
+
+}
+
+
+/* File icon */
+
+#workerPublicSkillsList .worker-public-certificate-icon {
+
+  width:
+    26px;
+
+  height:
+    26px;
+
+  flex:
+    0 0 26px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  color:
+    #64748b;
+
+}
+
+
+#workerPublicSkillsList .worker-public-certificate-icon svg {
+
+  width:
+    20px;
+
+  height:
+    20px;
+
+}
+
+
+/* Filename */
+
+#workerPublicSkillsList .worker-public-certificate-name {
+
+  flex:
+    1;
+
+  min-width:
+    0;
+
+  color:
+    #475569;
+
+  font-size:
+    0.82rem;
+
+  font-weight:
+    600;
+
+  white-space:
+    nowrap;
+
+  overflow:
+    hidden;
+
+  text-overflow:
+    ellipsis;
+
+}
+
+
+/* ══════════════════════════════════════
+   EYE / VIEW CERTIFICATE
+══════════════════════════════════════ */
+
+#workerPublicSkillsList .worker-public-certificate-view {
+
+  width:
+    36px;
+
+  height:
+    36px;
+
+  flex:
+    0 0 36px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    0;
+
+  border:
+    none;
+
+  border-radius:
+    50%;
+
+  background:
+    transparent;
+
+  color:
+    var(--teal-dark);
+
+  cursor:
+    pointer;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+
+}
+
+
+#workerPublicSkillsList .worker-public-certificate-view svg {
+
+  width:
+    20px;
+
+  height:
+    20px;
+
+}
+
+
+#workerPublicSkillsList .worker-public-certificate-view:hover {
+
+  background:
+    var(--teal-bg);
+
+  color:
+    var(--teal-dark);
+
+  transform:
+    scale(1.06);
+
+}
+
+
+#workerPublicSkillsList .worker-public-certificate-view:active {
+
+  transform:
+    scale(0.94);
+
+}
+
+
+#workerPublicSkillsList .worker-public-certificate-view:focus-visible {
+
+  outline:
+    2px solid rgba(20,
+      184,
+      166,
+      0.4);
+
+  outline-offset:
+    2px;
+
+}
+
+
+/* ══════════════════════════════════════
+   NO CERTIFICATE
+══════════════════════════════════════ */
+
+#workerPublicSkillsList .worker-public-no-certificate {
+
+  width:
+    100%;
+
+  margin-top:
+    11px;
+
+  padding:
+    10px 12px;
+
+  border:
+    1px dashed #d1d5db;
+
+  border-radius:
+    10px;
+
+  color:
+    #94a3b8;
+
+  background:
+    #fafafa;
+
+  font-size:
+    0.78rem;
+
+  font-weight:
+    600;
+
+  text-align:
+    center;
+
+}
+
+
+/* ══════════════════════════════════════
+   DARK MODE
+══════════════════════════════════════ */
+
+body.dark-mode #workerPublicSkillsList .worker-public-skill-card {
+
+  background:
+    #111827;
+
+  border-color:
+    #334155;
+
+}
+
+
+body.dark-mode #workerPublicSkillsList .worker-public-skill-card:hover {
+
+  border-color:
+    #475569;
+
+  box-shadow:
+    0 8px 22px rgba(0,
+      0,
+      0,
+      0.28);
+
+}
+
+
+body.dark-mode #workerPublicSkillsList .worker-public-skill-icon {
+
+  background:
+    rgba(45,
+      212,
+      191,
+      0.12);
+
+  color:
+    #5eead4;
+
+}
+
+
+body.dark-mode #workerPublicSkillsList .worker-public-skill-name {
+
+  color:
+    #f8fafc;
+
+}
+
+
+body.dark-mode #workerPublicSkillsList .worker-public-skill-certificate {
+
+  background:
+    #0f172a;
+
+  border-color:
+    #334155;
+
+}
+
+
+body.dark-mode #workerPublicSkillsList .worker-public-certificate-icon,
+
+body.dark-mode #workerPublicSkillsList .worker-public-certificate-name {
+
+  color:
+    #cbd5e1;
+
+}
+
+
+body.dark-mode #workerPublicSkillsList .worker-public-certificate-view {
+
+  color:
+    #5eead4;
+
+}
+
+
+body.dark-mode #workerPublicSkillsList .worker-public-certificate-view:hover {
+
+  background:
+    rgba(45,
+      212,
+      191,
+      0.12);
+
+}
+
+
+body.dark-mode #workerPublicSkillsList .worker-public-no-certificate {
+
+  color:
+    #94a3b8;
+
+  background:
+    #0f172a;
+
+  border-color:
+    #475569;
+
+}
+
+
+/* ══════════════════════════════════════
+   MOBILE
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  #workerPublicSkillsList {
+
+    padding:
+      0 16px 16px;
+
+    gap:
+      11px;
+
+  }
+
+
+  #workerPublicSkillsList .worker-public-skill-card {
+
+    padding:
+      12px;
+
+    border-radius:
+      12px;
+
+  }
+
+
+  #workerPublicSkillsList .worker-public-skill-icon {
+
+    width:
+      38px;
+
+    height:
+      38px;
+
+    flex-basis:
+      38px;
+
+  }
+
+
+  #workerPublicSkillsList .worker-public-skill-icon svg {
+
+    width:
+      18px;
+
+    height:
+      18px;
+
+  }
+
+
+  #workerPublicSkillsList .worker-public-skill-name {
+
+    font-size:
+      0.9rem;
+
+  }
+
+
+  #workerPublicSkillsList .worker-public-skill-certificate {
+
+    min-height:
+      52px;
+
+    margin-top:
+      10px;
+
+    padding:
+      9px 10px;
+
+  }
+
+
+  #workerPublicSkillsList .worker-public-certificate-name {
+
+    font-size:
+      0.76rem;
+
+  }
+
+
+  #workerPublicSkillsList .worker-public-certificate-view {
+
+    width:
+      34px;
+
+    height:
+      34px;
+
+    flex-basis:
+      34px;
+
+  }
+
+}

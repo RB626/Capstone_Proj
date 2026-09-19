@@ -6612,44 +6612,148 @@
         );
 
 
-      if (!container) return;
+      if (
+        !container
+      ) {
+
+        return;
+
+      }
 
 
-      const skills = [
-        ...new Set(
-          documents
-            .flatMap(
-              documentSnapshot => {
+      /* ══════════════════════════════════════
+         BUILD SKILL ITEMS
+    
+         Keep compatibility with your old
+         comma-separated skill data while also
+         reading the new certificate fields.
+      ═══════════════════════════════════════ */
 
-                const data =
-                  documentSnapshot.data();
+      const skillItems =
+        documents.flatMap(
+          documentSnapshot => {
+
+            const data =
+              documentSnapshot.data();
 
 
-                return String(
-                  data.name || ""
+            const names =
+              String(
+                data.name || ""
+              )
+                .split(",")
+                .map(
+                  skill =>
+                    skill.trim()
                 )
-                  .split(",")
-                  .map(
-                    skill =>
-                      skill.trim()
-                  )
-                  .filter(Boolean);
+                .filter(Boolean);
 
-              }
-            )
-        )
-      ];
 
+            const certificateURL =
+              String(
+                data.certificateURL || ""
+              ).trim();
+
+
+            const certificateName =
+              String(
+                data.certificateName ||
+                "Certificate"
+              ).trim();
+
+
+            const certificateType =
+              String(
+                data.certificateType || ""
+              ).trim();
+
+
+            return names.map(
+              name => ({
+                documentId:
+                  documentSnapshot.id,
+
+                name:
+                  name,
+
+                certificateURL:
+                  certificateURL,
+
+                certificateName:
+                  certificateName,
+
+                certificateType:
+                  certificateType
+              })
+            );
+
+          }
+        );
+
+
+      /* ══════════════════════════════════════
+         REMOVE DUPLICATE SKILL NAMES
+    
+         Preserve your existing behavior where
+         duplicate skills are not displayed.
+      ═══════════════════════════════════════ */
+
+      const seenSkills =
+        new Set();
+
+
+      const uniqueSkills =
+        skillItems.filter(
+          item => {
+
+            const key =
+              item.name
+                .trim()
+                .toLowerCase();
+
+
+            if (
+              !key ||
+              seenSkills.has(
+                key
+              )
+            ) {
+
+              return false;
+
+            }
+
+
+            seenSkills.add(
+              key
+            );
+
+
+            return true;
+
+          }
+        );
+
+
+      /* ══════════════════════════════════════
+         KEEP PROFILE COMPLETION LOGIC
+      ═══════════════════════════════════════ */
 
       workerPublicProfileState
         .skillsCount =
-        skills.length;
+        uniqueSkills.length;
 
 
       refreshWorkerPublicCompletion();
 
 
-      if (!skills.length) {
+      /* ══════════════════════════════════════
+         EMPTY STATE
+      ═══════════════════════════════════════ */
+
+      if (
+        !uniqueSkills.length
+      ) {
 
         container.innerHTML = `
       <div class="skills-empty-state">
@@ -6657,41 +6761,241 @@
       </div>
     `;
 
+
         return;
+
       }
 
 
+      /* ══════════════════════════════════════
+         RENDER EMPLOYER VIEW
+    
+         NO:
+         - Add Skill
+         - Attach certificate
+         - Edit skill
+    
+         YES:
+         - Skill name
+         - Certificate filename
+         - View certificate
+      ═══════════════════════════════════════ */
+
       container.innerHTML =
-        skills
+        uniqueSkills
           .map(
-            skill => `
-          <div class="skill-row">
+            item => {
 
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="var(--teal-dark)"
-              stroke-width="2"
+              const hasCertificate =
+                Boolean(
+                  item.certificateURL
+                );
+
+
+              return `
+            <div
+              class="worker-public-skill-card"
+              data-skill-id="${escapeHtml(
+                item.documentId
+              )}"
             >
-              <circle
-                cx="12"
-                cy="8"
-                r="6"
-              ></circle>
 
-              <path
-                d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"
-              ></path>
-            </svg>
+              <!-- ═══════════════════════════
+                   SKILL HEADER
+              ═══════════════════════════ -->
 
-            <span class="sk-name">
-              ${escapeHtml(skill)}
-            </span>
+              <div
+                class="worker-public-skill-header"
+              >
 
-          </div>
-        `
+                <span
+                  class="worker-public-skill-icon"
+                  aria-hidden="true"
+                >
+
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512">
+  <path d="M0 0h512v512H0z" fill="none" />
+  <path fill="currentColor" d="M256 336c-5.22 0-10.4-.24-15.51-.69a176.12 176.12 0 0 1-131.29-78.37L20 416h115l58 96l82.53-177.09A178 178 0 0 1 256 336m147-79.26a176.9 176.9 0 0 1-88.18 69.14L273.7 415.5L319 512l58-96h115Z" />
+  <circle cx="256.02" cy="160" r="48" fill="currentColor" />
+  <path fill="currentColor" d="M256 16c-79.4 0-144 64.6-144 144s64.6 144 144 144s144-64.6 144-144S335.4 16 256 16m0 224a80 80 0 1 1 80-80a80.09 80.09 0 0 1-80 80" />
+</svg>
+
+                </span>
+
+
+                <span
+                  class="worker-public-skill-name"
+                >
+                  ${escapeHtml(
+                item.name
+              )}
+                </span>
+
+              </div>
+
+
+              <!-- ═══════════════════════════
+                   CERTIFICATE
+              ═══════════════════════════ -->
+
+              ${hasCertificate
+
+                  ? `
+                    <div
+                      class="worker-public-skill-certificate"
+                    >
+
+                      <!-- FILE ICON -->
+
+                      <span
+                        class="worker-public-certificate-icon"
+                        aria-hidden="true"
+                      >
+
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path
+                            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z">
+                          </path>
+
+                          <polyline
+                            points="14 2 14 8 20 8">
+                          </polyline>
+                        </svg>
+
+                      </span>
+
+
+                      <!-- FILE NAME -->
+
+                      <span
+                        class="worker-public-certificate-name"
+                        title="${escapeHtml(
+                    item.certificateName
+                  )}"
+                      >
+                        ${escapeHtml(
+                    item.certificateName
+                  )}
+                      </span>
+
+
+                      <!-- VIEW BUTTON -->
+
+                      <button
+                        type="button"
+                        class="worker-public-certificate-view"
+                        data-certificate-url="${escapeHtml(
+                    item.certificateURL
+                  )}"
+                        aria-label="View certificate"
+                        title="View certificate"
+                      >
+
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12">
+                          </path>
+
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="3">
+                          </circle>
+                        </svg>
+
+                      </button>
+
+                    </div>
+                  `
+
+                  : `
+                    <div
+                      class="worker-public-no-certificate"
+                    >
+                      No certificate attached
+                    </div>
+                  `
+                }
+
+            </div>
+          `;
+
+            }
           )
           .join("");
+
+
+      /* ══════════════════════════════════════
+         CERTIFICATE VIEW BUTTONS
+      ═══════════════════════════════════════ */
+
+      container
+        .querySelectorAll(
+          ".worker-public-certificate-view"
+        )
+        .forEach(
+          button => {
+
+            button.addEventListener(
+              "click",
+              event => {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+
+                const certificateURL =
+                  String(
+                    button.dataset
+                      .certificateUrl ||
+                    ""
+                  ).trim();
+
+
+                if (
+                  !certificateURL
+                ) {
+
+                  return;
+
+                }
+
+
+                /*
+                  PDF:
+                  opens browser PDF viewer.
+    
+                  Image:
+                  opens browser image viewer.
+                */
+                window.open(
+                  certificateURL,
+                  "_blank",
+                  "noopener,noreferrer"
+                );
+
+              }
+            );
+
+          }
+        );
+
     }
 
     function renderWorkerPublicExperience(

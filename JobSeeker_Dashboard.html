@@ -983,11 +983,25 @@
 
             <!-- Skills & Endorsements -->
             <div class="prof-card">
-              <div class="prof-section-title" data-i18n="profileSkills">Skills</div>
+              <div class="prof-section-title" data-i18n="profileSkills">
+                Skills
+              </div>
 
               <div class="skills-list" id="skillsList"></div>
 
-              <button class="add-skill-btn" id="addSkillBtn" data-i18n="profileAddSkill">Add Skill</button>
+
+              <!--
+    Hidden certificate picker.
+
+    One input is reused by every skill.
+  -->
+              <input type="file" id="skillCertificateInput" class="skill-certificate-input"
+                accept=".pdf,image/jpeg,image/png,image/webp" hidden />
+
+
+              <button class="add-skill-btn" id="addSkillBtn" data-i18n="profileAddSkill">
+                Add Skill
+              </button>
             </div>
 
           </div><!-- /profile-left-col -->
@@ -2042,6 +2056,10 @@
 
     const skillsList = document.getElementById("skillsList");
     const addSkillBtn = document.getElementById("addSkillBtn");
+    const skillCertificateInput = document.getElementById("skillCertificateInput");
+    let activeSkillCertificateId = null;
+    const SKILL_CERTIFICATE_MAX_SIZE = 10 * 1024 * 1024;
+    const SKILL_CERTIFICATE_ALLOWED_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
 
     const skillModalOverlay = document.getElementById("skillModalOverlay");
     const skillModalHeading = document.getElementById("skillModalHeading");
@@ -14818,44 +14836,756 @@ near the bottom.
       });
     }
 
-    function renderSkillsList(docs) {
-      if (!skillsList) return;
+    function renderSkillsList(
+      docs
+    ) {
 
-      if (!docs.length) {
-        skillsList.innerHTML = `<div class="skills-empty-state">No skills added yet.</div>`;
+      if (
+        !skillsList
+      ) {
+
         return;
+
       }
 
-      skillsList.innerHTML = docs.map((docSnap) => {
-        const data = docSnap.data();
 
-        return `
-      <div class="skill-row" tabindex="0" data-skill-id="${docSnap.id}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="8" r="6" />
-          <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
-        </svg>
-        <span class="sk-name">${escapeHtml(data.name || "Untitled Skill")}</span>
+      if (
+        !docs.length
+      ) {
+
+        skillsList.innerHTML = `
+      <div class="skills-empty-state">
+        No skills added yet.
       </div>
     `;
-      }).join("");
 
-      docs.forEach((docSnap) => {
-        const row = skillsList.querySelector(`[data-skill-id="${docSnap.id}"]`);
-        if (!row) return;
+        return;
 
-        row.addEventListener("click", () => {
-          openSkillModalForEdit(docSnap.id, docSnap.data());
-        });
+      }
 
-        row.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            openSkillModalForEdit(docSnap.id, docSnap.data());
+
+      skillsList.innerHTML =
+        docs
+          .map(
+            docSnap => {
+
+              const data =
+                docSnap.data();
+
+
+              const hasCertificate =
+                Boolean(
+                  String(
+                    data.certificateURL || ""
+                  ).trim()
+                );
+
+
+              const certificateName =
+                String(
+                  data.certificateName ||
+                  "Certificate"
+                );
+
+
+              return `
+            <div
+              class="skill-row"
+              tabindex="0"
+              data-skill-id="${docSnap.id}"
+            >
+
+              <!-- SKILL TITLE -->
+              <div class="skill-row-main">
+
+                <span
+                  class="skill-medal-icon"
+                  aria-hidden="true"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512">
+  <path d="M0 0h512v512H0z" fill="none" />
+  <path fill="currentColor" d="M256 336c-5.22 0-10.4-.24-15.51-.69a176.12 176.12 0 0 1-131.29-78.37L20 416h115l58 96l82.53-177.09A178 178 0 0 1 256 336m147-79.26a176.9 176.9 0 0 1-88.18 69.14L273.7 415.5L319 512l58-96h115Z" />
+  <circle cx="256.02" cy="160" r="48" fill="currentColor" />
+  <path fill="currentColor" d="M256 16c-79.4 0-144 64.6-144 144s64.6 144 144 144s144-64.6 144-144S335.4 16 256 16m0 224a80 80 0 1 1 80-80a80.09 80.09 0 0 1-80 80" />
+</svg>
+                </span>
+
+
+                <span class="sk-name">
+                  ${escapeHtml(
+                data.name ||
+                "Untitled Skill"
+              )}
+                </span>
+
+              </div>
+
+
+              <!-- CERTIFICATE -->
+              <div class="skill-certificate-area">
+
+                ${hasCertificate
+
+                  ? `
+                      <div
+                        class="skill-certificate-file"
+                      >
+
+                        <span
+                          class="skill-certificate-file-icon"
+                          aria-hidden="true"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path
+                              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z">
+                            </path>
+
+                            <polyline
+                              points="14 2 14 8 20 8">
+                            </polyline>
+                          </svg>
+                        </span>
+
+
+                        <span
+                          class="skill-certificate-name"
+                          title="${escapeHtml(
+                    certificateName
+                  )}"
+                        >
+                          ${escapeHtml(
+                    certificateName
+                  )}
+                        </span>
+
+
+                        <button
+                          type="button"
+                          class="skill-certificate-view-btn"
+                          aria-label="View certificate"
+                          title="View certificate"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12">
+                            </path>
+
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="3">
+                            </circle>
+                          </svg>
+                        </button>
+
+                      </div>
+                    `
+
+                  : `
+                      <button
+                        type="button"
+                        class="skill-attach-certificate-btn"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48">
+                          </path>
+                        </svg>
+
+                        <span>
+                          Attach certificate
+                        </span>
+                      </button>
+                    `
+                }
+
+              </div>
+
+            </div>
+          `;
+
+            }
+          )
+          .join("");
+
+
+      /*
+        Restore existing Edit Skill behavior,
+        while keeping certificate buttons
+        independent from the row click.
+      */
+      docs.forEach(
+        docSnap => {
+
+          const row =
+            skillsList.querySelector(
+              `[data-skill-id="${docSnap.id}"]`
+            );
+
+
+          if (
+            !row
+          ) {
+
+            return;
+
           }
-        });
-      });
+
+
+          const data =
+            docSnap.data();
+
+
+          const attachButton =
+            row.querySelector(
+              ".skill-attach-certificate-btn"
+            );
+
+
+          const viewButton =
+            row.querySelector(
+              ".skill-certificate-view-btn"
+            );
+
+
+          /* ────────────────────────────────
+             ATTACH CERTIFICATE
+          ──────────────────────────────── */
+
+          attachButton
+            ?.addEventListener(
+              "click",
+              event => {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+
+                if (
+                  !currentUser ||
+                  !skillCertificateInput
+                ) {
+
+                  return;
+
+                }
+
+
+                activeSkillCertificateId =
+                  docSnap.id;
+
+
+                /*
+                  Reset so the same file can
+                  be selected again later.
+                */
+                skillCertificateInput.value =
+                  "";
+
+
+                skillCertificateInput.click();
+
+              }
+            );
+
+
+          /* ────────────────────────────────
+             VIEW CERTIFICATE
+          ──────────────────────────────── */
+
+          viewButton
+            ?.addEventListener(
+              "click",
+              event => {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+
+                const certificateURL =
+                  String(
+                    data.certificateURL || ""
+                  ).trim();
+
+
+                if (
+                  !certificateURL
+                ) {
+
+                  return;
+
+                }
+
+
+                window.open(
+                  certificateURL,
+                  "_blank",
+                  "noopener,noreferrer"
+                );
+
+              }
+            );
+
+
+          /* ────────────────────────────────
+             EXISTING EDIT-SKILL BEHAVIOR
+          ──────────────────────────────── */
+
+          row.addEventListener(
+            "click",
+            event => {
+
+              /*
+                Certificate controls must NOT
+                open the Edit Skill modal.
+              */
+              if (
+                event.target.closest(
+                  ".skill-attach-certificate-btn, .skill-certificate-view-btn"
+                )
+              ) {
+
+                return;
+
+              }
+
+
+              openSkillModalForEdit(
+                docSnap.id,
+                data
+              );
+
+            }
+          );
+
+
+          row.addEventListener(
+            "keydown",
+            event => {
+
+              /*
+                Only activate the row itself.
+                Do not catch Enter presses from
+                the certificate buttons.
+              */
+              if (
+                event.target !==
+                row
+              ) {
+
+                return;
+
+              }
+
+
+              if (
+                event.key === "Enter" ||
+                event.key === " "
+              ) {
+
+                event.preventDefault();
+
+
+                openSkillModalForEdit(
+                  docSnap.id,
+                  data
+                );
+
+              }
+
+            }
+          );
+
+        }
+      );
+
     }
+
+    /* ══════════════════════════════════════
+   UPLOAD SKILL CERTIFICATE
+══════════════════════════════════════ */
+
+    async function uploadSkillCertificate(
+      skillId,
+      file
+    ) {
+
+      if (
+        !currentUser ||
+        !skillId ||
+        !file
+      ) {
+
+        return;
+
+      }
+
+
+      /* ────────────────────────────────
+         FILE TYPE
+      ──────────────────────────────── */
+
+      if (
+        !SKILL_CERTIFICATE_ALLOWED_TYPES
+          .has(
+            file.type
+          )
+      ) {
+
+        alert(
+          "Please select a PDF, JPG, PNG, or WEBP certificate."
+        );
+
+        return;
+
+      }
+
+
+      /* ────────────────────────────────
+         FILE SIZE
+      ──────────────────────────────── */
+
+      if (
+        file.size >
+        SKILL_CERTIFICATE_MAX_SIZE
+      ) {
+
+        alert(
+          "Certificate must be 10 MB or below."
+        );
+
+        return;
+
+      }
+
+
+      const skillRef =
+        doc(
+          db,
+          "users",
+          currentUser.uid,
+          "skills",
+          skillId
+        );
+
+
+      const row =
+        skillsList
+          ?.querySelector(
+            `[data-skill-id="${skillId}"]`
+          );
+
+
+      const attachButton =
+        row
+          ?.querySelector(
+            ".skill-attach-certificate-btn"
+          );
+
+
+      if (
+        attachButton
+      ) {
+
+        attachButton.disabled =
+          true;
+
+
+        attachButton.classList.add(
+          "uploading"
+        );
+
+
+        attachButton.innerHTML = `
+      <span class="skill-certificate-spinner"></span>
+
+      <span>
+        Uploading...
+      </span>
+    `;
+
+      }
+
+
+      let newStorageRef =
+        null;
+
+
+      let uploadedSuccessfully =
+        false;
+
+
+      try {
+
+        /*
+          Read old certificate first.
+    
+          This lets us safely delete the old
+          file only AFTER the new one succeeds.
+        */
+        const currentSkillSnap =
+          await getDoc(
+            skillRef
+          );
+
+
+        const currentSkillData =
+          currentSkillSnap.exists()
+
+            ? currentSkillSnap.data()
+
+            : {};
+
+
+        const oldCertificatePath =
+          String(
+            currentSkillData
+              .certificatePath ||
+            ""
+          );
+
+
+        const safeFileName =
+          `${Date.now()}_${file.name
+            .replace(
+              /[^a-zA-Z0-9._-]/g,
+              "_"
+            )}`;
+
+
+        const filePath =
+          `users/${currentUser.uid}` +
+          `/skillCertificates/${skillId}` +
+          `/${safeFileName}`;
+
+
+        newStorageRef =
+          ref(
+            storage,
+            filePath
+          );
+
+
+        /* ────────────────────────────────
+           FIREBASE STORAGE
+        ──────────────────────────────── */
+
+        await uploadBytes(
+          newStorageRef,
+          file,
+          {
+            contentType:
+              file.type
+          }
+        );
+
+
+        uploadedSuccessfully =
+          true;
+
+
+        const downloadURL =
+          await getDownloadURL(
+            newStorageRef
+          );
+
+
+        /* ────────────────────────────────
+           SAVE TO EXISTING SKILL DOCUMENT
+        ──────────────────────────────── */
+
+        await updateDoc(
+          skillRef,
+          {
+
+            certificateName:
+              file.name,
+
+            certificateURL:
+              downloadURL,
+
+            certificatePath:
+              filePath,
+
+            certificateType:
+              file.type,
+
+            certificateSize:
+              file.size,
+
+            certificateUpdatedAt:
+              serverTimestamp(),
+
+            /*
+              Keep your existing updatedAt.
+            */
+            updatedAt:
+              serverTimestamp()
+
+          }
+        );
+
+
+        /*
+          New certificate is safely stored
+          in Firestore now.
+    
+          Remove the previous Storage file,
+          if this skill had one.
+        */
+        if (
+          oldCertificatePath &&
+          oldCertificatePath !==
+          filePath
+        ) {
+
+          try {
+
+            await deleteObject(
+              ref(
+                storage,
+                oldCertificatePath
+              )
+            );
+
+          }
+
+          catch (
+          deleteError
+          ) {
+
+            console.warn(
+              "Old skill certificate could not be deleted:",
+              deleteError
+            );
+
+          }
+
+        }
+
+      }
+
+      catch (
+      error
+      ) {
+
+        console.error(
+          "SKILL CERTIFICATE UPLOAD ERROR:",
+          error
+        );
+
+
+        /*
+          If Storage succeeded but Firestore
+          failed, clean up the orphan file.
+        */
+        if (
+          uploadedSuccessfully &&
+          newStorageRef
+        ) {
+
+          try {
+
+            await deleteObject(
+              newStorageRef
+            );
+
+          }
+
+          catch (
+          cleanupError
+          ) {
+
+            console.warn(
+              "Certificate cleanup failed:",
+              cleanupError
+            );
+
+          }
+
+        }
+
+
+        alert(
+          "Failed to upload certificate. Please try again."
+        );
+
+      }
+
+    }
+
+    /* ══════════════════════════════════════
+   CERTIFICATE FILE SELECTED
+══════════════════════════════════════ */
+
+    skillCertificateInput
+      ?.addEventListener(
+        "change",
+        async event => {
+
+          const file =
+            event.target
+              ?.files?.[0];
+
+
+          const skillId =
+            activeSkillCertificateId;
+
+
+          /*
+            Reset immediately.
+          */
+          activeSkillCertificateId =
+            null;
+
+
+          if (
+            !file ||
+            !skillId
+          ) {
+
+            event.target.value =
+              "";
+
+            return;
+
+          }
+
+
+          await uploadSkillCertificate(
+            skillId,
+            file
+          );
+
+
+          event.target.value =
+            "";
+
+        }
+      );
 
     function subscribeToWorkExperience(uid) {
       if (unsubscribeExperienceList) {
@@ -15098,7 +15828,69 @@ near the bottom.
       deleteSkillBtn.textContent = "Deleting...";
 
       try {
-        await deleteDoc(doc(db, "users", currentUser.uid, "skills", editingSkillId));
+        const skillRef =
+          doc(
+            db,
+            "users",
+            currentUser.uid,
+            "skills",
+            editingSkillId
+          );
+
+
+        const skillSnap =
+          await getDoc(
+            skillRef
+          );
+
+
+        const skillData =
+          skillSnap.exists()
+
+            ? skillSnap.data()
+
+            : {};
+
+
+        /*
+          Remove certificate file first,
+          if this skill has one.
+        */
+        if (
+          skillData.certificatePath
+        ) {
+
+          try {
+
+            await deleteObject(
+              ref(
+                storage,
+                skillData.certificatePath
+              )
+            );
+
+          }
+
+          catch (
+          certificateDeleteError
+          ) {
+
+            console.warn(
+              "Skill certificate could not be deleted:",
+              certificateDeleteError
+            );
+
+          }
+
+        }
+
+
+        /*
+          Keep your existing skill deletion.
+        */
+        await deleteDoc(
+          skillRef
+        );
         closeSkillModal();
         clearSkillForm();
       } catch (error) {
