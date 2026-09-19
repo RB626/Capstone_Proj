@@ -17222,3 +17222,188 @@ body.dark-mode .msg-bubble.received .chat-voice-time {
   }
 
 }
+
+/* ══════════════════════════════════════
+   MESSENGER-STYLE MOBILE CHAT TOOLS
+══════════════════════════════════════ */
+
+
+/*
+  Desktop:
+  never show mobile arrow.
+*/
+.chat-mobile-tools-toggle {
+  display: none;
+}
+
+
+/* ══════════════════════════════════════
+   MOBILE
+══════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  /*
+    Arrow button itself.
+  */
+  #page-messages .chat-mobile-tools-toggle {
+
+    width: 38px;
+    height: 38px;
+
+    flex: 0 0 38px;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: var(--teal);
+
+    cursor: pointer;
+
+    outline: none;
+
+    -webkit-tap-highlight-color:
+      transparent;
+
+    transition:
+      background 0.18s ease,
+      transform 0.18s ease;
+  }
+
+
+  /*
+    IMPORTANT:
+
+    Arrow appears ONLY while
+    the tools are hidden.
+  */
+  #page-messages .chat-input-area.mobile-tools-collapsed .chat-mobile-tools-toggle {
+
+    display:
+      inline-flex;
+
+  }
+
+
+  #page-messages .chat-mobile-tools-toggle:active {
+
+    transform:
+      scale(0.92);
+
+  }
+
+
+  #page-messages .chat-mobile-tools-toggle svg {
+
+    width: 22px;
+    height: 22px;
+
+    flex-shrink: 0;
+
+  }
+
+
+  /* ════════════════════════════════════
+     TOOLS HIDDEN
+
+     > [ Message................ ] ➤
+  ════════════════════════════════════ */
+
+  #page-messages .chat-input-area.mobile-tools-collapsed .chat-camera-ui-btn,
+
+  #page-messages .chat-input-area.mobile-tools-collapsed .chat-image-btn,
+
+  #page-messages .chat-input-area.mobile-tools-collapsed .chat-voice-ui-btn {
+
+    display:
+      none !important;
+
+  }
+
+
+  #page-messages .chat-input-area.mobile-tools-collapsed .chat-input {
+
+    flex:
+      1 1 auto;
+
+    min-width:
+      0;
+
+  }
+
+
+  /* ════════════════════════════════════
+     TOOLS EXPANDED
+
+     Camera Gallery Voice [Message] ➤
+
+     No + icon.
+     No arrow.
+  ════════════════════════════════════ */
+
+  #page-messages .chat-input-area.mobile-tools-expanded .chat-mobile-tools-toggle {
+
+    display:
+      none !important;
+
+  }
+
+
+  #page-messages .chat-input-area.mobile-tools-expanded .chat-input {
+
+    flex:
+      1 1 auto;
+
+    min-width:
+      0;
+
+  }
+
+
+  #page-messages .chat-input-area.mobile-tools-expanded {
+
+    gap:
+      6px;
+
+  }
+
+
+  /*
+    Voice recording owns the composer
+    while active.
+  */
+  #page-messages .chat-input-area.is-voice-recording .chat-mobile-tools-toggle {
+
+    display:
+      none !important;
+
+  }
+
+}
+
+
+/* ══════════════════════════════════════
+   DARK MODE
+══════════════════════════════════════ */
+
+body.dark-mode .chat-mobile-tools-toggle {
+
+  color:
+    #5eead4;
+
+}
+
+
+body.dark-mode .chat-mobile-tools-toggle:hover {
+
+  background:
+    #273449;
+
+}

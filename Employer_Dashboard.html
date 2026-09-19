@@ -607,6 +607,23 @@
             <!-- Input area -->
             <div class="chat-input-area">
 
+              <!-- ══════════════════════════════════════
+     MOBILE CHAT TOOLS ARROW
+
+     MOBILE ONLY:
+     Shows only when Camera / Gallery /
+     Voice tools are hidden.
+══════════════════════════════════════ -->
+              <button type="button" class="chat-mobile-tools-toggle" id="chatMobileToolsToggle"
+                aria-label="Show chat tools" title="Show chat tools" tabindex="-1">
+
+                <svg class="chat-mobile-tools-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+
+              </button>
+
               <!-- CAMERA / PHOTO BUTTON — UI ONLY FOR NOW -->
               <button type="button" class="chat-camera-ui-btn" id="chatCameraUiBtn" aria-label="Take a photo"
                 title="Take a photo">
@@ -14905,6 +14922,389 @@ ${description
       document.querySelector(
         "#page-messages .chat-input-area"
       );
+
+    /* ══════════════════════════════════════
+       MESSENGER-STYLE MOBILE CHAT TOOLS
+    
+       NORMAL:
+       Camera / Gallery / Voice visible
+    
+       INPUT TAP:
+       Hide tools and show >
+    
+       > TAP:
+       Show tools again and hide >
+    
+       INPUT TAP AGAIN:
+       Hide tools again
+    ══════════════════════════════════════ */
+
+    const jobSeekerChatTextInput =
+      document.getElementById(
+        "chat-input"
+      );
+
+
+    const jobSeekerMobileToolsToggle =
+      document.getElementById(
+        "chatMobileToolsToggle"
+      );
+
+
+    const jobSeekerMobileComposerMedia =
+      window.matchMedia(
+        "(max-width: 600px)"
+      );
+
+
+    /*
+      True only while Camera / Gallery /
+      Voice tools are currently expanded.
+    */
+    let jobSeekerMobileToolsExpanded =
+      false;
+
+
+    /* ══════════════════════════════════════
+       RESET TO ORIGINAL COMPOSER
+    ══════════════════════════════════════ */
+
+    function resetJobSeekerMobileChatTools() {
+
+      if (
+        !chatComposer
+      ) {
+
+        return;
+
+      }
+
+
+      jobSeekerMobileToolsExpanded =
+        false;
+
+
+      chatComposer.classList.remove(
+        "mobile-tools-collapsed",
+        "mobile-tools-expanded"
+      );
+
+    }
+
+
+    /* ══════════════════════════════════════
+       HIDE CAMERA / GALLERY / VOICE
+    ══════════════════════════════════════ */
+
+    function collapseJobSeekerMobileChatTools() {
+
+      if (
+        !jobSeekerMobileComposerMedia.matches ||
+        !chatComposer
+      ) {
+
+        return;
+
+      }
+
+
+      /*
+        Do not interfere with the existing
+        voice-recording interface.
+      */
+      if (
+        chatComposer.classList.contains(
+          "is-voice-recording"
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      jobSeekerMobileToolsExpanded =
+        false;
+
+
+      chatComposer.classList.add(
+        "mobile-tools-collapsed"
+      );
+
+
+      chatComposer.classList.remove(
+        "mobile-tools-expanded"
+      );
+
+    }
+
+
+    /* ══════════════════════════════════════
+       SHOW CAMERA / GALLERY / VOICE
+    ══════════════════════════════════════ */
+
+    function expandJobSeekerMobileChatTools() {
+
+      if (
+        !jobSeekerMobileComposerMedia.matches ||
+        !chatComposer
+      ) {
+
+        return;
+
+      }
+
+
+      jobSeekerMobileToolsExpanded =
+        true;
+
+
+      chatComposer.classList.add(
+        "mobile-tools-expanded"
+      );
+
+
+      chatComposer.classList.remove(
+        "mobile-tools-collapsed"
+      );
+
+    }
+
+
+    /* ══════════════════════════════════════
+       FIRST TAP / FOCUS ON MESSAGE INPUT
+    
+       Hide Camera / Gallery / Voice.
+    ══════════════════════════════════════ */
+
+    jobSeekerChatTextInput
+      ?.addEventListener(
+        "focus",
+        () => {
+
+          if (
+            !jobSeekerMobileComposerMedia.matches
+          ) {
+
+            return;
+
+          }
+
+
+          /*
+            If the arrow was just clicked,
+            keep the tools visible.
+    
+            The focus() performed by the arrow
+            must not immediately hide them.
+          */
+          if (
+            jobSeekerMobileToolsExpanded
+          ) {
+
+            return;
+
+          }
+
+
+          collapseJobSeekerMobileChatTools();
+
+        }
+      );
+
+
+    /* ══════════════════════════════════════
+       TAP INPUT AGAIN
+    
+       When tools are visible, tapping
+       the input hides them again.
+    ══════════════════════════════════════ */
+
+    jobSeekerChatTextInput
+      ?.addEventListener(
+        "click",
+        () => {
+
+          if (
+            !jobSeekerMobileComposerMedia.matches
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            !jobSeekerMobileToolsExpanded
+          ) {
+
+            return;
+
+          }
+
+
+          collapseJobSeekerMobileChatTools();
+
+        }
+      );
+
+
+    /* ══════════════════════════════════════
+       KEEP KEYBOARD OPEN WHEN > IS PRESSED
+    ══════════════════════════════════════ */
+
+    jobSeekerMobileToolsToggle
+      ?.addEventListener(
+        "pointerdown",
+        event => {
+
+          /*
+            Prevent the arrow from taking
+            focus away from the message input.
+          */
+          event.preventDefault();
+
+        }
+      );
+
+
+    /* ══════════════════════════════════════
+       > ARROW CLICK
+    
+       Only performs ONE action:
+       show Camera / Gallery / Voice.
+    ══════════════════════════════════════ */
+
+    jobSeekerMobileToolsToggle
+      ?.addEventListener(
+        "click",
+        event => {
+
+          event.preventDefault();
+          event.stopPropagation();
+
+
+          if (
+            !jobSeekerMobileComposerMedia.matches
+          ) {
+
+            return;
+
+          }
+
+
+          expandJobSeekerMobileChatTools();
+
+
+          /*
+            Keep cursor + keyboard active.
+          */
+          if (
+            jobSeekerChatTextInput
+          ) {
+
+            try {
+
+              jobSeekerChatTextInput.focus(
+                {
+                  preventScroll:
+                    true
+                }
+              );
+
+            }
+
+            catch (
+            error
+            ) {
+
+              jobSeekerChatTextInput.focus();
+
+            }
+
+          }
+
+        }
+      );
+
+
+    /* ══════════════════════════════════════
+       KEYBOARD CLOSED / INPUT LOSES FOCUS
+    
+       Restore original composer.
+    ══════════════════════════════════════ */
+
+    jobSeekerChatTextInput
+      ?.addEventListener(
+        "blur",
+        () => {
+
+          setTimeout(
+            () => {
+
+              /*
+                If the input is still active,
+                the keyboard is still being used.
+              */
+              if (
+                document.activeElement ===
+                jobSeekerChatTextInput
+              ) {
+
+                return;
+
+              }
+
+
+              resetJobSeekerMobileChatTools();
+
+            },
+            120
+          );
+
+        }
+      );
+
+
+    /* ══════════════════════════════════════
+       DESKTOP / ROTATION SAFETY
+    ══════════════════════════════════════ */
+
+    function handleJobSeekerMobileComposerChange() {
+
+      if (
+        !jobSeekerMobileComposerMedia.matches
+      ) {
+
+        resetJobSeekerMobileChatTools();
+
+      }
+
+    }
+
+
+    if (
+      typeof jobSeekerMobileComposerMedia
+        .addEventListener ===
+      "function"
+    ) {
+
+      jobSeekerMobileComposerMedia
+        .addEventListener(
+          "change",
+          handleJobSeekerMobileComposerChange
+        );
+
+    }
+
+    else {
+
+      jobSeekerMobileComposerMedia
+        .addListener(
+          handleJobSeekerMobileComposerChange
+        );
+
+    }
 
 
     /* Existing camera icon */
