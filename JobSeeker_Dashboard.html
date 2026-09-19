@@ -889,8 +889,10 @@
 
 
               <!-- EXISTING MESSAGE INPUT -->
-              <input class="chat-input" id="chat-input" type="text" placeholder="Type a message..."
-                data-i18n="msgTypeMessage" onkeydown="sendOnEnterWithAttachments(event)" />
+              <!-- MESSENGER-STYLE AUTO-GROWING MESSAGE INPUT -->
+              <textarea class="chat-input" id="chat-input" rows="1" placeholder="Type a message..."
+                data-i18n="msgTypeMessage" enterkeyhint="enter"
+                onkeydown="sendOnEnterWithAttachments(event)"></textarea>
 
               <!-- EXISTING SEND BUTTON -->
               <button class="chat-send-btn" id="chatSendBtn" onclick="sendMessageWithAttachments()"
@@ -4938,6 +4940,143 @@
       window.matchMedia(
         "(max-width: 600px)"
       );
+
+    /* ══════════════════════════════════════
+ MESSENGER-STYLE AUTO-GROWING INPUT
+══════════════════════════════════════ */
+
+    const CHAT_INPUT_MIN_HEIGHT =
+      42;
+
+
+    const CHAT_INPUT_MOBILE_MAX_HEIGHT =
+      96;
+
+
+    const CHAT_INPUT_DESKTOP_MAX_HEIGHT =
+      120;
+
+
+    /*
+      Grow textarea with the message.
+    
+      Mobile:
+      about 4 lines maximum.
+    
+      Desktop:
+      slightly taller maximum.
+    */
+    function resizeJobSeekerChatInput() {
+
+      if (
+        !jobSeekerChatTextInput
+      ) {
+
+        return;
+
+      }
+
+
+      const maxHeight =
+        jobSeekerMobileComposerMedia.matches
+
+          ? CHAT_INPUT_MOBILE_MAX_HEIGHT
+
+          : CHAT_INPUT_DESKTOP_MAX_HEIGHT;
+
+
+      /*
+        Reset first so scrollHeight can
+        calculate the real content height.
+      */
+      jobSeekerChatTextInput.style.height =
+        "auto";
+
+
+      const contentHeight =
+        jobSeekerChatTextInput
+          .scrollHeight;
+
+
+      const newHeight =
+        Math.min(
+          Math.max(
+            contentHeight,
+            CHAT_INPUT_MIN_HEIGHT
+          ),
+          maxHeight
+        );
+
+
+      jobSeekerChatTextInput.style.height =
+        `${newHeight}px`;
+
+
+      /*
+        Once maximum height is reached,
+        scroll inside the textarea instead
+        of making the whole composer huge.
+      */
+      jobSeekerChatTextInput.style.overflowY =
+
+        contentHeight >
+          maxHeight
+
+          ? "auto"
+
+          : "hidden";
+
+    }
+
+
+    /*
+      Reset after sending.
+    */
+    function resetJobSeekerChatInputHeight() {
+
+      if (
+        !jobSeekerChatTextInput
+      ) {
+
+        return;
+
+      }
+
+
+      jobSeekerChatTextInput.style.height =
+        `${CHAT_INPUT_MIN_HEIGHT}px`;
+
+
+      jobSeekerChatTextInput.style.overflowY =
+        "hidden";
+
+    }
+
+
+    /*
+      Resize continuously while typing.
+    */
+    jobSeekerChatTextInput
+      ?.addEventListener(
+        "input",
+        resizeJobSeekerChatInput
+      );
+
+
+    /*
+      Recalculate when phone rotates or
+      browser width changes.
+    */
+    window.addEventListener(
+      "resize",
+      resizeJobSeekerChatInput
+    );
+
+
+    /*
+      Initial one-line size.
+    */
+    resizeJobSeekerChatInput();
 
 
     /*
@@ -9087,6 +9226,8 @@ when recording voice messages.
               input.value =
                 "";
 
+              resetJobSeekerChatInputHeight();
+
             }
 
           }
@@ -9175,6 +9316,8 @@ when recording voice messages.
               input.value =
                 "";
 
+              resetJobSeekerChatInputHeight();
+
             }
 
           }
@@ -9251,19 +9394,10 @@ when recording voice messages.
     window.sendOnEnterWithAttachments =
       function (event) {
 
-        /*
-          If an attachment is staged,
-          Enter sends it using the new system.
-        */
         if (
-          event.key === "Enter" &&
-          pendingChatAttachments.length > 0
+          event.key !==
+          "Enter"
         ) {
-
-          event.preventDefault();
-
-
-          window.sendMessageWithAttachments();
 
           return;
 
@@ -9271,23 +9405,79 @@ when recording voice messages.
 
 
         /*
-          No attachment staged?
-    
-          Keep the ORIGINAL Enter logic.
+          Do not interfere with keyboard
+          composition/autocorrect.
         */
         if (
-          typeof window.sendOnEnter ===
+          event.isComposing
+        ) {
+
+          return;
+
+        }
+
+
+        const isMobile =
+          window.matchMedia(
+            "(max-width: 600px)"
+          ).matches;
+
+
+        /* ════════════════════════════════════
+           MOBILE
+    
+           Enter = NEW LINE.
+    
+           User presses the teal Send button
+           when ready, like Messenger.
+        ════════════════════════════════════ */
+
+        if (
+          isMobile
+        ) {
+
+          /*
+            Do NOT preventDefault().
+    
+            The textarea inserts the newline
+            normally.
+          */
+          return;
+
+        }
+
+
+        /* ════════════════════════════════════
+           DESKTOP / LAPTOP
+    
+           Enter       = Send
+           Shift+Enter = New line
+        ════════════════════════════════════ */
+
+        if (
+          event.shiftKey
+        ) {
+
+          return;
+
+        }
+
+
+        event.preventDefault();
+
+
+        if (
+          typeof window
+            .sendMessageWithAttachments ===
           "function"
         ) {
 
-          window.sendOnEnter(
-            event
-          );
+          window
+            .sendMessageWithAttachments();
 
         }
 
       };
-
 
     /* KEEP YOUR EXISTING TEXT MESSAGE CODE */
     window.sendRealtimeMessage = async function (text) {
