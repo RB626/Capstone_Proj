@@ -2152,9 +2152,55 @@
     let latestJobSeekerConversations = [];
     let unsubscribeProfileReviews = null;
 
-
     const applicationJobVisibility = new Map();
     const applicationJobUnsubscribers = new Map();
+
+    const savedJobSourceUnsubs = new Map();
+    const savedJobSourceData = new Map();
+
+    let savedJobCopies = [];
+    let savedJobsSession = 0;
+
+    function clearSavedJobSourceListeners() {
+      savedJobsSession++;
+
+      for (const unsubscribe of savedJobSourceUnsubs.values()) {
+        unsubscribe();
+      }
+
+      savedJobSourceUnsubs.clear();
+      savedJobSourceData.clear();
+
+      savedJobCopies = [];
+    }
+
+    function refreshVisibleSavedJobs() {
+      savedJobsData = savedJobCopies.flatMap(saved => {
+        const id = String(saved.jobId || saved.id || "");
+        const source = savedJobSourceData.get(id);
+
+        // Hide jobs that no longer exist or are no longer active.
+        if (
+          !source ||
+          source.status !== "active" ||
+          source.isDeleted === true
+        ) {
+          return [];
+        }
+
+        // Display the latest job details from the original posting.
+        return [{
+          ...saved,
+          ...source,
+          id,
+          jobId: id
+        }];
+      });
+
+      syncEmployerProfileListeners();
+      renderHomeJobs();
+      renderSavedJobsPage();
+    }
 
     function visibleApplicationNotifications() {
       return jobSeekerApplicationNotifications.filter(application => {
@@ -13621,6 +13667,7 @@ near the bottom.
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
 
+        clearSavedJobSourceListeners();
         currentUser = null;
         clearApplicationJobListeners();
         jobSeekerApplicationNotifications = [];
@@ -13639,6 +13686,8 @@ near the bottom.
           unsubscribeSavedJobs();
           unsubscribeSavedJobs = null;
         }
+
+        clearSavedJobSourceListeners();
 
         if (unsubscribeExperienceList) {
           unsubscribeExperienceList();
@@ -19982,6 +20031,7 @@ near the bottom.
       }
     );
 
+
     function listenToSavedJobs() {
       if (!currentUser) return;
 
@@ -19990,29 +20040,93 @@ near the bottom.
         unsubscribeSavedJobs = null;
       }
 
+      clearSavedJobSourceListeners();
+
+      const session = savedJobsSession;
+      const userId = currentUser.uid;
+
       unsubscribeSavedJobs = onSnapshot(
-        getSavedJobsCollectionRef(currentUser.uid),
+        getSavedJobsCollectionRef(userId),
+
         (snapshot) => {
-          savedJobIds = new Set(snapshot.docs.map(docSnap => docSnap.id));
+          if (
+            session !== savedJobsSession ||
+            currentUser?.uid !== userId
+          ) {
+            return;
+          }
 
-          savedJobsData =
-            snapshot.docs.map(
-              docSnap => ({
-                id:
-                  docSnap.id,
+          // Keep the original saved-job IDs for the Save/Unsave buttons.
+          savedJobIds = new Set(
+            snapshot.docs.map(saved => saved.id)
+          );
 
-                ...docSnap.data()
-              })
+          savedJobCopies = snapshot.docs.map(saved => ({
+            id: saved.id,
+            ...saved.data()
+          }));
+
+          const wantedIds = new Set(
+            savedJobCopies
+              .map(saved => String(saved.jobId || saved.id || ""))
+              .filter(Boolean)
+          );
+
+          // Stop listening to jobs that the user has unsaved.
+          for (const [id, unsubscribe] of savedJobSourceUnsubs) {
+            if (!wantedIds.has(id)) {
+              unsubscribe();
+
+              savedJobSourceUnsubs.delete(id);
+              savedJobSourceData.delete(id);
+            }
+          }
+
+          // Listen to the original Firebase document for each saved job.
+          for (const id of wantedIds) {
+            if (savedJobSourceUnsubs.has(id)) continue;
+
+            const unsubscribe = onSnapshot(
+              doc(db, "jobs", id),
+
+              (jobSnapshot) => {
+                if (
+                  session !== savedJobsSession ||
+                  currentUser?.uid !== userId
+                ) {
+                  return;
+                }
+
+                savedJobSourceData.set(
+                  id,
+                  jobSnapshot.exists()
+                    ? jobSnapshot.data()
+                    : null
+                );
+
+                refreshVisibleSavedJobs();
+              },
+
+              (error) => {
+                console.error(
+                  "Failed to check saved job availability:",
+                  id,
+                  error
+                );
+
+                // Do not display an unverified job as available.
+                savedJobSourceData.set(id, null);
+
+                refreshVisibleSavedJobs();
+              }
             );
 
+            savedJobSourceUnsubs.set(id, unsubscribe);
+          }
 
-          syncEmployerProfileListeners();
-
-
-          renderHomeJobs();
-
-          renderSavedJobsPage();
+          refreshVisibleSavedJobs();
         },
+
         (error) => {
           console.error("Failed to load saved jobs:", error);
         }
@@ -22882,7 +22996,7 @@ near the bottom.
       // The applications notification listener now handles this count.
       updateVisibleApplicationsCount();
     }
-    
+
     async function backfillMyApplications(uid) {
       const jobsSnap = await getDocs(query(collection(db, "jobs"), where("status", "==", "active")));
 
