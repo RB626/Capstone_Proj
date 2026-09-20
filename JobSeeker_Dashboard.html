@@ -2177,6 +2177,97 @@
     let latestJobSeekerConversations = [];
     let unsubscribeProfileReviews = null;
 
+
+    const applicationJobVisibility = new Map();
+    const applicationJobUnsubscribers = new Map();
+
+    function visibleApplicationNotifications() {
+      return jobSeekerApplicationNotifications.filter(application => {
+        const jobId = application.jobId || application.id;
+
+        // Keep records without a verifiable job ID unchanged.
+        if (!jobId) return true;
+
+        // A false value means the job was confirmed deleted.
+        return applicationJobVisibility.get(String(jobId)) !== false;
+      });
+    }
+
+    function updateVisibleApplicationsCount() {
+      if (!applicationsCountEl) return;
+
+      applicationsCountEl.textContent =
+        visibleApplicationNotifications().length;
+    }
+
+    function clearApplicationJobListeners() {
+      applicationJobUnsubscribers.forEach(unsubscribe => {
+        unsubscribe();
+      });
+
+      applicationJobUnsubscribers.clear();
+      applicationJobVisibility.clear();
+    }
+
+    function syncApplicationJobListeners() {
+      const jobIds = new Set(
+        jobSeekerApplicationNotifications
+          .map(application => application.jobId || application.id)
+          .filter(Boolean)
+          .map(String)
+      );
+
+      // Stop listening to jobs that are no longer in the applications list.
+      for (const [jobId, unsubscribe] of applicationJobUnsubscribers) {
+        if (!jobIds.has(jobId)) {
+          unsubscribe();
+          applicationJobUnsubscribers.delete(jobId);
+          applicationJobVisibility.delete(jobId);
+        }
+      }
+
+      // Check each job and listen for deletion.
+      for (const jobId of jobIds) {
+        if (applicationJobUnsubscribers.has(jobId)) continue;
+
+        // Temporarily hide this notification until the job is checked.
+        applicationJobVisibility.set(jobId, false);
+
+        const unsubscribe = onSnapshot(
+          doc(db, "jobs", jobId),
+
+          snapshot => {
+            const jobData = snapshot.data();
+
+            const jobStillExists =
+              snapshot.exists() &&
+              jobData?.status !== "deleted" &&
+              jobData?.isDeleted !== true;
+
+            applicationJobVisibility.set(jobId, jobStillExists);
+            updateVisibleApplicationsCount();
+            renderJobSeekerNotifications();
+          },
+
+          error => {
+            console.warn(
+              "Unable to verify notification job:",
+              jobId,
+              error
+            );
+
+            // A network or permission error does not prove deletion.
+            applicationJobVisibility.set(jobId, true);
+            updateVisibleApplicationsCount();
+            renderJobSeekerNotifications();
+          }
+        );
+
+        applicationJobUnsubscribers.set(jobId, unsubscribe);
+      }
+    }
+
+
     function createReviewStars(rating) {
       const numericRating =
         Math.max(
@@ -12828,7 +12919,7 @@ near the bottom.
         Combine applications + reviews.
       */
       const allNotifications = [
-        ...jobSeekerApplicationNotifications.map(
+        ...visibleApplicationNotifications().map(
           application => ({
             ...application,
             notificationType:
@@ -13014,6 +13105,12 @@ near the bottom.
           null;
       }
 
+      clearApplicationJobListeners();
+
+      jobSeekerApplicationNotifications = [];
+
+      renderJobSeekerNotifications();
+
       const applicationsReference =
         collection(
           db,
@@ -13057,7 +13154,8 @@ near the bottom.
                   );
 
                 });
-
+            syncApplicationJobListeners();
+            updateVisibleApplicationsCount();
             renderJobSeekerNotifications();
             syncEmployerProfileListeners();
           },
@@ -13089,7 +13187,7 @@ near the bottom.
         getReadJobSeekerNotificationIds();
 
       const unreadApplications =
-        jobSeekerApplicationNotifications
+        visibleApplicationNotifications()
           .filter(application => {
             return !readIds.has(
               getApplicationNotificationId(
@@ -13185,7 +13283,7 @@ near the bottom.
         const readIds =
           getReadJobSeekerNotificationIds();
 
-        jobSeekerApplicationNotifications
+        visibleApplicationNotifications()
           .forEach(application => {
             readIds.add(
               getApplicationNotificationId(
@@ -13264,7 +13362,7 @@ near the bottom.
         );
 
       const hasNotifications =
-        jobSeekerApplicationNotifications.length +
+        visibleApplicationNotifications().length +
         jobSeekerReviewNotifications.length > 0;
 
 
@@ -13547,7 +13645,10 @@ near the bottom.
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
+
         currentUser = null;
+        clearApplicationJobListeners();
+        jobSeekerApplicationNotifications = [];
 
         if (unsubscribeApplicationsCount) {
           unsubscribeApplicationsCount();
@@ -22797,26 +22898,16 @@ near the bottom.
     function listenToMyApplicationsCount(uid) {
       if (!applicationsCountEl || !uid) return;
 
+      // Stop the old listener if it is still active.
       if (unsubscribeApplicationsCount) {
         unsubscribeApplicationsCount();
         unsubscribeApplicationsCount = null;
       }
 
-      const myApplicationsRef = collection(db, "users", uid, "applications");
-
-      unsubscribeApplicationsCount = onSnapshot(
-        myApplicationsRef,
-        (snapshot) => {
-          applicationsCountEl.textContent = snapshot.size;
-          console.log("My applications count:", snapshot.size);
-        },
-        (error) => {
-          console.error("Failed to load applications count:", error);
-          applicationsCountEl.textContent = "0";
-        }
-      );
+      // The applications notification listener now handles this count.
+      updateVisibleApplicationsCount();
     }
-
+    
     async function backfillMyApplications(uid) {
       const jobsSnap = await getDocs(query(collection(db, "jobs"), where("status", "==", "active")));
 
@@ -23091,6 +23182,10 @@ near the bottom.
 
     window.firebaseLogout = async function () {
       try {
+
+        clearApplicationJobListeners();
+        jobSeekerApplicationNotifications = [];
+
         if (unsubscribeApplicationsCount) {
           unsubscribeApplicationsCount();
           unsubscribeApplicationsCount = null;
